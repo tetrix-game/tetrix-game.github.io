@@ -9,3 +9,5 @@
   - The turn button doesn't stop a shape from being placed... Kindof unusable, and super easy to fix... I don't even know why I'm writing this, I guess I just like checklists.
 - 🌱 I’m currently learning full stack js.
 - 📫 How to reach me: Anyone can open an issue in github. If you've never done it before, go ahead and try. I believe in you.
+
+- I changed the repository name... Does git still work?

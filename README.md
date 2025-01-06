@@ -15,6 +15,13 @@
 # For Developers:
 
 my wishlist for you is that you be using: vscode, nvm, npm, a mac laptop running Sequoia
+- that way, you'll be able to open your workspace settings in vscode, and paste this:
+```javascript
+{
+  "editor.defaultFormatter": "vscode.typescript-language-features",
+  "editor.formatOnSave": true,
+}
+```
 
 1. Clone the repo
 ```javasctipt

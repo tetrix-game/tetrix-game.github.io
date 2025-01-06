@@ -36,3 +36,5 @@ npm run publish
 - That will compile the .ts files, create a /dist foler, and publish that dist folder to the 'gh-pages' branch, which is purely for serveing the code for players to play the game.
 
 6. We're playing it fast and loose with privledges and branch protection, go ahead and commit directly to main, break the app, users won't care... right?
+
+7. If you want to fix typscript errors, you're a better person than me. Feel free

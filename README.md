@@ -19,7 +19,7 @@ my wishlist for you is that you be using: vscode, nvm, npm, a mac laptop running
 ```javasctipt
 git clone https://github.com/tetrix-game/tetrix-game.github.io
 ```
-2. Open the project
+2. Open the project and run the following:
 ```javascript
 npm install
 ```

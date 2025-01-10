@@ -1,0 +1,33 @@
+.tetrix_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 10vh;
+  background-color: lightgrey;
+}
+
+.tetrix_header_start,
+.tetrix_header_middle,
+.tetrix_header_end {
+  background-color: grey;
+  border: 1px solid rgb(25, 25, 25);
+  height: 100%;
+}
+
+.tetrix_header_start {
+  flex: 1;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 1rem;
+}
+
+.tetrix_header_middle {
+  flex: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

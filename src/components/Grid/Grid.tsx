@@ -1,6 +1,6 @@
-import './Tetrix.css'
-import GridBlock from './GridBlock';
-import type { Block } from './GridBlock';
+import './Grid.css'
+import GridBlock from '../GridBlock';
+import type { Block } from '../GridBlock';
 
 type GridProps = {
   gridBlocks: Array<Block>;

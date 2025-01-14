@@ -1,26 +1,8 @@
+import "./FullScreenButton.css";
 import { useEffect, useState } from "react";
 
-function FullScreenFloatingActionButton() {
+function FullScreenButton() {
   const [isFullScreen, setIsFullScreen] = useState(false);
-
-  const style = {
-    position: "absolute",
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: "4em",
-    bottom: "1em",
-    right: "1em",
-    top: "auto",
-    left: "auto",
-    width: "2em",
-    height: "2em",
-    borderRadius: "50%",
-    backgroundColor: "lightblue",
-    border: "none",
-    padding: "0.5em 1em",
-    cursor: "pointer",
-  }
 
   const goFullScreen = () => {
     // make the browser full screen
@@ -48,11 +30,11 @@ function FullScreenFloatingActionButton() {
 
   return (
     !isFullScreen ? (
-      <button style={style} onClick={goFullScreen}>
+      <button className="full-screen-button" onClick={goFullScreen}>
         <span>+</span>
       </button>
     ) : null
   )
 }
 
-export default FullScreenFloatingActionButton;
+export default FullScreenButton;

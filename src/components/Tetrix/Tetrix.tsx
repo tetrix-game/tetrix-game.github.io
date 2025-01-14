@@ -1,16 +1,21 @@
 import { useReducer } from 'react';
 import './Tetrix.css';
-import Grid from './Grid';
+import Grid from '../Grid';
 import reducer, { initialState } from './TetrixReducer'
+import ShapeSelector from '../ShapeSelector';
 
-const Tetrix = () => {
+type TetrixProps = {
+  setScore: (score: number) => void;
+}
+
+const Tetrix = ({ setScore }: TetrixProps) => {
   const [{ gridBlocks }] = useReducer(reducer, initialState);
-  console.log('gridBlocks', gridBlocks)
+  setScore(0);
 
   return (
     <div className="tetrix">
       <Grid gridBlocks={gridBlocks} />
-      <div className="shapes" />
+      <ShapeSelector />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Block } from './GridBlock';
+import { Block } from './GridBlock/GridBlock';
 
 type TetrixReducerState = {
   gridBlocks: Array<Block>;

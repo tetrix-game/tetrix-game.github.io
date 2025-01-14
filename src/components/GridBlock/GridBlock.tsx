@@ -1,4 +1,4 @@
-import './GridBlockVisual.css';
+import './GridBlock.css';
 
 type Block = {
   row: number;

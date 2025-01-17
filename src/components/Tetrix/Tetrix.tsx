@@ -9,13 +9,13 @@ type TetrixProps = {
 }
 
 const Tetrix = ({ setScore }: TetrixProps) => {
-  const [{ gridBlocks }] = useReducer(reducer, initialState);
+  const [{ tiles, nextShapes, savedShape }] = useReducer(reducer, initialState);
   setScore(0);
 
   return (
     <div className="tetrix">
-      <Grid gridBlocks={gridBlocks} />
-      <ShapeSelector />
+      <Grid tiles={tiles} />
+      <ShapeSelector {...{ nextShapes, savedShape }} />
     </div>
   )
 }

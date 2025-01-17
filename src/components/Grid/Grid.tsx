@@ -1,21 +1,21 @@
 import './Grid.css'
-import GridBlock from '../GridBlock';
-import type { Block } from '../GridBlock';
+import Tile from '../Tile';
+import type { Block } from '../../utils/shape';
 
 type GridProps = {
-  gridBlocks: Array<Block>;
+  tiles: Array<Block>;
 }
 
 
 
-const Grid = ({ gridBlocks }: GridProps) => {
+const Grid = ({ tiles }: GridProps) => {
 
   return (
     <div className="grid">
       {
-        gridBlocks.map((block: Block, index) => {
+        tiles.map((block: Block, index) => {
           return (
-            <GridBlock key={index} block={block} />
+            <Tile key={index} block={block} />
           )
         })
       }

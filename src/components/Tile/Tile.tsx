@@ -1,16 +1,14 @@
-import './GridBlock.css';
+import './Tile.css';
+import type { Block } from '../../utils/shape';
+import BlockVisual from '../BlockVisual';
 
-type Block = {
+type TileProps = {
+  block: Block;
   row: number;
   column: number;
-  color: string | undefined;
 }
 
-type GridBlockProps = {
-  block: Block;
-}
-
-const GridBlock = ({ block }: GridBlockProps) => {
+const Tile = ({ block, row, column }: TileProps) => {
 
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
@@ -22,9 +20,10 @@ const GridBlock = ({ block }: GridBlockProps) => {
     }
   }
   return (
-    <div style={style(block.row, block.column)}></div>
+    <div style={style(row, column)}>
+      <BlockVisual block={block} />
+    </div>
   )
 }
 
-export type { Block };
-export default GridBlock;
+export default Tile;

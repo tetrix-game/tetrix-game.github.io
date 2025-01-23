@@ -1,6 +1,6 @@
 import ShapeOption from '../ShapeOption'
 import SavedShape from '../SavedShape'
-import type { Shape } from '../../utils/shape';
+import type { Shape } from '../../utils/types';
 
 type ShapeSelectorProps = {
   nextShapes: Shape[];
@@ -9,7 +9,7 @@ type ShapeSelectorProps = {
 
 const ShapeSelector = ({ nextShapes, savedShape }: ShapeSelectorProps): JSX.Element => {
 
-  const [shape1, shape2, shape3] = nextShapes;
+  const [shape1 = [], shape2 = [], shape3 = []] = nextShapes;
   return (
     <div className="shape-selector">
       <ShapeOption shape={shape1} />

@@ -1,5 +1,5 @@
 import './ShapeOption.css';
-import type { Block } from '../../utils/shape';
+import type { Block } from '../../utils/types';
 
 const shapeContainerCss = {
 

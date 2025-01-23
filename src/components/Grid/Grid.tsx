@@ -1,21 +1,20 @@
 import './Grid.css'
-import Tile from '../Tile';
-import type { Block } from '../../utils/shape';
+import TileComponent from '../TileComponent';
+import type { Tile } from '../../utils/types';
 
 type GridProps = {
-  tiles: Array<Block>;
+  tiles: Tile[];
+  dispatch: React.Dispatch<{ type: string; value: Tile }>;
 }
 
-
-
-const Grid = ({ tiles }: GridProps) => {
+const Grid = ({ tiles, dispatch }: GridProps) => {
 
   return (
     <div className="grid">
       {
-        tiles.map((block: Block, index) => {
+        tiles.map((tile: Tile, index) => {
           return (
-            <Tile key={index} block={block} />
+            <TileComponent key={index} tile={tile} dispatch={dispatch} />
           )
         })
       }

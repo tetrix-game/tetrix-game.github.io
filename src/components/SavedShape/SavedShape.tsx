@@ -1,4 +1,4 @@
-import { Shape } from "../../utils/shape";
+import { Shape } from "../../utils/types";
 
 type SavedShapeProps = {
   shape: Shape | null;

@@ -6,7 +6,7 @@
 export type Shape = Block[][];
 export type Location = { row: number, column: number }
 export type Block = {
-  color: string | undefined;
+  color: { lightest: string, light: string, main: string, dark: string, darkest: string };
   isFilled: boolean;
   customAttribute?: string;
 }

@@ -1,25 +1,20 @@
 import './Grid.css'
-import TileComponent from '../TileComponent';
+import TileVisual from '../TileVisual';
 import type { Tile } from '../../utils/types';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 
-type GridProps = {
-  tiles: Tile[];
-  dispatch: React.Dispatch<{ type: string; value: Tile }>;
-}
-
-const Grid = ({ tiles, dispatch }: GridProps) => {
+export default function Grid() {
+  const { tiles } = useTetrixStateContext()
 
   return (
     <div className="grid">
       {
-        tiles.map((tile: Tile, index) => {
+        tiles.map((tile: Tile) => {
           return (
-            <TileComponent key={index} tile={tile} dispatch={dispatch} />
+            <TileVisual key={tile.id} tile={tile} />
           )
         })
       }
     </div >
   )
 }
-
-export default Grid;

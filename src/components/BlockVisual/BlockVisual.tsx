@@ -1,9 +1,6 @@
+import { Block } from "../../utils/types";
 
-import type { Block } from "../../utils/types";
-
-type BlockVisualProps = { block: Block }
-
-const BlockVisual = ({ block }: BlockVisualProps): JSX.Element => {
+export default function BlockVisual({ block }: { block: Block }): JSX.Element {
   return (
     <div
       style={{
@@ -18,5 +15,3 @@ const BlockVisual = ({ block }: BlockVisualProps): JSX.Element => {
     ></div>
   )
 }
-
-export default BlockVisual;

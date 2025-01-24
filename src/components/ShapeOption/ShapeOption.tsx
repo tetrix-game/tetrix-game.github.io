@@ -9,7 +9,7 @@ type ShapeOptionProps = {
   shape: Block[][];
 };
 
-const ShapeOption = ({ shape }: ShapeOptionProps) => {
+const ShapeOption = ({ shape = [] }: ShapeOptionProps) => {
   // Who's responsible for maintaining the state for the location of the shape that may or may not be dragged at any given time?
   // position: { x: number, y: number }
   // whether the shape fits in the grid location it's hovering over

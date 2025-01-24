@@ -1,24 +1,22 @@
-import './TileComponent.css';
+import './TileVisual.css';
 import type { Tile } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React, { useCallback } from 'react';
+import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 
-type TileComponentProps = {
+type TileVisualProps = {
   tile: Tile;
-  dispatch: React.Dispatch<{ type: string; value: Tile }>;
 }
 
-const TileComponent = ({ tile, dispatch }: TileComponentProps) => {
-  if (tile.location.column === 1 && tile.location.row === 1) {
-    console.log('block:', tile.block)
-  }
+const TileVisual = ({ tile }: TileVisualProps) => {
+  const dispatch = useTetrixDispatchContext();
 
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
     return {
       gridColumn: column,
       gridRow: row,
-      backgroundColor: dark ? "rgb(30, 30, 40)" : "rgb(40, 40, 60)",
+      backgroundColor: dark ? "rgb(69, 69, 108)" : "rgb(40, 40, 60)",
       borderRadius: '5px',
       zIndex: 1,
     }
@@ -37,4 +35,4 @@ const TileComponent = ({ tile, dispatch }: TileComponentProps) => {
   )
 }
 
-export default React.memo(TileComponent);
+export default React.memo(TileVisual);

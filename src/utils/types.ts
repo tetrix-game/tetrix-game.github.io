@@ -11,11 +11,20 @@ export type Block = {
   customAttribute?: string;
 }
 export type Tile = {
+  id: string;
   location: Location;
   block: Block
 }
+
+// Reducer types
 export type TetrixReducerState = {
   tiles: Tile[];
   nextShapes: Shape[];
   savedShape: Shape | null,
 }
+type ToggleBlockAction = {
+  type: 'TOGGLE_BLOCK';
+  value: { index: number, isFilled: boolean };
+}
+export type TetrixAction = ToggleBlockAction;
+export type TetrixDispatch = React.Dispatch<TetrixAction>;

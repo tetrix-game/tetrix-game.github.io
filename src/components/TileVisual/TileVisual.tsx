@@ -1,14 +1,16 @@
 import './TileVisual.css';
-import type { Tile } from '../../utils/types';
+import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React, { useCallback } from 'react';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
   tile: Tile;
+  isPreview?: boolean;
+  previewBlock?: Block;
 }
 
-const TileVisual = ({ tile }: TileVisualProps) => {
+const TileVisual = ({ tile, isPreview = false, previewBlock }: TileVisualProps) => {
   const dispatch = useTetrixDispatchContext();
 
   const style = (row: number, column: number) => {
@@ -16,7 +18,7 @@ const TileVisual = ({ tile }: TileVisualProps) => {
     return {
       gridColumn: column,
       gridRow: row,
-      backgroundColor: dark ? "rgb(69, 69, 108)" : "rgb(40, 40, 60)",
+      backgroundColor: dark ? "rgb(59, 59, 62)" : "rgb(40, 40, 50)",
       borderRadius: '5px',
       zIndex: 1,
     }
@@ -28,9 +30,27 @@ const TileVisual = ({ tile }: TileVisualProps) => {
     dispatch({ type: "TOGGLE_BLOCK", value: { isFilled, index } })
   }, [dispatch, tile])
 
+  // Display preview block if present, otherwise display actual tile block
+  const displayBlock = isPreview && previewBlock ? {
+    ...previewBlock,
+    isFilled: true,
+  } : tile.block;
+
   return (
     <div onClick={onClick} style={style(tile.location.row, tile.location.column)}>
-      <BlockVisual block={tile.block} />
+      <BlockVisual block={displayBlock} />
+      {isPreview && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+          pointerEvents: 'none',
+          zIndex: 3,
+        }} />
+      )}
     </div>
   )
 }

@@ -20,11 +20,46 @@ export type Tile = {
 export type TetrixReducerState = {
   tiles: Tile[];
   nextShapes: Shape[];
-  savedShape: Shape | null,
+  savedShape: Shape | null;
+  selectedShape: Shape | null;
+  mouseGridLocation: Location | null;
+  isShapeDragging: boolean;
 }
+
 type ToggleBlockAction = {
   type: 'TOGGLE_BLOCK';
   value: { index: number, isFilled: boolean };
 }
-export type TetrixAction = ToggleBlockAction;
+
+type SelectShapeAction = {
+  type: 'SELECT_SHAPE';
+  value: { shape: Shape };
+}
+
+type UpdateMouseLocationAction = {
+  type: 'UPDATE_MOUSE_LOCATION';
+  value: { location: Location | null };
+}
+
+type PlaceShapeAction = {
+  type: 'PLACE_SHAPE';
+}
+
+type ClearSelectionAction = {
+  type: 'CLEAR_SELECTION';
+}
+
+type SetAvailableShapesAction = {
+  type: 'SET_AVAILABLE_SHAPES';
+  value: { shapes: Shape[] };
+}
+
+export type TetrixAction =
+  | ToggleBlockAction
+  | SelectShapeAction
+  | UpdateMouseLocationAction
+  | PlaceShapeAction
+  | ClearSelectionAction
+  | SetAvailableShapesAction;
+
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

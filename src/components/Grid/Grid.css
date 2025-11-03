@@ -1,16 +1,9 @@
-.grid {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  background-color: rgb(10, 10, 10);
-  gap: 1px;
-}
-
 /* Aspect ratio decides whether to favor flex-row for horizonral layouts and flex-column for vertical layouts */
 @media (min-aspect-ratio: 1/1) {
   .grid {
-    width: 100vh;
-    height: 100vh;
+    width: calc(90vh - 1px);
+    height: calc(90vh - 1px);
+    gap: 2px;
   }
 }
 
@@ -20,5 +13,6 @@
     width: 90vw;
     margin-left: 5vw;
     margin-right: 5vw;
+    gap: 2px;
   }
 }

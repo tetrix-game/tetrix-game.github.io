@@ -28,11 +28,6 @@ export type TetrixReducerState = {
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
 }
 
-type ToggleBlockAction = {
-  type: 'TOGGLE_BLOCK';
-  value: { index: number, isFilled: boolean };
-}
-
 type SelectShapeAction = {
   type: 'SELECT_SHAPE';
   value: { shape: Shape; shapeIndex: number };
@@ -57,7 +52,6 @@ type SetAvailableShapesAction = {
 }
 
 export type TetrixAction =
-  | ToggleBlockAction
   | SelectShapeAction
   | UpdateMouseLocationAction
   | PlaceShapeAction

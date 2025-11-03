@@ -42,7 +42,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
 
   return (
     <div onClick={onClick} style={style(tile.location.row, tile.location.column)}>
-      <BlockVisual block={displayBlock} />
+      <BlockVisual block={displayBlock} isHovered={isHovered} />
     </div>
   )
 }

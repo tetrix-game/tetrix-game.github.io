@@ -1,6 +1,7 @@
 import type { TetrixAction, Tile } from '../../utils/types';
 import { TetrixReducerState } from '../../utils/types';
 import { getShapeGridPositions, generateRandomShape } from '../../utils/shapeUtils';
+import { clearFullLines } from '../../utils/lineUtils';
 
 const emptyColor = {
   lightest: '#000000',
@@ -37,21 +38,6 @@ export const initialState: TetrixReducerState = {
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
-    case "TOGGLE_BLOCK": {
-      const { index, isFilled } = action.value as { index: number, isFilled: boolean };
-      const tile = state.tiles[index];
-
-      // Only allow toggling tiles with non-empty colors (placed blocks)
-      if (tile.block.color.main === '#000000') {
-        return state; // Don't toggle empty tiles
-      }
-
-      const newTiles = state.tiles.map((tile, idx) =>
-        idx === index ? { ...tile, block: { ...tile.block, isFilled: !isFilled } } : tile
-      );
-      return { ...state, tiles: newTiles };
-    }
-
     case "SELECT_SHAPE": {
       const { shape, shapeIndex } = action.value;
 
@@ -99,8 +85,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         positionMap.set(key, pos);
       }
 
-      // Update tiles
-      const newTiles = state.tiles.map(tile => {
+      // Update tiles with the placed shape
+      const tilesWithShape = state.tiles.map(tile => {
         const key = `${tile.location.row},${tile.location.column}`;
         const shapePos = positionMap.get(key);
 
@@ -112,6 +98,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         }
         return tile;
       });
+
+      // Check for and clear full lines
+      const { tiles: newTiles } = clearFullLines(tilesWithShape);
 
       // Remove the placed shape from nextShapes
       const remainingShapes = state.nextShapes.filter((_, index) => index !== state.selectedShapeIndex);

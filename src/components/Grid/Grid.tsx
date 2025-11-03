@@ -29,11 +29,28 @@ export default function Grid() {
       { rows: 10, columns: 10 }
     );
 
-    dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location } });
+    // Calculate the tile size based on grid dimensions
+    const gridRect = gridRef.current.getBoundingClientRect();
+    const tileSize = (gridRect.width - 9 * 2) / 10; // Subtract gap space (9 gaps of 2px), divide by 10 tiles
+
+    dispatch({
+      type: 'UPDATE_MOUSE_LOCATION',
+      value: {
+        location,
+        position: { x: e.clientX, y: e.clientY },
+        tileSize,
+        gridBounds: {
+          top: gridRect.top,
+          left: gridRect.left,
+          width: gridRect.width,
+          height: gridRect.height
+        }
+      }
+    });
   }, [selectedShape, dispatch]);
 
   const handleMouseLeave = useCallback(() => {
-    dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: null } });
+    dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: null, position: null } });
   }, [dispatch]);
 
   const handleClick = useCallback((e: MouseEvent) => {

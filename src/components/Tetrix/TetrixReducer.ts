@@ -32,6 +32,9 @@ export const initialState: TetrixReducerState = {
   selectedShape: null,
   selectedShapeIndex: null,
   mouseGridLocation: null,
+  mousePosition: null,
+  gridTileSize: null,
+  gridBounds: null,
   isShapeDragging: false,
   hoveredBlockPositions: [],
 }
@@ -56,7 +59,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "UPDATE_MOUSE_LOCATION": {
-      const { location } = action.value;
+      const { location, position, tileSize, gridBounds } = action.value;
 
       // Calculate hovered block positions based on selected shape and mouse location
       const hoveredBlockPositions = state.selectedShape && location
@@ -66,6 +69,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         mouseGridLocation: location,
+        mousePosition: position ?? null,
+        gridTileSize: tileSize ?? state.gridTileSize,
+        gridBounds: gridBounds ?? state.gridBounds,
         hoveredBlockPositions,
       };
     }
@@ -122,6 +128,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: nextSelectedShape,
         selectedShapeIndex: nextSelectedShapeIndex,
         mouseGridLocation: null,
+        mousePosition: null,
         isShapeDragging: nextSelectedShape !== null,
         hoveredBlockPositions: [],
       };
@@ -133,6 +140,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: null,
         selectedShapeIndex: null,
         mouseGridLocation: null,
+        mousePosition: null,
         isShapeDragging: false,
         hoveredBlockPositions: [],
       };
@@ -143,6 +151,22 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         nextShapes: shapes,
+      };
+    }
+
+    case "TOGGLE_BLOCK": {
+      const { isFilled, index } = action.value;
+      const newTiles = [...state.tiles];
+      newTiles[index] = {
+        ...newTiles[index],
+        block: {
+          ...newTiles[index].block,
+          isFilled: !isFilled,
+        }
+      };
+      return {
+        ...state,
+        tiles: newTiles,
       };
     }
   }

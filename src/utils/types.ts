@@ -24,6 +24,9 @@ export type TetrixReducerState = {
   selectedShape: Shape | null;
   selectedShapeIndex: number | null;
   mouseGridLocation: Location | null;
+  mousePosition: { x: number; y: number } | null;
+  gridTileSize: number | null;
+  gridBounds: { top: number; left: number; width: number; height: number } | null;
   isShapeDragging: boolean;
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
 }
@@ -35,7 +38,12 @@ type SelectShapeAction = {
 
 type UpdateMouseLocationAction = {
   type: 'UPDATE_MOUSE_LOCATION';
-  value: { location: Location | null };
+  value: {
+    location: Location | null;
+    position?: { x: number; y: number } | null;
+    tileSize?: number | null;
+    gridBounds?: { top: number; left: number; width: number; height: number } | null;
+  };
 }
 
 type PlaceShapeAction = {
@@ -51,11 +59,17 @@ type SetAvailableShapesAction = {
   value: { shapes: Shape[] };
 }
 
+type ToggleBlockAction = {
+  type: 'TOGGLE_BLOCK';
+  value: { isFilled: boolean; index: number };
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
   | PlaceShapeAction
   | ClearSelectionAction
-  | SetAvailableShapesAction;
+  | SetAvailableShapesAction
+  | ToggleBlockAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

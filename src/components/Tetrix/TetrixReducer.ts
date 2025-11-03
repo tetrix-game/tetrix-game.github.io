@@ -38,6 +38,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
   switch (action.type) {
     case "TOGGLE_BLOCK": {
       const { index, isFilled } = action.value as { index: number, isFilled: boolean };
+      const tile = state.tiles[index];
+
+      // Only allow toggling tiles with non-empty colors (placed blocks)
+      if (tile.block.color.main === '#000000') {
+        return state; // Don't toggle empty tiles
+      }
+
       const newTiles = state.tiles.map((tile, idx) =>
         idx === index ? { ...tile, block: { ...tile.block, isFilled: !isFilled } } : tile
       );

@@ -54,18 +54,41 @@ export function getShapeCenter(shape: Shape): { row: number; col: number } {
 }
 
 /**
- * Get all filled block positions relative to the shape's center
+ * Get the anchor block position for a shape - the block that should be centered on the mouse.
+ * For tie-breaking when there's an even number of blocks, choose the block that is above and to the left.
+ * 
+ * Examples:
+ * - 2x2 square: upper-left block
+ * - 3x3 square: center block
+ * - 1x3 line (any orientation): center block
+ */
+export function getShapeAnchorBlock(shape: Shape): { row: number; col: number } {
+  const bounds = getShapeBounds(shape);
+
+  // For odd dimensions, use the mathematical center (which will be a filled block)
+  // For even dimensions, round down to prefer upper-left
+  const anchorRow = bounds.minRow + Math.floor((bounds.height - 1) / 2);
+  const anchorCol = bounds.minCol + Math.floor((bounds.width - 1) / 2);
+
+  return {
+    row: anchorRow,
+    col: anchorCol,
+  };
+}
+
+/**
+ * Get all filled block positions relative to the shape's anchor block
  */
 export function getFilledBlocksRelativeToCenter(shape: Shape): Array<{ row: number; col: number; block: Block }> {
-  const center = getShapeCenter(shape);
+  const anchor = getShapeAnchorBlock(shape);
   const filledBlocks: Array<{ row: number; col: number; block: Block }> = [];
 
   for (let row = 0; row < shape.length; row++) {
     for (let col = 0; col < shape[row].length; col++) {
       if (shape[row][col].isFilled) {
         filledBlocks.push({
-          row: row - center.row,
-          col: col - center.col,
+          row: row - anchor.row,
+          col: col - anchor.col,
           block: shape[row][col],
         });
       }

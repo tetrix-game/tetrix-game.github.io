@@ -1,6 +1,6 @@
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual';
-import { getShapeCenter } from '../../utils/shapeUtils';
+import { getShapeAnchorBlock } from '../../utils/shapeUtils';
 
 export default function DraggingShape() {
   const { selectedShape, mousePosition, mouseGridLocation, gridTileSize, gridBounds } = useTetrixStateContext();
@@ -9,8 +9,8 @@ export default function DraggingShape() {
     return null;
   }
 
-  // Calculate the shape's center in the 3x3 grid
-  const shapeCenter = getShapeCenter(selectedShape);
+  // Calculate the shape's anchor block - the block that should align with the mouse
+  const shapeAnchor = getShapeAnchorBlock(selectedShape);
 
   // Calculate where the mouse-hovered grid cell is in pixels
   const tileWithGap = gridTileSize + 2;
@@ -27,15 +27,15 @@ export default function DraggingShape() {
   const mouseOffsetX = mousePosition.x - hoveredCellCenterX;
   const mouseOffsetY = mousePosition.y - hoveredCellCenterY;
 
-  // Position the 3x3 grid so that the shape's center block aligns with the hovered grid cell
+  // Position the 3x3 grid so that the shape's anchor block aligns with the hovered grid cell
   // accounting for where the mouse is within that cell
-  const shapeCenterOffsetX = shapeCenter.col * tileWithGap;
-  const shapeCenterOffsetY = shapeCenter.row * tileWithGap;
+  const shapeAnchorOffsetX = shapeAnchor.col * tileWithGap;
+  const shapeAnchorOffsetY = shapeAnchor.row * tileWithGap;
 
   const containerStyle: React.CSSProperties = {
     position: 'fixed',
-    top: hoveredCellTop - shapeCenterOffsetY + mouseOffsetY,
-    left: hoveredCellLeft - shapeCenterOffsetX + mouseOffsetX,
+    top: hoveredCellTop - shapeAnchorOffsetY + mouseOffsetY,
+    left: hoveredCellLeft - shapeAnchorOffsetX + mouseOffsetX,
     pointerEvents: 'none', // Don't interfere with mouse events
     zIndex: 1000, // Above everything
     display: 'grid',

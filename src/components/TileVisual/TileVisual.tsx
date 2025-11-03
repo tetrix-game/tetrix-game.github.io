@@ -2,7 +2,7 @@ import './TileVisual.css';
 import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React, { useCallback } from 'react';
-import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
   tile: Tile;
@@ -12,6 +12,7 @@ type TileVisualProps = {
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
   const dispatch = useTetrixDispatchContext();
+  const { isShapeDragging } = useTetrixStateContext();
 
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
@@ -25,10 +26,13 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
   }
 
   const onClick = useCallback(() => {
+    // Only allow toggling when not dragging a shape
+    if (isShapeDragging) return;
+
     const isFilled = tile.block.isFilled;
     const index = (tile.location.row - 1) * 10 + tile.location.column - 1;
     dispatch({ type: "TOGGLE_BLOCK", value: { isFilled, index } })
-  }, [dispatch, tile])
+  }, [dispatch, tile, isShapeDragging])
 
   // Display hovered block if present, otherwise display actual tile block
   const displayBlock = isHovered && hoveredBlock ? {

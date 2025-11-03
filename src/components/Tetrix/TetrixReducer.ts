@@ -29,6 +29,7 @@ export const initialState: TetrixReducerState = {
   nextShapes: [],
   savedShape: null,
   selectedShape: null,
+  selectedShapeIndex: null,
   mouseGridLocation: null,
   isShapeDragging: false,
   hoveredBlockPositions: [],
@@ -52,7 +53,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "SELECT_SHAPE": {
-      const { shape } = action.value;
+      const { shape, shapeIndex } = action.value;
 
       // Calculate hovered block positions if we have a mouse location
       const hoveredBlockPositions = shape && state.mouseGridLocation
@@ -62,6 +63,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         selectedShape: shape,
+        selectedShapeIndex: shapeIndex,
         isShapeDragging: true,
         hoveredBlockPositions,
       };
@@ -83,7 +85,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "PLACE_SHAPE": {
-      if (!state.selectedShape || !state.mouseGridLocation) {
+      if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
         return state;
       }
 
@@ -111,22 +113,25 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         return tile;
       });
 
-      // Generate a new random shape to replace the one that was placed
+      // Remove the placed shape from nextShapes
+      const remainingShapes = state.nextShapes.filter((_, index) => index !== state.selectedShapeIndex);
+
+      // Generate a new random shape to replace the placed one
       const newRandomShape = generateRandomShape();
 
       // Add the new shape to the end of nextShapes
-      const updatedNextShapes = [...state.nextShapes, newRandomShape];
+      const updatedNextShapes = [...remainingShapes, newRandomShape];
 
-      // Auto-select the first available shape after placing
-      const nextSelectedShape = updatedNextShapes.length > 0 ? updatedNextShapes[0] : null;
-      // Remove the auto-selected shape from nextShapes
-      const remainingShapes = updatedNextShapes.length > 0 ? updatedNextShapes.slice(1) : [];
+      // Auto-select the first remaining shape (from the original two)
+      const nextSelectedShape = remainingShapes.length > 0 ? remainingShapes[0] : null;
+      const nextSelectedShapeIndex = remainingShapes.length > 0 ? 0 : null;
 
       return {
         ...state,
         tiles: newTiles,
-        nextShapes: remainingShapes,
+        nextShapes: updatedNextShapes,
         selectedShape: nextSelectedShape,
+        selectedShapeIndex: nextSelectedShapeIndex,
         mouseGridLocation: null,
         isShapeDragging: nextSelectedShape !== null,
         hoveredBlockPositions: [],
@@ -137,6 +142,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         selectedShape: null,
+        selectedShapeIndex: null,
         mouseGridLocation: null,
         isShapeDragging: false,
         hoveredBlockPositions: [],

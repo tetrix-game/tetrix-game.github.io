@@ -111,9 +111,9 @@ const ShapeSelector = (): JSX.Element => {
 
   return (
     <div className="shape-selector">
-      <ShapeOption shape={shapes[0]} />
-      <ShapeOption shape={shapes[1]} />
-      <ShapeOption shape={shapes[2]} />
+      <ShapeOption shape={shapes[0]} shapeIndex={0} />
+      <ShapeOption shape={shapes[1]} shapeIndex={1} />
+      <ShapeOption shape={shapes[2]} shapeIndex={2} />
       <SavedShape shape={null} />
     </div>
   )

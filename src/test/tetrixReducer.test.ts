@@ -21,12 +21,13 @@ describe('TetrixReducer - Bug Fixes', () => {
       const testShape = createTestShape();
       const action: TetrixAction = {
         type: 'SELECT_SHAPE',
-        value: { shape: testShape }
+        value: { shape: testShape, shapeIndex: 0 }
       };
 
       const newState = tetrixReducer(initialState, action);
 
       expect(newState.selectedShape).toBe(testShape);
+      expect(newState.selectedShapeIndex).toBe(0);
       expect(newState.isShapeDragging).toBe(true);
     });
 
@@ -36,50 +37,70 @@ describe('TetrixReducer - Bug Fixes', () => {
 
       let state = tetrixReducer(initialState, {
         type: 'SELECT_SHAPE',
-        value: { shape: shape1 }
+        value: { shape: shape1, shapeIndex: 0 }
       });
 
       expect(state.selectedShape).toBe(shape1);
+      expect(state.selectedShapeIndex).toBe(0);
 
       state = tetrixReducer(state, {
         type: 'SELECT_SHAPE',
-        value: { shape: shape2 }
+        value: { shape: shape2, shapeIndex: 1 }
       });
 
       expect(state.selectedShape).toBe(shape2);
+      expect(state.selectedShapeIndex).toBe(1);
     });
   });
 
   describe('PLACE_SHAPE action', () => {
-    it('should auto-generate a new shape after placing when no nextShapes available', () => {
-      const testShape = createTestShape();
-      const state = { ...initialState, selectedShape: testShape, mouseGridLocation: { row: 5, column: 5 } };
-
-      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
-
-      // Should auto-generate and select a new random shape
-      expect(newState.selectedShape).not.toBeNull();
-      expect(newState.isShapeDragging).toBe(true);
-      expect(newState.mouseGridLocation).toBeNull();
-      // Should have no shapes in nextShapes (the generated shape was auto-selected)
-      expect(newState.nextShapes.length).toBe(0);
-    });
-
-    it('should auto-select first shape from nextShapes after placing', () => {
-      const testShape = createTestShape();
-      const nextShape = createTestShape();
+    it('should remove placed shape from nextShapes and select a remaining shape', () => {
+      const shape1 = createTestShape();
+      const shape2 = createTestShape();
+      const shape3 = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: testShape,
+        selectedShape: shape1,
+        selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 5 },
-        nextShapes: [nextShape]
+        nextShapes: [shape1, shape2, shape3]
       };
 
       const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
 
-      expect(newState.selectedShape).toBe(nextShape);
+      // Should select shape2 (first remaining shape after removing shape1)
+      expect(newState.selectedShape).toBe(shape2);
+      expect(newState.selectedShapeIndex).toBe(0);
       expect(newState.isShapeDragging).toBe(true);
       expect(newState.mouseGridLocation).toBeNull();
+      // Should have 3 shapes: shape2, shape3, and a new random shape
+      expect(newState.nextShapes.length).toBe(3);
+      expect(newState.nextShapes[0]).toBe(shape2);
+      expect(newState.nextShapes[1]).toBe(shape3);
+    });
+
+    it('should generate a new shape to maintain 3 available shapes', () => {
+      const shape1 = createTestShape();
+      const shape2 = createTestShape();
+      const shape3 = createTestShape();
+      const state = {
+        ...initialState,
+        selectedShape: shape2,
+        selectedShapeIndex: 1,
+        mouseGridLocation: { row: 5, column: 5 },
+        nextShapes: [shape1, shape2, shape3]
+      };
+
+      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+
+      // Should have 3 shapes total (2 original + 1 new random)
+      expect(newState.nextShapes.length).toBe(3);
+      // First shape should still be shape1, second should be shape3, third is new
+      expect(newState.nextShapes[0]).toBe(shape1);
+      expect(newState.nextShapes[1]).toBe(shape3);
+      expect(newState.nextShapes[2]).not.toBe(shape1);
+      expect(newState.nextShapes[2]).not.toBe(shape2);
+      expect(newState.nextShapes[2]).not.toBe(shape3);
     });
 
     it('should update grid tiles with shape blocks', () => {
@@ -87,6 +108,7 @@ describe('TetrixReducer - Bug Fixes', () => {
       const state = {
         ...initialState,
         selectedShape: testShape,
+        selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 5 } // Place in middle of grid
       };
 
@@ -113,7 +135,21 @@ describe('TetrixReducer - Bug Fixes', () => {
 
     it('should not place shape if no mouse location is set', () => {
       const testShape = createTestShape();
-      const state = { ...initialState, selectedShape: testShape };
+      const state = { ...initialState, selectedShape: testShape, selectedShapeIndex: 0 };
+
+      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+
+      expect(newState).toEqual(state);
+    });
+
+    it('should not place shape if selectedShapeIndex is null', () => {
+      const testShape = createTestShape();
+      const state = {
+        ...initialState,
+        selectedShape: testShape,
+        selectedShapeIndex: null,
+        mouseGridLocation: { row: 5, column: 5 }
+      };
 
       const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
 

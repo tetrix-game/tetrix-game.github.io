@@ -15,7 +15,7 @@ const gridCss = {
 }
 
 export default function Grid() {
-  const { tiles, selectedShape, mouseGridLocation, hoveredBlockPositions } = useTetrixStateContext();
+  const { tiles, selectedShape, hoveredBlockPositions } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -36,11 +36,23 @@ export default function Grid() {
     dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: null } });
   }, [dispatch]);
 
-  const handleClick = useCallback(() => {
-    if (selectedShape && mouseGridLocation) {
-      dispatch({ type: 'PLACE_SHAPE' });
-    }
-  }, [selectedShape, mouseGridLocation, dispatch]);
+  const handleClick = useCallback((e: MouseEvent) => {
+    if (!selectedShape || !gridRef.current) return;
+
+    // Calculate grid location at click time to avoid race conditions with mouseleave
+    const clickLocation = mousePositionToGridLocation(
+      e.clientX,
+      e.clientY,
+      gridRef.current,
+      { rows: 10, columns: 10 }
+    );
+
+    if (!clickLocation) return;
+
+    // Update the mouse location to the click position, then place
+    dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: clickLocation } });
+    dispatch({ type: 'PLACE_SHAPE' });
+  }, [selectedShape, dispatch]);
 
   useEffect(() => {
     const grid = gridRef.current;

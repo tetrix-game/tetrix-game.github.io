@@ -22,6 +22,7 @@ export type TetrixReducerState = {
   nextShapes: Shape[];
   savedShape: Shape | null;
   selectedShape: Shape | null;
+  selectedShapeIndex: number | null;
   mouseGridLocation: Location | null;
   isShapeDragging: boolean;
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
@@ -34,7 +35,7 @@ type ToggleBlockAction = {
 
 type SelectShapeAction = {
   type: 'SELECT_SHAPE';
-  value: { shape: Shape };
+  value: { shape: Shape; shapeIndex: number };
 }
 
 type UpdateMouseLocationAction = {

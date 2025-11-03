@@ -18,14 +18,15 @@ const shapeContainerCss = {
 
 type ShapeOptionProps = {
   shape: Shape;
+  shapeIndex: number;
 };
 
-const ShapeOption = ({ shape }: ShapeOptionProps) => {
+const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
 
   const handleClick = useCallback(() => {
-    dispatch({ type: 'SELECT_SHAPE', value: { shape } });
-  }, [dispatch, shape]);
+    dispatch({ type: 'SELECT_SHAPE', value: { shape, shapeIndex } });
+  }, [dispatch, shape, shapeIndex]);
 
   return (
     <div

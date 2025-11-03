@@ -106,10 +106,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       // Auto-select the first available shape after placing
       const nextSelectedShape = state.nextShapes.length > 0 ? state.nextShapes[0] : null;
+      // Remove the auto-selected shape from nextShapes
+      const remainingShapes = state.nextShapes.length > 0 ? state.nextShapes.slice(1) : [];
 
       return {
         ...state,
         tiles: newTiles,
+        nextShapes: remainingShapes,
         selectedShape: nextSelectedShape,
         mouseGridLocation: null,
         isShapeDragging: nextSelectedShape !== null,

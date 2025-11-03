@@ -1,6 +1,11 @@
 import { Block } from "../../utils/types";
 
 export default function BlockVisual({ block }: { block: Block }): JSX.Element {
+  // Don't render anything if the block is not filled to avoid black flash
+  if (!block.isFilled) {
+    return <></>;
+  }
+
   return (
     <div
       style={{
@@ -10,7 +15,7 @@ export default function BlockVisual({ block }: { block: Block }): JSX.Element {
         transition: 'opacity 0.5s ease-in-out',
         zIndex: 2,
         backgroundColor: block.color.main,
-        opacity: block.isFilled ? 1 : 0,
+        opacity: 1,
         width: 'calc(100% + 2px)',
         height: 'calc(100% + 2px)',
         borderTop: '15px solid ' + block.color.lightest,

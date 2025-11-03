@@ -51,15 +51,18 @@ describe('TetrixReducer - Bug Fixes', () => {
   });
 
   describe('PLACE_SHAPE action', () => {
-    it('should clear selectedShape after placing when no nextShapes available', () => {
+    it('should auto-generate a new shape after placing when no nextShapes available', () => {
       const testShape = createTestShape();
       const state = { ...initialState, selectedShape: testShape, mouseGridLocation: { row: 5, column: 5 } };
 
       const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
 
-      expect(newState.selectedShape).toBeNull();
-      expect(newState.isShapeDragging).toBe(false);
+      // Should auto-generate and select a new random shape
+      expect(newState.selectedShape).not.toBeNull();
+      expect(newState.isShapeDragging).toBe(true);
       expect(newState.mouseGridLocation).toBeNull();
+      // Should have no shapes in nextShapes (the generated shape was auto-selected)
+      expect(newState.nextShapes.length).toBe(0);
     });
 
     it('should auto-select first shape from nextShapes after placing', () => {

@@ -1,6 +1,6 @@
 import type { TetrixAction, Tile } from '../../utils/types';
 import { TetrixReducerState } from '../../utils/types';
-import { getShapeGridPositions } from '../../utils/shapeUtils';
+import { getShapeGridPositions, generateRandomShape } from '../../utils/shapeUtils';
 
 const emptyColor = {
   lightest: '#000000',
@@ -111,10 +111,16 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         return tile;
       });
 
+      // Generate a new random shape to replace the one that was placed
+      const newRandomShape = generateRandomShape();
+
+      // Add the new shape to the end of nextShapes
+      const updatedNextShapes = [...state.nextShapes, newRandomShape];
+
       // Auto-select the first available shape after placing
-      const nextSelectedShape = state.nextShapes.length > 0 ? state.nextShapes[0] : null;
+      const nextSelectedShape = updatedNextShapes.length > 0 ? updatedNextShapes[0] : null;
       // Remove the auto-selected shape from nextShapes
-      const remainingShapes = state.nextShapes.length > 0 ? state.nextShapes.slice(1) : [];
+      const remainingShapes = updatedNextShapes.length > 0 ? updatedNextShapes.slice(1) : [];
 
       return {
         ...state,

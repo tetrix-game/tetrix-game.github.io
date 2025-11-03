@@ -211,3 +211,182 @@ export function rotateShape(shape: Shape): Shape {
 export function cloneShape(shape: Shape): Shape {
   return shape.map(row => row.map(block => ({ ...block })));
 }
+
+/**
+ * Generate a random color for a shape
+ */
+export function makeRandomColor() {
+  const colors = ['blue', 'red', 'green', 'yellow', 'purple', 'orange'];
+  const randomColorIndex = Math.floor(Math.random() * colors.length);
+  const randomColor = colors[randomColorIndex];
+
+  switch (randomColor) {
+    case 'blue':
+      return {
+        lightest: '#0274e6',
+        light: '#0059b2',
+        main: '#023f80',
+        dark: '#023468',
+        darkest: '#011e3f'
+      };
+    case 'red':
+      return {
+        lightest: '#ff6b6b',
+        light: '#ee5a52',
+        main: '#d63031',
+        dark: '#b71c1c',
+        darkest: '#7f0000'
+      };
+    case 'green':
+      return {
+        lightest: '#51cf66',
+        light: '#40c057',
+        main: '#2f9e44',
+        dark: '#2b8a3e',
+        darkest: '#1b5e20'
+      };
+    case 'yellow':
+      return {
+        lightest: '#ffd43b',
+        light: '#fcc419',
+        main: '#fab005',
+        dark: '#f59f00',
+        darkest: '#e67700'
+      };
+    case 'purple':
+      return {
+        lightest: '#b197fc',
+        light: '#9775fa',
+        main: '#7950f2',
+        dark: '#6741d9',
+        darkest: '#4c2a85'
+      };
+    case 'orange':
+      return {
+        lightest: '#ffa94d',
+        light: '#ff922b',
+        main: '#fd7e14',
+        dark: '#f76707',
+        darkest: '#d9480f'
+      };
+    default:
+      return {
+        lightest: '#0274e6',
+        light: '#0059b2',
+        main: '#023f80',
+        dark: '#023468',
+        darkest: '#011e3f'
+      };
+  }
+}
+
+/**
+ * Generate a random shape (one of several predefined patterns)
+ */
+export function generateRandomShape(): Shape {
+  const shapePatterns = [
+    // L-shape
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [filledBlock, emptyBlock, emptyBlock],
+        [{ ...filledBlock }, emptyBlock, emptyBlock],
+        [{ ...filledBlock }, { ...filledBlock }, emptyBlock],
+      ];
+    },
+    // Reverse L-shape
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [emptyBlock, emptyBlock, filledBlock],
+        [emptyBlock, emptyBlock, { ...filledBlock }],
+        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
+      ];
+    },
+    // T-shape
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [emptyBlock, filledBlock, emptyBlock],
+        [{ ...filledBlock }, { ...filledBlock }, { ...filledBlock }],
+        [emptyBlock, emptyBlock, emptyBlock],
+      ];
+    },
+    // Square
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [filledBlock, { ...filledBlock }, emptyBlock],
+        [{ ...filledBlock }, { ...filledBlock }, emptyBlock],
+        [emptyBlock, emptyBlock, emptyBlock],
+      ];
+    },
+    // Line (horizontal)
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [emptyBlock, emptyBlock, emptyBlock],
+        [{ ...filledBlock }, { ...filledBlock }, { ...filledBlock }],
+        [emptyBlock, emptyBlock, emptyBlock],
+      ];
+    },
+    // Line (vertical)
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [emptyBlock, filledBlock, emptyBlock],
+        [emptyBlock, { ...filledBlock }, emptyBlock],
+        [emptyBlock, { ...filledBlock }, emptyBlock],
+      ];
+    },
+    // Z-shape
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [filledBlock, { ...filledBlock }, emptyBlock],
+        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
+        [emptyBlock, emptyBlock, emptyBlock],
+      ];
+    },
+    // S-shape
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
+        [{ ...filledBlock }, { ...filledBlock }, emptyBlock],
+        [emptyBlock, emptyBlock, emptyBlock],
+      ];
+    },
+    // Single block
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [emptyBlock, emptyBlock, emptyBlock],
+        [emptyBlock, filledBlock, emptyBlock],
+        [emptyBlock, emptyBlock, emptyBlock],
+      ];
+    },
+    // Small L (3 blocks)
+    () => {
+      const emptyBlock = { color: makeRandomColor(), isFilled: false };
+      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      return [
+        [emptyBlock, filledBlock, emptyBlock],
+        [emptyBlock, { ...filledBlock }, emptyBlock],
+        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
+      ];
+    },
+  ];
+
+  const randomIndex = Math.floor(Math.random() * shapePatterns.length);
+  return shapePatterns[randomIndex]();
+}

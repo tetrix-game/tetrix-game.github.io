@@ -6,11 +6,11 @@ import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
   tile: Tile;
-  isPreview?: boolean;
-  previewBlock?: Block;
+  isHovered?: boolean;
+  hoveredBlock?: Block;
 }
 
-const TileVisual = ({ tile, isPreview = false, previewBlock }: TileVisualProps) => {
+const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
   const dispatch = useTetrixDispatchContext();
 
   const style = (row: number, column: number) => {
@@ -30,9 +30,9 @@ const TileVisual = ({ tile, isPreview = false, previewBlock }: TileVisualProps) 
     dispatch({ type: "TOGGLE_BLOCK", value: { isFilled, index } })
   }, [dispatch, tile])
 
-  // Display preview block if present, otherwise display actual tile block
-  const displayBlock = isPreview && previewBlock ? {
-    ...previewBlock,
+  // Display hovered block if present, otherwise display actual tile block
+  const displayBlock = isHovered && hoveredBlock ? {
+    ...hoveredBlock,
     isFilled: true,
   } : tile.block;
 

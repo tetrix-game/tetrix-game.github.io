@@ -24,6 +24,7 @@ export type TetrixReducerState = {
   selectedShape: Shape | null;
   mouseGridLocation: Location | null;
   isShapeDragging: boolean;
+  hoveredBlockPositions: Array<{ location: Location; block: Block }>;
 }
 
 type ToggleBlockAction = {

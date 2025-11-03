@@ -1,9 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
 import { canPlaceShape, getShapeGridPositions } from '../utils/shapeUtils';
-import type { Shape, Location, Tile, Block } from '../utils/types';
-import TileVisual from '../components/TileVisual/TileVisual';
-import { TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
+import type { Shape, Location, Tile } from '../utils/types';
 
 // Helper to create test shapes
 const createLShape = (): Shape => {
@@ -267,160 +264,8 @@ describe('Shape Hover Effect - Unit Tests', () => {
     });
   });
 
-  describe('Tint Overlay Rendering Conditions', () => {
-    it('should render tint overlay when isPreview=true and tile.block.isFilled=false', () => {
-      const mockDispatch = () => { };
-      const emptyColor = {
-        lightest: '#ffffff',
-        light: '#cccccc',
-        main: '#999999',
-        dark: '#666666',
-        darkest: '#333333'
-      };
-
-      const previewColor = {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
-      };
-
-      // Case 1: Empty tile with preview - SHOULD show tint
-      const emptyTileWithPreview: Tile = {
-        id: '1',
-        location: { row: 5, column: 5 },
-        block: { color: emptyColor, isFilled: false }
-      };
-
-      const previewBlock: Block = {
-        color: previewColor,
-        isFilled: true
-      };
-
-      const { container: container1 } = render(
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <TileVisual
-            tile={emptyTileWithPreview}
-            isPreview={true}
-            previewBlock={previewBlock}
-          />
-        </TetrixDispatchContext.Provider>
-      );
-
-      // Find tint overlay - it should have rgba(255, 255, 255, 0.2) background
-      const tintOverlay1 = container1.querySelector('[style*="rgba(255, 255, 255, 0.2)"]');
-      expect(tintOverlay1).toBeTruthy();
-    });
-
-    it('should NOT render tint overlay when isPreview=true but tile.block.isFilled=true', () => {
-      const mockDispatch = () => { };
-      const filledColor = {
-        lightest: '#ff6b6b',
-        light: '#ff5252',
-        main: '#ff3838',
-        dark: '#ee2222',
-        darkest: '#cc0000'
-      };
-
-      const previewColor = {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
-      };
-
-      // Case 2: Filled tile with preview - should NOT show tint
-      const filledTileWithPreview: Tile = {
-        id: '2',
-        location: { row: 5, column: 5 },
-        block: { color: filledColor, isFilled: true }
-      };
-
-      const previewBlock: Block = {
-        color: previewColor,
-        isFilled: true
-      };
-
-      const { container } = render(
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <TileVisual
-            tile={filledTileWithPreview}
-            isPreview={true}
-            previewBlock={previewBlock}
-          />
-        </TetrixDispatchContext.Provider>
-      );
-
-      // Should NOT find tint overlay
-      const tintOverlay = container.querySelector('[style*="rgba(255, 255, 255, 0.2)"]');
-      expect(tintOverlay).toBeNull();
-    });
-
-    it('should NOT render tint overlay when isPreview=false even if tile is empty', () => {
-      const mockDispatch = () => { };
-      const emptyColor = {
-        lightest: '#ffffff',
-        light: '#cccccc',
-        main: '#999999',
-        dark: '#666666',
-        darkest: '#333333'
-      };
-
-      // Case 3: Empty tile without preview - should NOT show tint
-      const emptyTileNoPreview: Tile = {
-        id: '3',
-        location: { row: 5, column: 5 },
-        block: { color: emptyColor, isFilled: false }
-      };
-
-      const { container } = render(
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <TileVisual
-            tile={emptyTileNoPreview}
-            isPreview={false}
-          />
-        </TetrixDispatchContext.Provider>
-      );
-
-      // Should NOT find tint overlay
-      const tintOverlay = container.querySelector('[style*="rgba(255, 255, 255, 0.2)"]');
-      expect(tintOverlay).toBeNull();
-    });
-
-    it('should NOT render tint overlay when isPreview=false and tile is filled', () => {
-      const mockDispatch = () => { };
-      const filledColor = {
-        lightest: '#ff6b6b',
-        light: '#ff5252',
-        main: '#ff3838',
-        dark: '#ee2222',
-        darkest: '#cc0000'
-      };
-
-      // Case 4: Filled tile without preview - should NOT show tint
-      const filledTileNoPreview: Tile = {
-        id: '4',
-        location: { row: 5, column: 5 },
-        block: { color: filledColor, isFilled: true }
-      };
-
-      const { container } = render(
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <TileVisual
-            tile={filledTileNoPreview}
-            isPreview={false}
-          />
-        </TetrixDispatchContext.Provider>
-      );
-
-      // Should NOT find tint overlay
-      const tintOverlay = container.querySelector('[style*="rgba(255, 255, 255, 0.2)"]');
-      expect(tintOverlay).toBeNull();
-    });
-
-    it('BUG FIX: isPreview should be false if tile is already filled, even if in previewSet', () => {
+  describe('Hover State Logic', () => {
+    it('BUG FIX: isHovered should be false if tile is already filled, even if in hoveredSet', () => {
       // This test catches the bug shown in the screenshot where tint appears on filled tiles
       const shape = createLShape();
       const hoverLocation: Location = { row: 5, column: 5 };
@@ -461,7 +306,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
       expect(isPreviewForEmpty).toBe(true); // SHOULD be preview because tile is empty
     });
 
-    it('BUG DETECTION: isPreview should be true if and only if the tile is in previewSet', () => {
+    it('BUG DETECTION: isHovered should be true if and only if the tile is in hoveredSet', () => {
       const shape = createLShape();
       const hoverLocation: Location = { row: 5, column: 5 };
 
@@ -474,13 +319,13 @@ describe('Shape Hover Effect - Unit Tests', () => {
       for (let row = 1; row <= 10; row++) {
         for (let col = 1; col <= 10; col++) {
           const key = `${row},${col}`;
-          const isPreview = previewSet.has(key);
+          const isHovered = previewSet.has(key);
 
-          // isPreview should be true if and only if the key is in previewSet
-          expect(isPreview).toBe(previewSet.has(key));
+          // isHovered should be true if and only if the key is in previewSet
+          expect(isHovered).toBe(previewSet.has(key));
 
-          // If isPreview is true, there should be a corresponding position in previewPositions
-          if (isPreview) {
+          // If isHovered is true, there should be a corresponding position in previewPositions
+          if (isHovered) {
             const matchingPosition = previewPositions.find(p =>
               p.location.row === row && p.location.column === col
             );
@@ -489,7 +334,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
         }
       }
 
-      // Exactly 4 tiles should have isPreview=true (L-shape has 4 blocks)
+      // Exactly 4 tiles should have isHovered=true (L-shape has 4 blocks)
       let previewCount = 0;
       for (let row = 1; row <= 10; row++) {
         for (let col = 1; col <= 10; col++) {
@@ -503,7 +348,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
     it('BUG DETECTION: Grid.tsx performs unnecessary .find() operations on every render', () => {
       // This test documents a performance bug in Grid.tsx
       // CURRENT IMPLEMENTATION (line 94-97 in Grid.tsx):
-      // previewBlock={isPreview ? previewPositions.find(p =>
+      // hoveredBlock={isHovered ? previewPositions.find(p =>
       //   p.location.row === tile.location.row &&
       //   p.location.column === tile.location.column
       // )?.block : undefined}

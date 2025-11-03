@@ -31,6 +31,7 @@ export const initialState: TetrixReducerState = {
   selectedShape: null,
   mouseGridLocation: null,
   isShapeDragging: false,
+  hoveredBlockPositions: [],
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -45,18 +46,32 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "SELECT_SHAPE": {
       const { shape } = action.value;
+
+      // Calculate hovered block positions if we have a mouse location
+      const hoveredBlockPositions = shape && state.mouseGridLocation
+        ? getShapeGridPositions(shape, state.mouseGridLocation)
+        : [];
+
       return {
         ...state,
         selectedShape: shape,
         isShapeDragging: true,
+        hoveredBlockPositions,
       };
     }
 
     case "UPDATE_MOUSE_LOCATION": {
       const { location } = action.value;
+
+      // Calculate hovered block positions based on selected shape and mouse location
+      const hoveredBlockPositions = state.selectedShape && location
+        ? getShapeGridPositions(state.selectedShape, location)
+        : [];
+
       return {
         ...state,
         mouseGridLocation: location,
+        hoveredBlockPositions,
       };
     }
 
@@ -98,6 +113,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: nextSelectedShape,
         mouseGridLocation: null,
         isShapeDragging: nextSelectedShape !== null,
+        hoveredBlockPositions: [],
       };
     }
 
@@ -107,6 +123,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: null,
         mouseGridLocation: null,
         isShapeDragging: false,
+        hoveredBlockPositions: [],
       };
     }
 

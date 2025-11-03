@@ -3,7 +3,7 @@ import TileVisual from '../TileVisual';
 import type { Tile } from '../../utils/types';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useRef, useCallback, useEffect } from 'react';
-import { mousePositionToGridLocation, getShapeGridPositions } from '../../utils/shapeUtils';
+import { mousePositionToGridLocation } from '../../utils/shapeUtils';
 
 const gridCss = {
   display: "grid",
@@ -15,7 +15,7 @@ const gridCss = {
 }
 
 export default function Grid() {
-  const { tiles, selectedShape, mouseGridLocation } = useTetrixStateContext();
+  const { tiles, selectedShape, mouseGridLocation, hoveredBlockPositions } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -66,13 +66,12 @@ export default function Grid() {
     };
   }, [handleMouseMove, handleMouseLeave, handleClick, selectedShape, dispatch]);
 
-  // Calculate preview positions
-  const previewPositions = selectedShape && mouseGridLocation
-    ? getShapeGridPositions(selectedShape, mouseGridLocation)
-    : [];
-
-  const previewSet = new Set(
-    previewPositions.map(p => `${p.location.row},${p.location.column}`)
+  // Create a map of hovered block positions for quick lookup
+  const hoveredBlockMap = new Map(
+    hoveredBlockPositions.map(pos => [
+      `${pos.location.row},${pos.location.column}`,
+      pos.block
+    ])
   );
 
   return (
@@ -84,17 +83,15 @@ export default function Grid() {
       {
         tiles.map((tile: Tile) => {
           const key = `${tile.location.row},${tile.location.column}`;
-          const isPreview = previewSet.has(key) && !tile.block.isFilled;
+          const hoveredBlock = hoveredBlockMap.get(key);
+          const isHovered = hoveredBlock !== undefined && !tile.block.isFilled;
 
           return (
             <TileVisual
               key={tile.id}
               tile={tile}
-              isPreview={isPreview}
-              previewBlock={isPreview ? previewPositions.find(p =>
-                p.location.row === tile.location.row &&
-                p.location.column === tile.location.column
-              )?.block : undefined}
+              isHovered={isHovered}
+              hoveredBlock={hoveredBlock}
             />
           )
         })

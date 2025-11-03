@@ -16,6 +16,9 @@ export type Tile = {
   block: Block
 }
 
+// Placement animation states
+export type PlacementAnimationState = 'none' | 'animating' | 'settling';
+
 // Reducer types
 export type TetrixReducerState = {
   tiles: Tile[];
@@ -29,6 +32,10 @@ export type TetrixReducerState = {
   gridBounds: { top: number; left: number; width: number; height: number } | null;
   isShapeDragging: boolean;
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
+  // Animation state for shape placement
+  placementAnimationState: PlacementAnimationState;
+  animationStartPosition: { x: number; y: number } | null;
+  animationTargetPosition: { x: number; y: number } | null;
 }
 
 type SelectShapeAction = {
@@ -64,12 +71,27 @@ type ToggleBlockAction = {
   value: { isFilled: boolean; index: number };
 }
 
+type StartPlacementAnimationAction = {
+  type: 'START_PLACEMENT_ANIMATION';
+}
+
+type CompletePlacementAnimationAction = {
+  type: 'COMPLETE_PLACEMENT_ANIMATION';
+}
+
+type FinishSettlingAnimationAction = {
+  type: 'FINISH_SETTLING_ANIMATION';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
   | PlaceShapeAction
   | ClearSelectionAction
   | SetAvailableShapesAction
-  | ToggleBlockAction;
+  | ToggleBlockAction
+  | StartPlacementAnimationAction
+  | CompletePlacementAnimationAction
+  | FinishSettlingAnimationAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

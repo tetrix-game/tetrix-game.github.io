@@ -66,9 +66,9 @@ export default function Grid() {
 
     if (!clickLocation) return;
 
-    // Update the mouse location to the click position, then place
+    // Update the mouse location to the click position, then start placement animation
     dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: clickLocation } });
-    dispatch({ type: 'PLACE_SHAPE' });
+    dispatch({ type: 'START_PLACEMENT_ANIMATION' });
   }, [selectedShape, dispatch]);
 
   useEffect(() => {

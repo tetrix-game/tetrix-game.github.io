@@ -2,69 +2,13 @@ import type { TetrixAction, Tile } from '../../utils/types';
 import { TetrixReducerState } from '../../utils/types';
 import { getShapeGridPositions } from '../../utils/shapeUtils';
 
-const makeColor = () => {
-  const colors = ['blue', 'red', 'green', 'yellow', 'purple', 'orange'];
-  const randomColorIndex = Math.floor(Math.random() * colors.length);
-  const randomColor = colors[randomColorIndex];
-  switch (randomColor) {
-    case 'blue':
-      return {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
-      }
-    case 'red':
-      return {
-        lightest: '#ff6b6b',
-        light: '#ee5a52',
-        main: '#d63031',
-        dark: '#b71c1c',
-        darkest: '#7f0000'
-      }
-    case 'green':
-      return {
-        lightest: '#51cf66',
-        light: '#40c057',
-        main: '#2f9e44',
-        dark: '#2b8a3e',
-        darkest: '#1b5e20'
-      }
-    case 'yellow':
-      return {
-        lightest: '#ffd43b',
-        light: '#fcc419',
-        main: '#fab005',
-        dark: '#f59f00',
-        darkest: '#e67700'
-      }
-    case 'purple':
-      return {
-        lightest: '#b197fc',
-        light: '#9775fa',
-        main: '#7950f2',
-        dark: '#6741d9',
-        darkest: '#4c2a85'
-      }
-    case 'orange':
-      return {
-        lightest: '#ffa94d',
-        light: '#ff922b',
-        main: '#fd7e14',
-        dark: '#f76707',
-        darkest: '#d9480f'
-      }
-    default:
-      return {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
-      }
-  }
-}
+const emptyColor = {
+  lightest: '#000000',
+  light: '#000000',
+  main: '#000000',
+  dark: '#000000',
+  darkest: '#000000'
+};
 
 const makeTiles = () => {
   const tiles: Tile[] = [];
@@ -73,7 +17,7 @@ const makeTiles = () => {
       tiles.push({
         id: `(row: ${row}, column: ${column})`,
         location: { row, column },
-        block: { isFilled: row === 6 && column === 6 ? true : false, color: makeColor() }
+        block: { isFilled: false, color: emptyColor }
       })
     }
   }

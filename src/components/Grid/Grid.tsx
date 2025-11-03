@@ -84,7 +84,7 @@ export default function Grid() {
       {
         tiles.map((tile: Tile) => {
           const key = `${tile.location.row},${tile.location.column}`;
-          const isPreview = previewSet.has(key);
+          const isPreview = previewSet.has(key) && !tile.block.isFilled;
 
           return (
             <TileVisual

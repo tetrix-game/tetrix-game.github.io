@@ -66,7 +66,6 @@ export default function Grid() {
 
     if (!clickLocation) return;
 
-    console.log('[Grid] Click → starting animation');
     dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: clickLocation } });
     dispatch({ type: 'START_PLACEMENT_ANIMATION' });
   }, [selectedShape, dispatch]);

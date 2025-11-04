@@ -43,7 +43,6 @@ export const initialState: TetrixReducerState = {
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
-  console.log(`[Reducer] ${action.type}`);
 
   switch (action.type) {
     case "SELECT_SHAPE": {
@@ -161,13 +160,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "START_PLACEMENT_ANIMATION": {
       if (!state.selectedShape || !state.mouseGridLocation || !state.mousePosition || !state.gridTileSize || !state.gridBounds) {
-        console.log('[Reducer] START_PLACEMENT_ANIMATION failed - missing state', {
-          selectedShape: state.selectedShape,
-          mouseGridLocation: state.mouseGridLocation,
-          mousePosition: state.mousePosition,
-          gridTileSize: state.gridTileSize,
-          gridBounds: state.gridBounds
-        });
         return state;
       }
 
@@ -177,11 +169,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const targetCellTop = state.gridBounds.top + (state.mouseGridLocation.row - 1) * tileWithGap;
       const targetCellCenterX = targetCellLeft + state.gridTileSize / 2;
       const targetCellCenterY = targetCellTop + state.gridTileSize / 2;
-
-      console.log('[Reducer] Animation positions set:', {
-        start: state.mousePosition,
-        target: { x: targetCellCenterX, y: targetCellCenterY },
-      });
 
       return {
         ...state,
@@ -194,11 +181,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "COMPLETE_PLACEMENT_ANIMATION": {
       if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
-        console.log('[Reducer] COMPLETE_PLACEMENT_ANIMATION failed - missing state');
         return state;
       }
-
-      console.log('[Reducer] Movement complete, transitioning to settling (blocks stay as hover preview at 50%)');
 
       // Keep hoveredBlockPositions and mouseGridLocation for the grow animation
       // Blocks will be placed on tiles AFTER the grow animation completes
@@ -211,11 +195,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "FINISH_SETTLING_ANIMATION": {
       if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
-        console.log('[Reducer] FINISH_SETTLING_ANIMATION failed - missing state');
         return state;
       }
-
-      console.log('[Reducer] Settling animation complete, now placing blocks on tiles permanently');
 
       // Get the positions where the shape would be placed
       const shapePositions = getShapeGridPositions(state.selectedShape, state.mouseGridLocation);

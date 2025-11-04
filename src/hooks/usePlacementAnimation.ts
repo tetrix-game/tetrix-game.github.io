@@ -16,7 +16,6 @@ export function usePlacementAnimation(
 
   useEffect(() => {
     if (placementAnimationState === 'animating' && animationStartPosition && animationTargetPosition) {
-      console.log('[Animation] Starting 300ms movement phase');
       const ANIMATION_DURATION = 300;
       const startTime = performance.now();
 
@@ -25,7 +24,6 @@ export function usePlacementAnimation(
         const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
 
         if (progress >= 1) {
-          console.log('[Animation] Movement complete → settling');
           dispatch({ type: 'COMPLETE_PLACEMENT_ANIMATION' });
           animationRef.current = null;
         } else {

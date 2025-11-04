@@ -1,7 +1,7 @@
 import './TileVisual.css';
 import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
@@ -11,7 +11,7 @@ type TileVisualProps = {
 }
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
-  const { isShapeDragging, placementAnimationState } = useTetrixStateContext();
+  const { placementAnimationState } = useTetrixStateContext();
 
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
@@ -23,15 +23,6 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
       zIndex: 1,
     }
   }
-
-  const onClick = useCallback(() => {
-    // Only allow toggling when not dragging a shape
-    if (isShapeDragging) return;
-
-    const isFilled = tile.block.isFilled;
-    const index = (tile.location.row - 1) * 10 + tile.location.column - 1;
-    console.log(`Tile clicked: index: ${index}, isFilled: ${isFilled}`)
-  }, [tile, isShapeDragging])
 
   // Show hovered blocks ONLY during settling phase (not during animating)
   // DraggingShape handles the visual during animating phase
@@ -46,7 +37,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
   } : tile.block;
 
   return (
-    <div onClick={onClick} style={style(tile.location.row, tile.location.column)}>
+    <div style={style(tile.location.row, tile.location.column)}>
       <BlockVisual block={displayBlock} isHovered={shouldShowHoveredBlock} isSettling={isSettling} />
     </div>
   )

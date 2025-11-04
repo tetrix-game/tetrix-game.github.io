@@ -31,7 +31,6 @@ export default function DraggingShape() {
       return;
     }
 
-    console.log('[DraggingShape] Starting position interpolation');
     const ANIMATION_DURATION = 300;
     const startTime = performance.now();
 
@@ -57,7 +56,6 @@ export default function DraggingShape() {
 
   // Unmount during settling phase (TileVisual hoveredBlocks take over with grow animation)
   if (placementAnimationState === 'settling') {
-    console.log('[DraggingShape] Unmounted (settling phase - blocks now on TileVisuals)');
     return null;
   }
 

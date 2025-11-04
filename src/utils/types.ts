@@ -17,7 +17,15 @@ export type Tile = {
 }
 
 // Placement animation states
-export type PlacementAnimationState = 'none' | 'animating' | 'settling';
+export type PlacementAnimationState = 'none' | 'animating' | 'settling' | 'returning';
+
+// Bounds for shape options (for return animation)
+export type ShapeOptionBounds = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
 
 // Reducer types
 export type TetrixReducerState = {
@@ -36,6 +44,8 @@ export type TetrixReducerState = {
   placementAnimationState: PlacementAnimationState;
   animationStartPosition: { x: number; y: number } | null;
   animationTargetPosition: { x: number; y: number } | null;
+  // Bounds of each shape option for return animation
+  shapeOptionBounds: (ShapeOptionBounds | null)[];
 }
 
 type SelectShapeAction = {
@@ -78,6 +88,19 @@ type FinishSettlingAnimationAction = {
   type: 'FINISH_SETTLING_ANIMATION';
 }
 
+type SetShapeOptionBoundsAction = {
+  type: 'SET_SHAPE_OPTION_BOUNDS';
+  value: { index: number; bounds: ShapeOptionBounds };
+}
+
+type ReturnShapeToSelectorAction = {
+  type: 'RETURN_SHAPE_TO_SELECTOR';
+}
+
+type CompleteReturnAnimationAction = {
+  type: 'COMPLETE_RETURN_ANIMATION';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -86,6 +109,9 @@ export type TetrixAction =
   | SetAvailableShapesAction
   | StartPlacementAnimationAction
   | CompletePlacementAnimationAction
-  | FinishSettlingAnimationAction;
+  | FinishSettlingAnimationAction
+  | SetShapeOptionBoundsAction
+  | ReturnShapeToSelectorAction
+  | CompleteReturnAnimationAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

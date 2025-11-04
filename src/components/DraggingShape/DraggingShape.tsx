@@ -1,4 +1,4 @@
-import { useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual';
 import { getShapeAnchorBlock } from '../../utils/shapeUtils';
 import { usePlacementAnimation } from '../../hooks/usePlacementAnimation';
@@ -15,6 +15,8 @@ export default function DraggingShape() {
     animationStartPosition,
     animationTargetPosition,
   } = useTetrixStateContext();
+
+  const dispatch = useTetrixDispatchContext();
 
   const { isAnimating } = usePlacementAnimation(
     placementAnimationState,
@@ -44,17 +46,23 @@ export default function DraggingShape() {
 
       if (progress < 1) {
         requestAnimationFrame(animate);
+      } else {
+        // Animation complete - dispatch based on animation type
+        if (placementAnimationState === 'returning') {
+          dispatch({ type: 'COMPLETE_RETURN_ANIMATION' });
+        }
       }
     };
 
     requestAnimationFrame(animate);
-  }, [isAnimating, animationStartPosition, animationTargetPosition]);
+  }, [isAnimating, animationStartPosition, animationTargetPosition, placementAnimationState, dispatch]);
 
   if (!selectedShape || !gridTileSize || !gridBounds) {
     return null;
   }
 
   // Unmount during settling phase (TileVisual hoveredBlocks take over with grow animation)
+  // But stay mounted during 'returning' to show return animation
   if (placementAnimationState === 'settling') {
     return null;
   }
@@ -71,26 +79,38 @@ export default function DraggingShape() {
   let containerTop: number;
   let containerLeft: number;
 
-  if (isAnimating && animationStartPosition && animationTargetPosition && mouseGridLocation) {
+  if (isAnimating && animationStartPosition && animationTargetPosition) {
     // During animation: interpolate from start to target
     const currentX = animationStartPosition.x + (animationTargetPosition.x - animationStartPosition.x) * animationProgress;
     const currentY = animationStartPosition.y + (animationTargetPosition.y - animationStartPosition.y) * animationProgress;
 
-    // Calculate target cell position
-    const targetCellLeft = gridBounds.left + (mouseGridLocation.column - 1) * tileWithGap;
-    const targetCellTop = gridBounds.top + (mouseGridLocation.row - 1) * tileWithGap;
-    const targetCellCenterX = targetCellLeft + gridTileSize / 2;
-    const targetCellCenterY = targetCellTop + gridTileSize / 2;
+    if (placementAnimationState === 'returning') {
+      // Returning to selector: animate directly to target position (center of shape)
+      const shapeAnchorOffsetX = shapeAnchor.col * tileWithGap;
+      const shapeAnchorOffsetY = shapeAnchor.row * tileWithGap;
 
-    // Offset from current animated position to target cell center
-    const offsetX = currentX - targetCellCenterX;
-    const offsetY = currentY - targetCellCenterY;
+      containerTop = currentY - shapeAnchorOffsetY;
+      containerLeft = currentX - shapeAnchorOffsetX;
+    } else if (mouseGridLocation) {
+      // Placing on grid: use grid-aligned animation
+      // Calculate target cell position
+      const targetCellLeft = gridBounds.left + (mouseGridLocation.column - 1) * tileWithGap;
+      const targetCellTop = gridBounds.top + (mouseGridLocation.row - 1) * tileWithGap;
+      const targetCellCenterX = targetCellLeft + gridTileSize / 2;
+      const targetCellCenterY = targetCellTop + gridTileSize / 2;
 
-    const shapeAnchorOffsetX = shapeAnchor.col * tileWithGap;
-    const shapeAnchorOffsetY = shapeAnchor.row * tileWithGap;
+      // Offset from current animated position to target cell center
+      const offsetX = currentX - targetCellCenterX;
+      const offsetY = currentY - targetCellCenterY;
 
-    containerTop = targetCellTop - shapeAnchorOffsetY + offsetY;
-    containerLeft = targetCellLeft - shapeAnchorOffsetX + offsetX;
+      const shapeAnchorOffsetX = shapeAnchor.col * tileWithGap;
+      const shapeAnchorOffsetY = shapeAnchor.row * tileWithGap;
+
+      containerTop = targetCellTop - shapeAnchorOffsetY + offsetY;
+      containerLeft = targetCellLeft - shapeAnchorOffsetX + offsetX;
+    } else {
+      return null;
+    }
   } else if (mousePosition && mouseGridLocation) {
     // Normal dragging: follow the mouse
     const hoveredCellLeft = gridBounds.left + (mouseGridLocation.column - 1) * tileWithGap;
@@ -107,6 +127,11 @@ export default function DraggingShape() {
     containerTop = hoveredCellTop - shapeAnchorOffsetY + mouseOffsetY;
     containerLeft = hoveredCellLeft - shapeAnchorOffsetX + mouseOffsetX;
   } else {
+    return null;
+  }
+
+  // Safety check: ensure valid positions
+  if (!Number.isFinite(containerTop) || !Number.isFinite(containerLeft)) {
     return null;
   }
 

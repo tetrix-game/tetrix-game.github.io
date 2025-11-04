@@ -1,7 +1,7 @@
 import ShapeOption from '../ShapeOption'
 import SavedShape from '../SavedShape'
 import type { Shape } from '../../utils/types';
-import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
 
 // Sample shapes (tetromino-like pieces)
@@ -72,9 +72,10 @@ const makeColor = () => {
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
+  const { nextShapes } = useTetrixStateContext();
 
-  // Create shapes with colors each time
-  const shapes = useMemo(() => {
+  // Create initial shapes with colors once on mount
+  const initialShapes = useMemo(() => {
     const emptyBlock = { color: makeColor(), isFilled: false };
     const filledBlock1 = { color: makeColor(), isFilled: true };
     const filledBlock2 = { color: makeColor(), isFilled: true };
@@ -104,16 +105,18 @@ const ShapeSelector = (): JSX.Element => {
     return [lShape, tShape, squareShape];
   }, []);
 
-  // Update available shapes in context when component mounts
+  // Set initial shapes in context when component mounts
   useEffect(() => {
-    dispatch({ type: 'SET_AVAILABLE_SHAPES', value: { shapes } });
-  }, [dispatch, shapes]);
+    if (nextShapes.length === 0) {
+      dispatch({ type: 'SET_AVAILABLE_SHAPES', value: { shapes: initialShapes } });
+    }
+  }, [dispatch, initialShapes, nextShapes.length]);
 
   return (
     <div className="shape-selector">
-      <ShapeOption shape={shapes[0]} shapeIndex={0} />
-      <ShapeOption shape={shapes[1]} shapeIndex={1} />
-      <ShapeOption shape={shapes[2]} shapeIndex={2} />
+      {nextShapes.map((shape, index) => (
+        <ShapeOption key={`shape-option-${index}`} shape={shape} shapeIndex={index} />
+      ))}
       <SavedShape shape={null} />
     </div>
   )

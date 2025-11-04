@@ -74,10 +74,10 @@ export default function Grid() {
     const grid = gridRef.current;
     if (!grid) return;
 
-    // Handle escape key to clear selection
+    // Handle escape key to return shape to selector
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && selectedShape) {
-        dispatch({ type: 'CLEAR_SELECTION' });
+        dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
       }
     };
 

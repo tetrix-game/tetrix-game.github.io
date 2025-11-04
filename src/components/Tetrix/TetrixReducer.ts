@@ -40,6 +40,7 @@ export const initialState: TetrixReducerState = {
   placementAnimationState: 'none',
   animationStartPosition: null,
   animationTargetPosition: null,
+  shapeOptionBounds: [null, null, null],
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -139,6 +140,23 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "CLEAR_SELECTION": {
+      // Instead of immediately clearing, trigger return animation
+      if (state.selectedShape && state.selectedShapeIndex !== null && state.mousePosition) {
+        return {
+          ...state,
+          placementAnimationState: 'returning',
+          animationStartPosition: { ...state.mousePosition },
+          animationTargetPosition: state.shapeOptionBounds[state.selectedShapeIndex]
+            ? {
+              x: state.shapeOptionBounds[state.selectedShapeIndex]!.left + state.shapeOptionBounds[state.selectedShapeIndex]!.width / 2,
+              y: state.shapeOptionBounds[state.selectedShapeIndex]!.top + state.shapeOptionBounds[state.selectedShapeIndex]!.height / 2,
+            }
+            : null,
+          isShapeDragging: false,
+        };
+      }
+
+      // If no animation possible, clear immediately
       return {
         ...state,
         selectedShape: null,
@@ -248,6 +266,54 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mouseGridLocation: null,
         mousePosition: null,
         hoveredBlockPositions,
+        placementAnimationState: 'none',
+        animationStartPosition: null,
+        animationTargetPosition: null,
+      };
+    }
+
+    case "SET_SHAPE_OPTION_BOUNDS": {
+      const { index, bounds } = action.value;
+      const newBounds = [...state.shapeOptionBounds];
+      newBounds[index] = bounds;
+      return {
+        ...state,
+        shapeOptionBounds: newBounds,
+      };
+    }
+
+    case "RETURN_SHAPE_TO_SELECTOR": {
+      // Start the return animation if we have the necessary data
+      if (state.selectedShape && state.selectedShapeIndex !== null && state.mousePosition) {
+        const targetBounds = state.shapeOptionBounds[state.selectedShapeIndex];
+
+        return {
+          ...state,
+          placementAnimationState: 'returning',
+          animationStartPosition: { ...state.mousePosition },
+          animationTargetPosition: targetBounds
+            ? {
+              x: targetBounds.left + targetBounds.width / 2,
+              y: targetBounds.top + targetBounds.height / 2,
+            }
+            : null,
+          isShapeDragging: false,
+        };
+      }
+
+      return state;
+    }
+
+    case "COMPLETE_RETURN_ANIMATION": {
+      // Shape has returned to selector, clear all selection state
+      return {
+        ...state,
+        selectedShape: null,
+        selectedShapeIndex: null,
+        mouseGridLocation: null,
+        mousePosition: null,
+        isShapeDragging: false,
+        hoveredBlockPositions: [],
         placementAnimationState: 'none',
         animationStartPosition: null,
         animationTargetPosition: null,

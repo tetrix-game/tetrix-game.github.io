@@ -1,8 +1,8 @@
 import './ShapeOption.css';
 import type { Shape } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
-import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import { useCallback } from 'react';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useCallback, useRef, useEffect } from 'react';
 
 const shapeContainerCss = {
   display: 'grid',
@@ -23,13 +23,43 @@ type ShapeOptionProps = {
 
 const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
+  const { selectedShapeIndex } = useTetrixStateContext();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Register bounds when component mounts or updates
+  useEffect(() => {
+    if (containerRef.current) {
+      const bounds = containerRef.current.getBoundingClientRect();
+      dispatch({
+        type: 'SET_SHAPE_OPTION_BOUNDS',
+        value: {
+          index: shapeIndex,
+          bounds: {
+            top: bounds.top,
+            left: bounds.left,
+            width: bounds.width,
+            height: bounds.height,
+          },
+        },
+      });
+    }
+  }, [dispatch, shapeIndex]);
 
   const handleClick = useCallback(() => {
-    dispatch({ type: 'SELECT_SHAPE', value: { shape, shapeIndex } });
-  }, [dispatch, shape, shapeIndex]);
+    if (selectedShapeIndex === shapeIndex) {
+      // Clicking the already-selected shape triggers return animation
+      dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
+    } else {
+      // Select this shape
+      dispatch({ type: 'SELECT_SHAPE', value: { shape, shapeIndex } });
+    }
+  }, [dispatch, shape, shapeIndex, selectedShapeIndex]);
+
+  const isSelected = selectedShapeIndex === shapeIndex;
 
   return (
     <div
+      ref={containerRef}
       style={shapeContainerCss}
       onClick={handleClick}
       onMouseEnter={(e) => {
@@ -49,9 +79,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
               backgroundColor: 'rgba(0, 0, 0, 0.3)',
               borderRadius: '3px',
               position: 'relative',
+              opacity: isSelected ? 0.3 : 1, // Fade out when selected
             }}
           >
-            <BlockVisual block={block} />
+            {!isSelected && <BlockVisual block={block} />}
           </div>
         ))
       ))}

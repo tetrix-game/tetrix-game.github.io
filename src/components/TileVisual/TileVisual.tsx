@@ -2,7 +2,7 @@ import './TileVisual.css';
 import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React, { useCallback } from 'react';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
   tile: Tile;
@@ -11,7 +11,6 @@ type TileVisualProps = {
 }
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
-  const dispatch = useTetrixDispatchContext();
   const { isShapeDragging, placementAnimationState } = useTetrixStateContext();
 
   const style = (row: number, column: number) => {
@@ -31,10 +30,10 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
 
     const isFilled = tile.block.isFilled;
     const index = (tile.location.row - 1) * 10 + tile.location.column - 1;
-    dispatch({ type: "TOGGLE_BLOCK", value: { isFilled, index } })
-  }, [dispatch, tile, isShapeDragging])
+    console.log(`Tile clicked: index: ${index}, isFilled: ${isFilled}`)
+  }, [tile, isShapeDragging])
 
-  // Hide hovered blocks during normal dragging and animation - only show during settling
+  // Only show hovered blocks during settling phase - hide during animation to avoid duplicates
   const shouldShowHoveredBlock = isHovered && hoveredBlock && placementAnimationState === 'settling';
   const isSettling = placementAnimationState === 'settling';
 

@@ -4,7 +4,7 @@ import type { PlacementAnimationState } from '../utils/types';
 
 /**
  * Hook to manage the shape placement animation lifecycle
- * Coordinates the transition from DraggingShape to visible hoveredBlockPositions
+ * Handles only the 300ms movement animation - DraggingShape unmounts after completion
  */
 export function usePlacementAnimation(
   placementAnimationState: PlacementAnimationState,
@@ -13,11 +13,10 @@ export function usePlacementAnimation(
 ) {
   const dispatch = useTetrixDispatchContext();
   const animationRef = useRef<number | null>(null);
-  const settlingTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (placementAnimationState === 'animating' && animationStartPosition && animationTargetPosition) {
-      // Animation duration in milliseconds
+      console.log('[Animation] Starting 300ms movement phase');
       const ANIMATION_DURATION = 300;
       const startTime = performance.now();
 
@@ -26,7 +25,7 @@ export function usePlacementAnimation(
         const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
 
         if (progress >= 1) {
-          // Animation complete - transition to settling
+          console.log('[Animation] Movement complete → settling');
           dispatch({ type: 'COMPLETE_PLACEMENT_ANIMATION' });
           animationRef.current = null;
         } else {
@@ -42,25 +41,9 @@ export function usePlacementAnimation(
         }
       };
     }
-
-    if (placementAnimationState === 'settling') {
-      // After a brief delay for the settling animation to play, finish
-      const SETTLING_DURATION = 200;
-      
-      settlingTimeoutRef.current = window.setTimeout(() => {
-        dispatch({ type: 'FINISH_SETTLING_ANIMATION' });
-      }, SETTLING_DURATION);
-
-      return () => {
-        if (settlingTimeoutRef.current !== null) {
-          clearTimeout(settlingTimeoutRef.current);
-        }
-      };
-    }
   }, [placementAnimationState, animationStartPosition, animationTargetPosition, dispatch]);
 
   return {
     isAnimating: placementAnimationState === 'animating',
-    isSettling: placementAnimationState === 'settling',
   };
 }

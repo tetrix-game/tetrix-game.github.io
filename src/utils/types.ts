@@ -66,11 +66,6 @@ type SetAvailableShapesAction = {
   value: { shapes: Shape[] };
 }
 
-type ToggleBlockAction = {
-  type: 'TOGGLE_BLOCK';
-  value: { isFilled: boolean; index: number };
-}
-
 type StartPlacementAnimationAction = {
   type: 'START_PLACEMENT_ANIMATION';
 }
@@ -89,7 +84,6 @@ export type TetrixAction =
   | PlaceShapeAction
   | ClearSelectionAction
   | SetAvailableShapesAction
-  | ToggleBlockAction
   | StartPlacementAnimationAction
   | CompletePlacementAnimationAction
   | FinishSettlingAnimationAction;

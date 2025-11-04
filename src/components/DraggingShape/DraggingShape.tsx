@@ -5,11 +5,11 @@ import { usePlacementAnimation } from '../../hooks/usePlacementAnimation';
 import { useEffect, useState } from 'react';
 
 export default function DraggingShape() {
-  const { 
-    selectedShape, 
-    mousePosition, 
-    mouseGridLocation, 
-    gridTileSize, 
+  const {
+    selectedShape,
+    mousePosition,
+    mouseGridLocation,
+    gridTileSize,
     gridBounds,
     placementAnimationState,
     animationStartPosition,
@@ -31,13 +31,14 @@ export default function DraggingShape() {
       return;
     }
 
+    console.log('[DraggingShape] Starting position interpolation');
     const ANIMATION_DURATION = 300;
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
-      
+
       // Ease-out cubic for smooth deceleration
       const eased = 1 - Math.pow(1 - progress, 3);
       setAnimationProgress(eased);
@@ -54,8 +55,9 @@ export default function DraggingShape() {
     return null;
   }
 
-  // Don't render during settling phase (let hoveredBlockPositions show)
+  // Unmount during settling phase (TileVisual blocks take over with grow animation)
   if (placementAnimationState === 'settling') {
+    console.log('[DraggingShape] Unmounted (settling phase)');
     return null;
   }
 
@@ -120,7 +122,7 @@ export default function DraggingShape() {
     gridTemplateColumns: `repeat(3, ${gridTileSize}px)`,
     gridTemplateRows: `repeat(3, ${gridTileSize}px)`,
     gap: '2px',
-    transition: isAnimating ? 'none' : undefined, // No CSS transition, we handle it with JS
+    transition: isAnimating ? 'none' : undefined,
   };
 
   return (

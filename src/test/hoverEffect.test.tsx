@@ -212,7 +212,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
   });
 
   describe('Preview overlay logic', () => {
-    it('should only mark tiles as preview that exactly match shape block positions', () => {
+    it('should only mark tiles as preview that exactly match shape block positions during settling', () => {
       const shape = createLShape();
       const hoverLocation: Location = { row: 5, column: 5 };
 
@@ -221,12 +221,11 @@ describe('Shape Hover Effect - Unit Tests', () => {
         previewPositions.map(p => `${p.location.row},${p.location.column}`)
       );
 
-      // Only these exact positions should be marked as preview
+      // Only these exact positions should be marked as preview (during settling phase only)
       expect(previewSet.size).toBe(4); // L-shape has 4 blocks
 
-      // Tiles ABOVE the hover location should NOT be in the preview set
-      // unless they are part of the actual shape
-      // The key is that ONLY shape positions should be previewed
+      // Note: Preview blocks only show during the 'settling' animation phase (200ms grow animation)
+      // They do NOT show during normal dragging - DraggingShape handles that visual
       const allPossibleTiles = [];
       for (let row = 1; row <= 10; row++) {
         for (let col = 1; col <= 10; col++) {
@@ -258,15 +257,18 @@ describe('Shape Hover Effect - Unit Tests', () => {
 
       expect(positionsPlaceable.length).toBe(positionsNonPlaceable.length);
 
-      // The rendering logic should differ:
-      // - Placeable: full size + whitish tint
-      // - Non-placeable: half size + NO tint
+      // Note: Preview blocks only appear during 'settling' phase (after click)
+      // DraggingShape (at 50% size) shows the shape during normal dragging
+      // The rendering logic for TileVisual during settling:
+      // - Valid placement: blocks grow from 50% to 100% over 200ms
+      // - Invalid placement: Click is prevented, no animation occurs
     });
   });
 
   describe('Hover State Logic', () => {
     it('BUG FIX: isHovered should be false if tile is already filled, even if in hoveredSet', () => {
-      // This test catches the bug shown in the screenshot where tint appears on filled tiles
+      // This test catches the bug where tint appears on filled tiles
+      // Note: Hover preview only shows during 'settling' animation phase
       const shape = createLShape();
       const hoverLocation: Location = { row: 5, column: 5 };
 
@@ -306,7 +308,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
       expect(isPreviewForEmpty).toBe(true); // SHOULD be preview because tile is empty
     });
 
-    it('BUG DETECTION: isHovered should be true if and only if the tile is in hoveredSet', () => {
+    it('BUG DETECTION: isHovered should be true during settling phase only', () => {
       const shape = createLShape();
       const hoverLocation: Location = { row: 5, column: 5 };
 
@@ -319,13 +321,11 @@ describe('Shape Hover Effect - Unit Tests', () => {
       for (let row = 1; row <= 10; row++) {
         for (let col = 1; col <= 10; col++) {
           const key = `${row},${col}`;
-          const isHovered = previewSet.has(key);
+          const isInPreviewSet = previewSet.has(key);
 
-          // isHovered should be true if and only if the key is in previewSet
-          expect(isHovered).toBe(previewSet.has(key));
-
-          // If isHovered is true, there should be a corresponding position in previewPositions
-          if (isHovered) {
+          // During settling phase, isHovered is true for tiles in previewSet
+          // During normal dragging, DraggingShape shows the preview (not grid tiles)
+          if (isInPreviewSet) {
             const matchingPosition = previewPositions.find(p =>
               p.location.row === row && p.location.column === col
             );
@@ -334,7 +334,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
         }
       }
 
-      // Exactly 4 tiles should have isHovered=true (L-shape has 4 blocks)
+      // Exactly 4 tiles should have isHovered=true during settling (L-shape has 4 blocks)
       let previewCount = 0;
       for (let row = 1; row <= 10; row++) {
         for (let col = 1; col <= 10; col++) {

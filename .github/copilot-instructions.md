@@ -29,7 +29,6 @@ This is a Tetris-inspired puzzle game built with React, TypeScript, and Vite. Pl
 - `PLACE_SHAPE`: Applies shape to grid, auto-selects next shape if available
 - `CLEAR_SELECTION`: Resets drag state (triggered by ESC key)
 - `SET_AVAILABLE_SHAPES`: Updates available shapes pool
-- `TOGGLE_BLOCK`: Dev tool for manually toggling individual tiles
 
 ## Key Data Structures
 

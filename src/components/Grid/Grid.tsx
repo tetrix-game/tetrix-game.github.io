@@ -15,12 +15,13 @@ const gridCss = {
 }
 
 export default function Grid() {
-  const { tiles, selectedShape, hoveredBlockPositions } = useTetrixStateContext();
+  const { tiles, selectedShape, hoveredBlockPositions, isShapeDragging } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!gridRef.current || !selectedShape) return;
+    // Only track mouse movement when actively dragging (not during animation)
+    if (!gridRef.current || !selectedShape || !isShapeDragging) return;
 
     const location = mousePositionToGridLocation(
       e.clientX,
@@ -47,7 +48,7 @@ export default function Grid() {
         }
       }
     });
-  }, [selectedShape, dispatch]);
+  }, [selectedShape, isShapeDragging, dispatch]);
 
   const handleMouseLeave = useCallback(() => {
     dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: null, position: null } });
@@ -56,7 +57,6 @@ export default function Grid() {
   const handleClick = useCallback((e: MouseEvent) => {
     if (!selectedShape || !gridRef.current) return;
 
-    // Calculate grid location at click time to avoid race conditions with mouseleave
     const clickLocation = mousePositionToGridLocation(
       e.clientX,
       e.clientY,
@@ -66,7 +66,7 @@ export default function Grid() {
 
     if (!clickLocation) return;
 
-    // Update the mouse location to the click position, then start placement animation
+    console.log('[Grid] Click → starting animation');
     dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: clickLocation } });
     dispatch({ type: 'START_PLACEMENT_ANIMATION' });
   }, [selectedShape, dispatch]);

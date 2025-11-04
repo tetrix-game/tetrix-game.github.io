@@ -43,6 +43,8 @@ export const initialState: TetrixReducerState = {
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
+  console.log(`[Reducer] ${action.type}`);
+
   switch (action.type) {
     case "SELECT_SHAPE": {
       const { shape, shapeIndex } = action.value;
@@ -72,9 +74,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         mouseGridLocation: location,
-        mousePosition: position ?? null,
-        gridTileSize: tileSize ?? state.gridTileSize,
-        gridBounds: gridBounds ?? state.gridBounds,
+        mousePosition: position ?? state.mousePosition ?? null,
+        gridTileSize: tileSize ?? state.gridTileSize ?? null,
+        gridBounds: gridBounds ?? state.gridBounds ?? null,
         hoveredBlockPositions,
       };
     }
@@ -157,24 +159,15 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       };
     }
 
-    case "TOGGLE_BLOCK": {
-      const { isFilled, index } = action.value;
-      const newTiles = [...state.tiles];
-      newTiles[index] = {
-        ...newTiles[index],
-        block: {
-          ...newTiles[index].block,
-          isFilled: !isFilled,
-        }
-      };
-      return {
-        ...state,
-        tiles: newTiles,
-      };
-    }
-
     case "START_PLACEMENT_ANIMATION": {
       if (!state.selectedShape || !state.mouseGridLocation || !state.mousePosition || !state.gridTileSize || !state.gridBounds) {
+        console.log('[Reducer] START_PLACEMENT_ANIMATION failed - missing state', {
+          selectedShape: state.selectedShape,
+          mouseGridLocation: state.mouseGridLocation,
+          mousePosition: state.mousePosition,
+          gridTileSize: state.gridTileSize,
+          gridBounds: state.gridBounds
+        });
         return state;
       }
 
@@ -185,29 +178,23 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const targetCellCenterX = targetCellLeft + state.gridTileSize / 2;
       const targetCellCenterY = targetCellTop + state.gridTileSize / 2;
 
+      console.log('[Reducer] Animation positions set:', {
+        start: state.mousePosition,
+        target: { x: targetCellCenterX, y: targetCellCenterY },
+      });
+
       return {
         ...state,
         placementAnimationState: 'animating',
         animationStartPosition: { ...state.mousePosition },
         animationTargetPosition: { x: targetCellCenterX, y: targetCellCenterY },
-        // Stop updating mouse position during animation
         isShapeDragging: false,
       };
     }
 
     case "COMPLETE_PLACEMENT_ANIMATION": {
-      // This is called when the DraggingShape reaches its target
-      // Now we show the hoveredBlockPositions and start settling animation
-      return {
-        ...state,
-        placementAnimationState: 'settling',
-      };
-    }
-
-    case "FINISH_SETTLING_ANIMATION": {
-      // This is called when the settling animation completes
-      // Actually place the shape on the grid
       if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
+        console.log('[Reducer] COMPLETE_PLACEMENT_ANIMATION failed - missing state');
         return state;
       }
 
@@ -246,15 +233,32 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const nextSelectedShape = newNextShapes.length > 0 ? newNextShapes[0] : null;
       const nextSelectedShapeIndex = newNextShapes.length > 0 ? 0 : null;
 
+      // Recalculate hoveredBlockPositions for the new selected shape
+      const hoveredBlockPositions = nextSelectedShape && state.mouseGridLocation
+        ? getShapeGridPositions(nextSelectedShape, state.mouseGridLocation)
+        : [];
+
+      console.log('[Reducer] Shape placed on grid, transitioning to settling for grow animation');
+
       return {
         ...state,
         tiles: tilesAfterLineClearing,
         nextShapes: newNextShapes,
         selectedShape: nextSelectedShape,
         selectedShapeIndex: nextSelectedShapeIndex,
+        isShapeDragging: nextSelectedShape !== null,
+        hoveredBlockPositions,
+        placementAnimationState: 'settling',
+      };
+    }
+
+    case "FINISH_SETTLING_ANIMATION": {
+      console.log('[Reducer] Settling animation complete, resetting animation state');
+
+      return {
+        ...state,
         mouseGridLocation: null,
         mousePosition: null,
-        isShapeDragging: nextSelectedShape !== null,
         hoveredBlockPositions: [],
         placementAnimationState: 'none',
         animationStartPosition: null,

@@ -12,8 +12,9 @@ export default function BlockVisual({ block, isHovered = false, isSettling = fal
     return <></>;
   }
 
-  // During settling animation, transition from 50% to 100%
+  // During settling animation, blocks grow from 50% to 100%
   const isSmall = isHovered && !isSettling;
+  const shouldAnimateGrow = isHovered && isSettling;
 
   return (
     <div
@@ -21,7 +22,6 @@ export default function BlockVisual({ block, isHovered = false, isSettling = fal
         position: 'relative',
         top: isSmall ? '25%' : '-1px',
         left: isSmall ? '25%' : '-1px',
-        transition: 'opacity 0.5s ease-in-out, width 0.2s ease-out, height 0.2s ease-out, top 0.2s ease-out, left 0.2s ease-out',
         zIndex: 2,
         backgroundColor: block.color.main,
         opacity: 1,
@@ -31,8 +31,25 @@ export default function BlockVisual({ block, isHovered = false, isSettling = fal
         borderLeft: '15px solid ' + block.color.light,
         borderBottom: '15px solid ' + block.color.darkest,
         borderRight: '15px solid ' + block.color.dark,
+        animation: shouldAnimateGrow ? 'growBlock 0.2s ease-out' : 'none',
       }}
     >
+      <style>{`
+        @keyframes growBlock {
+          from {
+            width: 50%;
+            height: 50%;
+            top: 25%;
+            left: 25%;
+          }
+          to {
+            width: calc(100% + 2px);
+            height: calc(100% + 2px);
+            top: -1px;
+            left: -1px;
+          }
+        }
+      `}</style>
     </div>
   )
 }

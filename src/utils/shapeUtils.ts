@@ -304,108 +304,316 @@ export function makeRandomColor() {
 }
 
 /**
- * Generate a random shape (one of several predefined patterns)
+ * Generate a random shape (one of several predefined Tetris patterns in various orientations)
+ * Includes all standard Tetris pieces that fit in a 3x3 grid:
+ * - I piece (vertical only - horizontal doesn't fit)
+ * - O piece (square, no rotations needed)
+ * - T piece (4 rotations)
+ * - S piece (2 rotations)
+ * - Z piece (2 rotations)
+ * - L piece (4 rotations)
+ * - J piece (4 rotations)
+ * Plus smaller variations for gameplay variety
  */
 export function generateRandomShape(): Shape {
   const shapePatterns = [
-    // L-shape
+    // I-piece (vertical) - 3 blocks
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [filledBlock, emptyBlock, emptyBlock],
-        [{ ...filledBlock }, emptyBlock, emptyBlock],
-        [{ ...filledBlock }, { ...filledBlock }, emptyBlock],
+        [e, f, e],
+        [e, { ...f }, e],
+        [e, { ...f }, e],
       ];
     },
-    // Reverse L-shape
+
+    // O-piece (square) - 4 blocks
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [emptyBlock, emptyBlock, filledBlock],
-        [emptyBlock, emptyBlock, { ...filledBlock }],
-        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
+        [f, { ...f }, e],
+        [{ ...f }, { ...f }, e],
+        [e, e, e],
       ];
     },
-    // T-shape
+
+    // T-piece - Rotation 1 (pointing up)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [emptyBlock, filledBlock, emptyBlock],
-        [{ ...filledBlock }, { ...filledBlock }, { ...filledBlock }],
-        [emptyBlock, emptyBlock, emptyBlock],
+        [e, f, e],
+        [{ ...f }, { ...f }, { ...f }],
+        [e, e, e],
       ];
     },
-    // Square
+
+    // T-piece - Rotation 2 (pointing right)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [filledBlock, { ...filledBlock }, emptyBlock],
-        [{ ...filledBlock }, { ...filledBlock }, emptyBlock],
-        [emptyBlock, emptyBlock, emptyBlock],
+        [e, f, e],
+        [e, { ...f }, { ...f }],
+        [e, { ...f }, e],
       ];
     },
-    // Line (horizontal)
+
+    // T-piece - Rotation 3 (pointing down)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [emptyBlock, emptyBlock, emptyBlock],
-        [{ ...filledBlock }, { ...filledBlock }, { ...filledBlock }],
-        [emptyBlock, emptyBlock, emptyBlock],
+        [e, e, e],
+        [{ ...f }, { ...f }, { ...f }],
+        [e, { ...f }, e],
       ];
     },
-    // Line (vertical)
+
+    // T-piece - Rotation 4 (pointing left)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [emptyBlock, filledBlock, emptyBlock],
-        [emptyBlock, { ...filledBlock }, emptyBlock],
-        [emptyBlock, { ...filledBlock }, emptyBlock],
+        [e, f, e],
+        [{ ...f }, { ...f }, e],
+        [e, { ...f }, e],
       ];
     },
-    // Z-shape
+
+    // S-piece - Rotation 1 (horizontal)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [filledBlock, { ...filledBlock }, emptyBlock],
-        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
-        [emptyBlock, emptyBlock, emptyBlock],
+        [e, f, { ...f }],
+        [{ ...f }, { ...f }, e],
+        [e, e, e],
       ];
     },
-    // S-shape
+
+    // S-piece - Rotation 2 (vertical)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
-        [{ ...filledBlock }, { ...filledBlock }, emptyBlock],
-        [emptyBlock, emptyBlock, emptyBlock],
+        [e, f, e],
+        [e, { ...f }, { ...f }],
+        [e, e, { ...f }],
       ];
     },
-    // Single block
+
+    // Z-piece - Rotation 1 (horizontal)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [emptyBlock, emptyBlock, emptyBlock],
-        [emptyBlock, filledBlock, emptyBlock],
-        [emptyBlock, emptyBlock, emptyBlock],
+        [f, { ...f }, e],
+        [e, { ...f }, { ...f }],
+        [e, e, e],
       ];
     },
-    // Small L (3 blocks)
+
+    // Z-piece - Rotation 2 (vertical)
     () => {
-      const emptyBlock = { color: makeRandomColor(), isFilled: false };
-      const filledBlock = { color: makeRandomColor(), isFilled: true };
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
       return [
-        [emptyBlock, filledBlock, emptyBlock],
-        [emptyBlock, { ...filledBlock }, emptyBlock],
-        [emptyBlock, { ...filledBlock }, { ...filledBlock }],
+        [e, e, f],
+        [e, { ...f }, { ...f }],
+        [e, { ...f }, e],
+      ];
+    },
+
+    // L-piece - Rotation 1 (pointing up-right)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, f],
+        [e, e, { ...f }],
+        [e, { ...f }, { ...f }],
+      ];
+    },
+
+    // L-piece - Rotation 2 (pointing down-right)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, e],
+        [{ ...f }, { ...f }, { ...f }],
+        [{ ...f }, e, e],
+      ];
+    },
+
+    // L-piece - Rotation 3 (pointing down-left)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [{ ...f }, { ...f }, e],
+        [e, { ...f }, e],
+        [e, { ...f }, e],
+      ];
+    },
+
+    // L-piece - Rotation 4 (pointing up-left)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, { ...f }],
+        [{ ...f }, { ...f }, { ...f }],
+        [e, e, e],
+      ];
+    },
+
+    // J-piece - Rotation 1 (pointing up-left)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [f, e, e],
+        [{ ...f }, e, e],
+        [{ ...f }, { ...f }, e],
+      ];
+    },
+
+    // J-piece - Rotation 2 (pointing down-left)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, e],
+        [{ ...f }, { ...f }, { ...f }],
+        [e, e, { ...f }],
+      ];
+    },
+
+    // J-piece - Rotation 3 (pointing down-right)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, { ...f }, { ...f }],
+        [e, { ...f }, e],
+        [e, { ...f }, e],
+      ];
+    },
+
+    // J-piece - Rotation 4 (pointing up-right)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [{ ...f }, e, e],
+        [{ ...f }, { ...f }, { ...f }],
+        [e, e, e],
+      ];
+    },
+
+    // Single block (for variety)
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, e],
+        [e, f, e],
+        [e, e, e],
+      ];
+    },
+
+    // 2-block horizontal
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, e],
+        [e, f, { ...f }],
+        [e, e, e],
+      ];
+    },
+
+    // 2-block vertical
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, e],
+        [e, f, e],
+        [e, { ...f }, e],
+      ];
+    },
+
+    // Small L (3 blocks) - Rotation 1
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, f, e],
+        [e, { ...f }, e],
+        [e, { ...f }, { ...f }],
+      ];
+    },
+
+    // Small L (3 blocks) - Rotation 2
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [e, e, e],
+        [e, e, f],
+        [e, { ...f }, { ...f }],
+      ];
+    },
+
+    // Small L (3 blocks) - Rotation 3
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [{ ...f }, { ...f }, e],
+        [e, { ...f }, e],
+        [e, e, e],
+      ];
+    },
+
+    // Small L (3 blocks) - Rotation 4
+    () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+      return [
+        [{ ...f }, { ...f }, e],
+        [{ ...f }, e, e],
+        [e, e, e],
       ];
     },
   ];

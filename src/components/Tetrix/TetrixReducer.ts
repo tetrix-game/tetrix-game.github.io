@@ -245,7 +245,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const { tiles: tilesAfterLineClearing } = clearFullLines(newTiles);
 
       // Remove the placed shape from nextShapes
-      const newNextShapes = state.nextShapes.filter((_, index) => index !== state.selectedShapeIndex);
+      const remainingShapes = state.nextShapes.filter((_, index) => index !== state.selectedShapeIndex);
+
+      // Generate a new random shape to replace the placed one
+      const newRandomShape = generateRandomShape();
+
+      // Add the new shape to maintain 3 shapes
+      const newNextShapes = [...remainingShapes, newRandomShape];
 
       // Auto-select the first shape if available
       const nextSelectedShape = newNextShapes.length > 0 ? newNextShapes[0] : null;

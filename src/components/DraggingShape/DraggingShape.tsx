@@ -55,9 +55,9 @@ export default function DraggingShape() {
     return null;
   }
 
-  // Unmount during settling phase (TileVisual blocks take over with grow animation)
+  // Unmount during settling phase (TileVisual hoveredBlocks take over with grow animation)
   if (placementAnimationState === 'settling') {
-    console.log('[DraggingShape] Unmounted (settling phase)');
+    console.log('[DraggingShape] Unmounted (settling phase - blocks now on TileVisuals)');
     return null;
   }
 

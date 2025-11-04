@@ -198,6 +198,25 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         return state;
       }
 
+      console.log('[Reducer] Movement complete, transitioning to settling (blocks stay as hover preview at 50%)');
+
+      // Keep hoveredBlockPositions and mouseGridLocation for the grow animation
+      // Blocks will be placed on tiles AFTER the grow animation completes
+      return {
+        ...state,
+        placementAnimationState: 'settling',
+        isShapeDragging: false,
+      };
+    }
+
+    case "FINISH_SETTLING_ANIMATION": {
+      if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
+        console.log('[Reducer] FINISH_SETTLING_ANIMATION failed - missing state');
+        return state;
+      }
+
+      console.log('[Reducer] Settling animation complete, now placing blocks on tiles permanently');
+
       // Get the positions where the shape would be placed
       const shapePositions = getShapeGridPositions(state.selectedShape, state.mouseGridLocation);
 
@@ -238,8 +257,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         ? getShapeGridPositions(nextSelectedShape, state.mouseGridLocation)
         : [];
 
-      console.log('[Reducer] Shape placed on grid, transitioning to settling for grow animation');
-
       return {
         ...state,
         tiles: tilesAfterLineClearing,
@@ -247,19 +264,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: nextSelectedShape,
         selectedShapeIndex: nextSelectedShapeIndex,
         isShapeDragging: nextSelectedShape !== null,
-        hoveredBlockPositions,
-        placementAnimationState: 'settling',
-      };
-    }
-
-    case "FINISH_SETTLING_ANIMATION": {
-      console.log('[Reducer] Settling animation complete, resetting animation state');
-
-      return {
-        ...state,
         mouseGridLocation: null,
         mousePosition: null,
-        hoveredBlockPositions: [],
+        hoveredBlockPositions,
         placementAnimationState: 'none',
         animationStartPosition: null,
         animationTargetPosition: null,

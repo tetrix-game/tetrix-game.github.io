@@ -33,11 +33,13 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
     console.log(`Tile clicked: index: ${index}, isFilled: ${isFilled}`)
   }, [tile, isShapeDragging])
 
-  // Only show hovered blocks during settling phase - hide during animation to avoid duplicates
+  // Show hovered blocks ONLY during settling phase (not during animating)
+  // DraggingShape handles the visual during animating phase
+  // During settling, blocks start at 50% and grow to 100%
   const shouldShowHoveredBlock = isHovered && hoveredBlock && placementAnimationState === 'settling';
   const isSettling = placementAnimationState === 'settling';
 
-  // Display hovered block if in settling phase, otherwise display actual tile block
+  // Display hovered block during settling phase, otherwise display actual tile block
   const displayBlock = shouldShowHoveredBlock ? {
     ...hoveredBlock,
     isFilled: true,

@@ -1,10 +1,108 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- The getting larger animation doesn't work
-- The mouse position update before placement changes the eventual placement postiion
-- Selecting a shape from the side should remove it from the side when the shape is placed
-- The shape replacement logic is applying to the selectedShape, not the side bar of shape options
-- No action sounds
-- No background music
-- No score
-- No clearance animations
+- Clicking and then moving the mouse off the screen is making for wonky state
+- action sounds
+- background music
+- score
+- clearance animations
+
+
+
+- Ideas:
+- Login with Google
+- Progress Board:
+  - Shoots and ladders progression
+    - Roll the dice, move that number of spaces
+    - Zones of difficulty
+    - Challenge set: A specific set of challenges for a specific game session
+      - Board sections specify a challenge set
+        - Prime number factorization of the board index decides what challenge set is picked
+    - Ladders take the player up
+    - Shoots take the player down
+  - Limit the colors
+- Challenges:
+  - Challanges for a level are rolled
+    - Default: Random roll
+    - Upgrade: Roll 3, pick 1
+    - Up to 4 challenge slots availble for purchase
+  - Default challenge: Clear ${index} number of any type of lines
+  - Prime factorization determines additional challenge type:
+    - 2:
+      - Always the gray color, additional factors of 2 in the index add another
+      - Number of colors equals number of 2 factors in index
+      - ROYGBP: Red, Orange, Yellow, Green, Blue, Purple
+      - Full rainbow every 128 levels
+    - 3:
+      - Clear 2^n solid color lines, all of any color available where n is the number of powers of 3
+      - X pts per 3 line clear
+      - Randomly rolls the next 3 line color block requirement
+    - 5: 
+    - 7:
+    - 11:
+    - 13:
+    - 17:
+    - 19:
+    - 23:
+    - 29:
+    - 31:
+    - 37:
+    - 41:
+    - 43:
+    - 47:
+    - 53:
+    - 59:
+    - 61:
+    - 67:
+    - 71:
+    - 73:
+    - 79:
+    - 83:
+    - 89:
+    - 97:
+    - 101:
+    - 103:
+    - 107:
+    - 109:
+    - 113:
+    - 127:
+    - 131:
+    - 137:
+    - 139:
+    - 149:
+    - 151:
+  - Challenge types:
+    - Clear lines
+      - any color
+      - specific color
+      - 2 at a time
+      - 3 at a time
+      - 2 X 1
+      - 1 X 2
+      - specific column
+      - columns in order
+  - Make a pattern
+- Consumable in-game Powers:
+  - Turn shapes for X number of turns
+  - Interchangable selected shape for X nubmer of turns
+  - Reroll queued shapes (one time use)
+  - Larger shapes queue (whole game)
+- Points system:
+  - Earning points:
+    - Points only awarded to the player after completion of the entire level
+    - Completing all challenges completes the level
+    - Complete multiple challenges at the same time is multiplicative
+      - Points awarded = Prior bonus (default 1) * challenge award
+      - Up to 3 challenges can be completed at the same time, multiplying all the points awarded together
+    - Steak points to add a multiplier to the points
+      - Ex. Steak 100 pts, winning -> 120 pts (20% of the steak), loosing -> 0 pts
+  - Spending points:
+    - Playing any level other than level 0 costs points in some way or another
+      - Rolling the dice moves the character up that many levels
+    - Buying any number of replay tickets when the character avatar is ON the level
+    - Buying in-game powerups to make a level easier
+    - Buying challenge slots on a level
+    - Cosmetics:
+      - Choose color progression
+      - Decorate avatar
+      - Pick avatar
+      - Change name

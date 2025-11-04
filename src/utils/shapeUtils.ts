@@ -237,20 +237,30 @@ export function cloneShape(shape: Shape): Shape {
 
 /**
  * Generate a random color for a shape
+ * @param colorCount - Number of colors to use from the palette (1-7). Defaults to 7.
+ *                     Colors are used in rainbow order: Grey, Red, Orange, Yellow, Green, Blue, Purple
  */
-export function makeRandomColor() {
-  const colors = ['blue', 'red', 'green', 'yellow', 'purple', 'orange'];
+export function makeRandomColor(colorCount: number = 7) {
+  // Available colors in rainbow order (starting with grey)
+  const allColors = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+
+  // Clamp colorCount to valid range (1-7)
+  const count = Math.max(1, Math.min(7, colorCount));
+
+  // Use only the first 'count' colors from the list
+  const colors = allColors.slice(0, count);
+
   const randomColorIndex = Math.floor(Math.random() * colors.length);
   const randomColor = colors[randomColorIndex];
 
   switch (randomColor) {
-    case 'blue':
+    case 'grey':
       return {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
+        lightest: '#e0e0e0',
+        light: '#bdbdbd',
+        main: '#9e9e9e',
+        dark: '#757575',
+        darkest: '#424242'
       };
     case 'red':
       return {
@@ -260,13 +270,13 @@ export function makeRandomColor() {
         dark: '#b71c1c',
         darkest: '#7f0000'
       };
-    case 'green':
+    case 'orange':
       return {
-        lightest: '#51cf66',
-        light: '#40c057',
-        main: '#2f9e44',
-        dark: '#2b8a3e',
-        darkest: '#1b5e20'
+        lightest: '#ffa94d',
+        light: '#ff922b',
+        main: '#fd7e14',
+        dark: '#f76707',
+        darkest: '#d9480f'
       };
     case 'yellow':
       return {
@@ -276,6 +286,22 @@ export function makeRandomColor() {
         dark: '#f59f00',
         darkest: '#e67700'
       };
+    case 'green':
+      return {
+        lightest: '#51cf66',
+        light: '#40c057',
+        main: '#2f9e44',
+        dark: '#2b8a3e',
+        darkest: '#1b5e20'
+      };
+    case 'blue':
+      return {
+        lightest: '#0274e6',
+        light: '#0059b2',
+        main: '#023f80',
+        dark: '#023468',
+        darkest: '#011e3f'
+      };
     case 'purple':
       return {
         lightest: '#b197fc',
@@ -284,21 +310,13 @@ export function makeRandomColor() {
         dark: '#6741d9',
         darkest: '#4c2a85'
       };
-    case 'orange':
-      return {
-        lightest: '#ffa94d',
-        light: '#ff922b',
-        main: '#fd7e14',
-        dark: '#f76707',
-        darkest: '#d9480f'
-      };
     default:
       return {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
+        lightest: '#e0e0e0',
+        light: '#bdbdbd',
+        main: '#9e9e9e',
+        dark: '#757575',
+        darkest: '#424242'
       };
   }
 }

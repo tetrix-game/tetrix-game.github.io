@@ -162,18 +162,18 @@ describe('Shape Selection and Color Bugs', () => {
 
 // Helper function to test color generation
 function makeColorForTest() {
-  const colors = ['blue', 'red', 'green', 'yellow', 'purple', 'orange'];
+  const colors = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
   const randomColorIndex = Math.floor(Math.random() * colors.length);
   const randomColor = colors[randomColorIndex];
 
   switch (randomColor) {
-    case 'blue':
+    case 'grey':
       return {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
+        lightest: '#e0e0e0',
+        light: '#bdbdbd',
+        main: '#9e9e9e',
+        dark: '#757575',
+        darkest: '#424242'
       };
     case 'red':
       return {
@@ -183,13 +183,13 @@ function makeColorForTest() {
         dark: '#b71c1c',
         darkest: '#7f0000'
       };
-    case 'green':
+    case 'orange':
       return {
-        lightest: '#51cf66',
-        light: '#40c057',
-        main: '#2f9e44',
-        dark: '#2b8a3e',
-        darkest: '#1b5e20'
+        lightest: '#ffa94d',
+        light: '#ff922b',
+        main: '#fd7e14',
+        dark: '#f76707',
+        darkest: '#d9480f'
       };
     case 'yellow':
       return {
@@ -199,6 +199,22 @@ function makeColorForTest() {
         dark: '#f59f00',
         darkest: '#e67700'
       };
+    case 'green':
+      return {
+        lightest: '#51cf66',
+        light: '#40c057',
+        main: '#2f9e44',
+        dark: '#2b8a3e',
+        darkest: '#1b5e20'
+      };
+    case 'blue':
+      return {
+        lightest: '#0274e6',
+        light: '#0059b2',
+        main: '#023f80',
+        dark: '#023468',
+        darkest: '#011e3f'
+      };
     case 'purple':
       return {
         lightest: '#b197fc',
@@ -207,21 +223,13 @@ function makeColorForTest() {
         dark: '#6741d9',
         darkest: '#4c2a85'
       };
-    case 'orange':
-      return {
-        lightest: '#ffa94d',
-        light: '#ff922b',
-        main: '#fd7e14',
-        dark: '#f76707',
-        darkest: '#d9480f'
-      };
     default:
       return {
-        lightest: '#0274e6',
-        light: '#0059b2',
-        main: '#023f80',
-        dark: '#023468',
-        darkest: '#011e3f'
+        lightest: '#e0e0e0',
+        light: '#bdbdbd',
+        main: '#9e9e9e',
+        dark: '#757575',
+        darkest: '#424242'
       };
   }
 }

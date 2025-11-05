@@ -149,6 +149,44 @@ export function canPlaceShape(
 }
 
 /**
+ * Check if a shape can be placed at a given location based on tile array
+ */
+export function isValidPlacement(
+  shape: Shape,
+  centerLocation: Location,
+  tiles: Array<{ location: Location; block: { isFilled: boolean } }>
+): boolean {
+  const positions = getShapeGridPositions(shape, centerLocation);
+
+  // Create a map of occupied tiles for quick lookup
+  const occupiedTiles = new Set(
+    tiles
+      .filter(tile => tile.block.isFilled)
+      .map(tile => `${tile.location.row},${tile.location.column}`)
+  );
+
+  for (const { location } of positions) {
+    // Check bounds (10x10 grid, 1-indexed)
+    if (
+      location.row < 1 ||
+      location.row > 10 ||
+      location.column < 1 ||
+      location.column > 10
+    ) {
+      return false;
+    }
+
+    // Check if position is already occupied
+    const key = `${location.row},${location.column}`;
+    if (occupiedTiles.has(key)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Convert a mouse position to a grid location
  */
 export function mousePositionToGridLocation(

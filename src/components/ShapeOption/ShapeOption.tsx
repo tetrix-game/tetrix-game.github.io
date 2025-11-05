@@ -14,6 +14,7 @@ const shapeContainerCss = {
   borderRadius: '8px',
   cursor: 'pointer',
   transition: 'all 0.2s ease',
+  touchAction: 'none' as const, // Prevent browser touch gestures during drag
 };
 
 type ShapeOptionProps = {
@@ -45,12 +46,14 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     }
   }, [dispatch, shapeIndex]);
 
-  const handleClick = useCallback(() => {
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    e.preventDefault(); // Prevent default browser behaviors
+
     if (selectedShapeIndex === shapeIndex) {
-      // Clicking the already-selected shape triggers return animation
+      // Already selected shape - clicking again triggers return animation
       dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
     } else {
-      // Select this shape
+      // Start drag by selecting this shape
       dispatch({ type: 'SELECT_SHAPE', value: { shape, shapeIndex } });
     }
   }, [dispatch, shape, shapeIndex, selectedShapeIndex]);
@@ -61,12 +64,12 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     <div
       ref={containerRef}
       style={shapeContainerCss}
-      onClick={handleClick}
-      onMouseEnter={(e) => {
+      onPointerDown={handlePointerDown}
+      onPointerEnter={(e) => {
         e.currentTarget.style.transform = 'scale(1.05)';
         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
       }}
-      onMouseLeave={(e) => {
+      onPointerLeave={(e) => {
         e.currentTarget.style.transform = 'scale(1)';
         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
       }}

@@ -3,7 +3,7 @@ import TileVisual from '../TileVisual';
 import type { Tile } from '../../utils/types';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useRef, useCallback, useEffect } from 'react';
-import { mousePositionToGridLocation } from '../../utils/shapeUtils';
+import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shapeUtils';
 
 const gridCss = {
   display: "grid",
@@ -12,6 +12,7 @@ const gridCss = {
   backgroundColor: "rgb(10, 10, 10)",
   gap: "2px,",
   position: "relative" as const,
+  touchAction: "none" as const, // Prevent browser touch gestures during drag
 }
 
 export default function Grid() {
@@ -19,13 +20,13 @@ export default function Grid() {
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    // Only track mouse movement when actively dragging (not during animation)
+  const handlePointerMove = useCallback((clientX: number, clientY: number) => {
+    // Only track pointer movement when actively dragging (not during animation)
     if (!gridRef.current || !selectedShape || !isShapeDragging) return;
 
     const location = mousePositionToGridLocation(
-      e.clientX,
-      e.clientY,
+      clientX,
+      clientY,
       gridRef.current,
       { rows: 10, columns: 10 }
     );
@@ -34,41 +35,57 @@ export default function Grid() {
     const gridRect = gridRef.current.getBoundingClientRect();
     const tileSize = (gridRect.width - 9 * 2) / 10; // Subtract gap space (9 gaps of 2px), divide by 10 tiles
 
+    // Check if placement is valid
+    const isValid = location ? isValidPlacement(selectedShape, location, tiles) : false;
+
     dispatch({
       type: 'UPDATE_MOUSE_LOCATION',
       value: {
         location,
-        position: { x: e.clientX, y: e.clientY },
+        position: { x: clientX, y: clientY },
         tileSize,
         gridBounds: {
           top: gridRect.top,
           left: gridRect.left,
           width: gridRect.width,
           height: gridRect.height
-        }
+        },
+        isValid,
       }
     });
-  }, [selectedShape, isShapeDragging, dispatch]);
+  }, [selectedShape, isShapeDragging, tiles, dispatch]);
 
-  const handleMouseLeave = useCallback(() => {
+  const handlePointerLeave = useCallback(() => {
     dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: null, position: null } });
   }, [dispatch]);
 
-  const handleClick = useCallback((e: MouseEvent) => {
+  const handlePointerUp = useCallback((clientX: number, clientY: number) => {
     if (!selectedShape || !gridRef.current) return;
 
     const clickLocation = mousePositionToGridLocation(
-      e.clientX,
-      e.clientY,
+      clientX,
+      clientY,
       gridRef.current,
       { rows: 10, columns: 10 }
     );
 
-    if (!clickLocation) return;
+    if (!clickLocation) {
+      // Pointer up outside grid - return shape to selector
+      dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
+      return;
+    }
 
+    // Check if placement is valid
+    if (!isValidPlacement(selectedShape, clickLocation, tiles)) {
+      // Invalid placement - return shape to selector
+      dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
+      return;
+    }
+
+    // Valid placement - proceed with animation
     dispatch({ type: 'UPDATE_MOUSE_LOCATION', value: { location: clickLocation } });
     dispatch({ type: 'START_PLACEMENT_ANIMATION' });
-  }, [selectedShape, dispatch]);
+  }, [selectedShape, tiles, dispatch]);
 
   useEffect(() => {
     const grid = gridRef.current;
@@ -81,18 +98,31 @@ export default function Grid() {
       }
     };
 
-    grid.addEventListener('mousemove', handleMouseMove);
-    grid.addEventListener('mouseleave', handleMouseLeave);
-    grid.addEventListener('click', handleClick);
+    // Pointer event handlers
+    const onPointerMove = (e: PointerEvent) => {
+      handlePointerMove(e.clientX, e.clientY);
+    };
+
+    const onPointerLeave = () => {
+      handlePointerLeave();
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      handlePointerUp(e.clientX, e.clientY);
+    };
+
+    grid.addEventListener('pointermove', onPointerMove);
+    grid.addEventListener('pointerleave', onPointerLeave);
+    grid.addEventListener('pointerup', onPointerUp);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      grid.removeEventListener('mousemove', handleMouseMove);
-      grid.removeEventListener('mouseleave', handleMouseLeave);
-      grid.removeEventListener('click', handleClick);
+      grid.removeEventListener('pointermove', onPointerMove);
+      grid.removeEventListener('pointerleave', onPointerLeave);
+      grid.removeEventListener('pointerup', onPointerUp);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleMouseMove, handleMouseLeave, handleClick, selectedShape, dispatch]);
+  }, [handlePointerMove, handlePointerLeave, handlePointerUp, selectedShape, dispatch]);
 
   // Create a map of hovered block positions for quick lookup
   const hoveredBlockMap = new Map(

@@ -36,6 +36,7 @@ export const initialState: TetrixReducerState = {
   gridTileSize: null,
   gridBounds: null,
   isShapeDragging: false,
+  isValidPlacement: false,
   hoveredBlockPositions: [],
   placementAnimationState: 'none',
   animationStartPosition: null,
@@ -64,7 +65,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "UPDATE_MOUSE_LOCATION": {
-      const { location, position, tileSize, gridBounds } = action.value;
+      const { location, position, tileSize, gridBounds, isValid } = action.value;
 
       // Calculate hovered block positions based on selected shape and mouse location
       const hoveredBlockPositions = state.selectedShape && location
@@ -77,6 +78,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mousePosition: position ?? state.mousePosition ?? null,
         gridTileSize: tileSize ?? state.gridTileSize ?? null,
         gridBounds: gridBounds ?? state.gridBounds ?? null,
+        isValidPlacement: isValid ?? false,
         hoveredBlockPositions,
       };
     }

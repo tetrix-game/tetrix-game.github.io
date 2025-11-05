@@ -39,6 +39,7 @@ export type TetrixReducerState = {
   gridTileSize: number | null;
   gridBounds: { top: number; left: number; width: number; height: number } | null;
   isShapeDragging: boolean;
+  isValidPlacement: boolean; // Track if current hover position is valid for placement
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
   // Animation state for shape placement
   placementAnimationState: PlacementAnimationState;
@@ -60,6 +61,7 @@ type UpdateMouseLocationAction = {
     position?: { x: number; y: number } | null;
     tileSize?: number | null;
     gridBounds?: { top: number; left: number; width: number; height: number } | null;
+    isValid?: boolean; // Whether the current placement is valid
   };
 }
 

@@ -48,9 +48,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
   switch (action.type) {
     case "SELECT_SHAPE": {
-      const { shape, shapeIndex } = action.value;
+      const { shape, shapeIndex, initialPosition } = action.value;
 
-      // Calculate hovered block positions if we have a mouse location
+      // Calculate hovered blocks only if we have an initial position
       const hoveredBlockPositions = shape && state.mouseGridLocation
         ? getShapeGridPositions(shape, state.mouseGridLocation)
         : [];
@@ -60,6 +60,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: shape,
         selectedShapeIndex: shapeIndex,
         isShapeDragging: true,
+        mousePosition: initialPosition || state.mousePosition,
         hoveredBlockPositions,
       };
     }

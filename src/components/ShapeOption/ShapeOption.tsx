@@ -48,13 +48,23 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault(); // Prevent default browser behaviors
+    
+    // Capture the pointer to ensure we continue receiving events even if pointer moves outside
+    e.currentTarget.setPointerCapture(e.pointerId);
 
     if (selectedShapeIndex === shapeIndex) {
       // Already selected shape - clicking again triggers return animation
       dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
     } else {
-      // Start drag by selecting this shape
-      dispatch({ type: 'SELECT_SHAPE', value: { shape, shapeIndex } });
+      // Start drag by selecting this shape with initial position
+      dispatch({ 
+        type: 'SELECT_SHAPE', 
+        value: { 
+          shape, 
+          shapeIndex,
+          initialPosition: { x: e.clientX, y: e.clientY }
+        } 
+      });
     }
   }, [dispatch, shape, shapeIndex, selectedShapeIndex]);
 

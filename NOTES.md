@@ -1,6 +1,6 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Clicking and then moving the mouse off the screen is making for wonky state
+- Drag and drop isn't working nor is the mouse
 - action sounds
 - background music
 - score

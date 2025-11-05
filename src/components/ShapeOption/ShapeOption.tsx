@@ -15,6 +15,7 @@ const shapeContainerCss = {
   cursor: 'pointer',
   transition: 'all 0.2s ease',
   touchAction: 'none' as const, // Prevent browser touch gestures during drag
+  boxSizing: 'border-box' as const, // Prevent border from adding width
 };
 
 type ShapeOptionProps = {
@@ -71,7 +72,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   return (
     <div
       ref={containerRef}
-      style={shapeContainerCss}
+      style={{
+        ...shapeContainerCss,
+        border: isSelected ? '2px solid rgba(255, 255, 255, 0.5)' : '2px solid transparent',
+      }}
       onPointerDown={handlePointerDown}
       onPointerEnter={(e) => {
         e.currentTarget.style.transform = 'scale(1.05)';
@@ -90,10 +94,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
               backgroundColor: 'rgba(0, 0, 0, 0.3)',
               borderRadius: '3px',
               position: 'relative',
-              opacity: isSelected ? 0.3 : 1, // Fade out when selected
+              opacity: isSelected ? 0.1 : 1, // 10% opacity when selected
             }}
           >
-            {!isSelected && <BlockVisual block={block} />}
+            <BlockVisual block={block} />
           </div>
         ))
       ))}

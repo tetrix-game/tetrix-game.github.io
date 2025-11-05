@@ -9,7 +9,6 @@
 
 
 - Ideas:
-- Login with Google
 - Progress Board:
   - Shoots and ladders progression
     - Roll the dice, move that number of spaces
@@ -32,11 +31,11 @@
       - Number of colors equals number of 2 factors in index
       - ROYGBP: Red, Orange, Yellow, Green, Blue, Purple
       - Full rainbow every 128 levels
+      - Reward is 10 X 2^n colors, 10, 20, 40, 80, 160, 320, 640
     - 3:
-      - Clear 2^n solid color lines, all of any color available where n is the number of powers of 3
-      - X pts per 3 line clear
-      - Randomly rolls the next 3 line color block requirement
-    - 5: 
+      - Clear 2^n solid 3 wide lines, where n is the number of powers of 3
+      - 10 pts per 3 line clear
+    - 5:
     - 7:
     - 11:
     - 13:
@@ -70,6 +69,24 @@
     - 139:
     - 149:
     - 151:
+
+    - Ideas:
+      - First occurance of a prime gives an explanation of the level type
+      - Modifiiers:
+        - Color: Require all lines to be of a specific color
+      - Perk:
+        - Steak: Bet a portion of points on a successful game
+        - Rewards:
+          - In game consumables:
+            - Shape turns
+            - Board shuffles
+          - Per game uses:
+            - Extra ShapeOption
+            - Turnable shapes unlock
+            - Lock a ShapeOption to one shape
+              - subsequent uses cost more and more
+      
+
   - Challenge types:
     - Clear lines
       - any color
@@ -88,21 +105,4 @@
   - Larger shapes queue (whole game)
 - Points system:
   - Earning points:
-    - Points only awarded to the player after completion of the entire level
-    - Completing all challenges completes the level
-    - Complete multiple challenges at the same time is multiplicative
-      - Points awarded = Prior bonus (default 1) * challenge award
-      - Up to 3 challenges can be completed at the same time, multiplying all the points awarded together
-    - Steak points to add a multiplier to the points
-      - Ex. Steak 100 pts, winning -> 120 pts (20% of the steak), loosing -> 0 pts
   - Spending points:
-    - Playing any level other than level 0 costs points in some way or another
-      - Rolling the dice moves the character up that many levels
-    - Buying any number of replay tickets when the character avatar is ON the level
-    - Buying in-game powerups to make a level easier
-    - Buying challenge slots on a level
-    - Cosmetics:
-      - Choose color progression
-      - Decorate avatar
-      - Pick avatar
-      - Change name

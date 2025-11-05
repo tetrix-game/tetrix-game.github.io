@@ -20,10 +20,10 @@ const BackgroundMusic: React.FC = () => {
   // Monitor for shape placements to detect first user interaction
   useEffect(() => {
     // When a shape completes placement, it means user has interacted
-    if (tetrixState.placementAnimationState === 'none' && 
-        tetrixState.selectedShape === null && 
-        tetrixState.tiles.some(tile => tile.block.isFilled) && 
-        !hasUserInteracted) {
+    if (tetrixState.placementAnimationState === 'none' &&
+      tetrixState.selectedShape === null &&
+      tetrixState.tiles.some(tile => tile.block.isFilled) &&
+      !hasUserInteracted) {
       setHasUserInteracted(true);
       setShouldPlay(true);
     }
@@ -88,13 +88,16 @@ const BackgroundMusic: React.FC = () => {
       >
         <track kind="captions" />
       </audio>
-      <button
-        className={`music-toggle ${isMuted ? 'muted' : 'playing'}`}
-        onClick={toggleMute}
-        title={isMuted ? 'Unmute music' : 'Mute music'}
-      >
-        {isMuted ? '🔇' : '🎵'}
-      </button>
+      <label className="toggle-switch" title={isMuted ? 'Turn on music' : 'Turn off music'}>
+        <input
+          type="checkbox"
+          checked={!isMuted}
+          onChange={toggleMute}
+          className="toggle-input"
+          aria-label={isMuted ? 'Turn on background music' : 'Turn off background music'}
+        />
+        <span className="toggle-slider"></span>
+      </label>
     </div>
   );
 };

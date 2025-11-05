@@ -2,9 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import './BackgroundMusic.css';
 
-const BackgroundMusic: React.FC = () => {
+interface BackgroundMusicProps {
+  isMuted: boolean;
+}
+
+const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isMuted, setIsMuted] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [shouldPlay, setShouldPlay] = useState(false);
@@ -76,10 +79,6 @@ const BackgroundMusic: React.FC = () => {
     }
   }, [isMuted, shouldPlay]);
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
-
   return (
     <div className="background-music">
       <audio
@@ -88,16 +87,6 @@ const BackgroundMusic: React.FC = () => {
       >
         <track kind="captions" />
       </audio>
-      <label className="toggle-switch" title={isMuted ? 'Turn on music' : 'Turn off music'}>
-        <input
-          type="checkbox"
-          checked={!isMuted}
-          onChange={toggleMute}
-          className="toggle-input"
-          aria-label={isMuted ? 'Turn on background music' : 'Turn off background music'}
-        />
-        <span className="toggle-slider"></span>
-      </label>
     </div>
   );
 };

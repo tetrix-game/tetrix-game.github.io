@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import BackgroundMusic from '../BackgroundMusic';
+import { useMusicControl } from '../Header/MusicControlContext';
 import './MenuDropdown.css';
 
 const MenuDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { isMuted, toggleMute } = useMusicControl();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -58,7 +59,16 @@ const MenuDropdown: React.FC = () => {
         <div className="dropdown-overlay">
           <div className="dropdown-content">
             <div className="menu-item">
-              <BackgroundMusic />
+              <label className="toggle-switch" title={isMuted ? 'Turn on music' : 'Turn off music'}>
+                <input
+                  type="checkbox"
+                  checked={!isMuted}
+                  onChange={toggleMute}
+                  className="toggle-input"
+                  aria-label={isMuted ? 'Turn on background music' : 'Turn off background music'}
+                />
+                <span className="toggle-slider"></span>
+              </label>
               <span className="menu-label">Music</span>
             </div>
           </div>

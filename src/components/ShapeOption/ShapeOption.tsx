@@ -89,7 +89,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
     // Apply mobile offset to match DraggingShape visual offset
     const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
-    const adjustedY = e.clientY + MOBILE_TOUCH_OFFSET;
+    const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
     // Calculate grid location from adjusted mouse position
     const location = mousePositionToGridLocation(
@@ -138,7 +138,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
     // Apply mobile offset to match DraggingShape visual offset
     const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
-    const adjustedY = e.clientY + MOBILE_TOUCH_OFFSET;
+    const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
     // Calculate final location from adjusted position
     const location = mousePositionToGridLocation(

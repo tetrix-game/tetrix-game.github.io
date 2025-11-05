@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tetrixReducer, initialState } from '../components/Tetrix/tetrixReducer';
+import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
 import type { Shape } from '../utils/types';
 
 // Helper to create a simple horizontal line shape (3 blocks in a row)

@@ -6,7 +6,7 @@ This is a Tetris-inspired puzzle game built with React, TypeScript, and Vite. Pl
 ## Architecture & State Management
 
 ### Core State Pattern (Reducer-Based)
-- **Central reducer**: `src/components/Tetrix/tetrixReducer.ts` manages all game state
+- **Central reducer**: `src/components/Tetrix/TetrixReducer.ts` manages all game state
 - **Context split**: Separate contexts for state (`TetrixStateContext`) and dispatch (`TetrixDispatchContext`) in `TetrixContext.ts`
 - **Global provider**: `TetrixProvider` wraps the entire app in `Main.tsx` (NOT in `App.tsx`)
 - Always use custom hooks `useTetrixStateContext()` and `useTetrixDispatchContext()` - they enforce provider usage with error checks
@@ -90,7 +90,7 @@ npm run lint         # ESLint check
 
 ### Testing Strategy
 - **Vitest** with `@testing-library/react` and `jsdom`
-- Test reducer actions in `src/test/tetrixReducer.test.ts` - tests state transitions
+- Test reducer actions in `src/test/TetrixReducer.test.ts` - tests state transitions
 - Test files: `bugs.test.tsx`, `hoverEffect.test.tsx` document specific fixes
 - Run tests as you develop - state bugs are common with the reducer pattern
 

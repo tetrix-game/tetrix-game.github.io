@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { initialState, tetrixReducer } from "./tetrixReducer";
+import { initialState, tetrixReducer } from "./TetrixReducer";
 import { TetrixStateContext, TetrixDispatchContext } from "./TetrixContext";
 
 export default function TetrixProvider({ children }: { children: React.ReactNode }) {

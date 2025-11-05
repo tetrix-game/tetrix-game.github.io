@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import './BackgroundMusic.css';
 
 const BackgroundMusic: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [shouldPlay, setShouldPlay] = useState(false);
+  const tetrixState = useTetrixStateContext();
 
   // List of available tracks (using useMemo to prevent recreation on each render)
   const tracks = React.useMemo(() => [
@@ -12,6 +16,18 @@ const BackgroundMusic: React.FC = () => {
     '/bgm/Jazz3_KEY_Ab_in_C.mp3',
     '/bgm/Jazz4_KEY_C_in_C.mp3',
   ], []);
+
+  // Monitor for shape placements to detect first user interaction
+  useEffect(() => {
+    // When a shape completes placement, it means user has interacted
+    if (tetrixState.placementAnimationState === 'none' && 
+        tetrixState.selectedShape === null && 
+        tetrixState.tiles.some(tile => tile.block.isFilled) && 
+        !hasUserInteracted) {
+      setHasUserInteracted(true);
+      setShouldPlay(true);
+    }
+  }, [tetrixState.placementAnimationState, tetrixState.selectedShape, tetrixState.tiles, hasUserInteracted]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -22,12 +38,14 @@ const BackgroundMusic: React.FC = () => {
     audio.loop = false; // We'll handle track changes manually
     audio.volume = 0.3; // Set a reasonable default volume
 
-    // Auto-play the music
+    // Only auto-play the music after user interaction
     const playMusic = async () => {
-      try {
-        await audio.play();
-      } catch (error) {
-        console.log('Auto-play was prevented by browser policy:', error);
+      if (shouldPlay && !isMuted) {
+        try {
+          await audio.play();
+        } catch (error) {
+          console.log('Auto-play was prevented by browser policy:', error);
+        }
       }
     };
 
@@ -43,7 +61,7 @@ const BackgroundMusic: React.FC = () => {
     return () => {
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [currentTrackIndex, tracks]);
+  }, [currentTrackIndex, tracks, shouldPlay, isMuted]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -51,12 +69,12 @@ const BackgroundMusic: React.FC = () => {
 
     if (isMuted) {
       audio.pause();
-    } else {
+    } else if (shouldPlay) {
       audio.play().catch(error => {
         console.log('Play was prevented:', error);
       });
     }
-  }, [isMuted]);
+  }, [isMuted, shouldPlay]);
 
   const toggleMute = () => {
     setIsMuted(!isMuted);

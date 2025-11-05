@@ -51,8 +51,8 @@ export type TetrixReducerState = {
 
 type SelectShapeAction = {
   type: 'SELECT_SHAPE';
-  value: { 
-    shape: Shape; 
+  value: {
+    shape: Shape;
     shapeIndex: number;
     initialPosition?: { x: number; y: number };
   };

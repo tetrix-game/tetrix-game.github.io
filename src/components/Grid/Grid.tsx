@@ -62,7 +62,7 @@ export default function Grid() {
 
   const handlePointerDown = useCallback((e: PointerEvent) => {
     if (!selectedShape || !gridRef.current) return;
-    
+
     // Capture the pointer to ensure continuous tracking
     gridRef.current.setPointerCapture(e.pointerId);
     activePointerIdRef.current = e.pointerId;

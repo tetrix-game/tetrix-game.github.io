@@ -18,6 +18,11 @@ export default function DraggingShape() {
   const dispatch = useTetrixDispatchContext();
   const [animationProgress, setAnimationProgress] = useState(0);
 
+  // Detect if this is a touch device (mobile)
+  const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
+  // Offset shape above finger on mobile (in pixels) - roughly 2-3 shape heights
+  const MOBILE_TOUCH_OFFSET = isTouchDevice && gridTileSize ? gridTileSize * 2.5 : 0;
+
   // Animate position during placement
   useEffect(() => {
     if (placementAnimationState !== 'placing' || !animationStartPosition || !animationTargetPosition) {
@@ -104,7 +109,7 @@ export default function DraggingShape() {
     const shapeAnchorOffsetX = shapeAnchor.col * tileWithGap;
     const shapeAnchorOffsetY = shapeAnchor.row * tileWithGap;
 
-    containerTop = hoveredCellTop - shapeAnchorOffsetY + mouseOffsetY;
+    containerTop = hoveredCellTop - shapeAnchorOffsetY + mouseOffsetY - MOBILE_TOUCH_OFFSET;
     containerLeft = hoveredCellLeft - shapeAnchorOffsetX + mouseOffsetX;
   } else {
     return null;

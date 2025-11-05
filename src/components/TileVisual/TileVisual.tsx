@@ -2,6 +2,7 @@ import './TileVisual.css';
 import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React from 'react';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
   tile: Tile;
@@ -10,6 +11,8 @@ type TileVisualProps = {
 }
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
+  const { isValidPlacement } = useTetrixStateContext();
+
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
     return {
@@ -27,9 +30,12 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
     isFilled: true,
   } : tile.block;
 
+  // Apply 20% opacity if hovering but placement is invalid
+  const shouldDimBlock = isHovered && !isValidPlacement;
+
   return (
     <div style={style(tile.location.row, tile.location.column)}>
-      <BlockVisual block={displayBlock} />
+      <BlockVisual block={displayBlock} opacity={shouldDimBlock ? 0.2 : 1} />
     </div>
   )
 }

@@ -50,18 +50,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     case "SELECT_SHAPE": {
       const { shape, shapeIndex, initialPosition } = action.value;
 
-      // Calculate hovered blocks only if we have an initial position
-      const hoveredBlockPositions = shape && state.mouseGridLocation
-        ? getShapeGridPositions(shape, state.mouseGridLocation)
-        : [];
-
       return {
         ...state,
         selectedShape: shape,
         selectedShapeIndex: shapeIndex,
         isShapeDragging: true,
         mousePosition: initialPosition || state.mousePosition,
-        hoveredBlockPositions,
+        hoveredBlockPositions: [],
       };
     }
 
@@ -85,6 +80,39 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "PLACE_SHAPE": {
+      const { location } = action.value;
+
+      if (!state.selectedShape || state.selectedShapeIndex === null) {
+        return state;
+      }
+
+      // Start placement animation
+      if (!state.mousePosition || !state.gridTileSize || !state.gridBounds) {
+        return state;
+      }
+
+      // Calculate the target position
+      const tileWithGap = state.gridTileSize + 2;
+      const targetCellLeft = state.gridBounds.left + (location.column - 1) * tileWithGap;
+      const targetCellTop = state.gridBounds.top + (location.row - 1) * tileWithGap;
+      const targetCellCenterX = targetCellLeft + state.gridTileSize / 2;
+      const targetCellCenterY = targetCellTop + state.gridTileSize / 2;
+
+      // Get the positions where the shape will be placed
+      const shapePositions = getShapeGridPositions(state.selectedShape, location);
+
+      return {
+        ...state,
+        placementAnimationState: 'placing',
+        animationStartPosition: { ...state.mousePosition },
+        animationTargetPosition: { x: targetCellCenterX, y: targetCellCenterY },
+        mouseGridLocation: location,
+        hoveredBlockPositions: shapePositions,
+        isShapeDragging: false,
+      };
+    }
+
+    case "COMPLETE_PLACEMENT": {
       if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
         return state;
       }
@@ -125,41 +153,24 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Add the new shape to the end of nextShapes
       const updatedNextShapes = [...remainingShapes, newRandomShape];
 
-      // Auto-select the first remaining shape (from the original two)
-      const nextSelectedShape = remainingShapes.length > 0 ? remainingShapes[0] : null;
-      const nextSelectedShapeIndex = remainingShapes.length > 0 ? 0 : null;
-
       return {
         ...state,
         tiles: newTiles,
         nextShapes: updatedNextShapes,
-        selectedShape: nextSelectedShape,
-        selectedShapeIndex: nextSelectedShapeIndex,
+        selectedShape: null,
+        selectedShapeIndex: null,
         mouseGridLocation: null,
         mousePosition: null,
-        isShapeDragging: false, // Don't auto-drag - let user click to start dragging
+        isShapeDragging: false,
         hoveredBlockPositions: [],
+        placementAnimationState: 'none',
+        animationStartPosition: null,
+        animationTargetPosition: null,
       };
     }
 
     case "CLEAR_SELECTION": {
-      // Instead of immediately clearing, trigger return animation
-      if (state.selectedShape && state.selectedShapeIndex !== null && state.mousePosition) {
-        return {
-          ...state,
-          placementAnimationState: 'returning',
-          animationStartPosition: { ...state.mousePosition },
-          animationTargetPosition: state.shapeOptionBounds[state.selectedShapeIndex]
-            ? {
-              x: state.shapeOptionBounds[state.selectedShapeIndex]!.left + state.shapeOptionBounds[state.selectedShapeIndex]!.width / 2,
-              y: state.shapeOptionBounds[state.selectedShapeIndex]!.top + state.shapeOptionBounds[state.selectedShapeIndex]!.height / 2,
-            }
-            : null,
-          isShapeDragging: false,
-        };
-      }
-
-      // If no animation possible, clear immediately
+      // Clear selection immediately (ESC key)
       return {
         ...state,
         selectedShape: null,
@@ -168,6 +179,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mousePosition: null,
         isShapeDragging: false,
         hoveredBlockPositions: [],
+        placementAnimationState: 'none',
+        animationStartPosition: null,
+        animationTargetPosition: null,
       };
     }
 
@@ -176,108 +190,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         nextShapes: shapes,
-      };
-    }
-
-    case "START_PLACEMENT_ANIMATION": {
-      if (!state.selectedShape || !state.mouseGridLocation || !state.mousePosition || !state.gridTileSize || !state.gridBounds) {
-        return state;
-      }
-
-      // Calculate the target position (where the hoveredBlockPositions are)
-      const tileWithGap = state.gridTileSize + 2;
-      const targetCellLeft = state.gridBounds.left + (state.mouseGridLocation.column - 1) * tileWithGap;
-      const targetCellTop = state.gridBounds.top + (state.mouseGridLocation.row - 1) * tileWithGap;
-      const targetCellCenterX = targetCellLeft + state.gridTileSize / 2;
-      const targetCellCenterY = targetCellTop + state.gridTileSize / 2;
-
-      return {
-        ...state,
-        placementAnimationState: 'animating',
-        animationStartPosition: { ...state.mousePosition },
-        animationTargetPosition: { x: targetCellCenterX, y: targetCellCenterY },
-        isShapeDragging: false,
-      };
-    }
-
-    case "COMPLETE_PLACEMENT_ANIMATION": {
-      if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
-        return state;
-      }
-
-      // Keep hoveredBlockPositions and mouseGridLocation for the grow animation
-      // Blocks will be placed on tiles AFTER the grow animation completes
-      return {
-        ...state,
-        placementAnimationState: 'settling',
-        isShapeDragging: false,
-      };
-    }
-
-    case "FINISH_SETTLING_ANIMATION": {
-      if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
-        return state;
-      }
-
-      // Get the positions where the shape would be placed
-      const shapePositions = getShapeGridPositions(state.selectedShape, state.mouseGridLocation);
-
-      // Create a map for quick lookup
-      const positionMap = new Map<string, typeof shapePositions[0]>();
-      for (const pos of shapePositions) {
-        const key = `${pos.location.row},${pos.location.column}`;
-        positionMap.set(key, pos);
-      }
-
-      // Update tiles with the placed shape
-      const newTiles = state.tiles.map(tile => {
-        const key = `${tile.location.row},${tile.location.column}`;
-        const shapePos = positionMap.get(key);
-
-        if (shapePos && !tile.block.isFilled) {
-          return {
-            ...tile,
-            block: shapePos.block
-          };
-        }
-
-        return tile;
-      });
-
-      // Clear completed lines
-      const { tiles: tilesAfterLineClearing } = clearFullLines(newTiles);
-
-      // Remove the placed shape from nextShapes
-      const remainingShapes = state.nextShapes.filter((_, index) => index !== state.selectedShapeIndex);
-
-      // Generate a new random shape to replace the placed one
-      const newRandomShape = generateRandomShape();
-
-      // Add the new shape to maintain 3 shapes
-      const newNextShapes = [...remainingShapes, newRandomShape];
-
-      // Auto-select the first shape if available
-      const nextSelectedShape = newNextShapes.length > 0 ? newNextShapes[0] : null;
-      const nextSelectedShapeIndex = newNextShapes.length > 0 ? 0 : null;
-
-      // Recalculate hoveredBlockPositions for the new selected shape
-      const hoveredBlockPositions = nextSelectedShape && state.mouseGridLocation
-        ? getShapeGridPositions(nextSelectedShape, state.mouseGridLocation)
-        : [];
-
-      return {
-        ...state,
-        tiles: tilesAfterLineClearing,
-        nextShapes: newNextShapes,
-        selectedShape: nextSelectedShape,
-        selectedShapeIndex: nextSelectedShapeIndex,
-        isShapeDragging: false, // Don't auto-drag - let user click to start dragging
-        mouseGridLocation: null,
-        mousePosition: null,
-        hoveredBlockPositions,
-        placementAnimationState: 'none',
-        animationStartPosition: null,
-        animationTargetPosition: null,
       };
     }
 
@@ -292,29 +204,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "RETURN_SHAPE_TO_SELECTOR": {
-      // Start the return animation if we have the necessary data
-      if (state.selectedShape && state.selectedShapeIndex !== null && state.mousePosition) {
-        const targetBounds = state.shapeOptionBounds[state.selectedShapeIndex];
-
-        return {
-          ...state,
-          placementAnimationState: 'returning',
-          animationStartPosition: { ...state.mousePosition },
-          animationTargetPosition: targetBounds
-            ? {
-              x: targetBounds.left + targetBounds.width / 2,
-              y: targetBounds.top + targetBounds.height / 2,
-            }
-            : null,
-          isShapeDragging: false,
-        };
-      }
-
-      return state;
-    }
-
-    case "COMPLETE_RETURN_ANIMATION": {
-      // Shape has returned to selector, clear all selection state
+      // Return shape to selector (invalid placement or drag outside grid)
       return {
         ...state,
         selectedShape: null,
@@ -322,6 +212,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mouseGridLocation: null,
         mousePosition: null,
         isShapeDragging: false,
+        isValidPlacement: false,
         hoveredBlockPositions: [],
         placementAnimationState: 'none',
         animationStartPosition: null,

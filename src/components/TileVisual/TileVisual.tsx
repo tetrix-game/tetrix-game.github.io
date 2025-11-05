@@ -2,7 +2,6 @@ import './TileVisual.css';
 import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React from 'react';
-import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
   tile: Tile;
@@ -11,8 +10,6 @@ type TileVisualProps = {
 }
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
-  const { placementAnimationState } = useTetrixStateContext();
-
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
     return {
@@ -24,21 +21,15 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
     }
   }
 
-  // Show hovered blocks ONLY during settling phase (not during animating)
-  // DraggingShape handles the visual during animating phase
-  // During settling, blocks start at 50% and grow to 100%
-  const shouldShowHoveredBlock = isHovered && hoveredBlock && placementAnimationState === 'settling';
-  const isSettling = placementAnimationState === 'settling';
-
-  // Display hovered block during settling phase, otherwise display actual tile block
-  const displayBlock = shouldShowHoveredBlock ? {
+  // Display hovered block during drag preview, otherwise display actual tile block
+  const displayBlock = (isHovered && hoveredBlock) ? {
     ...hoveredBlock,
     isFilled: true,
   } : tile.block;
 
   return (
     <div style={style(tile.location.row, tile.location.column)}>
-      <BlockVisual block={displayBlock} isHovered={shouldShowHoveredBlock} isSettling={isSettling} />
+      <BlockVisual block={displayBlock} />
     </div>
   )
 }

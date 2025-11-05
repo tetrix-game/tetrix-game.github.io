@@ -21,6 +21,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
       backgroundColor: dark ? "rgb(59, 59, 62)" : "rgb(40, 40, 50)",
       borderRadius: '5px',
       zIndex: 1,
+      position: 'relative' as const,
     }
   }
 

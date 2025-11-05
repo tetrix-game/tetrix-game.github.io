@@ -11,24 +11,26 @@
 .tetrix_header_middle,
 .tetrix_header_end {
   background-color: grey;
-  border: 1px solid rgb(25, 25, 25);
   height: 100%;
 }
 
 .tetrix_header_start {
   flex: 1;
-  text-align: right;
   display: flex;
-  flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 12px;
-  padding: 1rem 1rem;
 }
 
 .tetrix_header_middle {
   flex: 4;
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.tetrix_header_end {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
 }

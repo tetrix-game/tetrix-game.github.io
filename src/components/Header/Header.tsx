@@ -1,4 +1,5 @@
 import MenuDropdown from '../MenuDropdown';
+import LocationButton from '../LocationButton';
 import './Header.css';
 
 const Header = () => {
@@ -6,10 +7,12 @@ const Header = () => {
     <div className="tetrix_header">
       <div className="tetrix_header_start">
         <MenuDropdown />
-        <h2>Today</h2>
       </div>
       <div className="tetrix_header_middle">
-        <h1>tetrix-game</h1>
+        <h1>TETRIX</h1>
+      </div>
+      <div className="tetrix_header_end">
+        <LocationButton />
       </div>
     </div >
   );

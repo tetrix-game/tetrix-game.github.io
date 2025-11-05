@@ -12,19 +12,16 @@
 - Progress Board:
   - Shoots and ladders progression
     - Roll the dice, move that number of spaces
-    - Zones of difficulty
-    - Challenge set: A specific set of challenges for a specific game session
-      - Board sections specify a challenge set
-        - Prime number factorization of the board index decides what challenge set is picked
     - Ladders take the player up
     - Shoots take the player down
-  - Limit the colors
 - Challenges:
-  - Challanges for a level are rolled
-    - Default: Random roll
-    - Upgrade: Roll 3, pick 1
-    - Up to 4 challenge slots availble for purchase
-  - Default challenge: Clear ${index} number of any type of lines
+  - Challanges are rolled
+    - Default: One challenge roll per game, highest prime challenge wins
+    - Upgrades:
+      - Roll 2 pick 1
+      - Roll 3 pick 1
+      - Extra challenge slots 2, 3, and 4.
+  - Default challenge: Clear ${index} number of lines
   - Prime factorization determines additional challenge type:
     - 2:
       - Always the gray color, additional factors of 2 in the index add another
@@ -71,17 +68,30 @@
     - 151:
 
     - Ideas:
+      - Shape placeholder
       - First occurance of a prime gives an explanation of the level type
-      - Modifiiers:
-        - Color: Require all lines to be of a specific color
-      - Perk:
+      - Unlock modifiers at the prime modification level
+      - Shape clearance types:
+        - Clear x number of lines
+        - Clear x number of double line
+        - Clear x number of tripple line
+        - Clear x number of 1x1
+        - Clear x number of 2x1
+        - Clear X number of 3x1
+        - Clear X number of 3X2
+      - Game Instance Modifiers:
+        - Efficiency:
+          - Require a specific ratio of lines cleared to shapes placed
+        - Limitation:
+          - Less powerups:
+            - No turning
+            - No shuffling
+          - Less ShapeOptions (doesn't allow for using powerups)
+          - Clean:
+            - Never more than X number of shapes on the screen
+      - Game Instance Perks:
         - Steak: Bet a portion of points on a successful game
         - Rewards:
-          - In game consumables:
-            - Shape turns
-            - Board shuffles
-          - Per game uses:
-            - Extra ShapeOption
             - Turnable shapes unlock
             - Lock a ShapeOption to one shape
               - subsequent uses cost more and more

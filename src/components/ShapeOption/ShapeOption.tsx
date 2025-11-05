@@ -30,6 +30,9 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Detect if this is a touch device (mobile) - same logic as DraggingShape
+  const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
+
   // Register bounds when component mounts or updates
   useEffect(() => {
     if (containerRef.current) {
@@ -80,17 +83,21 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     const gridElement = document.querySelector('.grid') as HTMLElement;
     if (!gridElement) return;
 
-    // Calculate grid location from mouse position
-    const location = mousePositionToGridLocation(
-      e.clientX,
-      e.clientY,
-      gridElement,
-      { rows: 10, columns: 10 }
-    );
-
     // Calculate grid bounds and tile size
     const gridRect = gridElement.getBoundingClientRect();
     const tileSize = (gridRect.width - 9 * 2) / 10;
+
+    // Apply mobile offset to match DraggingShape visual offset
+    const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
+    const adjustedY = e.clientY + MOBILE_TOUCH_OFFSET;
+
+    // Calculate grid location from adjusted mouse position
+    const location = mousePositionToGridLocation(
+      e.clientX,
+      adjustedY,
+      gridElement,
+      { rows: 10, columns: 10 }
+    );
 
     // Check if placement is valid
     const isValid = location ? isValidPlacement(shape, location, tiles) : false;
@@ -110,7 +117,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         isValid,
       }
     });
-  }, [isDragging, shape, tiles, dispatch]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     if (!isDragging) return;
@@ -125,10 +132,18 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       return;
     }
 
-    // Calculate final location
+    // Calculate grid bounds and tile size
+    const gridRect = gridElement.getBoundingClientRect();
+    const tileSize = (gridRect.width - 9 * 2) / 10;
+
+    // Apply mobile offset to match DraggingShape visual offset
+    const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
+    const adjustedY = e.clientY + MOBILE_TOUCH_OFFSET;
+
+    // Calculate final location from adjusted position
     const location = mousePositionToGridLocation(
       e.clientX,
-      e.clientY,
+      adjustedY,
       gridElement,
       { rows: 10, columns: 10 }
     );
@@ -148,7 +163,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
     // Valid placement - start animation
     dispatch({ type: 'PLACE_SHAPE', value: { location } });
-  }, [isDragging, shape, tiles, dispatch]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice]);
 
   const isSelected = selectedShapeIndex === shapeIndex;
 

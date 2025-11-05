@@ -24,18 +24,36 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
     }
   }
 
-  // Display hovered block during drag preview, otherwise display actual tile block
-  const displayBlock = (isHovered && hoveredBlock) ? {
-    ...hoveredBlock,
-    isFilled: true,
-  } : tile.block;
+  // Always display the actual tile block
+  const displayBlock = tile.block;
 
-  // Apply 20% opacity if hovering but placement is invalid
-  const shouldDimBlock = isHovered && !isValidPlacement;
+  // Show a shadow overlay when hovering
+  const showShadow = isHovered && hoveredBlock;
+
+  // Calculate shadow opacity: 50% for valid placement, 20% for invalid
+  let shadowOpacity = 0;
+  if (showShadow) {
+    shadowOpacity = isValidPlacement ? 0.5 : 0.2;
+  }
 
   return (
     <div style={style(tile.location.row, tile.location.column)}>
-      <BlockVisual block={displayBlock} opacity={shouldDimBlock ? 0.2 : 1} />
+      <BlockVisual block={displayBlock} />
+      {showShadow && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'black',
+            opacity: shadowOpacity,
+            pointerEvents: 'none',
+            borderRadius: '3px',
+          }}
+        />
+      )}
     </div>
   )
 }

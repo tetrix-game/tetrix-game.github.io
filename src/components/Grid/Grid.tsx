@@ -19,7 +19,6 @@ export default function Grid() {
   const { tiles, selectedShape, hoveredBlockPositions, isShapeDragging } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
-  const activePointerIdRef = useRef<number | null>(null);
 
   const handlePointerMove = useCallback((clientX: number, clientY: number) => {
     // Only track pointer movement when actively dragging (not during animation)
@@ -63,10 +62,6 @@ export default function Grid() {
   const handlePointerDown = useCallback((e: PointerEvent) => {
     if (!selectedShape || !gridRef.current) return;
 
-    // Capture the pointer to ensure continuous tracking
-    gridRef.current.setPointerCapture(e.pointerId);
-    activePointerIdRef.current = e.pointerId;
-
     // Immediately update position when pointer goes down on grid
     const location = mousePositionToGridLocation(
       e.clientX,
@@ -96,18 +91,8 @@ export default function Grid() {
     });
   }, [selectedShape, tiles, dispatch]);
 
-  const handlePointerUp = useCallback((clientX: number, clientY: number, pointerId: number) => {
+  const handlePointerUp = useCallback((clientX: number, clientY: number) => {
     if (!selectedShape || !gridRef.current) return;
-
-    // Release pointer capture
-    if (activePointerIdRef.current === pointerId && gridRef.current) {
-      try {
-        gridRef.current.releasePointerCapture(pointerId);
-      } catch {
-        // Ignore if already released
-      }
-      activePointerIdRef.current = null;
-    }
 
     const clickLocation = mousePositionToGridLocation(
       clientX,
@@ -159,7 +144,7 @@ export default function Grid() {
     };
 
     const onPointerUp = (e: PointerEvent) => {
-      handlePointerUp(e.clientX, e.clientY, e.pointerId);
+      handlePointerUp(e.clientX, e.clientY);
     };
 
     grid.addEventListener('pointerdown', onPointerDown);

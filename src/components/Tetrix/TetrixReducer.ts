@@ -137,7 +137,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShapeIndex: nextSelectedShapeIndex,
         mouseGridLocation: null,
         mousePosition: null,
-        isShapeDragging: nextSelectedShape !== null,
+        isShapeDragging: false, // Don't auto-drag - let user click to start dragging
         hoveredBlockPositions: [],
       };
     }
@@ -271,7 +271,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         nextShapes: newNextShapes,
         selectedShape: nextSelectedShape,
         selectedShapeIndex: nextSelectedShapeIndex,
-        isShapeDragging: nextSelectedShape !== null,
+        isShapeDragging: false, // Don't auto-drag - let user click to start dragging
         mouseGridLocation: null,
         mousePosition: null,
         hoveredBlockPositions,

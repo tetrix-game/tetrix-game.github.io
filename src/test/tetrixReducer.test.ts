@@ -71,7 +71,7 @@ describe('TetrixReducer - Bug Fixes', () => {
       // Should select shape2 (first remaining shape after removing shape1)
       expect(newState.selectedShape).toBe(shape2);
       expect(newState.selectedShapeIndex).toBe(0);
-      expect(newState.isShapeDragging).toBe(true);
+      expect(newState.isShapeDragging).toBe(false); // Changed: no longer auto-dragging after placement
       expect(newState.mouseGridLocation).toBeNull();
       // Should have 3 shapes: shape2, shape3, and a new random shape
       expect(newState.nextShapes.length).toBe(3);

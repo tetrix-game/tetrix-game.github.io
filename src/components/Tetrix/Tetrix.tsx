@@ -34,11 +34,13 @@ const Tetrix = () => {
       if (!selectedShape) return;
 
       // Let Grid's pointerUp handle clicks within the grid
-      // This only handles pointerUp outside the grid area
+      // Let ShapeSelector handle clicks within the shape selector
+      // This only handles pointerUp outside both areas
       const target = e.target as HTMLElement;
       const isInsideGrid = target.closest('.grid') !== null;
+      const isInsideSelector = target.closest('.shape-selector') !== null;
 
-      if (!isInsideGrid) {
+      if (!isInsideGrid && !isInsideSelector) {
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
       }
     };

@@ -49,9 +49,6 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault(); // Prevent default browser behaviors
 
-    // Capture the pointer to ensure we continue receiving events even if pointer moves outside
-    e.currentTarget.setPointerCapture(e.pointerId);
-
     if (selectedShapeIndex === shapeIndex) {
       // Already selected shape - clicking again triggers return animation
       dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
@@ -66,6 +63,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         }
       });
     }
+    // Don't capture pointer - let it propagate to Grid for tracking
   }, [dispatch, shape, shapeIndex, selectedShapeIndex]);
 
   const isSelected = selectedShapeIndex === shapeIndex;

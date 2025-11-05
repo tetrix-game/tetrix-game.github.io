@@ -75,7 +75,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 2 }
       };
-      state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Verify blocks were placed
       let row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
@@ -88,7 +88,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 5 }
       };
-      state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
       expect(row5Filled).toBe(6);
@@ -100,7 +100,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 8 }
       };
-      state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
       expect(row5Filled).toBe(9);
@@ -113,7 +113,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 10 }
       };
-      state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Row 5 should now be cleared (all blocks removed)
       row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
@@ -143,7 +143,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           selectedShapeIndex: 0,
           mouseGridLocation: { row, column: 3 }
         };
-        state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
       }
 
       // Should have 9 blocks in column 3
@@ -158,7 +158,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 10, column: 3 }
       };
-      state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Column 3 should now be cleared
       col3Filled = state.tiles.filter(t => t.location.column === 3 && t.block.isFilled).length;
@@ -186,7 +186,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           selectedShapeIndex: 0,
           mouseGridLocation: { row: 5, column: col }
         };
-        state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
       }
 
       // Add the final block to row 5
@@ -197,7 +197,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 10 }
       };
-      state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Row 5 should be cleared now
       const row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
@@ -212,7 +212,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           selectedShapeIndex: 0,
           mouseGridLocation: { row, column: 5 }
         };
-        state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
       }
 
       // Add final block to column 5
@@ -222,7 +222,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 10, column: 5 }
       };
-      state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Column 5 should now be cleared
       const col5Filled = state.tiles.filter(t => t.location.column === 5 && t.block.isFilled).length;
@@ -245,7 +245,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           selectedShapeIndex: 0,
           mouseGridLocation: { row: 5, column: col }
         };
-        state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
       }
 
       // Should have 9 blocks, not cleared
@@ -271,7 +271,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           selectedShapeIndex: 0,
           mouseGridLocation: { row, column: 4 }
         };
-        state = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
       }
 
       // Should have 9 blocks, not cleared

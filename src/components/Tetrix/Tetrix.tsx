@@ -3,29 +3,11 @@ import Grid from '../Grid';
 import ShapeSelector from '../ShapeSelector';
 import DraggingShape from '../DraggingShape';
 import { useTetrixStateContext, useTetrixDispatchContext } from './TetrixContext';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 const Tetrix = () => {
-  const { placementAnimationState, selectedShape } = useTetrixStateContext();
+  const { selectedShape } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
-  const settlingTimeoutRef = useRef<number | null>(null);
-
-  // Handle settling phase timeout (200ms for CSS grow animation)
-  useEffect(() => {
-    if (placementAnimationState === 'settling') {
-      const SETTLING_DURATION = 200;
-
-      settlingTimeoutRef.current = window.setTimeout(() => {
-        dispatch({ type: 'FINISH_SETTLING_ANIMATION' });
-      }, SETTLING_DURATION);
-
-      return () => {
-        if (settlingTimeoutRef.current !== null) {
-          clearTimeout(settlingTimeoutRef.current);
-        }
-      };
-    }
-  }, [placementAnimationState, dispatch]);
 
   // Global pointerUp handler to catch drops outside the grid
   useEffect(() => {

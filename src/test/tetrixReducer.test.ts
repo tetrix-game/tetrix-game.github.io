@@ -54,7 +54,7 @@ describe('TetrixReducer - Bug Fixes', () => {
   });
 
   describe('PLACE_SHAPE action', () => {
-    it('should remove placed shape from nextShapes and select a remaining shape', () => {
+    it('should start placement animation and prepare for shape placement', () => {
       const shape1 = createTestShape();
       const shape2 = createTestShape();
       const shape3 = createTestShape();
@@ -63,23 +63,28 @@ describe('TetrixReducer - Bug Fixes', () => {
         selectedShape: shape1,
         selectedShapeIndex: 0,
         mouseGridLocation: { row: 5, column: 5 },
+        mousePosition: { x: 100, y: 100 },
+        gridTileSize: 20,
+        gridBounds: { top: 50, left: 50, width: 200, height: 200 },
         nextShapes: [shape1, shape2, shape3]
       };
 
-      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      const newState = tetrixReducer(state, {
+        type: 'PLACE_SHAPE',
+        value: { location: { row: 5, column: 5 } }
+      });
 
-      // Should select shape2 (first remaining shape after removing shape1)
-      expect(newState.selectedShape).toBe(shape2);
+      // Should start placement animation
+      expect(newState.placementAnimationState).toBe('placing');
+      expect(newState.isShapeDragging).toBe(false);
+      expect(newState.animationStartPosition).toEqual({ x: 100, y: 100 });
+      expect(newState.animationTargetPosition).toBeDefined();
+      // Should maintain selected shape during animation
+      expect(newState.selectedShape).toBe(shape1);
       expect(newState.selectedShapeIndex).toBe(0);
-      expect(newState.isShapeDragging).toBe(false); // Changed: no longer auto-dragging after placement
-      expect(newState.mouseGridLocation).toBeNull();
-      // Should have 3 shapes: shape2, shape3, and a new random shape
-      expect(newState.nextShapes.length).toBe(3);
-      expect(newState.nextShapes[0]).toBe(shape2);
-      expect(newState.nextShapes[1]).toBe(shape3);
     });
 
-    it('should generate a new shape to maintain 3 available shapes', () => {
+    it('should not affect shapes during placement animation', () => {
       const shape1 = createTestShape();
       const shape2 = createTestShape();
       const shape3 = createTestShape();
@@ -88,56 +93,69 @@ describe('TetrixReducer - Bug Fixes', () => {
         selectedShape: shape2,
         selectedShapeIndex: 1,
         mouseGridLocation: { row: 5, column: 5 },
+        mousePosition: { x: 100, y: 100 },
+        gridTileSize: 20,
+        gridBounds: { top: 50, left: 50, width: 200, height: 200 },
         nextShapes: [shape1, shape2, shape3]
       };
 
-      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      const newState = tetrixReducer(state, {
+        type: 'PLACE_SHAPE',
+        value: { location: { row: 5, column: 5 } }
+      });
 
-      // Should have 3 shapes total (2 original + 1 new random)
+      // Should not modify nextShapes during placement animation
       expect(newState.nextShapes.length).toBe(3);
-      // First shape should still be shape1, second should be shape3, third is new
       expect(newState.nextShapes[0]).toBe(shape1);
-      expect(newState.nextShapes[1]).toBe(shape3);
-      expect(newState.nextShapes[2]).not.toBe(shape1);
-      expect(newState.nextShapes[2]).not.toBe(shape2);
-      expect(newState.nextShapes[2]).not.toBe(shape3);
+      expect(newState.nextShapes[1]).toBe(shape2);
+      expect(newState.nextShapes[2]).toBe(shape3);
     });
 
-    it('should update grid tiles with shape blocks', () => {
+    it('should not update grid during placement animation', () => {
       const testShape = createTestShape();
       const state = {
         ...initialState,
         selectedShape: testShape,
         selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 5 } // Place in middle of grid
+        mouseGridLocation: { row: 5, column: 5 },
+        mousePosition: { x: 100, y: 100 },
+        gridTileSize: 20,
+        gridBounds: { top: 50, left: 50, width: 200, height: 200 }
       };
 
-      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      const newState = tetrixReducer(state, {
+        type: 'PLACE_SHAPE',
+        value: { location: { row: 5, column: 5 } }
+      });
 
-      // Find tiles that should have been filled
-      const filledTiles = newState.tiles.filter(tile => tile.block.isFilled);
-
-      // Should have more filled tiles than initial state (which has one at 6,6)
-      const initialFilledTiles = initialState.tiles.filter(tile => tile.block.isFilled);
-
-      // The test shape has 4 filled blocks, initial state has 1
-      // If placed successfully, we should have at least 5 total (or 4 if one overlaps with existing)
-      expect(filledTiles.length).toBeGreaterThan(initialFilledTiles.length);
+      // Grid should remain unchanged during placement animation
+      expect(newState.tiles).toEqual(initialState.tiles);
     });
 
     it('should not place shape if no shape is selected', () => {
       const state = { ...initialState, mouseGridLocation: { row: 5, column: 5 } };
 
-      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      const newState = tetrixReducer(state, {
+        type: 'PLACE_SHAPE',
+        value: { location: { row: 5, column: 5 } }
+      });
 
       expect(newState).toEqual(state);
     });
 
-    it('should not place shape if no mouse location is set', () => {
+    it('should not place shape if required animation properties are missing', () => {
       const testShape = createTestShape();
-      const state = { ...initialState, selectedShape: testShape, selectedShapeIndex: 0 };
+      const state = {
+        ...initialState,
+        selectedShape: testShape,
+        selectedShapeIndex: 0,
+        // Missing mousePosition, gridTileSize, gridBounds
+      };
 
-      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      const newState = tetrixReducer(state, {
+        type: 'PLACE_SHAPE',
+        value: { location: { row: 5, column: 5 } }
+      });
 
       expect(newState).toEqual(state);
     });
@@ -151,7 +169,74 @@ describe('TetrixReducer - Bug Fixes', () => {
         mouseGridLocation: { row: 5, column: 5 }
       };
 
-      const newState = tetrixReducer(state, { type: 'PLACE_SHAPE' });
+      const newState = tetrixReducer(state, {
+        type: 'PLACE_SHAPE',
+        value: { location: { row: 5, column: 5 } }
+      });
+
+      expect(newState).toEqual(state);
+    });
+  });
+
+  describe('COMPLETE_PLACEMENT action', () => {
+    it('should remove placed shape from nextShapes and generate new shape', () => {
+      const shape1 = createTestShape();
+      const shape2 = createTestShape();
+      const shape3 = createTestShape();
+      const state = {
+        ...initialState,
+        selectedShape: shape1,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 5 },
+        nextShapes: [shape1, shape2, shape3]
+      };
+
+      const newState = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Should clear selection
+      expect(newState.selectedShape).toBeNull();
+      expect(newState.selectedShapeIndex).toBeNull();
+      expect(newState.isShapeDragging).toBe(false);
+      expect(newState.mouseGridLocation).toBeNull();
+      // Should have 3 shapes: shape2, shape3, and a new random shape
+      expect(newState.nextShapes.length).toBe(3);
+      expect(newState.nextShapes[0]).toBe(shape2);
+      expect(newState.nextShapes[1]).toBe(shape3);
+      expect(newState.nextShapes[2]).not.toBe(shape1);
+    });
+
+    it('should update grid tiles with shape blocks', () => {
+      const testShape = createTestShape();
+      const state = {
+        ...initialState,
+        selectedShape: testShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 5 }
+      };
+
+      const newState = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Find tiles that should have been filled
+      const filledTiles = newState.tiles.filter(tile => tile.block.isFilled);
+      const initialFilledTiles = initialState.tiles.filter(tile => tile.block.isFilled);
+
+      // Should have more filled tiles than initial state
+      expect(filledTiles.length).toBeGreaterThan(initialFilledTiles.length);
+    });
+
+    it('should not place shape if no shape is selected', () => {
+      const state = { ...initialState, mouseGridLocation: { row: 5, column: 5 } };
+
+      const newState = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      expect(newState).toEqual(state);
+    });
+
+    it('should not place shape if no mouse location is set', () => {
+      const testShape = createTestShape();
+      const state = { ...initialState, selectedShape: testShape, selectedShapeIndex: 0 };
+
+      const newState = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       expect(newState).toEqual(state);
     });

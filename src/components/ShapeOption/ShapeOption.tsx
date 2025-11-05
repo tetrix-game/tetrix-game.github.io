@@ -91,13 +91,34 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
     const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
-    // Calculate grid location from adjusted mouse position
-    const location = mousePositionToGridLocation(
-      e.clientX,
-      adjustedY,
-      gridElement,
-      { rows: 10, columns: 10 }
-    );
+    // For touch devices, extend the grid bounds downward to allow placement
+    // when thumb is below the grid but adjusted position is within
+    const extendedBottom = gridRect.bottom + MOBILE_TOUCH_OFFSET;
+
+    // Manual boundary check with extended bottom boundary
+    let location: ReturnType<typeof mousePositionToGridLocation> = null;
+    
+    if (
+      e.clientX >= gridRect.left &&
+      e.clientX <= gridRect.right &&
+      adjustedY >= gridRect.top &&
+      adjustedY <= gridRect.bottom &&
+      e.clientY <= extendedBottom  // Allow thumb to be below grid
+    ) {
+      const relativeX = e.clientX - gridRect.left;
+      const relativeY = adjustedY - gridRect.top;
+      
+      const cellWidth = gridRect.width / 10;
+      const cellHeight = gridRect.height / 10;
+      
+      const column = Math.floor(relativeX / cellWidth) + 1;
+      const row = Math.floor(relativeY / cellHeight) + 1;
+      
+      // Ensure within bounds
+      if (row >= 1 && row <= 10 && column >= 1 && column <= 10) {
+        location = { row, column };
+      }
+    }
 
     // Check if placement is valid
     const isValid = location ? isValidPlacement(shape, location, tiles) : false;
@@ -140,13 +161,34 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
     const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
-    // Calculate final location from adjusted position
-    const location = mousePositionToGridLocation(
-      e.clientX,
-      adjustedY,
-      gridElement,
-      { rows: 10, columns: 10 }
-    );
+    // For touch devices, extend the grid bounds downward to allow placement
+    // when thumb is below the grid but adjusted position is within
+    const extendedBottom = gridRect.bottom + MOBILE_TOUCH_OFFSET;
+
+    // Manual boundary check with extended bottom boundary
+    let location: ReturnType<typeof mousePositionToGridLocation> = null;
+    
+    if (
+      e.clientX >= gridRect.left &&
+      e.clientX <= gridRect.right &&
+      adjustedY >= gridRect.top &&
+      adjustedY <= gridRect.bottom &&
+      e.clientY <= extendedBottom  // Allow thumb to be below grid
+    ) {
+      const relativeX = e.clientX - gridRect.left;
+      const relativeY = adjustedY - gridRect.top;
+      
+      const cellWidth = gridRect.width / 10;
+      const cellHeight = gridRect.height / 10;
+      
+      const column = Math.floor(relativeX / cellWidth) + 1;
+      const row = Math.floor(relativeY / cellHeight) + 1;
+      
+      // Ensure within bounds
+      if (row >= 1 && row <= 10 && column >= 1 && column <= 10) {
+        location = { row, column };
+      }
+    }
 
     if (!location) {
       // Pointer up outside grid - return shape

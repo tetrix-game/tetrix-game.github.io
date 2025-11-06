@@ -1,4 +1,4 @@
-import type { 
+import type {
   GamePersistenceData,
   ScorePersistenceData,
   TilesPersistenceData,
@@ -417,7 +417,7 @@ export async function loadCompleteGameState(): Promise<GamePersistenceData | nul
     const legacyData = await loadGameState();
     if (legacyData?.tiles?.length === 100) {
       console.log('Loaded game state from legacy store');
-      
+
       // Migrate legacy data to granular stores for future use
       safeBatchSave(
         legacyData.score,
@@ -479,10 +479,10 @@ export async function clearAllSavedData(): Promise<void> {
 
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([
-        GAME_STATE_STORE, 
-        SCORE_STORE, 
-        TILES_STORE, 
-        SHAPES_STORE, 
+        GAME_STATE_STORE,
+        SCORE_STORE,
+        TILES_STORE,
+        SHAPES_STORE,
         SETTINGS_STORE
       ], 'readwrite');
 

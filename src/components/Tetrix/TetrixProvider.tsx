@@ -12,7 +12,7 @@ export default function TetrixProvider({ children }: { readonly children: React.
       try {
         console.log('TetrixProvider: Attempting to load saved game state...');
         const gameData = await loadCompleteGameState();
-        
+
         // Only load if we have valid tile data (100 tiles for 10x10 grid)
         if (gameData?.tiles.length === 100) {
           console.log('TetrixProvider: Found valid saved game state, restoring...', {

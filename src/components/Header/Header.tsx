@@ -38,7 +38,7 @@ const Header = () => {
   const toggleMute = useCallback(() => {
     const newMutedState = !isMuted;
     setIsMuted(newMutedState);
-    
+
     // Save to IndexedDB (primary storage)
     saveMusicSettings(newMutedState).catch((error: Error) => {
       console.error('Failed to save music settings to IndexedDB:', error);

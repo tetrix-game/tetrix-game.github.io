@@ -30,6 +30,10 @@ describe('Rant Progression System', () => {
       }
     };
 
+    // Verify the config structure
+    expect(mapRantConfig.CandyCrushMapRant.rant).toHaveLength(9);
+    expect(mapRantConfig.CandyCrushMapRant.PostCrashRant.rant).toHaveLength(2);
+
     // Simulate the localStorage states
     expect(localStorage.getItem('CandyCrushMapRant')).toBe(null);
     expect(localStorage.getItem('CandyCrushMapRant_count')).toBe(null);
@@ -48,10 +52,10 @@ describe('Rant Progression System', () => {
       'CandyCrushMapRant.PostCrashRant'
     ];
 
-    expectedFlags.forEach(flag => {
+    for (const flag of expectedFlags) {
       expect(typeof flag).toBe('string');
       expect(flag.includes('.')).toBe(flag !== 'CandyCrushMapRant');
-    });
+    }
   });
 
   it('should handle the extensible configuration pattern', () => {

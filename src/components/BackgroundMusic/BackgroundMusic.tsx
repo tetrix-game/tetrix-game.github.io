@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { saveMusicState, loadMusicState, saveGameState } from '../../utils/persistenceUtils';
 import './BackgroundMusic.css';
 
 interface BackgroundMusicProps {
@@ -11,6 +12,7 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [shouldPlay, setShouldPlay] = useState(false);
+  const [musicStateLoaded, setMusicStateLoaded] = useState(false);
   const tetrixState = useTetrixStateContext();
 
   // List of available tracks (using useMemo to prevent recreation on each render)
@@ -19,6 +21,52 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
     '/bgm/Jazz3_KEY_Ab_in_C.mp3',
     '/bgm/Jazz4_KEY_C_in_C.mp3',
   ], []);
+
+  // Load music state on component mount
+  useEffect(() => {
+    const loadSavedMusicState = async () => {
+      try {
+        const musicState = await loadMusicState();
+        if (musicState) {
+          setCurrentTrackIndex(musicState.currentTrack);
+          setHasUserInteracted(musicState.hasUserInteracted);
+          if (musicState.hasUserInteracted) {
+            setShouldPlay(true);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load music state:', error);
+      } finally {
+        setMusicStateLoaded(true);
+      }
+    };
+
+    loadSavedMusicState();
+  }, []);
+
+  // Save music state when track changes
+  useEffect(() => {
+    if (musicStateLoaded) {
+      saveMusicState({
+        currentTrack: currentTrackIndex,
+        isMuted,
+        hasUserInteracted,
+      }).catch(error => {
+        console.error('Failed to save music state:', error);
+      });
+
+      // Also update the game state with current music track
+      saveGameState({
+        score: tetrixState.score,
+        tiles: tetrixState.tiles,
+        currentMusicTrack: currentTrackIndex,
+        nextShapes: tetrixState.nextShapes,
+        savedShape: tetrixState.savedShape,
+      }).catch(error => {
+        console.error('Failed to save game state with music:', error);
+      });
+    }
+  }, [currentTrackIndex, isMuted, hasUserInteracted, musicStateLoaded, tetrixState.score, tetrixState.tiles, tetrixState.nextShapes, tetrixState.savedShape]);
 
   // Monitor for shape placements to detect first user interaction
   useEffect(() => {

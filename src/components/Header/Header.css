@@ -19,6 +19,8 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  gap: 1rem;
+  padding-left: 1rem;
 }
 
 .tetrix_header_middle {
@@ -33,4 +35,6 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 1rem;
+  padding-right: 1rem;
 }

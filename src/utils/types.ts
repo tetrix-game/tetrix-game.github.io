@@ -27,6 +27,22 @@ export type ShapeOptionBounds = {
   height: number;
 };
 
+// Scoring system types
+export type ScoreData = {
+  rowsCleared: number;
+  columnsCleared: number;
+  pointsEarned: number;
+};
+
+// Game persistence data
+export type GamePersistenceData = {
+  score: number;
+  tiles: Tile[];
+  currentMusicTrack: number;
+  nextShapes: Shape[];
+  savedShape: Shape | null;
+};
+
 // Reducer types
 export type TetrixReducerState = {
   tiles: Tile[];
@@ -47,6 +63,8 @@ export type TetrixReducerState = {
   animationTargetPosition: { x: number; y: number } | null;
   // Bounds of each shape option for return animation
   shapeOptionBounds: (ShapeOptionBounds | null)[];
+  // Scoring system
+  score: number;
 }
 
 type SelectShapeAction = {
@@ -98,6 +116,20 @@ type ReturnShapeToSelectorAction = {
   type: 'RETURN_SHAPE_TO_SELECTOR';
 }
 
+type AddScoreAction = {
+  type: 'ADD_SCORE';
+  value: { scoreData: ScoreData };
+}
+
+type LoadGameStateAction = {
+  type: 'LOAD_GAME_STATE';
+  value: { gameData: GamePersistenceData };
+}
+
+type ResetGameAction = {
+  type: 'RESET_GAME';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -106,6 +138,9 @@ export type TetrixAction =
   | ClearSelectionAction
   | SetAvailableShapesAction
   | SetShapeOptionBoundsAction
-  | ReturnShapeToSelectorAction;
+  | ReturnShapeToSelectorAction
+  | AddScoreAction
+  | LoadGameStateAction
+  | ResetGameAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

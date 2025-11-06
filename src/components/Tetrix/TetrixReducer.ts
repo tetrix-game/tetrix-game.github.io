@@ -2,6 +2,8 @@ import type { TetrixAction, Tile } from '../../utils/types';
 import { TetrixReducerState } from '../../utils/types';
 import { getShapeGridPositions, generateRandomShape } from '../../utils/shapeUtils';
 import { clearFullLines } from '../../utils/lineUtils';
+import { calculateScore } from '../../utils/scoringUtils';
+import { saveGameState } from '../../utils/persistenceUtils';
 
 const emptyColor = {
   lightest: '#000000',
@@ -42,6 +44,7 @@ export const initialState: TetrixReducerState = {
   animationStartPosition: null,
   animationTargetPosition: null,
   shapeOptionBounds: [null, null, null],
+  score: 0,
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -142,7 +145,11 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       });
 
       // Check for and clear full lines
-      const { tiles: newTiles } = clearFullLines(tilesWithShape);
+      const { tiles: newTiles, clearedRows, clearedColumns } = clearFullLines(tilesWithShape);
+
+      // Calculate score for lines cleared
+      const scoreData = calculateScore(clearedRows.length, clearedColumns.length);
+      const newScore = state.score + scoreData.pointsEarned;
 
       // Remove the placed shape from nextShapes
       const remainingShapes = state.nextShapes.filter((_, index) => index !== state.selectedShapeIndex);
@@ -153,7 +160,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Add the new shape to the end of nextShapes
       const updatedNextShapes = [...remainingShapes, newRandomShape];
 
-      return {
+      const newState = {
         ...state,
         tiles: newTiles,
         nextShapes: updatedNextShapes,
@@ -163,10 +170,26 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mousePosition: null,
         isShapeDragging: false,
         hoveredBlockPositions: [],
-        placementAnimationState: 'none',
+        placementAnimationState: 'none' as const,
         animationStartPosition: null,
         animationTargetPosition: null,
+        score: newScore,
       };
+
+      // Save game state to browser DB asynchronously (don't block UI)
+      if (scoreData.pointsEarned > 0 || newTiles.some(tile => tile.block.isFilled)) {
+        saveGameState({
+          score: newScore,
+          tiles: newTiles,
+          currentMusicTrack: 0, // Will be updated by music component
+          nextShapes: updatedNextShapes,
+          savedShape: newState.savedShape,
+        }).catch(error => {
+          console.error('Failed to save game state:', error);
+        });
+      }
+
+      return newState;
     }
 
     case "CLEAR_SELECTION": {
@@ -187,10 +210,23 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "SET_AVAILABLE_SHAPES": {
       const { shapes } = action.value;
-      return {
+      const newState = {
         ...state,
         nextShapes: shapes,
       };
+
+      // Save shapes to database when they are updated
+      saveGameState({
+        score: newState.score,
+        tiles: newState.tiles,
+        currentMusicTrack: 0, // Will be updated by music component
+        nextShapes: shapes,
+        savedShape: newState.savedShape,
+      }).catch(error => {
+        console.error('Failed to save shapes state:', error);
+      });
+
+      return newState;
     }
 
     case "SET_SHAPE_OPTION_BOUNDS": {
@@ -214,9 +250,47 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         isShapeDragging: false,
         isValidPlacement: false,
         hoveredBlockPositions: [],
-        placementAnimationState: 'none',
+        placementAnimationState: 'none' as const,
         animationStartPosition: null,
         animationTargetPosition: null,
+      };
+    }
+
+    case "ADD_SCORE": {
+      const { scoreData } = action.value;
+      const newScore = state.score + scoreData.pointsEarned;
+
+      // Save updated score
+      saveGameState({
+        score: newScore,
+        tiles: state.tiles,
+        currentMusicTrack: 0, // Will be updated by music component
+        nextShapes: state.nextShapes,
+        savedShape: state.savedShape,
+      }).catch(error => {
+        console.error('Failed to save score:', error);
+      });
+
+      return {
+        ...state,
+        score: newScore,
+      };
+    }
+
+    case "LOAD_GAME_STATE": {
+      const { gameData } = action.value;
+      return {
+        ...state,
+        score: gameData.score,
+        tiles: gameData.tiles,
+        nextShapes: gameData.nextShapes || state.nextShapes,
+        savedShape: gameData.savedShape || state.savedShape,
+      };
+    }
+
+    case "RESET_GAME": {
+      return {
+        ...initialState,
       };
     }
   }

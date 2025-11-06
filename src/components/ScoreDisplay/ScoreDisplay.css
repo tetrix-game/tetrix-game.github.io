@@ -1,0 +1,37 @@
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 2px solid #333;
+}
+
+.score-label {
+  font-weight: bold;
+  color: #cccccc;
+}
+
+.score-value {
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 0 0 4px rgba(0, 255, 136, 0.5);
+  min-width: 4rem;
+  text-align: right;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .score-display {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .score-value {
+    min-width: 3rem;
+  }
+}

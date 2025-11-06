@@ -1,6 +1,7 @@
 import Header from './components/Header';
 import Tetrix from './components/Tetrix';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
+import ScoreNotification from './components/ScoreNotification';
 import './App.css';
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
       <Header />
       <Tetrix />
       <FullScreenFloatingActionButton />
+      <ScoreNotification />
     </div>
   )
 }

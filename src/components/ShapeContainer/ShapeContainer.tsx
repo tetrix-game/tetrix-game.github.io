@@ -14,16 +14,17 @@ const containerWrapperCss = {
 type ShapeContainerProps = {
   shape: Shape;
   shapeIndex: number;
+  isVirtual?: boolean;
 };
 
-const ShapeContainer = ({ shape, shapeIndex }: ShapeContainerProps) => {
+const ShapeContainer = ({ shape, shapeIndex, isVirtual = false }: ShapeContainerProps) => {
   const { openRotationMenus, removingShapeIndex, shapesSliding } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const isRotationMenuOpen = openRotationMenus[shapeIndex] || false;
   const isRemoving = removingShapeIndex === shapeIndex;
   const isSliding = shapesSliding && shapeIndex > (removingShapeIndex || -1);
 
-  console.log(`ShapeContainer ${shapeIndex}: removing=${isRemoving}, sliding=${isSliding}, removingIndex=${removingShapeIndex}`);
+  console.log(`ShapeContainer ${shapeIndex}: removing=${isRemoving}, sliding=${isSliding}, removingIndex=${removingShapeIndex}, virtual=${isVirtual}`);
 
   // Handle animation completion
   useEffect(() => {
@@ -37,7 +38,7 @@ const ShapeContainer = ({ shape, shapeIndex }: ShapeContainerProps) => {
 
   return (
     <div
-      className={`shape-container ${isRemoving ? 'removing' : ''} ${isSliding ? 'sliding-up' : ''}`}
+      className={`shape-container ${isRemoving ? 'removing' : ''} ${isSliding ? 'sliding-up' : ''} ${isVirtual ? 'virtual' : ''}`}
       style={containerWrapperCss}
     >
       <ShapeOption shape={shape} shapeIndex={shapeIndex} />

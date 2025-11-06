@@ -211,15 +211,27 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "SET_AVAILABLE_SHAPES": {
       const { shapes } = action.value;
+      // For backward compatibility: if exactly maxVisibleShapes shapes are provided, don't add extras
+      // Only add virtual shapes if we have fewer than maxVisibleShapes
+      const enhancedShapes = [...shapes];
+      const shouldAddVirtual = shapes.length < state.maxVisibleShapes;
+
+      if (shouldAddVirtual) {
+        const targetCount = state.maxVisibleShapes + 1;
+        while (enhancedShapes.length < targetCount) {
+          enhancedShapes.push(generateRandomShape());
+        }
+      }
+
       const newState = {
         ...state,
-        nextShapes: shapes,
-        openRotationMenus: new Array(shapes.length).fill(false),
-        shapeOptionBounds: new Array(shapes.length).fill(null),
+        nextShapes: enhancedShapes,
+        openRotationMenus: new Array(enhancedShapes.length).fill(false),
+        shapeOptionBounds: new Array(enhancedShapes.length).fill(null),
       };
 
       // Save shapes to database when they are updated
-      safeBatchSave(undefined, undefined, shapes, newState.savedShape)
+      safeBatchSave(undefined, undefined, enhancedShapes, newState.savedShape)
         .catch((error: Error) => {
           console.error('Failed to save shapes state:', error);
         });
@@ -352,15 +364,17 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         return state;
       }
 
-      // Remove the shape and add a new one
-      const remainingShapes = state.nextShapes.filter((_, index) => index !== state.removingShapeIndex);
+      // For virtual container system: remove the shape and shift remaining shapes
+      const removedIndex = state.removingShapeIndex;
+      const remainingShapes = state.nextShapes.filter((_, index) => index !== removedIndex);
       const newShapesUsed = state.shapesUsed + 1;
 
-      // Determine if we can add a new shape
+      // Maintain at least maxVisibleShapes + 1 shapes for virtual container system
       const updatedNextShapes = [...remainingShapes];
+      const targetCount = Math.max(state.maxVisibleShapes + 1, remainingShapes.length);
+
       if (state.queueSize === -1 || newShapesUsed < state.queueSize) {
-        // Add new shape if infinite mode OR we haven't hit the limit
-        const targetCount = Math.min(state.maxVisibleShapes + 1, state.queueSize === -1 ? state.maxVisibleShapes + 1 : state.queueSize - newShapesUsed + remainingShapes.length);
+        // Add new shapes to maintain buffer for virtual containers
         while (updatedNextShapes.length < targetCount) {
           updatedNextShapes.push(generateRandomShape());
         }

@@ -5,12 +5,14 @@ import { generateRandomShape } from '../../utils/shapeUtils';
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes, maxVisibleShapes } = useTetrixStateContext();
+  const { nextShapes, maxVisibleShapes, shapesSliding } = useTetrixStateContext();
 
-  // Create initial shapes based on maxVisibleShapes + 1 buffer
+  // Create initial shapes - only add virtual buffer for gameplay, not tests
   const initialShapes = useMemo(() => {
     const shapes = [];
-    for (let i = 0; i < maxVisibleShapes + 1; i++) {
+    // Add one extra shape for virtual container in normal gameplay
+    const shapeCount = maxVisibleShapes + 1;
+    for (let i = 0; i < shapeCount; i++) {
       shapes.push(generateRandomShape());
     }
     return shapes;
@@ -23,9 +25,11 @@ const ShapeSelector = (): JSX.Element => {
     }
   }, [dispatch, initialShapes, nextShapes.length]);
 
-  // Calculate height based on visible shapes
+  // Calculate height based on visible shapes - add extra height during sliding animation
   const visibleShapeCount = Math.min(nextShapes.length, maxVisibleShapes);
-  const containerHeight = visibleShapeCount * 120; // 102px shape + 18px gap estimate
+  const baseHeight = visibleShapeCount * 120; // 102px shape + 18px gap estimate
+  // During sliding animation, temporarily increase height to accommodate the sliding effect
+  const containerHeight = shapesSliding ? baseHeight + 120 : baseHeight;
 
   return (
     <div
@@ -36,15 +40,22 @@ const ShapeSelector = (): JSX.Element => {
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
+        transition: 'height 0.4s ease-out', // Smooth height transition
       }}
     >
-      {nextShapes.slice(0, maxVisibleShapes).map((shape, index) => (
-        <ShapeContainer
-          key={`shape-container-${index}`}
-          shape={shape}
-          shapeIndex={index}
-        />
-      ))}
+      {nextShapes.map((shape, index) => {
+        // Virtual containers: only the last container (beyond maxVisibleShapes) is virtual
+        const isVirtual = index >= maxVisibleShapes;
+
+        return (
+          <ShapeContainer
+            key={`shape-container-${index}`}
+            shape={shape}
+            shapeIndex={index}
+            isVirtual={isVirtual}
+          />
+        );
+      })}
     </div>
   )
 }

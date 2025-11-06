@@ -7,6 +7,17 @@
   /* Ensure consistent height for transition */
 }
 
+.shape-container.virtual {
+  /* Virtual containers maintain their full height and opacity */
+  /* They are hidden by parent container clipping, not opacity */
+  height: auto;
+  min-height: 110px;
+  opacity: 1;
+  visibility: visible;
+  /* Enable transition for smooth sliding */
+  transition: transform 0.4s ease-out;
+}
+
 .shape-container.removing {
   height: 0 !important;
   min-height: 0 !important;

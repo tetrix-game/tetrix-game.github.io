@@ -77,7 +77,8 @@ export type TetrixReducerState = {
   selectedShape: Shape | null;
   selectedShapeIndex: number | null;
   mouseGridLocation: Location | null;
-  mousePosition: { x: number; y: number } | null;
+  mousePosition: { x: number; y: number }; // Never null - always has a position
+  showerLocation: { x: number; y: number }; // Dedicated location for coin shower emission
   gridTileSize: number | null;
   gridBounds: { top: number; left: number; width: number; height: number } | null;
   isShapeDragging: boolean;
@@ -117,6 +118,7 @@ type PlaceShapeAction = {
   type: 'PLACE_SHAPE';
   value: {
     location: Location;
+    mousePosition?: { x: number; y: number };
   };
 }
 
@@ -144,7 +146,10 @@ type ReturnShapeToSelectorAction = {
 
 type AddScoreAction = {
   type: 'ADD_SCORE';
-  value: { scoreData: ScoreData };
+  value: {
+    scoreData: ScoreData;
+    mousePosition?: { x: number; y: number };
+  };
 }
 
 type LoadGameStateAction = {

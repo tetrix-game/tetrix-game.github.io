@@ -34,7 +34,8 @@ export const initialState: TetrixReducerState = {
   selectedShape: null,
   selectedShapeIndex: null,
   mouseGridLocation: null,
-  mousePosition: null,
+  mousePosition: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, // Default to center instead of null
+  showerLocation: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, // Default coin shower location
   gridTileSize: null,
   gridBounds: null,
   isShapeDragging: false,
@@ -74,7 +75,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         mouseGridLocation: location,
-        mousePosition: position ?? state.mousePosition ?? null,
+        mousePosition: position ?? state.mousePosition ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 },
         gridTileSize: tileSize ?? state.gridTileSize ?? null,
         gridBounds: gridBounds ?? state.gridBounds ?? null,
         isValidPlacement: isValid ?? false,
@@ -83,14 +84,20 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "PLACE_SHAPE": {
-      const { location } = action.value;
+      const { location, mousePosition: clickPosition } = action.value;
 
       if (!state.selectedShape || state.selectedShapeIndex === null) {
         return state;
       }
 
       // Start placement animation
-      if (!state.mousePosition || !state.gridTileSize || !state.gridBounds) {
+      if (!state.gridTileSize || !state.gridBounds) {
+        return state;
+      }
+
+      // Use the click position if provided, otherwise fall back to current mouse position
+      const useMousePosition = clickPosition || state.mousePosition;
+      if (!useMousePosition) {
         return state;
       }
 
@@ -107,9 +114,11 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         placementAnimationState: 'placing',
-        animationStartPosition: { ...state.mousePosition },
+        animationStartPosition: { ...useMousePosition },
         animationTargetPosition: { x: targetCellCenterX, y: targetCellCenterY },
         mouseGridLocation: location,
+        mousePosition: useMousePosition, // Update current mouse position with click position
+        showerLocation: useMousePosition, // Set dedicated shower location for coin emission
         hoveredBlockPositions: shapePositions,
         isShapeDragging: false,
       };
@@ -167,7 +176,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: null,
         selectedShapeIndex: null,
         mouseGridLocation: null,
-        mousePosition: null,
+        mousePosition: state.mousePosition, // Keep current mouse position instead of clearing
         isShapeDragging: false,
         hoveredBlockPositions: [],
         placementAnimationState: 'none' as const,
@@ -194,7 +203,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: null,
         selectedShapeIndex: null,
         mouseGridLocation: null,
-        mousePosition: null,
+        mousePosition: state.mousePosition, // Keep current mouse position
         isShapeDragging: false,
         hoveredBlockPositions: [],
         placementAnimationState: 'none',
@@ -236,7 +245,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         selectedShape: null,
         selectedShapeIndex: null,
         mouseGridLocation: null,
-        mousePosition: null,
+        mousePosition: state.mousePosition, // Keep current mouse position
         isShapeDragging: false,
         isValidPlacement: false,
         hoveredBlockPositions: [],
@@ -247,7 +256,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "ADD_SCORE": {
-      const { scoreData } = action.value;
+      const { scoreData, mousePosition: clickPosition } = action.value;
       const newScore = state.score + scoreData.pointsEarned;
 
       // Save updated score
@@ -259,6 +268,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         score: newScore,
+        mousePosition: clickPosition || state.mousePosition, // Update mouse position if provided
+        showerLocation: clickPosition || state.showerLocation, // Update shower location if provided (for debug injection)
       };
     }
 

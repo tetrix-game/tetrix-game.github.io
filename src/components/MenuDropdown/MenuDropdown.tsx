@@ -27,8 +27,8 @@ const MenuDropdown: React.FC = () => {
   };
 
   // Test notification function for debugging - opens prompt for custom currency amount
-  const testNotification = () => {
-    const input = globalThis.prompt('Enter amount of currency to add:', '100');
+  const testNotification = (e: React.MouseEvent) => {
+    const input = globalThis.prompt('Enter amount of points to inject (try 100, 1000, or 999999):', '100');
 
     // Check if user cancelled the prompt
     if (input === null) {
@@ -42,8 +42,13 @@ const MenuDropdown: React.FC = () => {
       return;
     }
 
+    console.log('💰 Injecting', amount, 'points - this will trigger the coin shower!');
+
+    // Capture the click position for coin emission
+    const clickPosition = { x: e.clientX, y: e.clientY };
+
     // Dispatch ADD_SCORE action to update the score
-    // This will trigger the score notification animation automatically
+    // This will trigger the coin shower animation automatically
     dispatch({
       type: 'ADD_SCORE',
       value: {
@@ -51,7 +56,8 @@ const MenuDropdown: React.FC = () => {
           rowsCleared: 0,
           columnsCleared: 0,
           pointsEarned: amount
-        }
+        },
+        mousePosition: clickPosition
       }
     });
   };
@@ -157,9 +163,9 @@ const MenuDropdown: React.FC = () => {
                   <button
                     className="debug-action-button"
                     onClick={testNotification}
-                    title="Test score notification animation"
+                    title="Inject points to test the new coin shower system! Try 100, 1000, or 999999 points."
                   >
-                    Test Notification
+                    Inject Points
                   </button>
                 </div>
               </div>

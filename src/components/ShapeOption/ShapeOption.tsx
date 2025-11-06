@@ -97,7 +97,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
     // Manual boundary check with extended bottom boundary
     let location: ReturnType<typeof mousePositionToGridLocation> = null;
-    
+
     if (
       e.clientX >= gridRect.left &&
       e.clientX <= gridRect.right &&
@@ -107,13 +107,13 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     ) {
       const relativeX = e.clientX - gridRect.left;
       const relativeY = adjustedY - gridRect.top;
-      
+
       const cellWidth = gridRect.width / 10;
       const cellHeight = gridRect.height / 10;
-      
+
       const column = Math.floor(relativeX / cellWidth) + 1;
       const row = Math.floor(relativeY / cellHeight) + 1;
-      
+
       // Ensure within bounds
       if (row >= 1 && row <= 10 && column >= 1 && column <= 10) {
         location = { row, column };
@@ -167,7 +167,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
     // Manual boundary check with extended bottom boundary
     let location: ReturnType<typeof mousePositionToGridLocation> = null;
-    
+
     if (
       e.clientX >= gridRect.left &&
       e.clientX <= gridRect.right &&
@@ -177,13 +177,13 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     ) {
       const relativeX = e.clientX - gridRect.left;
       const relativeY = adjustedY - gridRect.top;
-      
+
       const cellWidth = gridRect.width / 10;
       const cellHeight = gridRect.height / 10;
-      
+
       const column = Math.floor(relativeX / cellWidth) + 1;
       const row = Math.floor(relativeY / cellHeight) + 1;
-      
+
       // Ensure within bounds
       if (row >= 1 && row <= 10 && column >= 1 && column <= 10) {
         location = { row, column };
@@ -204,7 +204,13 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     }
 
     // Valid placement - start animation
-    dispatch({ type: 'PLACE_SHAPE', value: { location } });
+    dispatch({
+      type: 'PLACE_SHAPE',
+      value: {
+        location,
+        mousePosition: { x: e.clientX, y: e.clientY }
+      }
+    });
   }, [isDragging, shape, tiles, dispatch, isTouchDevice]);
 
   const isSelected = selectedShapeIndex === shapeIndex;

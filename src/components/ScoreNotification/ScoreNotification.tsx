@@ -19,7 +19,7 @@ const ScoreNotification: React.FC = () => {
   const lastScoreRef = useRef(score);
 
   // Animation constants
-  const ANIMATION_DURATION = 1000; // 1 second in milliseconds
+  const ANIMATION_DURATION = 2000; // 2 seconds in milliseconds
   const GRAVITY = 800; // pixels per second squared
 
   // Animation loop
@@ -41,9 +41,18 @@ const ScoreNotification: React.FC = () => {
         const newX = notification.startPos.x + notification.velocity.x * elapsed;
         const newY = notification.startPos.y + notification.velocity.y * elapsed + 0.5 * GRAVITY * elapsed * elapsed;
 
-        // Fade out over the animation duration
+        // Fade out over the animation duration - stay at 100% for first half, then fade
         const progress = (currentTime - notification.startTime) / ANIMATION_DURATION;
-        const opacity = Math.max(0, 1 - progress);
+        let opacity: number;
+        
+        if (progress <= 0.5) {
+          // First half: stay at 100% opacity
+          opacity = 1;
+        } else {
+          // Second half: fade from 100% to 0%
+          const fadeProgress = (progress - 0.5) / 0.5; // Normalize 0.5-1.0 to 0-1
+          opacity = Math.max(0, 1 - fadeProgress);
+        }
 
         updatedNotifications.push({
           ...notification,

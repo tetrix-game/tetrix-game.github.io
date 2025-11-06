@@ -5,6 +5,7 @@ import './MenuDropdown.css';
 
 const MenuDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDebugOpen, setIsDebugOpen] = useState(false);
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -17,6 +18,19 @@ const MenuDropdown: React.FC = () => {
       setButtonRect(rect);
     }
     setIsOpen(!isOpen);
+  };
+
+  const toggleDebugMenu = () => {
+    setIsDebugOpen(!isDebugOpen);
+  };
+
+  // Test notification function for debugging
+  const testNotification = () => {
+    // Dispatch a custom event that the ScoreNotification component can listen to
+    const event = new CustomEvent('tetrix-test-notification', {
+      detail: { message: '+10 TEST points!' }
+    });
+    document.dispatchEvent(event);
   };
 
   // Close dropdown when clicking outside
@@ -102,6 +116,31 @@ const MenuDropdown: React.FC = () => {
               </label>
               <span className="menu-label">Music</span>
             </div>
+            
+            <div className="menu-item debug-submenu">
+              <button 
+                className="debug-toggle"
+                onClick={toggleDebugMenu}
+                aria-expanded={isDebugOpen}
+              >
+                <span className="menu-label">Debug</span>
+                <span className={`debug-arrow ${isDebugOpen ? 'open' : ''}`}>▶</span>
+              </button>
+            </div>
+            
+            {isDebugOpen && (
+              <div className="debug-submenu-content">
+                <div className="menu-item submenu-item">
+                  <button 
+                    className="debug-action-button"
+                    onClick={testNotification}
+                    title="Test score notification animation"
+                  >
+                    Test Notification
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>,
         document.body

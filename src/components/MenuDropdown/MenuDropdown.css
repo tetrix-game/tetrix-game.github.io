@@ -88,6 +88,60 @@
   font-weight: 500;
 }
 
+/* Debug submenu styles */
+.debug-submenu {
+  position: relative;
+}
+
+.debug-toggle {
+  background: none;
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  cursor: pointer;
+  color: #333;
+}
+
+.debug-arrow {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  color: #666;
+}
+
+.debug-arrow.open {
+  transform: rotate(90deg);
+}
+
+.debug-submenu-content {
+  margin-left: 20px;
+  border-left: 2px solid #e0e0e0;
+  padding-left: 8px;
+}
+
+.submenu-item {
+  padding: 4px 8px;
+}
+
+.debug-action-button {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #555;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.debug-action-button:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
 /* Override BackgroundMusic styles when inside dropdown */
 .menu-dropdown .background-music {
   position: static;

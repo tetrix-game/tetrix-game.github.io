@@ -111,44 +111,31 @@ const ScoreNotification: React.FC = () => {
     lastScoreRef.current = score;
   }, [score]);
 
-  // Test button for debugging (remove in production)
-  const testNotification = () => {
-    const newNotification: NotificationData = {
-      id: `test-${Date.now()}`,
-      message: '+10 TEST points!',
-      startTime: performance.now(),
-      startPos: { x: 0, y: 0 },
-      velocity: { x: 0, y: -200 },
-      currentPos: { x: 0, y: 0 },
-      opacity: 1
+  // Listen for test notification events from debug menu
+  useEffect(() => {
+    const handleTestNotification = (event: CustomEvent) => {
+      const { message } = event.detail;
+      const newNotification: NotificationData = {
+        id: `test-${Date.now()}`,
+        message: message || '+10 TEST points!',
+        startTime: performance.now(),
+        startPos: { x: 0, y: 0 },
+        velocity: { x: 0, y: -200 },
+        currentPos: { x: 0, y: 0 },
+        opacity: 1
+      };
+      console.log('🎯 TEST: Creating test notification:', newNotification);
+      setNotifications(prev => [...prev, newNotification]);
     };
-    console.log('🎯 TEST: Creating test notification:', newNotification);
-    setNotifications(prev => [...prev, newNotification]);
-  };
+
+    document.addEventListener('tetrix-test-notification', handleTestNotification as EventListener);
+    return () => {
+      document.removeEventListener('tetrix-test-notification', handleTestNotification as EventListener);
+    };
+  }, []);
 
   return (
     <>
-      {/* Temporary test button - remove in production */}
-      <button
-        onClick={testNotification}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          left: '20px',
-          zIndex: 20000,
-          padding: '10px',
-          backgroundColor: 'red',
-          color: 'white',
-          border: 'none',
-          cursor: 'pointer',
-          borderRadius: '4px',
-          fontSize: '12px',
-          fontWeight: 'bold'
-        }}
-      >
-        TEST NOTIFICATION
-      </button>
-
       {notifications.map(notification => (
         <div
           key={notification.id}

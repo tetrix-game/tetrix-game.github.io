@@ -44,10 +44,15 @@ export const initialState: TetrixReducerState = {
   placementAnimationState: 'none',
   animationStartPosition: null,
   animationTargetPosition: null,
-  shapeOptionBounds: [null, null, null],
+  shapeOptionBounds: [],
   score: 0,
   showCoinDisplay: false,
-  openRotationMenus: [false, false, false], // Initially all rotation menus are closed
+  maxVisibleShapes: 3,
+  queueSize: -1, // Infinite by default
+  shapesUsed: 0,
+  removingShapeIndex: null,
+  shapesSliding: false,
+  openRotationMenus: [], // Dynamic array based on actual shapes
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -162,41 +167,30 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const scoreData = calculateScore(clearedRows.length, clearedColumns.length);
       const newScore = state.score + scoreData.pointsEarned;
 
-      // Remove the placed shape from nextShapes
-      const remainingShapes = state.nextShapes.filter((_, index) => index !== state.selectedShapeIndex);
-
-      // Generate a new random shape to replace the placed one
-      const newRandomShape = generateRandomShape();
-
-      // Add the new shape to the end of nextShapes
-      const updatedNextShapes = [...remainingShapes, newRandomShape];
-
-      const newState = {
-        ...state,
-        tiles: newTiles,
-        nextShapes: updatedNextShapes,
-        selectedShape: null,
-        selectedShapeIndex: null,
-        mouseGridLocation: null,
-        mousePosition: state.mousePosition, // Keep current mouse position instead of clearing
-        isShapeDragging: false,
-        hoveredBlockPositions: [],
-        placementAnimationState: 'none' as const,
-        animationStartPosition: null,
-        animationTargetPosition: null,
-        score: newScore,
-        openRotationMenus: [false, false, false], // Reset all rotation menus when shape is placed
-      };
-
       // Save game state to browser DB asynchronously (don't block UI)
       if (scoreData.pointsEarned > 0 || newTiles.some(tile => tile.block.isFilled)) {
-        safeBatchSave(newScore, newTiles, updatedNextShapes, newState.savedShape)
+        safeBatchSave(newScore, newTiles, state.nextShapes, state.savedShape)
           .catch((error: Error) => {
             console.error('Failed to save game state:', error);
           });
       }
 
-      return newState;
+      // Start the shape removal animation
+      return {
+        ...state,
+        tiles: newTiles,
+        score: newScore,
+        removingShapeIndex: state.selectedShapeIndex,
+        shapesSliding: true,
+        selectedShape: null,
+        selectedShapeIndex: null,
+        mouseGridLocation: null,
+        isShapeDragging: false,
+        hoveredBlockPositions: [],
+        placementAnimationState: 'none' as const,
+        animationStartPosition: null,
+        animationTargetPosition: null,
+      };
     }
 
     case "CLEAR_SELECTION": {
@@ -220,7 +214,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const newState = {
         ...state,
         nextShapes: shapes,
-        openRotationMenus: [false, false, false], // Reset rotation menus when new shapes are set
+        openRotationMenus: new Array(shapes.length).fill(false),
+        shapeOptionBounds: new Array(shapes.length).fill(null),
       };
 
       // Save shapes to database when they are updated
@@ -336,6 +331,56 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       // Save updated shapes to database
       safeBatchSave(undefined, undefined, newShapes, newState.savedShape)
+        .catch((error: Error) => {
+          console.error('Failed to save shapes state:', error);
+        });
+
+      return newState;
+    }
+
+    case "START_SHAPE_REMOVAL": {
+      const { shapeIndex } = action.value;
+      return {
+        ...state,
+        removingShapeIndex: shapeIndex,
+        shapesSliding: true,
+      };
+    }
+
+    case "COMPLETE_SHAPE_REMOVAL": {
+      if (state.removingShapeIndex === null) {
+        return state;
+      }
+
+      // Remove the shape and add a new one
+      const remainingShapes = state.nextShapes.filter((_, index) => index !== state.removingShapeIndex);
+      const newShapesUsed = state.shapesUsed + 1;
+
+      // Determine if we can add a new shape
+      const updatedNextShapes = [...remainingShapes];
+      if (state.queueSize === -1 || newShapesUsed < state.queueSize) {
+        // Add new shape if infinite mode OR we haven't hit the limit
+        const targetCount = Math.min(state.maxVisibleShapes + 1, state.queueSize === -1 ? state.maxVisibleShapes + 1 : state.queueSize - newShapesUsed + remainingShapes.length);
+        while (updatedNextShapes.length < targetCount) {
+          updatedNextShapes.push(generateRandomShape());
+        }
+      }
+
+      // Update rotation menus to match new array length
+      const newOpenRotationMenus = new Array(updatedNextShapes.length).fill(false);
+
+      const newState = {
+        ...state,
+        nextShapes: updatedNextShapes,
+        shapesUsed: newShapesUsed,
+        removingShapeIndex: null,
+        shapesSliding: false,
+        openRotationMenus: newOpenRotationMenus,
+        shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
+      };
+
+      // Save shapes to database
+      safeBatchSave(undefined, undefined, updatedNextShapes, newState.savedShape)
         .catch((error: Error) => {
           console.error('Failed to save shapes state:', error);
         });

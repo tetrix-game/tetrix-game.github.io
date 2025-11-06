@@ -80,7 +80,6 @@ Main.tsx (wraps with TetrixProvider)
 
 ### Essential Commands
 ```bash
-npm run start          # Start dev server (Vite)
 npm run build        # TypeScript compile + Vite build
 npm run publish      # Build + deploy to gh-pages branch (LIVE SITE)
 npm run test         # Run Vitest in watch mode

@@ -1,7 +1,8 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Points toast isn't going away nor is it nearly juicy enough
+- Header is too wide
 - saveGameState takes too much too often, should only upsert state
+- Points toast is too fast
 - Shape placeholder
 - Automatic game over calculation
 - Error boundary is snarky, but only specifically for the rant effect. It needs to catch all errors

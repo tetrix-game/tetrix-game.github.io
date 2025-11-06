@@ -5,6 +5,7 @@
   width: 100%;
   height: 10vh;
   background-color: lightgrey;
+  overflow: hidden; /* Prevent scrollbars */
 }
 
 .tetrix_header_start,
@@ -21,6 +22,7 @@
   align-items: center;
   gap: 1rem;
   padding-left: 1rem;
+  min-width: 0; /* Allow flex item to shrink */
 }
 
 .tetrix_header_middle {
@@ -28,6 +30,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 0; /* Allow flex item to shrink */
 }
 
 .tetrix_header_end {
@@ -37,4 +40,34 @@
   align-items: center;
   gap: 1rem;
   padding-right: 1rem;
+  min-width: 0; /* Allow flex item to shrink */
+}
+
+/* Hide title on smaller screens to prevent overflow */
+@media (max-width: 768px) {
+  .tetrix_header_middle {
+    display: none;
+  }
+  
+  .tetrix_header_start,
+  .tetrix_header_end {
+    flex: 1;
+    gap: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* Hide title on very narrow screens regardless of height */
+@media (max-width: 480px) {
+  .tetrix_header_middle {
+    display: none;
+  }
+  
+  .tetrix_header_start,
+  .tetrix_header_end {
+    gap: 0.25rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
 }

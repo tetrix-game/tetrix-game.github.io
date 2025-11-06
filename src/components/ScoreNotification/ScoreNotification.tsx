@@ -133,14 +133,17 @@ const ScoreNotification: React.FC = () => {
         onClick={testNotification}
         style={{
           position: 'fixed',
-          top: '10px',
-          left: '10px',
+          bottom: '20px',
+          left: '20px',
           zIndex: 20000,
           padding: '10px',
           backgroundColor: 'red',
           color: 'white',
           border: 'none',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          borderRadius: '4px',
+          fontSize: '12px',
+          fontWeight: 'bold'
         }}
       >
         TEST NOTIFICATION

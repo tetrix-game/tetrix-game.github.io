@@ -3,7 +3,7 @@ import { TetrixReducerState } from '../../utils/types';
 import { getShapeGridPositions, generateRandomShape } from '../../utils/shapeUtils';
 import { clearFullLines } from '../../utils/lineUtils';
 import { calculateScore } from '../../utils/scoringUtils';
-import { saveGameState } from '../../utils/persistenceUtils';
+import { safeBatchSave } from '../../utils/persistenceUtils';
 
 const emptyColor = {
   lightest: '#000000',
@@ -178,14 +178,10 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       // Save game state to browser DB asynchronously (don't block UI)
       if (scoreData.pointsEarned > 0 || newTiles.some(tile => tile.block.isFilled)) {
-        saveGameState({
-          score: newScore,
-          tiles: newTiles,
-          nextShapes: updatedNextShapes,
-          savedShape: newState.savedShape,
-        }).catch(error => {
-          console.error('Failed to save game state:', error);
-        });
+        safeBatchSave(newScore, newTiles, updatedNextShapes, newState.savedShape)
+          .catch((error: Error) => {
+            console.error('Failed to save game state:', error);
+          });
       }
 
       return newState;
@@ -215,14 +211,10 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       };
 
       // Save shapes to database when they are updated
-      saveGameState({
-        score: newState.score,
-        tiles: newState.tiles,
-        nextShapes: shapes,
-        savedShape: newState.savedShape,
-      }).catch(error => {
-        console.error('Failed to save shapes state:', error);
-      });
+      safeBatchSave(undefined, undefined, shapes, newState.savedShape)
+        .catch((error: Error) => {
+          console.error('Failed to save shapes state:', error);
+        });
 
       return newState;
     }
@@ -259,14 +251,10 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const newScore = state.score + scoreData.pointsEarned;
 
       // Save updated score
-      saveGameState({
-        score: newScore,
-        tiles: state.tiles,
-        nextShapes: state.nextShapes,
-        savedShape: state.savedShape,
-      }).catch(error => {
-        console.error('Failed to save score:', error);
-      });
+      safeBatchSave(newScore)
+        .catch((error: Error) => {
+          console.error('Failed to save score:', error);
+        });
 
       return {
         ...state,

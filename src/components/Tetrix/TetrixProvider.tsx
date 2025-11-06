@@ -1,7 +1,7 @@
 import { useReducer, useEffect } from "react";
 import { initialState, tetrixReducer } from "./TetrixReducer";
 import { TetrixStateContext, TetrixDispatchContext } from "./TetrixContext";
-import { loadGameState } from "../../utils/persistenceUtils";
+import { loadCompleteGameState } from "../../utils/persistenceUtils";
 
 export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
@@ -10,13 +10,23 @@ export default function TetrixProvider({ children }: { readonly children: React.
   useEffect(() => {
     const loadSavedData = async () => {
       try {
-        const gameData = await loadGameState();
+        console.log('TetrixProvider: Attempting to load saved game state...');
+        const gameData = await loadCompleteGameState();
+        
         // Only load if we have valid tile data (100 tiles for 10x10 grid)
         if (gameData?.tiles.length === 100) {
+          console.log('TetrixProvider: Found valid saved game state, restoring...', {
+            score: gameData.score,
+            tilesCount: gameData.tiles.length,
+            shapesCount: gameData.nextShapes.length,
+            hasSavedShape: !!gameData.savedShape
+          });
           dispatch({
             type: 'LOAD_GAME_STATE',
             value: { gameData },
           });
+        } else {
+          console.log('TetrixProvider: No valid saved game state found (tiles count:', gameData?.tiles?.length ?? 'undefined', ')');
         }
       } catch (error) {
         console.error('Failed to load saved game state:', error);

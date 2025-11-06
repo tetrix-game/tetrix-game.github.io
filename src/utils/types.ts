@@ -34,12 +34,39 @@ export type ScoreData = {
   pointsEarned: number;
 };
 
-// Game persistence data
+// Game persistence data (legacy - for backward compatibility)
 export type GamePersistenceData = {
   score: number;
   tiles: Tile[];
   nextShapes: Shape[];
   savedShape: Shape | null;
+};
+
+// Granular persistence types
+export type ScorePersistenceData = {
+  score: number;
+  lastUpdated: number;
+};
+
+export type TilesPersistenceData = {
+  tiles: Tile[];
+  lastUpdated: number;
+};
+
+export type ShapesPersistenceData = {
+  nextShapes: Shape[];
+  savedShape: Shape | null;
+  lastUpdated: number;
+};
+
+export type MusicPersistenceData = {
+  isMuted: boolean;
+  lastUpdated: number;
+};
+
+export type GameSettingsPersistenceData = {
+  music: MusicPersistenceData;
+  lastUpdated: number;
 };
 
 // Reducer types

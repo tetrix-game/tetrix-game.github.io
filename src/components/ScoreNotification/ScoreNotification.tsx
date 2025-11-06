@@ -44,7 +44,7 @@ const ScoreNotification: React.FC = () => {
         // Fade out over the animation duration - stay at 100% for first half, then fade
         const progress = (currentTime - notification.startTime) / ANIMATION_DURATION;
         let opacity: number;
-        
+
         if (progress <= 0.5) {
           // First half: stay at 100% opacity
           opacity = 1;

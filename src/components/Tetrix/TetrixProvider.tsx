@@ -11,7 +11,8 @@ export default function TetrixProvider({ children }: { readonly children: React.
     const loadSavedData = async () => {
       try {
         const gameData = await loadGameState();
-        if (gameData) {
+        // Only load if we have valid tile data (100 tiles for 10x10 grid)
+        if (gameData?.tiles.length === 100) {
           dispatch({
             type: 'LOAD_GAME_STATE',
             value: { gameData },

@@ -1,6 +1,5 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- saveGameState takes too much too often, should only upsert state
 - Points toast is too fast
 - Shape placeholder
 - Automatic game over calculation

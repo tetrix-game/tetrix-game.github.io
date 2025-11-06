@@ -1,6 +1,5 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Header is too wide
 - saveGameState takes too much too often, should only upsert state
 - Points toast is too fast
 - Shape placeholder
@@ -8,6 +7,7 @@
 - Error boundary is snarky, but only specifically for the rant effect. It needs to catch all errors
 - action sounds
 - clearance animations
+- ShapeOption vertical sliding animation
 
 
 

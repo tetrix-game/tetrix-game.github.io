@@ -5,7 +5,8 @@
   width: 100%;
   height: 10vh;
   background-color: lightgrey;
-  overflow: hidden; /* Prevent scrollbars */
+  overflow: hidden;
+  /* Prevent scrollbars */
 }
 
 .tetrix_header_start,
@@ -22,7 +23,8 @@
   align-items: center;
   gap: 1rem;
   padding-left: 1rem;
-  min-width: 0; /* Allow flex item to shrink */
+  min-width: 0;
+  /* Allow flex item to shrink */
 }
 
 .tetrix_header_middle {
@@ -30,7 +32,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 0; /* Allow flex item to shrink */
+  min-width: 0;
+  /* Allow flex item to shrink */
 }
 
 .tetrix_header_end {
@@ -40,7 +43,8 @@
   align-items: center;
   gap: 1rem;
   padding-right: 1rem;
-  min-width: 0; /* Allow flex item to shrink */
+  min-width: 0;
+  /* Allow flex item to shrink */
 }
 
 /* Hide title on smaller screens to prevent overflow */
@@ -48,7 +52,7 @@
   .tetrix_header_middle {
     display: none;
   }
-  
+
   .tetrix_header_start,
   .tetrix_header_end {
     flex: 1;
@@ -63,7 +67,7 @@
   .tetrix_header_middle {
     display: none;
   }
-  
+
   .tetrix_header_start,
   .tetrix_header_end {
     gap: 0.25rem;

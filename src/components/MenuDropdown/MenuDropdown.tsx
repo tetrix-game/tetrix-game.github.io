@@ -1,29 +1,51 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useMusicControl } from '../Header/MusicControlContext';
 import './MenuDropdown.css';
 
 const MenuDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const { isMuted, toggleMute } = useMusicControl();
 
   const toggleDropdown = () => {
+    if (!isOpen && buttonRef.current) {
+      // Calculate button position when opening dropdown
+      const rect = buttonRef.current.getBoundingClientRect();
+      setButtonRect(rect);
+    }
     setIsOpen(!isOpen);
   };
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    if (!isOpen) return;
+    
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+      const target = event.target as Node;
+      
+      // Don't close if clicking on the button
+      if (buttonRef.current && buttonRef.current.contains(target)) {
+        return;
       }
+      
+      // Don't close if clicking inside the dropdown
+      const dropdownElement = document.querySelector('.dropdown-overlay');
+      if (dropdownElement && dropdownElement.contains(target)) {
+        return;
+      }
+      
+      // Close if clicking outside
+      setIsOpen(false);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [isOpen]);
 
   // Close dropdown on escape key
   useEffect(() => {
@@ -42,6 +64,7 @@ const MenuDropdown: React.FC = () => {
   return (
     <div className="menu-dropdown" ref={dropdownRef}>
       <button
+        ref={buttonRef}
         className="hamburger-button"
         onClick={toggleDropdown}
         title="Menu"
@@ -55,8 +78,16 @@ const MenuDropdown: React.FC = () => {
         </div>
       </button>
 
-      {isOpen && (
-        <div className="dropdown-overlay">
+      {isOpen && buttonRect && createPortal(
+        <div 
+          className="dropdown-overlay" 
+          style={{
+            position: 'fixed',
+            top: buttonRect.bottom + window.scrollY,
+            left: buttonRect.left + window.scrollX,
+            zIndex: 10000,
+          }}
+        >
           <div className="dropdown-content">
             <div className="menu-item">
               <label className="toggle-switch" title={isMuted ? 'Turn on music' : 'Turn off music'}>
@@ -72,7 +103,8 @@ const MenuDropdown: React.FC = () => {
               <span className="menu-label">Music</span>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

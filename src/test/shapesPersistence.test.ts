@@ -8,8 +8,7 @@ import type { GamePersistenceData, Shape, Tile } from '../utils/types';
 
 // Mock database for testing
 const mockDB = {
-  gameState: null as GamePersistenceData | null,
-  musicState: null as Record<string, unknown> | null
+  gameState: null as GamePersistenceData | null
 };
 
 // Mock database operations
@@ -25,7 +24,6 @@ vi.mock('../utils/persistenceUtils', async () => {
     }),
     clearAllSavedData: vi.fn(async () => {
       mockDB.gameState = null;
-      mockDB.musicState = null;
     })
   };
 });
@@ -34,7 +32,6 @@ describe('Shape Options Persistence', () => {
   beforeEach(() => {
     // Reset mock database
     mockDB.gameState = null;
-    mockDB.musicState = null;
     vi.clearAllMocks();
   });
 

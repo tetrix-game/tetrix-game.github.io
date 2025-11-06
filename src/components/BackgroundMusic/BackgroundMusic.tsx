@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { saveMusicState, loadMusicState } from '../../utils/persistenceUtils';
 import './BackgroundMusic.css';
 
 interface BackgroundMusicProps {
@@ -9,10 +7,8 @@ interface BackgroundMusicProps {
 
 const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const hasUserInteractedRef = useRef(false);
   const [shouldPlay, setShouldPlay] = useState(false);
-  const [musicStateLoaded, setMusicStateLoaded] = useState(false);
-  const tetrixState = useTetrixStateContext();
 
   // List of available tracks (using useMemo to prevent recreation on each render)
   const tracks = React.useMemo(() => [
@@ -21,50 +17,24 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
     '/bgm/Jazz4_KEY_C_in_C.mp3',
   ], []);
 
-  // Load music state on component mount
+  // Simple user interaction detection - any click or keypress enables audio
   useEffect(() => {
-    const loadSavedMusicState = async () => {
-      try {
-        const musicState = await loadMusicState();
-        if (musicState) {
-          setHasUserInteracted(musicState.hasUserInteracted);
-          if (musicState.hasUserInteracted) {
-            setShouldPlay(true);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load music state:', error);
-      } finally {
-        setMusicStateLoaded(true);
+    const handleUserInteraction = () => {
+      if (!hasUserInteractedRef.current) {
+        hasUserInteractedRef.current = true;
+        setShouldPlay(true);
       }
     };
 
-    loadSavedMusicState();
+    // Listen for any user interaction
+    document.addEventListener('click', handleUserInteraction, { once: true });
+    document.addEventListener('keydown', handleUserInteraction, { once: true });
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+    };
   }, []);
-
-  // Save music state when interaction or mute status changes
-  useEffect(() => {
-    if (musicStateLoaded) {
-      saveMusicState({
-        isMuted,
-        hasUserInteracted,
-      }).catch((error: Error) => {
-        console.error('Failed to save music state:', error);
-      });
-    }
-  }, [isMuted, hasUserInteracted, musicStateLoaded]);
-
-  // Monitor for shape placements to detect first user interaction
-  useEffect(() => {
-    // When a shape completes placement, it means user has interacted
-    if (tetrixState.placementAnimationState === 'none' &&
-      tetrixState.selectedShape === null &&
-      tetrixState.tiles.some(tile => tile.block.isFilled) &&
-      !hasUserInteracted) {
-      setHasUserInteracted(true);
-      setShouldPlay(true);
-    }
-  }, [tetrixState.placementAnimationState, tetrixState.selectedShape, tetrixState.tiles, hasUserInteracted]);
 
   // Set up audio and handle track changes
   useEffect(() => {

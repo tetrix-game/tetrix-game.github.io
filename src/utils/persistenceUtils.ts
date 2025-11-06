@@ -3,7 +3,6 @@ import type { GamePersistenceData } from './types';
 const DB_NAME = 'TetrixGameDB';
 const DB_VERSION = 1;
 const GAME_STATE_STORE = 'gameState';
-const MUSIC_STATE_STORE = 'musicState';
 
 /**
  * Check if IndexedDB is available (not in Node.js/testing environments)
@@ -44,16 +43,6 @@ export function initializeDatabase(): Promise<IDBDatabase> {
           tiles: [],
           nextShapes: [],
           savedShape: null
-        }, 'current');
-      }
-
-      // Create music state store (mute status, user interaction, etc.)
-      if (!db.objectStoreNames.contains(MUSIC_STATE_STORE)) {
-        const musicStore = db.createObjectStore(MUSIC_STATE_STORE);
-        // Initialize with default values
-        musicStore.add({
-          isMuted: false,
-          hasUserInteracted: false
         }, 'current');
       }
     };
@@ -130,73 +119,7 @@ export async function loadGameState(): Promise<GamePersistenceData | null> {
   }
 }
 
-/**
- * Save music state (mute status, user interaction, etc.)
- */
-export async function saveMusicState(musicData: {
-  isMuted: boolean;
-  hasUserInteracted: boolean;
-}): Promise<void> {
-  try {
-    const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction([MUSIC_STATE_STORE], 'readwrite');
-      const store = transaction.objectStore(MUSIC_STATE_STORE);
-
-      const request = store.put(musicData, 'current');
-
-      request.onsuccess = () => {
-        console.log('Music state saved successfully');
-        resolve();
-      };
-
-      request.onerror = () => {
-        console.error('Failed to save music state:', request.error);
-        reject(new Error(`Failed to save music state: ${request.error}`));
-      };
-    });
-  } catch (error) {
-    console.error('Error saving music state:', error);
-    throw error;
-  }
-}
-
-/**
- * Load music state from IndexedDB
- */
-export async function loadMusicState(): Promise<{
-  isMuted: boolean;
-  hasUserInteracted: boolean;
-} | null> {
-  try {
-    const db = await initializeDatabase();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction([MUSIC_STATE_STORE], 'readonly');
-      const store = transaction.objectStore(MUSIC_STATE_STORE);
-
-      const request = store.get('current');
-
-      request.onsuccess = () => {
-        const result = request.result;
-        if (result) {
-          resolve(result);
-        } else {
-          resolve(null);
-        }
-      };
-
-      request.onerror = () => {
-        console.error('Failed to load music state:', request.error);
-        reject(new Error(`Failed to load music state: ${request.error}`));
-      };
-    });
-  } catch (error) {
-    console.error('Error loading music state:', error);
-    return null;
-  }
-}
 
 /**
  * Clear all saved data (reset game)
@@ -206,18 +129,11 @@ export async function clearAllSavedData(): Promise<void> {
     const db = await initializeDatabase();
 
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([GAME_STATE_STORE, MUSIC_STATE_STORE], 'readwrite');
+      const transaction = db.transaction([GAME_STATE_STORE], 'readwrite');
 
       // Clear game state
       const gameStore = transaction.objectStore(GAME_STATE_STORE);
       gameStore.delete('current');
-
-      // Reset music state
-      const musicStore = transaction.objectStore(MUSIC_STATE_STORE);
-      musicStore.put({
-        isMuted: false,
-        hasUserInteracted: false
-      }, 'current');
 
       transaction.oncomplete = () => {
         console.log('All saved data cleared successfully');

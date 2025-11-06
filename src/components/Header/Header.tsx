@@ -8,10 +8,25 @@ import { MusicControlContext } from './MusicControlContext';
 import './Header.css';
 
 const Header = () => {
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => {
+    // Load mute preference from localStorage on initialization
+    try {
+      const saved = localStorage.getItem('tetrix-music-muted');
+      return saved ? JSON.parse(saved) : false;
+    } catch {
+      return false;
+    }
+  });
 
   const toggleMute = useCallback(() => {
-    setIsMuted(!isMuted);
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    // Save mute preference to localStorage
+    try {
+      localStorage.setItem('tetrix-music-muted', JSON.stringify(newMutedState));
+    } catch (error) {
+      console.error('Failed to save music mute preference:', error);
+    }
   }, [isMuted]);
 
   const contextValue = useMemo(() => ({ isMuted, toggleMute }), [isMuted, toggleMute]);

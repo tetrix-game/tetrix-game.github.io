@@ -68,7 +68,7 @@ describe('Currency System', () => {
 
     it('should format multiple denominations', () => {
       const breakdown = convertPointsToCurrency(1234567);
-      expect(formatCurrencyBreakdown(breakdown)).toBe('1🥇 234🥈 567🥉');
+      expect(formatCurrencyBreakdown(breakdown)).toBe('1🥇 234🥈');
     });
 
     it('should format with thousand separators for large counts', () => {

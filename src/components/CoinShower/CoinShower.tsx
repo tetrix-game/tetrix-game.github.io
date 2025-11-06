@@ -40,9 +40,6 @@ const CoinShower: React.FC = () => {
         y: showerLocation.y
       };
 
-      console.log('🪙 CoinShower: Score increased from', lastScoreRef.current, 'to', score);
-      console.log('🪙 CoinShower: Emission origin:', emissionOrigin);
-
       // Calculate total coins for performance optimization
       const totalCoins = currencyBreakdown.reduce((sum, breakdown) => sum + breakdown.count, 0);
 
@@ -110,8 +107,6 @@ const CoinShower: React.FC = () => {
           delay: currentDelay
         });
 
-        console.log(`🪙 Generated coin ${i} for ${denomination.name}: startPos(${origin.x}, ${origin.y}), velocity(${velocityX.toFixed(1)}, ${velocityY.toFixed(1)})`);
-
         currentDelay += delayIncrement;
       }
     }
@@ -121,7 +116,6 @@ const CoinShower: React.FC = () => {
 
   const handleCoinComplete = (coinId: string) => {
     setCoins(prevCoins => prevCoins.filter(coin => coin.id !== coinId));
-    console.log(`filtered ${coinId}`);
   };
 
   return (

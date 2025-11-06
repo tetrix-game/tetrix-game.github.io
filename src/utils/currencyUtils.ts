@@ -47,13 +47,17 @@ export function convertPointsToCurrency(points: number): CurrencyBreakdown[] {
 
 /**
  * Formats a currency breakdown for display
+ * Only shows the top 2 highest value currencies
  */
 export function formatCurrencyBreakdown(breakdown: CurrencyBreakdown[]): string {
   if (breakdown.length === 0) {
     return '0';
   }
 
-  return breakdown
+  // Take only the top 2 currencies (highest value first)
+  const topCurrencies = breakdown.slice(0, 2);
+
+  return topCurrencies
     .map(({ denomination, count }) => `${count.toLocaleString()}${denomination.symbol}`)
     .join(' ');
 }

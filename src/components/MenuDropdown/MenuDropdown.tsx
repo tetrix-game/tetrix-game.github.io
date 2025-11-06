@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMusicControl } from '../Header/MusicControlContext';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { clearAllSavedData } from '../../utils/persistenceUtils';
 import './MenuDropdown.css';
 
 const MenuDropdown: React.FC = () => {
@@ -26,6 +27,20 @@ const MenuDropdown: React.FC = () => {
     setIsDebugOpen(!isDebugOpen);
   };
 
+  // New game function - same as GameControls
+  const handleNewGame = async () => {
+    try {
+      await clearAllSavedData();
+      dispatch({ type: 'RESET_GAME' });
+      // Refresh the page to fully reset state (music, etc.)
+      globalThis.location.reload();
+    } catch (error) {
+      console.error('Failed to reset game:', error);
+      // Still reset the game state even if clearing storage fails
+      dispatch({ type: 'RESET_GAME' });
+    }
+  };
+
   // Test notification function for debugging - opens prompt for custom currency amount
   const testNotification = (e: React.MouseEvent) => {
     const input = globalThis.prompt('Enter amount of points to inject (try 100, 1000, or 999999):', '100');
@@ -41,8 +56,6 @@ const MenuDropdown: React.FC = () => {
       alert('Please enter a valid positive number');
       return;
     }
-
-    console.log('💰 Injecting', amount, 'points - this will trigger the coin shower!');
 
     // Capture the click position for coin emission
     const clickPosition = { x: e.clientX, y: e.clientY };
@@ -159,6 +172,15 @@ const MenuDropdown: React.FC = () => {
 
             {isDebugOpen && (
               <div className="debug-submenu-content">
+                <div className="menu-item submenu-item">
+                  <button
+                    className="debug-action-button"
+                    onClick={handleNewGame}
+                    title="Reset the game and clear all saved data"
+                  >
+                    New Game
+                  </button>
+                </div>
                 <div className="menu-item submenu-item">
                   <button
                     className="debug-action-button"

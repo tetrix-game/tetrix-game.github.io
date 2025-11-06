@@ -46,6 +46,7 @@ export const initialState: TetrixReducerState = {
   animationTargetPosition: null,
   shapeOptionBounds: [null, null, null],
   score: 0,
+  showCoinDisplay: false,
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -281,6 +282,20 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         tiles: gameData.tiles,
         nextShapes: gameData.nextShapes || state.nextShapes,
         savedShape: gameData.savedShape || state.savedShape,
+      };
+    }
+
+    case "SHOW_COIN_DISPLAY": {
+      return {
+        ...state,
+        showCoinDisplay: true,
+      };
+    }
+
+    case "HIDE_COIN_DISPLAY": {
+      return {
+        ...state,
+        showCoinDisplay: false,
       };
     }
 

@@ -57,6 +57,14 @@ const MenuDropdown: React.FC = () => {
       return;
     }
 
+    // Show the coin display
+    dispatch({ type: 'SHOW_COIN_DISPLAY' });
+
+    // Hide the coin display after 5 seconds
+    setTimeout(() => {
+      dispatch({ type: 'HIDE_COIN_DISPLAY' });
+    }, 5000);
+
     // Capture the click position for coin emission
     const clickPosition = { x: e.clientX, y: e.clientY };
 

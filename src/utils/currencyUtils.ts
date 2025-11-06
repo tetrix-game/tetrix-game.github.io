@@ -47,11 +47,17 @@ export function convertPointsToCurrency(points: number): CurrencyBreakdown[] {
 
 /**
  * Formats a currency breakdown for display
- * Only shows the top 2 highest value currencies
+ * Shows "lots💎" if user has more than 999 diamonds, otherwise shows the top 2 highest value currencies
  */
 export function formatCurrencyBreakdown(breakdown: CurrencyBreakdown[]): string {
   if (breakdown.length === 0) {
     return '0';
+  }
+
+  // Check if user has more than 999 diamonds
+  const diamondBreakdown = breakdown.find(b => b.denomination.name === 'Diamond');
+  if (diamondBreakdown && diamondBreakdown.count > 999) {
+    return `lots${diamondBreakdown.denomination.symbol}`;
   }
 
   // Take only the top 2 currencies (highest value first)

@@ -75,6 +75,24 @@ describe('Currency System', () => {
       const breakdown = convertPointsToCurrency(123000000);
       expect(formatCurrencyBreakdown(breakdown)).toBe('123🥇');
     });
+
+    it('should show "lots💎" when user has more than 999 diamonds', () => {
+      // 1000 diamonds = 1,000,000,000,000,000,000 points
+      const breakdown = convertPointsToCurrency(1000000000000000000);
+      expect(formatCurrencyBreakdown(breakdown)).toBe('lots💎');
+    });
+
+    it('should show normal format when user has exactly 999 diamonds', () => {
+      // 999 diamonds = 999,000,000,000,000,000 points
+      const breakdown = convertPointsToCurrency(999000000000000000);
+      expect(formatCurrencyBreakdown(breakdown)).toBe('999💎');
+    });
+
+    it('should show normal format when user has fewer than 1000 diamonds', () => {
+      // 500 diamonds with some other currencies = 500 * 1e15 + 123 * 1e12 + 456 * 1e9
+      const breakdown = convertPointsToCurrency(500000000000000000 + 123000000000000 + 456000000000);
+      expect(formatCurrencyBreakdown(breakdown)).toBe('500💎 123💙');
+    });
   });
 
   describe('getHighestCurrencyColor', () => {

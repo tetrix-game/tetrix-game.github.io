@@ -5,15 +5,15 @@ import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import './ScoreDisplay.css';
 
 const ScoreDisplay: React.FC = () => {
-  const { score } = useTetrixStateContext();
+  const { score, showCoinDisplay } = useTetrixStateContext();
 
   // Convert points to currency breakdown
   const currencyBreakdown = convertPointsToCurrency(score);
   const currencyDisplay = formatCurrencyBreakdown(currencyBreakdown);
   const displayColor = getHighestCurrencyColor(score);
 
-  // Show currency if user has any points, otherwise show numeric score
-  const showCurrency = currencyBreakdown.length > 0;
+  // Show currency if user has any points AND coin display is enabled, otherwise show numeric score
+  const showCurrency = currencyBreakdown.length > 0 && showCoinDisplay;
 
   return (
     <div className="score-display">

@@ -92,6 +92,8 @@ export type TetrixReducerState = {
   shapeOptionBounds: (ShapeOptionBounds | null)[];
   // Scoring system
   score: number;
+  // Coin display visibility control
+  showCoinDisplay: boolean;
 }
 
 type SelectShapeAction = {
@@ -161,6 +163,14 @@ type ResetGameAction = {
   type: 'RESET_GAME';
 }
 
+type ShowCoinDisplayAction = {
+  type: 'SHOW_COIN_DISPLAY';
+}
+
+type HideCoinDisplayAction = {
+  type: 'HIDE_COIN_DISPLAY';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -172,6 +182,8 @@ export type TetrixAction =
   | ReturnShapeToSelectorAction
   | AddScoreAction
   | LoadGameStateAction
-  | ResetGameAction;
+  | ResetGameAction
+  | ShowCoinDisplayAction
+  | HideCoinDisplayAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

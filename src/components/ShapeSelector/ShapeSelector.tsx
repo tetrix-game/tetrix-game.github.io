@@ -5,7 +5,7 @@ import { generateRandomShape } from '../../utils/shapeUtils';
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes, maxVisibleShapes, shapesSliding } = useTetrixStateContext();
+  const { nextShapes, maxVisibleShapes } = useTetrixStateContext();
 
   // Create initial shapes - only add virtual buffer for gameplay, not tests
   const initialShapes = useMemo(() => {
@@ -25,22 +25,19 @@ const ShapeSelector = (): JSX.Element => {
     }
   }, [dispatch, initialShapes, nextShapes.length]);
 
-  // Calculate height based on visible shapes - add extra height during sliding animation
+  // Calculate height based on visible shapes only - parent clips virtual shapes
   const visibleShapeCount = Math.min(nextShapes.length, maxVisibleShapes);
-  const baseHeight = visibleShapeCount * 120; // 102px shape + 18px gap estimate
-  // During sliding animation, temporarily increase height to accommodate the sliding effect
-  const containerHeight = shapesSliding ? baseHeight + 120 : baseHeight;
+  const containerHeight = visibleShapeCount * 120; // 102px shape + 18px gap estimate
 
   return (
     <div
       className="shape-selector"
       style={{
         height: `${containerHeight}px`,
-        overflow: 'hidden',
+        overflow: 'hidden', // This clips the virtual shape below
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
-        transition: 'height 0.4s ease-out', // Smooth height transition
       }}
     >
       {nextShapes.map((shape, index) => {

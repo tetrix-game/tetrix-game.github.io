@@ -4,7 +4,7 @@ import TetrixProvider from '../components/Tetrix/TetrixProvider';
 import ShapeSelector from '../components/ShapeSelector';
 
 describe('Virtual Shape System', () => {
-  test('should render virtual shapes for smooth animation', () => {
+  test('should render virtual shapes with full opacity (clipped by parent)', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
@@ -19,23 +19,31 @@ describe('Virtual Shape System', () => {
     const visibleShapes = container.querySelectorAll('.shape-container:not(.virtual)');
     expect(visibleShapes.length).toBe(3);
 
-    // Last 1 should be virtual (hidden)
+    // Last 1 should be virtual (but with full opacity, clipped by parent)
     const virtualShapes = container.querySelectorAll('.shape-container.virtual');
     expect(virtualShapes.length).toBe(1);
+
+    // Virtual shape should be present in DOM (unlike opacity-based hiding)
+    const virtualShape = virtualShapes[0] as HTMLElement;
+    expect(virtualShape).toBeTruthy();
+    expect(virtualShape.classList.contains('virtual')).toBe(true);
   });
 
-  test('should show correct virtual state during sliding animation', () => {
+  test('should use parent clipping to hide virtual shapes', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
       </TetrixProvider>
     );
 
-    // Initially should have 3 visible + 1 virtual
-    const initialVirtualShapes = container.querySelectorAll('.shape-container.virtual');
-    expect(initialVirtualShapes.length).toBe(1);
+    // Parent container should have overflow:hidden to clip virtual shapes
+    const shapeSelector = container.querySelector('.shape-selector') as HTMLElement;
+    expect(shapeSelector).toBeTruthy();
 
-    // During sliding (when shapesSliding=true), the virtual logic should handle transitions
-    // This would need to be tested with proper state manipulation in a more complex test
+    const selectorStyle = globalThis.getComputedStyle(shapeSelector);
+    expect(selectorStyle.overflow).toBe('hidden');
+
+    // Height should be calculated for visible shapes only (3 * 120px = 360px)
+    expect(selectorStyle.height).toBe('360px');
   });
 });

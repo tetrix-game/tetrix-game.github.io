@@ -111,6 +111,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Get the positions where the shape will be placed
       const shapePositions = getShapeGridPositions(state.selectedShape, location);
 
+      console.log('🎯 PLACE_SHAPE: Setting showerLocation to:', useMousePosition);
+
       return {
         ...state,
         placementAnimationState: 'placing',
@@ -184,6 +186,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         animationTargetPosition: null,
         score: newScore,
       };
+
+      console.log('🎯 COMPLETE_PLACEMENT: showerLocation preserved as:', newState.showerLocation);
 
       // Save game state to browser DB asynchronously (don't block UI)
       if (scoreData.pointsEarned > 0 || newTiles.some(tile => tile.block.isFilled)) {

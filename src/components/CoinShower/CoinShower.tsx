@@ -34,11 +34,14 @@ const CoinShower: React.FC = () => {
         return;
       }
 
-      // Determine emission origin - always use current shower location
+      // Capture emission origin at time of score change - don't use as dependency
       const emissionOrigin: { x: number; y: number } = {
         x: showerLocation.x,
         y: showerLocation.y
       };
+
+      console.log('🪙 CoinShower: Score increased from', lastScoreRef.current, 'to', score);
+      console.log('🪙 CoinShower: Emission origin:', emissionOrigin);
 
       // Calculate total coins for performance optimization
       const totalCoins = currencyBreakdown.reduce((sum, breakdown) => sum + breakdown.count, 0);
@@ -72,7 +75,7 @@ const CoinShower: React.FC = () => {
       setCoins(prevCoins => [...prevCoins, ...coinsToSpawn]);
     }
     lastScoreRef.current = score;
-  }, [score, showerLocation]);
+  }, [score]); // Removed showerLocation dependency to prevent animation interruption
 
   const generateCoinsFromBreakdown = (
     breakdown: ReturnType<typeof convertPointsToCurrency>,
@@ -107,6 +110,8 @@ const CoinShower: React.FC = () => {
           delay: currentDelay
         });
 
+        console.log(`🪙 Generated coin ${i} for ${denomination.name}: startPos(${origin.x}, ${origin.y}), velocity(${velocityX.toFixed(1)}, ${velocityY.toFixed(1)})`);
+
         currentDelay += delayIncrement;
       }
     }
@@ -116,26 +121,8 @@ const CoinShower: React.FC = () => {
 
   const handleCoinComplete = (coinId: string) => {
     setCoins(prevCoins => prevCoins.filter(coin => coin.id !== coinId));
+    console.log(`filtered ${coinId}`);
   };
-
-  // Cleanup coins that have been around too long (failsafe)
-  useEffect(() => {
-    const cleanupOldCoins = (prevCoins: CoinData[]) => {
-      const now = Date.now();
-      return prevCoins.filter(coin => {
-        // Remove coins older than 5 seconds
-        const timestampStr = coin.id.split('-').pop() || '0';
-        const coinAge = now - Number.parseInt(timestampStr, 10);
-        return coinAge < 5000;
-      });
-    };
-
-    const cleanupInterval = setInterval(() => {
-      setCoins(cleanupOldCoins);
-    }, 1000);
-
-    return () => clearInterval(cleanupInterval);
-  }, []);
 
   return (
     <>

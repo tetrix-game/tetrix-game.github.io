@@ -17,6 +17,49 @@ const shapeContainerCss = {
   transition: 'all 0.2s ease',
   touchAction: 'none' as const,
   boxSizing: 'border-box' as const,
+  border: '3px solid rgba(255, 255, 255, 0.2)',
+};
+
+const turnButtonCss = {
+  width: '102px', // Square dimensions, same as shape container height
+  height: '102px', // Square dimensions, same as shape container height
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  border: '3px solid rgba(255, 255, 255, 0.2)',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '36px',
+  color: 'rgba(255, 255, 255, 0.8)',
+};
+
+const dollarButtonCss = {
+  width: '102px', // Same size as turn buttons
+  height: '102px',
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  border: '3px solid rgba(255, 255, 255, 0.2)',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '48px',
+  color: 'rgba(255, 255, 255, 0.8)',
+};
+
+const containerWrapperCss = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+};
+
+const buttonGroupCss = {
+  display: 'flex',
+  flexDirection: 'row' as const,
+  gap: '4px',
 };
 
 type ShapeOptionProps = {
@@ -26,7 +69,7 @@ type ShapeOptionProps = {
 
 const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
-  const { selectedShapeIndex, tiles } = useTetrixStateContext();
+  const { selectedShapeIndex, tiles, openRotationMenus } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -213,46 +256,128 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     });
   }, [isDragging, shape, tiles, dispatch, isTouchDevice]);
 
+  const handleRotateClockwise = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch({
+      type: 'ROTATE_SHAPE',
+      value: { shapeIndex, clockwise: true }
+    });
+  }, [dispatch, shapeIndex]);
+
+  const handleRotateCounterClockwise = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch({
+      type: 'ROTATE_SHAPE',
+      value: { shapeIndex, clockwise: false }
+    });
+  }, [dispatch, shapeIndex]);
+
+  const handleSpendCoin = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch({
+      type: 'SPEND_COIN',
+      value: {
+        shapeIndex,
+        mousePosition: { x: e.clientX, y: e.clientY }
+      }
+    });
+  }, [dispatch, shapeIndex]);
+
   const isSelected = selectedShapeIndex === shapeIndex;
+  const isRotationMenuOpen = openRotationMenus[shapeIndex] || false;
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        ...shapeContainerCss,
-        border: isSelected ? '2px solid rgba(255, 255, 255, 0.5)' : '2px solid transparent',
-      }}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerEnter={(e) => {
-        if (!isDragging) {
-          e.currentTarget.style.transform = 'scale(1.05)';
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-        }
-      }}
-      onPointerLeave={(e) => {
-        if (!isDragging) {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-        }
-      }}
-    >
-      {shape.map((row, rowIndex) => (
-        row.map((block, colIndex) => (
-          <div
-            key={`${rowIndex}-${colIndex}`}
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              borderRadius: '3px',
-              position: 'relative',
-              opacity: isSelected ? 0.1 : 1,
+    <div style={containerWrapperCss}>
+      <div
+        ref={containerRef}
+        style={{
+          ...shapeContainerCss,
+          border: isSelected ? '3px solid rgba(255, 255, 255, 0.5)' : '3px solid rgba(255, 255, 255, 0.2)',
+        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerEnter={(e) => {
+          if (!isDragging) {
+            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          }
+        }}
+        onPointerLeave={(e) => {
+          if (!isDragging) {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+          }
+        }}
+      >
+        {shape.map((row, rowIndex) => (
+          row.map((block, colIndex) => (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                borderRadius: '3px',
+                position: 'relative',
+                opacity: isSelected ? 0.1 : 1,
+              }}
+            >
+              <BlockVisual block={block} />
+            </div>
+          ))
+        ))}
+      </div>
+
+      {isRotationMenuOpen ? (
+        <div style={buttonGroupCss}>
+          <button
+            style={turnButtonCss}
+            onClick={handleRotateCounterClockwise}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'scale(1.05)';
             }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+            title="Rotate Counter-Clockwise"
           >
-            <BlockVisual block={block} />
-          </div>
-        ))
-      ))}
+            ↺
+          </button>
+
+          <button
+            style={turnButtonCss}
+            onClick={handleRotateClockwise}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+            title="Rotate Clockwise"
+          >
+            ↻
+          </button>
+        </div>
+      ) : (
+        <button
+          style={dollarButtonCss}
+          onClick={handleSpendCoin}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          title="Spend 1 coin to unlock rotation"
+        >
+          💲
+        </button>
+      )}
     </div>
   )
 }

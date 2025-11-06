@@ -1,6 +1,6 @@
 import type { TetrixAction, Tile } from '../../utils/types';
 import { TetrixReducerState } from '../../utils/types';
-import { getShapeGridPositions, generateRandomShape } from '../../utils/shapeUtils';
+import { getShapeGridPositions, generateRandomShape, rotateShape, cloneShape } from '../../utils/shapeUtils';
 import { clearFullLines } from '../../utils/lineUtils';
 import { calculateScore } from '../../utils/scoringUtils';
 import { safeBatchSave } from '../../utils/persistenceUtils';
@@ -47,6 +47,7 @@ export const initialState: TetrixReducerState = {
   shapeOptionBounds: [null, null, null],
   score: 0,
   showCoinDisplay: false,
+  openRotationMenus: [false, false, false], // Initially all rotation menus are closed
 }
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -184,6 +185,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         animationStartPosition: null,
         animationTargetPosition: null,
         score: newScore,
+        openRotationMenus: [false, false, false], // Reset all rotation menus when shape is placed
       };
 
       // Save game state to browser DB asynchronously (don't block UI)
@@ -218,6 +220,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const newState = {
         ...state,
         nextShapes: shapes,
+        openRotationMenus: [false, false, false], // Reset rotation menus when new shapes are set
       };
 
       // Save shapes to database when they are updated
@@ -302,6 +305,67 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     case "RESET_GAME": {
       return {
         ...initialState,
+      };
+    }
+
+    case "ROTATE_SHAPE": {
+      const { shapeIndex, clockwise } = action.value;
+
+      if (shapeIndex < 0 || shapeIndex >= state.nextShapes.length) {
+        return state;
+      }
+
+      const newShapes = [...state.nextShapes];
+      let rotatedShape = cloneShape(newShapes[shapeIndex]);
+
+      if (clockwise) {
+        rotatedShape = rotateShape(rotatedShape);
+      } else {
+        // Rotate counter-clockwise (3 clockwise rotations)
+        rotatedShape = rotateShape(rotateShape(rotateShape(rotatedShape)));
+      }
+
+      newShapes[shapeIndex] = rotatedShape;
+
+      const newState = {
+        ...state,
+        nextShapes: newShapes,
+        // If this is the currently selected shape, update it too
+        selectedShape: state.selectedShapeIndex === shapeIndex ? rotatedShape : state.selectedShape,
+      };
+
+      // Save updated shapes to database
+      safeBatchSave(undefined, undefined, newShapes, newState.savedShape)
+        .catch((error: Error) => {
+          console.error('Failed to save shapes state:', error);
+        });
+
+      return newState;
+    }
+
+    case "SPEND_COIN": {
+      const { shapeIndex, mousePosition: clickPosition } = action.value;
+
+      if (state.score <= 0 || shapeIndex < 0 || shapeIndex >= state.nextShapes.length) {
+        return state; // Can't spend if no coins or invalid index
+      }
+
+      const newScore = Math.max(0, state.score - 1);
+      const newOpenRotationMenus = [...state.openRotationMenus];
+      newOpenRotationMenus[shapeIndex] = true;
+
+      // Save updated score
+      safeBatchSave(newScore)
+        .catch((error: Error) => {
+          console.error('Failed to save score:', error);
+        });
+
+      return {
+        ...state,
+        score: newScore,
+        openRotationMenus: newOpenRotationMenus,
+        mousePosition: clickPosition || state.mousePosition,
+        showerLocation: clickPosition || state.showerLocation, // Update shower location for coin effect
       };
     }
   }

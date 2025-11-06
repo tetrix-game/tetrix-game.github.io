@@ -23,11 +23,12 @@ const CoinShower: React.FC = () => {
 
   // Score change detection
   useEffect(() => {
-    if (score > lastScoreRef.current) {
-      const pointsEarned = score - lastScoreRef.current;
+    if (score !== lastScoreRef.current) {
+      const scoreChange = score - lastScoreRef.current;
+      const pointsForEffect = Math.abs(scoreChange); // Use absolute value for coin shower
 
       // Convert points to currency breakdown
-      const currencyBreakdown = convertPointsToCurrency(pointsEarned);
+      const currencyBreakdown = convertPointsToCurrency(pointsForEffect);
 
       if (currencyBreakdown.length === 0) {
         lastScoreRef.current = score;

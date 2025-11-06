@@ -1,12 +1,11 @@
 import ShapeOption from '../ShapeOption'
-import SavedShape from '../SavedShape'
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes, savedShape } = useTetrixStateContext();
+  const { nextShapes } = useTetrixStateContext();
 
   // Create 3 random shapes on mount
   const initialShapes = useMemo(() => {
@@ -29,7 +28,6 @@ const ShapeSelector = (): JSX.Element => {
       {nextShapes.map((shape, index) => (
         <ShapeOption key={`shape-option-${index}`} shape={shape} shapeIndex={index} />
       ))}
-      <SavedShape shape={savedShape} />
     </div>
   )
 }

@@ -94,6 +94,8 @@ export type TetrixReducerState = {
   score: number;
   // Coin display visibility control
   showCoinDisplay: boolean;
+  // Rotation menu visibility per shape
+  openRotationMenus: boolean[]; // Track which shape rotation menus are open
 }
 
 type SelectShapeAction = {
@@ -171,6 +173,19 @@ type HideCoinDisplayAction = {
   type: 'HIDE_COIN_DISPLAY';
 }
 
+type RotateShapeAction = {
+  type: 'ROTATE_SHAPE';
+  value: { shapeIndex: number; clockwise: boolean };
+}
+
+type SpendCoinAction = {
+  type: 'SPEND_COIN';
+  value: {
+    shapeIndex: number;
+    mousePosition?: { x: number; y: number };
+  };
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -184,6 +199,8 @@ export type TetrixAction =
   | LoadGameStateAction
   | ResetGameAction
   | ShowCoinDisplayAction
-  | HideCoinDisplayAction;
+  | HideCoinDisplayAction
+  | RotateShapeAction
+  | SpendCoinAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

@@ -91,6 +91,10 @@
           - Less ShapeOptions (doesn't allow for using powerups)
           - Clean:
             - Never more than X number of shapes on the screen
+          - Cost:
+            - Buy 10 more shapes for increacingly more points
+            - Buying turns costs increacingly more point extra
+            - Buying queue shuffles costs increacingly more point extra
       - Game Instance Perks:
         - Steak: Bet a portion of points on a successful game
         - Rewards:

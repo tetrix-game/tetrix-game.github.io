@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMusicControl } from '../Header/MusicControlContext';
+import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import './MenuDropdown.css';
 
 const MenuDropdown: React.FC = () => {
@@ -10,6 +11,7 @@ const MenuDropdown: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { isMuted, toggleMute } = useMusicControl();
+  const dispatch = useTetrixDispatchContext();
 
   const toggleDropdown = () => {
     if (!isOpen && buttonRef.current) {
@@ -24,13 +26,34 @@ const MenuDropdown: React.FC = () => {
     setIsDebugOpen(!isDebugOpen);
   };
 
-  // Test notification function for debugging
+  // Test notification function for debugging - opens prompt for custom currency amount
   const testNotification = () => {
-    // Dispatch a custom event that the ScoreNotification component can listen to
-    const event = new CustomEvent('tetrix-test-notification', {
-      detail: { message: '+10 TEST points!' }
+    const input = globalThis.prompt('Enter amount of currency to add:', '100');
+
+    // Check if user cancelled the prompt
+    if (input === null) {
+      return;
+    }
+
+    // Parse and validate the input
+    const amount = Number.parseInt(input.trim(), 10);
+    if (Number.isNaN(amount) || amount <= 0) {
+      alert('Please enter a valid positive number');
+      return;
+    }
+
+    // Dispatch ADD_SCORE action to update the score
+    // This will trigger the score notification animation automatically
+    dispatch({
+      type: 'ADD_SCORE',
+      value: {
+        scoreData: {
+          rowsCleared: 0,
+          columnsCleared: 0,
+          pointsEarned: amount
+        }
+      }
     });
-    document.dispatchEvent(event);
   };
 
   // Close dropdown when clicking outside
@@ -41,13 +64,13 @@ const MenuDropdown: React.FC = () => {
       const target = event.target as Node;
 
       // Don't close if clicking on the button
-      if (buttonRef.current && buttonRef.current.contains(target)) {
+      if (buttonRef.current?.contains(target)) {
         return;
       }
 
       // Don't close if clicking inside the dropdown
       const dropdownElement = document.querySelector('.dropdown-overlay');
-      if (dropdownElement && dropdownElement.contains(target)) {
+      if (dropdownElement?.contains(target)) {
         return;
       }
 

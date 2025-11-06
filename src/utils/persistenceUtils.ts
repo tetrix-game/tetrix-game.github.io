@@ -23,13 +23,30 @@ function isIndexedDBAvailable(): boolean {
 }
 
 /**
- * Initialize the IndexedDB database for Tetrix game
+ * Recreate database with proper schema
  */
-export function initializeDatabase(): Promise<IDBDatabase> {
-  if (!isIndexedDBAvailable()) {
-    return Promise.reject(new Error('IndexedDB not available in this environment'));
-  }
+async function recreateDatabase(): Promise<IDBDatabase> {
+  const deleteRequest = indexedDB.deleteDatabase(DB_NAME);
 
+  return new Promise((resolve, reject) => {
+    deleteRequest.onsuccess = () => {
+      // Small delay then retry
+      setTimeout(() => {
+        openDatabase().then(resolve).catch(reject);
+      }, 100);
+    };
+
+    deleteRequest.onerror = () => {
+      console.error('Failed to delete corrupted database');
+      reject(new Error('Database schema mismatch and failed to recreate'));
+    };
+  });
+}
+
+/**
+ * Open database with proper error handling
+ */
+function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -38,36 +55,73 @@ export function initializeDatabase(): Promise<IDBDatabase> {
       reject(new Error(`Failed to open IndexedDB: ${request.error}`));
     };
 
-    request.onsuccess = () => {
-      resolve(request.result);
+    request.onsuccess = async () => {
+      const db = request.result;
+
+      // Verify all required stores exist
+      const requiredStores = [GAME_STATE_STORE, SCORE_STORE, TILES_STORE, SHAPES_STORE, SETTINGS_STORE];
+      const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
+
+      if (missingStores.length > 0) {
+        console.warn('Missing object stores:', missingStores, 'Recreating database...');
+        db.close();
+
+        try {
+          const newDb = await recreateDatabase();
+          resolve(newDb);
+        } catch (error) {
+          reject(error);
+        }
+        return;
+      }
+
+      resolve(db);
     };
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
+      console.log('Upgrading database from version', event.oldVersion, 'to', event.newVersion);
+
       // Create legacy game state store for backward compatibility
       if (!db.objectStoreNames.contains(GAME_STATE_STORE)) {
+        console.log('Creating', GAME_STATE_STORE, 'store');
         db.createObjectStore(GAME_STATE_STORE);
       }
 
       // Create granular stores
       if (!db.objectStoreNames.contains(SCORE_STORE)) {
+        console.log('Creating', SCORE_STORE, 'store');
         db.createObjectStore(SCORE_STORE);
       }
 
       if (!db.objectStoreNames.contains(TILES_STORE)) {
+        console.log('Creating', TILES_STORE, 'store');
         db.createObjectStore(TILES_STORE);
       }
 
       if (!db.objectStoreNames.contains(SHAPES_STORE)) {
+        console.log('Creating', SHAPES_STORE, 'store');
         db.createObjectStore(SHAPES_STORE);
       }
 
       if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
+        console.log('Creating', SETTINGS_STORE, 'store');
         db.createObjectStore(SETTINGS_STORE);
       }
     };
   });
+}
+
+/**
+ * Initialize the IndexedDB database for Tetrix game
+ */
+export function initializeDatabase(): Promise<IDBDatabase> {
+  if (!isIndexedDBAvailable()) {
+    return Promise.reject(new Error('IndexedDB not available in this environment'));
+  }
+
+  return openDatabase();
 }
 
 /**
@@ -149,20 +203,30 @@ export async function saveScore(score: number): Promise<void> {
     const data: ScorePersistenceData = { score, lastUpdated: Date.now() };
 
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([SCORE_STORE], 'readwrite');
-      const store = transaction.objectStore(SCORE_STORE);
+      try {
+        const transaction = db.transaction([SCORE_STORE], 'readwrite');
 
-      const request = store.put(data, 'current');
+        transaction.onerror = () => {
+          console.error('Transaction failed for score save:', transaction.error);
+          reject(new Error(`Transaction failed: ${transaction.error}`));
+        };
 
-      request.onsuccess = () => {
-        console.log('Score saved successfully:', score);
-        resolve();
-      };
+        const store = transaction.objectStore(SCORE_STORE);
+        const request = store.put(data, 'current');
 
-      request.onerror = () => {
-        console.error('Failed to save score:', request.error);
-        reject(new Error(`Failed to save score: ${request.error}`));
-      };
+        request.onsuccess = () => {
+          console.log('Score saved successfully:', score);
+          resolve();
+        };
+
+        request.onerror = () => {
+          console.error('Failed to save score:', request.error);
+          reject(new Error(`Failed to save score: ${request.error}`));
+        };
+      } catch (transactionError) {
+        console.error('Failed to create transaction for score save:', transactionError);
+        reject(new Error(`Transaction creation failed: ${transactionError}`));
+      }
     });
   } catch (error) {
     console.error('Error saving score:', error);
@@ -450,23 +514,43 @@ export async function safeBatchSave(
 ): Promise<void> {
   const promises: Promise<void>[] = [];
 
+  // Add score save with error handling
   if (score !== undefined) {
-    promises.push(saveScore(score));
+    promises.push(
+      saveScore(score).catch((error) => {
+        console.warn('Failed to save score, continuing without persistence:', error.message);
+      })
+    );
   }
 
+  // Add tiles save with error handling
   if (tiles) {
-    promises.push(saveTiles(tiles));
+    promises.push(
+      saveTiles(tiles).catch((error) => {
+        console.warn('Failed to save tiles, continuing without persistence:', error.message);
+      })
+    );
   }
 
+  // Add shapes save with error handling
   if (nextShapes !== undefined || savedShape !== undefined) {
-    // Load current shapes first to avoid overwriting
-    const currentShapes = await loadShapes();
-    promises.push(saveShapes(
-      nextShapes ?? currentShapes?.nextShapes ?? [],
-      savedShape ?? currentShapes?.savedShape ?? null
-    ));
+    promises.push(
+      (async () => {
+        try {
+          // Load current shapes first to avoid overwriting
+          const currentShapes = await loadShapes();
+          await saveShapes(
+            nextShapes ?? currentShapes?.nextShapes ?? [],
+            savedShape ?? currentShapes?.savedShape ?? null
+          );
+        } catch (error) {
+          console.warn('Failed to save shapes, continuing without persistence:', error instanceof Error ? error.message : 'Unknown error');
+        }
+      })()
+    );
   }
 
+  // Wait for all saves to complete (or fail gracefully)
   await Promise.all(promises);
 }
 

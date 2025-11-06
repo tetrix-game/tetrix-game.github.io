@@ -42,18 +42,16 @@ export function initializeDatabase(): Promise<IDBDatabase> {
         gameStore.add({
           score: 0,
           tiles: [],
-          currentMusicTrack: 0,
           nextShapes: [],
           savedShape: null
         }, 'current');
       }
 
-      // Create music state store (current track, volume, etc.)
+      // Create music state store (mute status, user interaction, etc.)
       if (!db.objectStoreNames.contains(MUSIC_STATE_STORE)) {
         const musicStore = db.createObjectStore(MUSIC_STATE_STORE);
         // Initialize with default values
         musicStore.add({
-          currentTrack: 0,
           isMuted: false,
           hasUserInteracted: false
         }, 'current');
@@ -111,7 +109,6 @@ export async function loadGameState(): Promise<GamePersistenceData | null> {
           const gameData = {
             score: result.score || 0,
             tiles: result.tiles || [],
-            currentMusicTrack: result.currentMusicTrack || 0,
             nextShapes: result.nextShapes || [],
             savedShape: result.savedShape || null,
           };
@@ -134,10 +131,9 @@ export async function loadGameState(): Promise<GamePersistenceData | null> {
 }
 
 /**
- * Save music state (current track, mute status, etc.)
+ * Save music state (mute status, user interaction, etc.)
  */
 export async function saveMusicState(musicData: {
-  currentTrack: number;
   isMuted: boolean;
   hasUserInteracted: boolean;
 }): Promise<void> {
@@ -170,7 +166,6 @@ export async function saveMusicState(musicData: {
  * Load music state from IndexedDB
  */
 export async function loadMusicState(): Promise<{
-  currentTrack: number;
   isMuted: boolean;
   hasUserInteracted: boolean;
 } | null> {
@@ -220,7 +215,6 @@ export async function clearAllSavedData(): Promise<void> {
       // Reset music state
       const musicStore = transaction.objectStore(MUSIC_STATE_STORE);
       musicStore.put({
-        currentTrack: 0,
         isMuted: false,
         hasUserInteracted: false
       }, 'current');

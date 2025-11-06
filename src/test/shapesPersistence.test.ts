@@ -69,7 +69,6 @@ describe('Shape Options Persistence', () => {
     const gameData: GamePersistenceData = {
       score: 100,
       tiles: [] as Tile[],
-      currentMusicTrack: 1,
       nextShapes: [sampleShape, sampleShape, sampleShape],
       savedShape: sampleShape
     };
@@ -95,7 +94,6 @@ describe('Shape Options Persistence', () => {
     const gameData: GamePersistenceData = {
       score: 0,
       tiles: [],
-      currentMusicTrack: 0,
       nextShapes: [],
       savedShape: null
     };
@@ -112,7 +110,6 @@ describe('Shape Options Persistence', () => {
     const gameData: GamePersistenceData = {
       score: 500,
       tiles: [],
-      currentMusicTrack: 2,
       nextShapes: [{} as Shape, {} as Shape],
       savedShape: {} as Shape
     };

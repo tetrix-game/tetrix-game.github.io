@@ -1,9 +1,12 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Drag and drop isn't working nor is the mouse
+- Music simplification
+- Points toast isn't going away nor is it nearly juicy enough
+- saveGameState takes too much too often, should only upsert state
+- Shape placeholder
+- Automatic game over calculation
+- Error boundary is snarky, but only specifically for the rant effect. It needs to catch all errors
 - action sounds
-- background music
-- score
 - clearance animations
 
 

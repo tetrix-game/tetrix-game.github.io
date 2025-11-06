@@ -181,7 +181,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         saveGameState({
           score: newScore,
           tiles: newTiles,
-          currentMusicTrack: 0, // Will be updated by music component
           nextShapes: updatedNextShapes,
           savedShape: newState.savedShape,
         }).catch(error => {
@@ -219,7 +218,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       saveGameState({
         score: newState.score,
         tiles: newState.tiles,
-        currentMusicTrack: 0, // Will be updated by music component
         nextShapes: shapes,
         savedShape: newState.savedShape,
       }).catch(error => {
@@ -264,7 +262,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       saveGameState({
         score: newScore,
         tiles: state.tiles,
-        currentMusicTrack: 0, // Will be updated by music component
         nextShapes: state.nextShapes,
         savedShape: state.savedShape,
       }).catch(error => {

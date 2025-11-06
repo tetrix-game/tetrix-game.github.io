@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { saveMusicState, loadMusicState, saveGameState } from '../../utils/persistenceUtils';
+import { saveMusicState, loadMusicState } from '../../utils/persistenceUtils';
 import './BackgroundMusic.css';
 
 interface BackgroundMusicProps {
@@ -9,7 +9,6 @@ interface BackgroundMusicProps {
 
 const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [shouldPlay, setShouldPlay] = useState(false);
   const [musicStateLoaded, setMusicStateLoaded] = useState(false);
@@ -28,7 +27,6 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
       try {
         const musicState = await loadMusicState();
         if (musicState) {
-          setCurrentTrackIndex(musicState.currentTrack);
           setHasUserInteracted(musicState.hasUserInteracted);
           if (musicState.hasUserInteracted) {
             setShouldPlay(true);
@@ -44,29 +42,17 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
     loadSavedMusicState();
   }, []);
 
-  // Save music state when track changes
+  // Save music state when interaction or mute status changes
   useEffect(() => {
     if (musicStateLoaded) {
       saveMusicState({
-        currentTrack: currentTrackIndex,
         isMuted,
         hasUserInteracted,
-      }).catch(error => {
+      }).catch((error: Error) => {
         console.error('Failed to save music state:', error);
       });
-
-      // Also update the game state with current music track
-      saveGameState({
-        score: tetrixState.score,
-        tiles: tetrixState.tiles,
-        currentMusicTrack: currentTrackIndex,
-        nextShapes: tetrixState.nextShapes,
-        savedShape: tetrixState.savedShape,
-      }).catch(error => {
-        console.error('Failed to save game state with music:', error);
-      });
     }
-  }, [currentTrackIndex, isMuted, hasUserInteracted, musicStateLoaded, tetrixState.score, tetrixState.tiles, tetrixState.nextShapes, tetrixState.savedShape]);
+  }, [isMuted, hasUserInteracted, musicStateLoaded]);
 
   // Monitor for shape placements to detect first user interaction
   useEffect(() => {
@@ -80,18 +66,24 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
     }
   }, [tetrixState.placementAnimationState, tetrixState.selectedShape, tetrixState.tiles, hasUserInteracted]);
 
+  // Set up audio and handle track changes
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Set up the audio element
-    audio.src = tracks[currentTrackIndex];
-    audio.loop = false; // We'll handle track changes manually
-    audio.volume = 0.3; // Set a reasonable default volume
+    // Function to get a random track
+    const getRandomTrack = () => {
+      const randomIndex = Math.floor(Math.random() * tracks.length);
+      return tracks[randomIndex];
+    };
 
-    // Only auto-play the music after user interaction
-    const playMusic = async () => {
+    // Function to play a random track
+    const playRandomTrack = async () => {
       if (shouldPlay && !isMuted) {
+        audio.src = getRandomTrack();
+        audio.loop = false;
+        audio.volume = 0.3;
+
         try {
           await audio.play();
         } catch (error) {
@@ -100,19 +92,24 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
       }
     };
 
-    playMusic();
-
-    // Handle track ending to play next track
+    // Handle track ending to play another random track
     const handleTrackEnd = () => {
-      setCurrentTrackIndex((prevIndex) => (prevIndex + 1) % tracks.length);
+      if (shouldPlay && !isMuted) {
+        playRandomTrack();
+      }
     };
+
+    // Start playing if conditions are met
+    if (shouldPlay && !isMuted) {
+      playRandomTrack();
+    }
 
     audio.addEventListener('ended', handleTrackEnd);
 
     return () => {
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [currentTrackIndex, tracks, shouldPlay, isMuted]);
+  }, [shouldPlay, isMuted, tracks]);
 
   useEffect(() => {
     const audio = audioRef.current;

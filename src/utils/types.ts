@@ -38,7 +38,6 @@ export type ScoreData = {
 export type GamePersistenceData = {
   score: number;
   tiles: Tile[];
-  currentMusicTrack: number;
   nextShapes: Shape[];
   savedShape: Shape | null;
 };

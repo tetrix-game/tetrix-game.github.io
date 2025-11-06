@@ -2,7 +2,6 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   background: linear-gradient(145deg, rgba(0, 255, 136, 0.95), rgba(0, 200, 100, 0.95));
   color: #ffffff;
   font-family: 'Courier New', monospace;
@@ -14,13 +13,11 @@
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
   z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
   pointer-events: none;
-}
-
-.score-notification.visible {
-  opacity: 1;
+  /* Center the element around the transform origin */
+  transform-origin: center;
+  margin-left: -50%;
+  margin-top: -50%;
 }
 
 /* Responsive design */

@@ -273,7 +273,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         ...state,
         score: newScore,
         mousePosition: clickPosition || state.mousePosition, // Update mouse position if provided
-        showerLocation: clickPosition || state.showerLocation, // Update shower location if provided (for debug injection)
+        // showerLocation intentionally NOT updated - only update on shape placement
       };
     }
 

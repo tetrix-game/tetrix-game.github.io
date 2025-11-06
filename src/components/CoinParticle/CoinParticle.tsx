@@ -22,7 +22,7 @@ const CoinParticle: React.FC<CoinParticleProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const animationRef = useRef<number>();
   const startTimeRef = useRef<number>();
-  
+
   // Store initial props in refs to prevent re-renders from affecting animation
   const initialPropsRef = useRef({
     startPosition,
@@ -40,7 +40,7 @@ const CoinParticle: React.FC<CoinParticleProps> = ({
   useEffect(() => {
     // Use initial props from ref to prevent animation restart on re-renders
     const { startPosition: initialStart, velocity: initialVelocity, onComplete: initialOnComplete, delay: initialDelay } = initialPropsRef.current;
-    
+
     // Apply the delay before starting the animation
     const startDelay = setTimeout(() => {
       setIsVisible(true);

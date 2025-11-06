@@ -1,10 +1,9 @@
 .shape-container {
-  transition: transform 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+  /* Base styles - no transitions by default to avoid unwanted animations */
   transform-origin: top;
   overflow: hidden;
   height: auto;
   min-height: 110px;
-  /* Ensure consistent height for transition */
 }
 
 .shape-container.virtual {
@@ -14,19 +13,15 @@
   min-height: 110px;
   opacity: 1;
   visibility: visible;
-  /* Enable transition for smooth sliding */
-  transition: transform 0.4s ease-out;
 }
 
 .shape-container.removing {
+  /* Only removing containers animate height, opacity, and scale */
+  transition: height 0.4s ease-out, opacity 0.4s ease-out, transform 0.4s ease-out;
   height: 0 !important;
   min-height: 0 !important;
   opacity: 0;
   transform: scaleY(0);
   margin: 0;
   padding: 0;
-}
-
-.shape-container.sliding-up {
-  transform: translateY(-110px);
 }

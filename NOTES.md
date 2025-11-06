@@ -1,6 +1,5 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Music simplification
 - Points toast isn't going away nor is it nearly juicy enough
 - saveGameState takes too much too often, should only upsert state
 - Shape placeholder

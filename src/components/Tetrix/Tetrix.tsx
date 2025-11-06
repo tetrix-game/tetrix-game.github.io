@@ -2,6 +2,7 @@ import './Tetrix.css';
 import Grid from '../Grid';
 import ShapeSelector from '../ShapeSelector';
 import DraggingShape from '../DraggingShape';
+import ScoreNotification from '../ScoreNotification';
 import { useTetrixStateContext, useTetrixDispatchContext } from './TetrixContext';
 import { useEffect } from 'react';
 
@@ -39,6 +40,7 @@ const Tetrix = () => {
       <Grid />
       <ShapeSelector />
       <DraggingShape />
+      <ScoreNotification />
     </div>
   )
 }

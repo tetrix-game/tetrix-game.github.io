@@ -14,15 +14,13 @@ interface NotificationData {
 
 const ScoreNotification: React.FC = () => {
   const { score } = useTetrixStateContext();
-  const [lastScore, setLastScore] = useState(score);
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const animationRef = useRef<number>();
+  const lastScoreRef = useRef(score);
 
   // Animation constants
   const ANIMATION_DURATION = 1000; // 1 second in milliseconds
   const GRAVITY = 800; // pixels per second squared
-  const SCREEN_CENTER_X = globalThis.window ? globalThis.window.innerWidth / 2 : 400;
-  const SCREEN_CENTER_Y = globalThis.window ? globalThis.window.innerHeight / 2 : 300;
 
   // Animation loop
   useEffect(() => {
@@ -73,13 +71,11 @@ const ScoreNotification: React.FC = () => {
 
   // Score change detection
   useEffect(() => {
-    if (score > lastScore) {
-      const pointsEarned = score - lastScore;
+    if (score > lastScoreRef.current) {
+      const pointsEarned = score - lastScoreRef.current;
       const message = `+${pointsEarned} points!`;
 
-      // Get current screen center (recalculated each time for responsive behavior)
-      const screenCenterX = globalThis.window ? globalThis.window.innerWidth / 2 : 400;
-      const screenCenterY = globalThis.window ? globalThis.window.innerHeight / 2 : 300;
+      console.log('🎉 ScoreNotification: Creating notification for', pointsEarned, 'points');
 
       // Calculate random trajectory within 15 degrees of vertical (75° to 105°)
       const angle = (75 + Math.random() * 30) * (Math.PI / 180);
@@ -93,25 +89,60 @@ const ScoreNotification: React.FC = () => {
         id: `${Date.now()}-${Math.random()}`, // Unique ID
         message,
         startTime: performance.now(),
-        startPos: { x: screenCenterX, y: screenCenterY },
+        startPos: { x: 0, y: 0 }, // Start at CSS center (0,0 relative to transform)
         velocity: { x: velocityX, y: velocityY },
-        currentPos: { x: screenCenterX, y: screenCenterY },
+        currentPos: { x: 0, y: 0 }, // Start at CSS center
         opacity: 1
       };
 
+      console.log('🎉 ScoreNotification: Created notification:', newNotification);
+
       setNotifications(prev => [...prev, newNotification]);
-      setLastScore(score);
     }
-  }, [score, lastScore]);
+    lastScoreRef.current = score;
+  }, [score]);
+
+  // Test button for debugging (remove in production)
+  const testNotification = () => {
+    const newNotification: NotificationData = {
+      id: `test-${Date.now()}`,
+      message: '+10 TEST points!',
+      startTime: performance.now(),
+      startPos: { x: 0, y: 0 },
+      velocity: { x: 0, y: -200 },
+      currentPos: { x: 0, y: 0 },
+      opacity: 1
+    };
+    console.log('🎯 TEST: Creating test notification:', newNotification);
+    setNotifications(prev => [...prev, newNotification]);
+  };
 
   return (
     <>
+      {/* Temporary test button - remove in production */}
+      <button
+        onClick={testNotification}
+        style={{
+          position: 'fixed',
+          top: '10px',
+          left: '10px',
+          zIndex: 20000,
+          padding: '10px',
+          backgroundColor: 'red',
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        TEST NOTIFICATION
+      </button>
+
       {notifications.map(notification => (
         <div
           key={notification.id}
           className="score-notification"
           style={{
-            transform: `translate(${notification.currentPos.x - SCREEN_CENTER_X}px, ${notification.currentPos.y - SCREEN_CENTER_Y}px)`,
+            transform: `translate(${notification.currentPos.x}px, ${notification.currentPos.y}px)`,
             opacity: notification.opacity,
           }}
         >

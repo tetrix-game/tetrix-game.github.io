@@ -9,9 +9,7 @@
     "publish": "npx vite build && gh-pages -d dist",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test": "vitest run"
   },
   "dependencies": {
     "@uidotdev/usehooks": "^2.4.1",

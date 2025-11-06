@@ -36,21 +36,21 @@ const MenuDropdown: React.FC = () => {
   // Close dropdown when clicking outside
   useEffect(() => {
     if (!isOpen) return;
-    
+
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-      
+
       // Don't close if clicking on the button
       if (buttonRef.current && buttonRef.current.contains(target)) {
         return;
       }
-      
+
       // Don't close if clicking inside the dropdown
       const dropdownElement = document.querySelector('.dropdown-overlay');
       if (dropdownElement && dropdownElement.contains(target)) {
         return;
       }
-      
+
       // Close if clicking outside
       setIsOpen(false);
     };
@@ -93,8 +93,8 @@ const MenuDropdown: React.FC = () => {
       </button>
 
       {isOpen && buttonRect && createPortal(
-        <div 
-          className="dropdown-overlay" 
+        <div
+          className="dropdown-overlay"
           style={{
             position: 'fixed',
             top: buttonRect.bottom + window.scrollY,
@@ -116,9 +116,9 @@ const MenuDropdown: React.FC = () => {
               </label>
               <span className="menu-label">Music</span>
             </div>
-            
+
             <div className="menu-item debug-submenu">
-              <button 
+              <button
                 className="debug-toggle"
                 onClick={toggleDebugMenu}
                 aria-expanded={isDebugOpen}
@@ -127,11 +127,11 @@ const MenuDropdown: React.FC = () => {
                 <span className={`debug-arrow ${isDebugOpen ? 'open' : ''}`}>▶</span>
               </button>
             </div>
-            
+
             {isDebugOpen && (
               <div className="debug-submenu-content">
                 <div className="menu-item submenu-item">
-                  <button 
+                  <button
                     className="debug-action-button"
                     onClick={testNotification}
                     title="Test score notification animation"

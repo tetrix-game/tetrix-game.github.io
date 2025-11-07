@@ -1,27 +1,19 @@
 .shape-container {
-  /* Base styles - no transitions by default to avoid unwanted animations */
-  transform-origin: top;
+  /* Base styles with simple height transition for removal animation */
   overflow: hidden;
-  height: auto;
+  height: 110px;
   min-height: 110px;
+  /* Ensure minimum height is maintained */
+  transition: height 0.4s ease-out;
+  flex-shrink: 0;
+  /* Prevent flex compression */
 }
 
-.shape-container.virtual {
-  /* Virtual containers maintain their full height and opacity */
-  /* They are hidden by parent container clipping, not opacity */
-  height: auto;
-  min-height: 110px;
-  opacity: 1;
-  visibility: visible;
-}
+/* Virtual containers are identical to regular containers - parent handles clipping */
 
 .shape-container.removing {
-  /* Only removing containers animate height, opacity, and scale */
-  transition: height 0.4s ease-out, opacity 0.4s ease-out, transform 0.4s ease-out;
-  height: 0 !important;
-  min-height: 0 !important;
-  opacity: 0;
-  transform: scaleY(0);
-  margin: 0;
-  padding: 0;
+  /* Shrink to height 0 for seamless removal */
+  height: 0;
+  min-height: 0;
+  /* Override min-height during removal */
 }

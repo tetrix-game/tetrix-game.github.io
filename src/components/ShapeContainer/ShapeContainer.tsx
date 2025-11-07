@@ -23,8 +23,6 @@ const ShapeContainer = ({ shape, shapeIndex, isVirtual = false }: ShapeContainer
   const isRotationMenuOpen = openRotationMenus[shapeIndex] || false;
   const isRemoving = removingShapeIndex === shapeIndex;
 
-  console.log(`ShapeContainer ${shapeIndex}: removing=${isRemoving}, removingIndex=${removingShapeIndex}, virtual=${isVirtual}`);
-
   // Handle animation completion
   useEffect(() => {
     if (isRemoving) {

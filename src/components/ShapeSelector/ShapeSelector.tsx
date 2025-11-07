@@ -3,6 +3,17 @@ import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/Tetri
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
 
+// Use WeakMap to assign stable IDs to shapes
+const shapeIds = new WeakMap<object, string>();
+let idCounter = 0;
+
+const getShapeId = (shape: object): string => {
+  if (!shapeIds.has(shape)) {
+    shapeIds.set(shape, `shape-${++idCounter}`);
+  }
+  return shapeIds.get(shape)!;
+};
+
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const { nextShapes, maxVisibleShapes } = useTetrixStateContext();
@@ -27,7 +38,7 @@ const ShapeSelector = (): JSX.Element => {
 
   // Calculate height based on visible shapes only - parent clips virtual shapes
   const visibleShapeCount = Math.min(nextShapes.length, maxVisibleShapes);
-  const containerHeight = visibleShapeCount * 120; // 102px shape + 18px gap estimate
+  const containerHeight = visibleShapeCount * 118; // 110px container + 8px gap
 
   return (
     <div
@@ -46,7 +57,7 @@ const ShapeSelector = (): JSX.Element => {
 
         return (
           <ShapeContainer
-            key={`shape-container-${index}`}
+            key={getShapeId(shape)}
             shape={shape}
             shapeIndex={index}
             isVirtual={isVirtual}

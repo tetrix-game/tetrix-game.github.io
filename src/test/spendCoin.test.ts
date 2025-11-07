@@ -96,8 +96,8 @@ describe('Spend Coin Feature', () => {
     expect(newState.nextShapes).toEqual(newShapes);
   });
 
-  test('COMPLETE_PLACEMENT resets all rotation menus', () => {
-    // Create a test state with some opened rotation menus and a selected shape
+  test('COMPLETE_SHAPE_REMOVAL preserves rotation menus for remaining shapes', () => {
+    // Create a test state with some opened rotation menus
     const testShapes = [
       generateRandomShape(),
       generateRandomShape(),
@@ -106,23 +106,23 @@ describe('Spend Coin Feature', () => {
 
     const state = {
       ...initialState,
-      tiles: initialState.tiles, // Start with empty grid
       nextShapes: testShapes,
-      selectedShape: testShapes[0],
-      selectedShapeIndex: 0,
-      mouseGridLocation: { row: 5, column: 5 },
       openRotationMenus: [true, true, false], // Some menus are open
-      score: 10,
+      removingShapeIndex: 0, // Remove the first shape
+      shapesSliding: true,
     };
 
-    // Complete placement
+    // Complete shape removal
     const newState = tetrixReducer(state, {
-      type: 'COMPLETE_PLACEMENT'
+      type: 'COMPLETE_SHAPE_REMOVAL'
     });
 
-    // All rotation menus should be reset
-    expect(newState.openRotationMenus).toEqual([false, false, false]);
-    expect(newState.selectedShape).toBe(null);
-    expect(newState.selectedShapeIndex).toBe(null);
+    // Only the removed shape's menu should be gone, others preserved
+    // Original was [true, true, false] for indices [0, 1, 2]
+    // After removing index 0, we should have [true, false] for indices [0, 1] (previously 1, 2)
+    expect(newState.openRotationMenus[0]).toBe(true); // Was index 1, now index 0
+    expect(newState.openRotationMenus[1]).toBe(false); // Was index 2, now index 1
+    expect(newState.removingShapeIndex).toBe(null);
+    expect(newState.shapesSliding).toBe(false);
   });
 });

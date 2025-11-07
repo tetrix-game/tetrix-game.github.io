@@ -380,8 +380,10 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         }
       }
 
-      // Update rotation menus to match new array length
-      const newOpenRotationMenus = new Array(updatedNextShapes.length).fill(false);
+      // Preserve rotation menu states for remaining shapes, removing the used shape's state
+      const newOpenRotationMenus = state.openRotationMenus
+        .filter((_, index) => index !== removedIndex) // Remove the state for the removed shape
+        .concat(new Array(Math.max(0, updatedNextShapes.length - remainingShapes.length)).fill(false)); // Add false for any new shapes
 
       const newState = {
         ...state,

@@ -69,8 +69,16 @@ export type GameSettingsPersistenceData = {
   lastUpdated: number;
 };
 
+// Game state types - simplified for level-based play
+export type GameState = 'playing' | 'map';
+
 // Reducer types
 export type TetrixReducerState = {
+  // Game state management - simplified
+  gameState: GameState;
+  currentLevel: number; // Current level being played
+  isMapUnlocked: boolean; // Whether map has been unlocked
+
   tiles: Tile[];
   nextShapes: Shape[];
   savedShape: Shape | null;
@@ -92,6 +100,7 @@ export type TetrixReducerState = {
   shapeOptionBounds: (ShapeOptionBounds | null)[];
   // Scoring system
   score: number;
+  totalLinesCleared: number; // Track total lines cleared for objectives
   // Coin display visibility control
   showCoinDisplay: boolean;
   // Shape queue configuration
@@ -209,6 +218,23 @@ type RemoveShapeOptionAction = {
   type: 'REMOVE_SHAPE_OPTION';
 }
 
+type SetLevelAction = {
+  type: 'SET_LEVEL';
+  value: { levelIndex: number };
+}
+
+type OpenMapAction = {
+  type: 'OPEN_MAP';
+}
+
+type CloseMapAction = {
+  type: 'CLOSE_MAP';
+}
+
+type UnlockMapAction = {
+  type: 'UNLOCK_MAP';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -228,6 +254,10 @@ export type TetrixAction =
   | StartShapeRemovalAction
   | CompleteShapeRemovalAction
   | AddShapeOptionAction
-  | RemoveShapeOptionAction;
+  | RemoveShapeOptionAction
+  | SetLevelAction
+  | OpenMapAction
+  | CloseMapAction
+  | UnlockMapAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

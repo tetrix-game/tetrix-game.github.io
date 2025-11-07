@@ -1,13 +1,21 @@
 import Header from './components/Header';
 import Tetrix from './components/Tetrix';
+import GameMap from './components/GameMap';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
+import { useTetrixStateContext } from './components/Tetrix/TetrixContext';
 import './App.css';
 
 const App = () => {
+  const { gameState } = useTetrixStateContext();
+
   return (
     <div className="App">
       <Header />
-      <Tetrix />
+      {gameState === 'playing' ? (
+        <Tetrix />
+      ) : (
+        <GameMap />
+      )}
       <FullScreenFloatingActionButton />
     </div>
   )

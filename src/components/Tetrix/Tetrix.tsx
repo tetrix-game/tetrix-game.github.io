@@ -4,10 +4,11 @@ import ShapeSelector from '../ShapeSelector';
 import DraggingShape from '../DraggingShape';
 import CoinShower from '../CoinShower';
 import { useTetrixStateContext, useTetrixDispatchContext } from './TetrixContext';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { set } from 'lodash';
 
-const Tetrix = () => {
-  const { selectedShape } = useTetrixStateContext();
+const Tetrix: React.FC = () => {
+  const { selectedShape, gameState } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
 
   // Global pointerUp handler to catch drops outside the grid
@@ -34,6 +35,11 @@ const Tetrix = () => {
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
   }, [selectedShape, dispatch]);
+
+  // Only render when in playing state
+  if (gameState !== 'playing') {
+    return null;
+  }
 
   return (
     <div className="tetrix">

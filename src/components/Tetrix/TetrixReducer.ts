@@ -28,6 +28,11 @@ const makeTiles = () => {
 }
 
 export const initialState: TetrixReducerState = {
+  // Game state management - simplified
+  gameState: 'playing',
+  currentLevel: 0,
+  isMapUnlocked: false,
+
   tiles: makeTiles(),
   nextShapes: [],
   savedShape: null,
@@ -46,6 +51,7 @@ export const initialState: TetrixReducerState = {
   animationTargetPosition: null,
   shapeOptionBounds: [],
   score: 0,
+  totalLinesCleared: 0,
   showCoinDisplay: false,
   queueSize: -1, // Infinite by default
   shapesUsed: 0,
@@ -165,6 +171,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Calculate score for lines cleared
       const scoreData = calculateScore(clearedRows.length, clearedColumns.length);
       const newScore = state.score + scoreData.pointsEarned;
+      const newTotalLinesCleared = state.totalLinesCleared + clearedRows.length + clearedColumns.length;
 
       // Save game state to browser DB asynchronously (don't block UI)
       if (scoreData.pointsEarned > 0 || newTiles.some(tile => tile.block.isFilled)) {
@@ -175,10 +182,11 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       }
 
       // Start the shape removal animation
-      return {
+      const newState = {
         ...state,
         tiles: newTiles,
         score: newScore,
+        totalLinesCleared: newTotalLinesCleared,
         removingShapeIndex: state.selectedShapeIndex,
         shapesSliding: true,
         selectedShape: null,
@@ -190,6 +198,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         animationStartPosition: null,
         animationTargetPosition: null,
       };
+
+      return newState;
     }
 
     case "CLEAR_SELECTION": {
@@ -474,6 +484,35 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         });
 
       return newState;
+    }
+
+    case "SET_LEVEL": {
+      const { levelIndex } = action.value;
+      return {
+        ...state,
+        currentLevel: levelIndex,
+      };
+    }
+
+    case "OPEN_MAP": {
+      return {
+        ...state,
+        gameState: 'map',
+      };
+    }
+
+    case "CLOSE_MAP": {
+      return {
+        ...state,
+        gameState: 'playing',
+      };
+    }
+
+    case "UNLOCK_MAP": {
+      return {
+        ...state,
+        isMapUnlocked: true,
+      };
     }
   }
 

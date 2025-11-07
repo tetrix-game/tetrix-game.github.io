@@ -59,6 +59,9 @@ const Header = () => {
         <div className="tetrix_header_start">
           <MenuDropdown />
         </div>
+        <div className="tetrix_header_middle">
+          <span>TETRIX</span>
+        </div>
         <div className="tetrix_header_end">
           <ScoreDisplay />
           <LocationButton />

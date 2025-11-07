@@ -4,16 +4,48 @@
   align-items: center;
   width: 100%;
   height: 10vh;
-  background-color: lightgrey;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  position: relative;
   overflow: hidden;
-  /* Prevent scrollbars */
+}
+
+/* Animated gradient background */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle overlay for depth */
+.tetrix_header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+  pointer-events: none;
 }
 
 .tetrix_header_start,
 .tetrix_header_middle,
 .tetrix_header_end {
-  background-color: grey;
   height: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .tetrix_header_start {
@@ -22,9 +54,18 @@
   justify-content: flex-start;
   align-items: center;
   gap: 1rem;
-  padding-left: 1rem;
+  padding-left: 1.5rem;
   min-width: 0;
-  /* Allow flex item to shrink */
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0 15px 15px 0;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.tetrix_header_start:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(2px);
 }
 
 .tetrix_header_middle {
@@ -33,7 +74,13 @@
   justify-content: center;
   align-items: center;
   min-width: 0;
-  /* Allow flex item to shrink */
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
 }
 
 .tetrix_header_end {
@@ -42,13 +89,27 @@
   justify-content: flex-end;
   align-items: center;
   gap: 1rem;
-  padding-right: 1rem;
+  padding-right: 1.5rem;
   min-width: 0;
-  /* Allow flex item to shrink */
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px 0 0 15px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
 }
 
-/* Hide title on smaller screens to prevent overflow */
+.tetrix_header_end:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-2px);
+}
+
+/* Responsive design improvements */
 @media (max-width: 768px) {
+  .tetrix_header {
+    height: 8vh;
+    min-height: 60px;
+  }
+
   .tetrix_header_middle {
     display: none;
   }
@@ -57,13 +118,28 @@
   .tetrix_header_end {
     flex: 1;
     gap: 0.5rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin: 6px 0;
+  }
+
+  .tetrix_header_start {
+    border-radius: 0 12px 12px 0;
+  }
+
+  .tetrix_header_end {
+    border-radius: 12px 0 0 12px;
   }
 }
 
-/* Hide title on very narrow screens regardless of height */
 @media (max-width: 480px) {
+  .tetrix_header {
+    height: 7vh;
+    min-height: 50px;
+    animation: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  }
+
   .tetrix_header_middle {
     display: none;
   }
@@ -71,7 +147,16 @@
   .tetrix_header_start,
   .tetrix_header_end {
     gap: 0.25rem;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin: 4px 0;
+  }
+
+  .tetrix_header_start {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .tetrix_header_end {
+    border-radius: 8px 0 0 8px;
   }
 }

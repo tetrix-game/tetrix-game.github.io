@@ -75,12 +75,54 @@
   align-items: center;
   min-width: 0;
   text-align: center;
+}
+
+.tetrix-title-button {
+  background: none;
+  border: none;
   font-family: 'Courier New', monospace;
   font-weight: bold;
   font-size: 1.5rem;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   letter-spacing: 2px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tetrix-title-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.tetrix-title-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tetrix-title-button:hover::before {
+  left: 100%;
+}
+
+.tetrix-title-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tetrix-title-button:focus {
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
 }
 
 .tetrix_header_end {

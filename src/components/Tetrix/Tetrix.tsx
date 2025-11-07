@@ -4,8 +4,7 @@ import ShapeSelector from '../ShapeSelector';
 import DraggingShape from '../DraggingShape';
 import CoinShower from '../CoinShower';
 import { useTetrixStateContext, useTetrixDispatchContext } from './TetrixContext';
-import { useCallback, useEffect, useState } from 'react';
-import { set } from 'lodash';
+import { useEffect } from 'react';
 
 const Tetrix: React.FC = () => {
   const { selectedShape, gameState } = useTetrixStateContext();

@@ -3,13 +3,17 @@ import MenuDropdown from '../MenuDropdown';
 import LocationButton from '../LocationButton';
 import BackgroundMusic from '../BackgroundMusic';
 import ScoreDisplay from '../ScoreDisplay';
+import ModifiersOverlay from '../ModifiersOverlay';
 import { MusicControlContext } from './MusicControlContext';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { loadMusicSettings, saveMusicSettings } from '../../utils/persistenceUtils';
 import './Header.css';
 
 const Header = () => {
+  const { currentLevel } = useTetrixStateContext();
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModifiersOpen, setIsModifiersOpen] = useState(false);
 
   // Load music settings from IndexedDB on mount
   useEffect(() => {
@@ -50,6 +54,14 @@ const Header = () => {
     });
   }, [isMuted]);
 
+  const handleModifiersClick = useCallback(() => {
+    setIsModifiersOpen(true);
+  }, []);
+
+  const handleModifiersClose = useCallback(() => {
+    setIsModifiersOpen(false);
+  }, []);
+
   const contextValue = useMemo(() => ({ isMuted, toggleMute }), [isMuted, toggleMute]);
 
   return (
@@ -60,13 +72,24 @@ const Header = () => {
           <MenuDropdown />
         </div>
         <div className="tetrix_header_middle">
-          <span>TETRIX</span>
+          <button 
+            className="tetrix-title-button" 
+            onClick={handleModifiersClick}
+            aria-label="Open game modifiers"
+            type="button"
+          >
+            TETRIX{currentLevel !== 0 && ` (${currentLevel})`}
+          </button>
         </div>
         <div className="tetrix_header_end">
           <ScoreDisplay />
           <LocationButton />
         </div>
       </div>
+      <ModifiersOverlay 
+        isOpen={isModifiersOpen} 
+        onClose={handleModifiersClose} 
+      />
     </MusicControlContext.Provider>
   );
 };

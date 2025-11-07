@@ -1,33 +1,20 @@
-import useRantProgression from '../../hooks/useRantProgression';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import './LocationButton.css';
 
-const mapRantConfig = {
-  CandyCrushMapRant: {
-    rant: [
-      'Candy crush map progression anybody?',
-      'Coming soon!',
-      'Hold your horses! I\'m doing this in my spare time!',
-      'Really, just play while you wait',
-      'I\'m doing this with AI, it shouldn\'t take that long XD',
-      'Stop it, I\'m busy',
-      'I can\'t focus if you keep doing that.',
-      'Stop, or I\'ll frickin crash this page!',
-      'Told you I\'d do it'
-    ],
-    PostCrashRant: {
-      rant: [
-        'Don\'t I know you?',
-        'You never learn, do you?!'
-      ]
-    }
-  }
-};
-
 const LocationButton = () => {
-  const handleClick = useRantProgression(mapRantConfig);
+  const { gameState } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
+
+  const handleClick = () => {
+    if (gameState === 'playing') {
+      dispatch({ type: 'OPEN_MAP' });
+    } else {
+      dispatch({ type: 'CLOSE_MAP' });
+    }
+  };
 
   return (
-    <button className="location_button" onClick={handleClick} aria-label="Location">
+    <button className="location_button" onClick={handleClick} aria-label="Toggle Level Map">
       <svg
         width="24"
         height="24"

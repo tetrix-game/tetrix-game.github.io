@@ -1,12 +1,13 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Points toast is too fast
-- Shape placeholder
-- Automatic game over calculation
-- Error boundary is snarky, but only specifically for the rant effect. It needs to catch all errors
-- action sounds
-- clearance animations
-- ShapeOption vertical sliding animation
+- Game modifiers
+- Pickup shape sound (shoop uptone)
+- Place shape sound (pronounced click)
+- Invalid placement sound (sheew back)
+- Valid placement calculation sound (tick)
+- Invalid placement calculation sound (tock)
+- clearance animations and sounds
+- ShapeOption borders are cut off
 
 
 

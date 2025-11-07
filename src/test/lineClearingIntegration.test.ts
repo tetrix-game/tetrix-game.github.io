@@ -2,14 +2,16 @@ import { describe, it, expect } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
 import type { Shape } from '../utils/types';
 
-// Helper to create a simple horizontal line shape (3 blocks in a row)
+// Helper to create a simple horizontal line shape (4 blocks in a row)
 const createHorizontalLineShape = (): Shape => [
   [
+    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false }
   ],
   [
+    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true }
@@ -17,25 +19,41 @@ const createHorizontalLineShape = (): Shape => [
   [
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
+    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
+    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false }
+  ],
+  [
+    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
+    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
+    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
     { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false }
   ]
 ];
 
-// Helper to create a simple vertical line shape (3 blocks in a column)
+// Helper to create a simple vertical line shape (4 blocks in a column)
 const createVerticalLineShape = (): Shape => [
   [
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
+    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
   ],
   [
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
+    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
   ],
   [
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
+    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
+    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
+  ],
+  [
+    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
+    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
+    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
     { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
   ]
 ];
@@ -88,34 +106,34 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Verify blocks were placed
       let row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
-      expect(row5Filled).toBe(3);
+      expect(row5Filled).toBe(4);
 
-      // Place second shape at column 5 (covers columns 4-6)
+      // Place second shape at column 6 (covers columns 5-8)
       state = {
         ...state,
         selectedShape: horizontalShape,
         selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 5 }
+        mouseGridLocation: { row: 5, column: 6 }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
-      expect(row5Filled).toBe(6);
+      expect(row5Filled).toBe(8);
 
-      // Place third shape at column 8 (covers columns 7-9)
+      // Place single blocks to complete the row (columns 9 and 10)
+      const singleBlock = createSingleBlockShape();
       state = {
         ...state,
-        selectedShape: horizontalShape,
+        selectedShape: singleBlock,
         selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 8 }
+        mouseGridLocation: { row: 5, column: 9 }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
       expect(row5Filled).toBe(9);
 
-      // Place final shape at column 10 (covers column 10)
-      const singleBlock = createSingleBlockShape();
+      // Place final single block at column 10
       state = {
         ...state,
         selectedShape: singleBlock,
@@ -143,24 +161,43 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Place vertical shapes to fill column 3
       const verticalShape = createVerticalLineShape();
 
-      // Place shapes at different rows to fill column 3
-      const rows = [2, 5, 8];
-      for (const row of rows) {
-        state = {
-          ...state,
-          selectedShape: verticalShape,
-          selectedShapeIndex: 0,
-          mouseGridLocation: { row, column: 3 }
-        };
-        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
-      }
+      // Place shapes at different rows to fill column 3 
+      // First shape at row 2 (covers rows 1-4)
+      state = {
+        ...state,
+        selectedShape: verticalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 2, column: 3 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Should have 9 blocks in column 3
+      // Second shape at row 6 (covers rows 5-8)  
+      state = {
+        ...state,
+        selectedShape: verticalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 6, column: 3 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Should have 8 blocks in column 3
       let col3Filled = state.tiles.filter(t => t.location.column === 3 && t.block.isFilled).length;
+      expect(col3Filled).toBe(8);
+
+      // Place single block for row 9
+      const singleBlock = createSingleBlockShape();
+      state = {
+        ...state,
+        selectedShape: singleBlock,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 9, column: 3 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      col3Filled = state.tiles.filter(t => t.location.column === 3 && t.block.isFilled).length;
       expect(col3Filled).toBe(9);
 
       // Place final block to complete column 3
-      const singleBlock = createSingleBlockShape();
       state = {
         ...state,
         selectedShape: singleBlock,
@@ -188,18 +225,35 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Fill all of row 5 
       const horizontalShape = createHorizontalLineShape();
-      for (const col of [2, 5, 8]) {
-        state = {
-          ...state,
-          selectedShape: horizontalShape,
-          selectedShapeIndex: 0,
-          mouseGridLocation: { row: 5, column: col }
-        };
-        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
-      }
+      
+      // First shape at column 2 (covers columns 1-4)
+      state = {
+        ...state,
+        selectedShape: horizontalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 2 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Add the final block to row 5
+      // Second shape at column 6 (covers columns 5-8)
+      state = {
+        ...state,
+        selectedShape: horizontalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 6 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Add single blocks for columns 9 and 10
       const singleBlock = createSingleBlockShape();
+      state = {
+        ...state,
+        selectedShape: singleBlock,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 9 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
       state = {
         ...state,
         selectedShape: singleBlock,
@@ -214,17 +268,34 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Now fill column 5 (which is already empty from row clearing)
       const verticalShape = createVerticalLineShape();
-      for (const row of [2, 5, 8]) {
-        state = {
-          ...state,
-          selectedShape: verticalShape,
-          selectedShapeIndex: 0,
-          mouseGridLocation: { row, column: 5 }
-        };
-        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
-      }
+      
+      // First shape at row 2 (covers rows 1-4)
+      state = {
+        ...state,
+        selectedShape: verticalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 2, column: 5 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Add final block to column 5
+      // Second shape at row 6 (covers rows 5-8)
+      state = {
+        ...state,
+        selectedShape: verticalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 6, column: 5 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Add single blocks for rows 9 and 10
+      state = {
+        ...state,
+        selectedShape: singleBlock,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 9, column: 5 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
       state = {
         ...state,
         selectedShape: singleBlock,
@@ -243,19 +314,36 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
     it('should not clear a row with only 9 blocks', () => {
       let state = initialState;
 
-      // Place 3 shapes to fill 9 blocks in row 5
+      // Place 2 horizontal shapes and 1 single block to get 9 blocks in row 5
       const horizontalShape = createHorizontalLineShape();
-      const positions = [2, 5, 8];
+      const singleBlock = createSingleBlockShape();
 
-      for (const col of positions) {
-        state = {
-          ...state,
-          selectedShape: horizontalShape,
-          selectedShapeIndex: 0,
-          mouseGridLocation: { row: 5, column: col }
-        };
-        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
-      }
+      // First shape at column 2 (covers columns 1-4)
+      state = {
+        ...state,
+        selectedShape: horizontalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 2 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Second shape at column 6 (covers columns 5-8)
+      state = {
+        ...state,
+        selectedShape: horizontalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 6 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Single block at column 9 (leaves column 10 empty)
+      state = {
+        ...state,
+        selectedShape: singleBlock,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 5, column: 9 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Should have 9 blocks, not cleared
       const row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
@@ -269,19 +357,36 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
     it('should not clear a column with only 9 blocks', () => {
       let state = initialState;
 
-      // Place 3 shapes to fill 9 blocks in column 4
+      // Place 2 vertical shapes and 1 single block to get 9 blocks in column 4
       const verticalShape = createVerticalLineShape();
-      const positions = [2, 5, 8];
+      const singleBlock = createSingleBlockShape();
 
-      for (const row of positions) {
-        state = {
-          ...state,
-          selectedShape: verticalShape,
-          selectedShapeIndex: 0,
-          mouseGridLocation: { row, column: 4 }
-        };
-        state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
-      }
+      // First shape at row 2 (covers rows 1-4)
+      state = {
+        ...state,
+        selectedShape: verticalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 2, column: 4 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Second shape at row 6 (covers rows 5-8)
+      state = {
+        ...state,
+        selectedShape: verticalShape,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 6, column: 4 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
+
+      // Single block at row 9 (leaves row 10 empty)
+      state = {
+        ...state,
+        selectedShape: singleBlock,
+        selectedShapeIndex: 0,
+        mouseGridLocation: { row: 9, column: 4 }
+      };
+      state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Should have 9 blocks, not cleared
       const col4Filled = state.tiles.filter(t => t.location.column === 4 && t.block.isFilled).length;

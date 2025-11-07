@@ -4,22 +4,30 @@ import type { Shape, TetrixAction } from '../utils/types';
 
 // Helper to create a test shape (in 4x4 grid)
 const createTestShape = (): Shape => [
-  [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
-  [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
-  [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
-  [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
-  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
+  [
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }
+  ],
+  [
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }
+  ],
+  [
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }
+  ],
+  [
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+    { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }
+  ]
 ];
 
 describe('TetrixReducer - Bug Fixes', () => {

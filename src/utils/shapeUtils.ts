@@ -517,31 +517,31 @@ export function generateRandomShape(): Shape {
       const f = { color, isFilled: true };
 
       const orientations = [
-        // Pointing up-right
+        // Standard up orientation (L-shaped, hook pointing right)
         [
           [e, e, e, e],
-          [e, e, f, e],
-          [e, e, { ...f }, e],
-          [e, f, { ...f }, e],
+          [f, { ...f }, e, e],
+          [e, { ...f }, e, e],
+          [e, { ...f }, e, e],
         ],
-        // Pointing down-right
+        // Rotated right (hook pointing down)
         [
           [e, e, e, e],
           [f, { ...f }, { ...f }, e],
           [f, e, e, e],
           [e, e, e, e],
         ],
-        // Pointing down-left
+        // Rotated down (hook pointing left)
         [
           [e, e, e, e],
-          [e, f, { ...f }, e],
           [e, { ...f }, e, e],
           [e, { ...f }, e, e],
+          [e, { ...f }, f, e],
         ],
-        // Pointing up-left
+        // Rotated left (hook pointing up)
         [
           [e, e, e, e],
-          [e, e, e, f],
+          [e, e, f, e],
           [f, { ...f }, { ...f }, e],
           [e, e, e, e],
         ]
@@ -558,32 +558,32 @@ export function generateRandomShape(): Shape {
       const f = { color, isFilled: true };
 
       const orientations = [
-        // Pointing up-left
+        // Standard up orientation (L-shaped, hook pointing left)
         [
           [e, e, e, e],
           [e, f, e, e],
           [e, { ...f }, e, e],
-          [e, { ...f }, { ...f }, e],
+          [f, { ...f }, e, e],
         ],
-        // Pointing down-left
-        [
-          [e, e, e, e],
-          [f, { ...f }, { ...f }, e],
-          [e, e, f, e],
-          [e, e, e, e],
-        ],
-        // Pointing down-right
-        [
-          [e, e, e, e],
-          [e, f, { ...f }, e],
-          [e, e, { ...f }, e],
-          [e, e, { ...f }, e],
-        ],
-        // Pointing up-right
+        // Rotated right (hook pointing up)
         [
           [e, e, e, e],
           [f, e, e, e],
           [f, { ...f }, { ...f }, e],
+          [e, e, e, e],
+        ],
+        // Rotated down (hook pointing right)
+        [
+          [e, e, e, e],
+          [e, { ...f }, f, e],
+          [e, { ...f }, e, e],
+          [e, { ...f }, e, e],
+        ],
+        // Rotated left (hook pointing down)
+        [
+          [e, e, e, e],
+          [f, { ...f }, { ...f }, e],
+          [e, e, f, e],
           [e, e, e, e],
         ]
       ];

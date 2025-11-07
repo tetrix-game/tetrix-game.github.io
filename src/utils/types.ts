@@ -2,7 +2,7 @@
 // 0,0 is the top left corner
 // 0, 3 is the top right corner
 // 3, 0 is the bottom left corner
-// 3, 3 is the bottom right corner
+// 4, 4 is the bottom right corner
 export type Shape = Block[][];
 export type Location = { row: number, column: number }
 export type Block = {

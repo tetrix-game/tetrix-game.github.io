@@ -121,21 +121,6 @@ const CoinShower: React.FC = () => {
 
   return (
     <>
-      {/* Debug: Show coin count */}
-      <div style={{
-        position: 'fixed',
-        top: 10,
-        right: 10,
-        color: 'white',
-        background: 'rgba(0,0,0,0.7)',
-        padding: '5px 10px',
-        borderRadius: '5px',
-        zIndex: 99999,
-        fontSize: '14px'
-      }}>
-        Active coins: {coins.length}
-      </div>
-
       {/* Render all coins */}
       {coins.map(coin => (
         <CoinParticle

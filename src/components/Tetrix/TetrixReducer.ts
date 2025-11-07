@@ -47,7 +47,6 @@ export const initialState: TetrixReducerState = {
   shapeOptionBounds: [],
   score: 0,
   showCoinDisplay: false,
-  maxVisibleShapes: 3,
   queueSize: -1, // Infinite by default
   shapesUsed: 0,
   removingShapeIndex: null,
@@ -211,17 +210,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "SET_AVAILABLE_SHAPES": {
       const { shapes } = action.value;
-      // For backward compatibility: if exactly maxVisibleShapes shapes are provided, don't add extras
-      // Only add virtual shapes if we have fewer than maxVisibleShapes
+      // Use the provided shapes directly - no automatic virtual buffer
       const enhancedShapes = [...shapes];
-      const shouldAddVirtual = shapes.length < state.maxVisibleShapes;
-
-      if (shouldAddVirtual) {
-        const targetCount = state.maxVisibleShapes + 1;
-        while (enhancedShapes.length < targetCount) {
-          enhancedShapes.push(generateRandomShape());
-        }
-      }
 
       const newState = {
         ...state,
@@ -369,15 +359,12 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const remainingShapes = state.nextShapes.filter((_, index) => index !== removedIndex);
       const newShapesUsed = state.shapesUsed + 1;
 
-      // Maintain at least maxVisibleShapes + 1 shapes for virtual container system
+      // Maintain the same number of shapes by adding a new one when one is removed
       const updatedNextShapes = [...remainingShapes];
-      const targetCount = Math.max(state.maxVisibleShapes + 1, remainingShapes.length);
 
       if (state.queueSize === -1 || newShapesUsed < state.queueSize) {
-        // Add new shapes to maintain buffer for virtual containers
-        while (updatedNextShapes.length < targetCount) {
-          updatedNextShapes.push(generateRandomShape());
-        }
+        // Add one new shape to replace the removed one
+        updatedNextShapes.push(generateRandomShape());
       }
 
       // Preserve rotation menu states for remaining shapes, removing the used shape's state
@@ -428,6 +415,65 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mousePosition: clickPosition || state.mousePosition,
         showerLocation: clickPosition || state.showerLocation, // Update shower location for coin effect
       };
+    }
+
+    case "ADD_SHAPE_OPTION": {
+      // Don't allow adding more than 7 shapes total
+      if (state.nextShapes.length >= 7) {
+        return state;
+      }
+
+      const newShape = generateRandomShape();
+      const updatedShapes = [...state.nextShapes, newShape];
+
+      const newState = {
+        ...state,
+        nextShapes: updatedShapes,
+        openRotationMenus: [...state.openRotationMenus, false], // New shape starts with menu closed
+        shapeOptionBounds: [...state.shapeOptionBounds, null], // New shape has no bounds initially
+      };
+
+      // Save updated shapes to database
+      safeBatchSave(undefined, undefined, updatedShapes, newState.savedShape)
+        .catch((error: Error) => {
+          console.error('Failed to save shapes state:', error);
+        });
+
+      return newState;
+    }
+
+    case "REMOVE_SHAPE_OPTION": {
+      // Never remove below 1 shape
+      if (state.nextShapes.length <= 1) {
+        return state;
+      }
+
+      // Remove the last shape
+      const updatedShapes = state.nextShapes.slice(0, -1);
+      const updatedRotationMenus = state.openRotationMenus.slice(0, -1);
+      const updatedBounds = state.shapeOptionBounds.slice(0, -1);
+
+      // If the currently selected shape is being removed, clear selection
+      const isRemovingSelectedShape = state.selectedShapeIndex === state.nextShapes.length - 1;
+
+      const newState = {
+        ...state,
+        nextShapes: updatedShapes,
+        openRotationMenus: updatedRotationMenus,
+        shapeOptionBounds: updatedBounds,
+        selectedShape: isRemovingSelectedShape ? null : state.selectedShape,
+        selectedShapeIndex: isRemovingSelectedShape ? null : state.selectedShapeIndex,
+        isShapeDragging: isRemovingSelectedShape ? false : state.isShapeDragging,
+        hoveredBlockPositions: isRemovingSelectedShape ? [] : state.hoveredBlockPositions,
+      };
+
+      // Save updated shapes to database
+      safeBatchSave(undefined, undefined, updatedShapes, newState.savedShape)
+        .catch((error: Error) => {
+          console.error('Failed to save shapes state:', error);
+        });
+
+      return newState;
     }
   }
 

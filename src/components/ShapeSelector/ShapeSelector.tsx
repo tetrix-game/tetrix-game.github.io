@@ -16,18 +16,17 @@ const getShapeId = (shape: object): string => {
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes, maxVisibleShapes } = useTetrixStateContext();
+  const { nextShapes } = useTetrixStateContext();
 
-  // Create initial shapes - only add virtual buffer for gameplay, not tests
+  // Create initial shapes - start with 3 shapes (can be changed via debug menu)
   const initialShapes = useMemo(() => {
     const shapes = [];
-    // Add one extra shape for virtual container in normal gameplay
-    const shapeCount = maxVisibleShapes + 1;
-    for (let i = 0; i < shapeCount; i++) {
+    const initialShapeCount = 3; // Default starting number of shapes
+    for (let i = 0; i < initialShapeCount; i++) {
       shapes.push(generateRandomShape());
     }
     return shapes;
-  }, [maxVisibleShapes]);
+  }, []);
 
   // Set initial shapes in context when component mounts
   useEffect(() => {
@@ -36,9 +35,8 @@ const ShapeSelector = (): JSX.Element => {
     }
   }, [dispatch, initialShapes, nextShapes.length]);
 
-  // Calculate height based on visible shapes only - parent clips virtual shapes
-  const visibleShapeCount = Math.min(nextShapes.length, maxVisibleShapes);
-  const containerHeight = visibleShapeCount * 118; // 110px container + 8px gap
+  // Calculate height based on actual number of shapes
+  const containerHeight = nextShapes.length * 118; // 110px container + 8px gap
 
   return (
     <div
@@ -52,15 +50,12 @@ const ShapeSelector = (): JSX.Element => {
       }}
     >
       {nextShapes.map((shape, index) => {
-        // Virtual containers: only the last container (beyond maxVisibleShapes) is virtual
-        const isVirtual = index >= maxVisibleShapes;
-
         return (
           <ShapeContainer
             key={getShapeId(shape)}
             shape={shape}
             shapeIndex={index}
-            isVirtual={isVirtual}
+            isVirtual={false} // No virtual shapes needed - height is dynamic
           />
         );
       })}

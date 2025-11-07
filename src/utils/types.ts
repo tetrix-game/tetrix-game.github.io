@@ -95,7 +95,6 @@ export type TetrixReducerState = {
   // Coin display visibility control
   showCoinDisplay: boolean;
   // Shape queue configuration
-  maxVisibleShapes: number; // How many shapes are visible on screen
   queueSize: number; // Total shapes available (-1 = infinite)
   shapesUsed: number; // Track how many shapes have been used (for finite mode)
   // Animation states for shape transitions
@@ -202,6 +201,14 @@ type CompleteShapeRemovalAction = {
   type: 'COMPLETE_SHAPE_REMOVAL';
 }
 
+type AddShapeOptionAction = {
+  type: 'ADD_SHAPE_OPTION';
+}
+
+type RemoveShapeOptionAction = {
+  type: 'REMOVE_SHAPE_OPTION';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -219,6 +226,8 @@ export type TetrixAction =
   | RotateShapeAction
   | SpendCoinAction
   | StartShapeRemovalAction
-  | CompleteShapeRemovalAction;
+  | CompleteShapeRemovalAction
+  | AddShapeOptionAction
+  | RemoveShapeOptionAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

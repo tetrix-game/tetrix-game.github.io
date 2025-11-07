@@ -198,6 +198,24 @@ const MenuDropdown: React.FC = () => {
                     Inject Points
                   </button>
                 </div>
+                <div className="menu-item submenu-item">
+                  <button
+                    className="debug-action-button"
+                    onClick={() => dispatch({ type: 'ADD_SHAPE_OPTION' })}
+                    title="Add a new shape option (max 7 total)"
+                  >
+                    Add ShapeOption
+                  </button>
+                </div>
+                <div className="menu-item submenu-item">
+                  <button
+                    className="debug-action-button"
+                    onClick={() => dispatch({ type: 'REMOVE_SHAPE_OPTION' })}
+                    title="Remove the last shape option (min 1 remaining)"
+                  >
+                    Remove ShapeOption
+                  </button>
+                </div>
               </div>
             )}
           </div>

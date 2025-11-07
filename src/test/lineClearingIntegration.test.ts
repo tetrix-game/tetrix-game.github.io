@@ -225,7 +225,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Fill all of row 5 
       const horizontalShape = createHorizontalLineShape();
-      
+
       // First shape at column 2 (covers columns 1-4)
       state = {
         ...state,
@@ -268,7 +268,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Now fill column 5 (which is already empty from row clearing)
       const verticalShape = createVerticalLineShape();
-      
+
       // First shape at row 2 (covers rows 1-4)
       state = {
         ...state,

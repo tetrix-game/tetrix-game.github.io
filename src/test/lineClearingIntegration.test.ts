@@ -40,9 +40,10 @@ const createVerticalLineShape = (): Shape => [
   ]
 ];
 
-// Helper to create a single block shape
+// Helper to create a single block shape (in 4x4 grid)
 const createSingleBlockShape = (): Shape => [
   [
+    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }
@@ -50,9 +51,17 @@ const createSingleBlockShape = (): Shape => [
   [
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: true },
+    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }
   ],
   [
+    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
+    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
+    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
+    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }
+  ],
+  [
+    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
     { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }

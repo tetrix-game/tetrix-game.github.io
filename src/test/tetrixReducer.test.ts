@@ -2,16 +2,23 @@ import { describe, it, expect } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
 import type { Shape, TetrixAction } from '../utils/types';
 
-// Helper to create a test shape
+// Helper to create a test shape (in 4x4 grid)
 const createTestShape = (): Shape => [
   [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
   { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
   { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
   [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
+  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
   { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
   { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
   [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
   { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: true },
+  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
+  [{ color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
+  { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false },
   { color: { lightest: '#0274e6', light: '#0059b2', main: '#023f80', dark: '#023468', darkest: '#011e3f' }, isFilled: false }],
 ];
 
@@ -179,7 +186,7 @@ describe('TetrixReducer - Bug Fixes', () => {
   });
 
   describe('COMPLETE_PLACEMENT action', () => {
-    it('should remove placed shape from nextShapes and generate new shape', () => {
+    it('should initiate shape removal animation without modifying nextShapes', () => {
       const shape1 = createTestShape();
       const shape2 = createTestShape();
       const shape3 = createTestShape();
@@ -198,6 +205,35 @@ describe('TetrixReducer - Bug Fixes', () => {
       expect(newState.selectedShapeIndex).toBeNull();
       expect(newState.isShapeDragging).toBe(false);
       expect(newState.mouseGridLocation).toBeNull();
+
+      // Should initiate shape removal animation
+      expect(newState.removingShapeIndex).toBe(0);
+      expect(newState.shapesSliding).toBe(true);
+
+      // nextShapes should remain unchanged during placement (shapes are removed later in animation)
+      expect(newState.nextShapes.length).toBe(3);
+      expect(newState.nextShapes[0]).toBe(shape1);
+      expect(newState.nextShapes[1]).toBe(shape2);
+      expect(newState.nextShapes[2]).toBe(shape3);
+    });
+
+    it('should complete shape removal and generate new shape', () => {
+      const shape1 = createTestShape();
+      const shape2 = createTestShape();
+      const shape3 = createTestShape();
+      const state = {
+        ...initialState,
+        removingShapeIndex: 0,
+        shapesSliding: true,
+        nextShapes: [shape1, shape2, shape3]
+      };
+
+      const newState = tetrixReducer(state, { type: 'COMPLETE_SHAPE_REMOVAL' });
+
+      // Should clear removal animation state
+      expect(newState.removingShapeIndex).toBeNull();
+      expect(newState.shapesSliding).toBe(false);
+
       // Should have 3 shapes: shape2, shape3, and a new random shape
       expect(newState.nextShapes.length).toBe(3);
       expect(newState.nextShapes[0]).toBe(shape2);

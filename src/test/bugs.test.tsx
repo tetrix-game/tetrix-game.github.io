@@ -68,9 +68,13 @@ describe('Shape Selection and Color Bugs', () => {
         </TetrixProvider>
       );
 
-      // Check that shapes are rendered
-      const shapeOptions = container.querySelectorAll('[style*="cursor: pointer"]');
-      expect(shapeOptions.length).toBe(3); // L, T, and Square shapes
+      // Check that shape containers are rendered (3 shapes)
+      const shapeContainers = container.querySelectorAll('.shape-container');
+      expect(shapeContainers.length).toBe(3);
+
+      // Check that we have both shape options and purchase menu buttons (6 total clickable elements)
+      const clickableElements = container.querySelectorAll('[style*="cursor: pointer"]');
+      expect(clickableElements.length).toBe(6); // 3 shapes + 3 purchase buttons
     });
   });
 
@@ -82,8 +86,8 @@ describe('Shape Selection and Color Bugs', () => {
         </TetrixProvider>
       );
 
-      // 1. Select a shape
-      const shapeOptions = container.querySelectorAll('[style*="cursor: pointer"]');
+      // 1. Select a shape - find shape options by grid display style
+      const shapeOptions = container.querySelectorAll('[style*="cursor: pointer"][style*="grid"]');
       act(() => {
         fireEvent.click(shapeOptions[0]);
       });
@@ -119,7 +123,12 @@ describe('Shape Selection and Color Bugs', () => {
         </TetrixProvider>
       );
 
-      const shapeOptions = container.querySelectorAll('[style*="cursor: pointer"]');
+      // Check that we have shape containers (3 shapes)
+      const shapeContainers = container.querySelectorAll('.shape-container');
+      expect(shapeContainers.length).toBe(3);
+
+      // Find only the shape options (not purchase menu buttons) by looking for grid display style
+      const shapeOptions = container.querySelectorAll('[style*="cursor: pointer"][style*="grid"]');
       expect(shapeOptions.length).toBe(3);
 
       // Try selecting each shape
@@ -138,7 +147,7 @@ describe('Shape Selection and Color Bugs', () => {
         </TetrixProvider>
       );
 
-      const shapeOptions = container.querySelectorAll('[style*="cursor: pointer"]');
+      const shapeOptions = container.querySelectorAll('[style*="cursor: pointer"][style*="grid"]');
 
       // Select first shape
       act(() => {
@@ -166,15 +175,17 @@ function makeColorForTest() {
   const randomColorIndex = Math.floor(Math.random() * colors.length);
   const randomColor = colors[randomColorIndex];
 
+  const greyColor = {
+    lightest: '#e0e0e0',
+    light: '#bdbdbd',
+    main: '#9e9e9e',
+    dark: '#757575',
+    darkest: '#424242'
+  };
+
   switch (randomColor) {
     case 'grey':
-      return {
-        lightest: '#e0e0e0',
-        light: '#bdbdbd',
-        main: '#9e9e9e',
-        dark: '#757575',
-        darkest: '#424242'
-      };
+      return greyColor;
     case 'red':
       return {
         lightest: '#ff6b6b',
@@ -224,12 +235,6 @@ function makeColorForTest() {
         darkest: '#4c2a85'
       };
     default:
-      return {
-        lightest: '#e0e0e0',
-        light: '#bdbdbd',
-        main: '#9e9e9e',
-        dark: '#757575',
-        darkest: '#424242'
-      };
+      return greyColor; // Fallback to grey
   }
 }

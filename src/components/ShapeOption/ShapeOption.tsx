@@ -7,8 +7,8 @@ import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shape
 
 const shapeContainerCss = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(3, 30px)',
-  gridTemplateRows: 'repeat(3, 30px)',
+  gridTemplateColumns: 'repeat(4, 25px)',
+  gridTemplateRows: 'repeat(4, 25px)',
   gap: '2px',
   padding: '10px',
   backgroundColor: 'rgba(255, 255, 255, 0.05)',

@@ -59,8 +59,8 @@ export function getShapeCenter(shape: Shape): { row: number; col: number } {
  * 
  * Examples:
  * - 2x2 square: upper-left block
- * - 3x3 square: center block
- * - 1x3 line (any orientation): center block
+ * - 4x4 square: center block (1.5, 1.5 rounded down to 1, 1)
+ * - 1x4 line (any orientation): center between blocks 1 and 2
  */
 export function getShapeAnchorBlock(shape: Shape): { row: number; col: number } {
   const bounds = getShapeBounds(shape);
@@ -220,11 +220,11 @@ export function mousePositionToGridLocation(
 }
 
 /**
- * Create an empty shape (3x3 grid)
+ * Create an empty shape (4x4 grid)
  */
 export function createEmptyShape(color: Block['color']): Shape {
-  return new Array(3).fill(null).map(() =>
-    new Array(3).fill(null).map(() => ({
+  return new Array(4).fill(null).map(() =>
+    new Array(4).fill(null).map(() => ({
       color,
       isFilled: false,
     }))
@@ -360,320 +360,245 @@ export function makeRandomColor(colorCount: number = 7) {
 }
 
 /**
- * Generate a random shape (one of several predefined Tetris patterns in various orientations)
- * Includes all standard Tetris pieces that fit in a 3x3 grid:
- * - I piece (vertical only - horizontal doesn't fit)
- * - O piece (square, no rotations needed)
- * - T piece (4 rotations)
- * - S piece (2 rotations)
- * - Z piece (2 rotations)
- * - L piece (4 rotations)
- * - J piece (4 rotations)
- * Plus smaller variations for gameplay variety
+ * Generate a random shape with balanced probability distribution
+ * Each base shape type has equal likelihood of being selected, then orientation is randomly chosen
+ * 
+ * Shape types and their orientations:
+ * - I-piece (4-block line): 2 orientations (horizontal/vertical)
+ * - O-piece (square): 1 orientation 
+ * - T-piece: 4 orientations
+ * - S-piece: 2 orientations
+ * - Z-piece: 2 orientations
+ * - L-piece: 4 orientations
+ * - J-piece: 4 orientations
  */
 export function generateRandomShape(): Shape {
-  const shapePatterns = [
-    // I-piece (vertical) - 3 blocks
-    () => {
+  // Define shape generators by type - each creates all orientations for that shape type
+  const shapeTypes = {
+    // I-piece (4-block line) - 2 orientations (horizontal and vertical)
+    I: () => {
+      const color = makeRandomColor();
+      const e = { color: makeRandomColor(), isFilled: false };
+      const f = { color, isFilled: true };
+
+      const orientations = [
+        // Horizontal - 4 blocks in a row
+        [
+          [e, e, e, e],
+          [f, { ...f }, { ...f }, { ...f }],
+          [e, e, e, e],
+          [e, e, e, e],
+        ],
+        // Vertical - 4 blocks in a column
+        [
+          [e, f, e, e],
+          [e, { ...f }, e, e],
+          [e, { ...f }, e, e],
+          [e, { ...f }, e, e],
+        ]
+      ];
+
+      const randomOrientation = Math.floor(Math.random() * orientations.length);
+      return orientations[randomOrientation];
+    },
+
+    // O-piece (2x2 square) - no rotations needed
+    O: () => {
       const color = makeRandomColor();
       const e = { color: makeRandomColor(), isFilled: false };
       const f = { color, isFilled: true };
       return [
-        [e, f, e],
-        [e, { ...f }, e],
-        [e, { ...f }, e],
+        [e, e, e, e],
+        [e, f, { ...f }, e],
+        [e, { ...f }, { ...f }, e],
+        [e, e, e, e],
       ];
     },
 
-    // O-piece (square) - 4 blocks
-    () => {
+    // T-piece - 4 orientations
+    T: () => {
       const color = makeRandomColor();
       const e = { color: makeRandomColor(), isFilled: false };
       const f = { color, isFilled: true };
-      return [
-        [f, { ...f }, e],
-        [{ ...f }, { ...f }, e],
-        [e, e, e],
+
+      const orientations = [
+        // Pointing up
+        [
+          [e, e, e, e],
+          [e, f, e, e],
+          [f, { ...f }, { ...f }, e],
+          [e, e, e, e],
+        ],
+        // Pointing right
+        [
+          [e, e, e, e],
+          [e, f, e, e],
+          [e, { ...f }, { ...f }, e],
+          [e, { ...f }, e, e],
+        ],
+        // Pointing down
+        [
+          [e, e, e, e],
+          [f, { ...f }, { ...f }, e],
+          [e, { ...f }, e, e],
+          [e, e, e, e],
+        ],
+        // Pointing left
+        [
+          [e, e, e, e],
+          [e, f, e, e],
+          [{ ...f }, { ...f }, e, e],
+          [e, { ...f }, e, e],
+        ]
       ];
+
+      const randomOrientation = Math.floor(Math.random() * orientations.length);
+      return orientations[randomOrientation];
     },
 
-    // T-piece - Rotation 1 (pointing up)
-    () => {
+    // S-piece - 2 orientations
+    S: () => {
       const color = makeRandomColor();
       const e = { color: makeRandomColor(), isFilled: false };
       const f = { color, isFilled: true };
-      return [
-        [e, f, e],
-        [{ ...f }, { ...f }, { ...f }],
-        [e, e, e],
+
+      const orientations = [
+        // Horizontal
+        [
+          [e, e, e, e],
+          [e, f, { ...f }, e],
+          [f, { ...f }, e, e],
+          [e, e, e, e],
+        ],
+        // Vertical
+        [
+          [e, e, e, e],
+          [e, f, e, e],
+          [e, { ...f }, { ...f }, e],
+          [e, e, { ...f }, e],
+        ]
       ];
+
+      const randomOrientation = Math.floor(Math.random() * orientations.length);
+      return orientations[randomOrientation];
     },
 
-    // T-piece - Rotation 2 (pointing right)
-    () => {
+    // Z-piece - 2 orientations
+    Z: () => {
       const color = makeRandomColor();
       const e = { color: makeRandomColor(), isFilled: false };
       const f = { color, isFilled: true };
-      return [
-        [e, f, e],
-        [e, { ...f }, { ...f }],
-        [e, { ...f }, e],
+
+      const orientations = [
+        // Horizontal
+        [
+          [e, e, e, e],
+          [f, { ...f }, e, e],
+          [e, { ...f }, { ...f }, e],
+          [e, e, e, e],
+        ],
+        // Vertical
+        [
+          [e, e, e, e],
+          [e, e, f, e],
+          [e, { ...f }, { ...f }, e],
+          [e, { ...f }, e, e],
+        ]
       ];
+
+      const randomOrientation = Math.floor(Math.random() * orientations.length);
+      return orientations[randomOrientation];
     },
 
-    // T-piece - Rotation 3 (pointing down)
-    () => {
+    // L-piece - 4 orientations
+    L: () => {
       const color = makeRandomColor();
       const e = { color: makeRandomColor(), isFilled: false };
       const f = { color, isFilled: true };
-      return [
-        [e, e, e],
-        [{ ...f }, { ...f }, { ...f }],
-        [e, { ...f }, e],
+
+      const orientations = [
+        // Pointing up-right
+        [
+          [e, e, e, e],
+          [e, e, f, e],
+          [e, e, { ...f }, e],
+          [e, f, { ...f }, e],
+        ],
+        // Pointing down-right
+        [
+          [e, e, e, e],
+          [f, { ...f }, { ...f }, e],
+          [f, e, e, e],
+          [e, e, e, e],
+        ],
+        // Pointing down-left
+        [
+          [e, e, e, e],
+          [e, f, { ...f }, e],
+          [e, { ...f }, e, e],
+          [e, { ...f }, e, e],
+        ],
+        // Pointing up-left
+        [
+          [e, e, e, e],
+          [e, e, e, f],
+          [f, { ...f }, { ...f }, e],
+          [e, e, e, e],
+        ]
       ];
+
+      const randomOrientation = Math.floor(Math.random() * orientations.length);
+      return orientations[randomOrientation];
     },
 
-    // T-piece - Rotation 4 (pointing left)
-    () => {
+    // J-piece - 4 orientations
+    J: () => {
       const color = makeRandomColor();
       const e = { color: makeRandomColor(), isFilled: false };
       const f = { color, isFilled: true };
-      return [
-        [e, f, e],
-        [{ ...f }, { ...f }, e],
-        [e, { ...f }, e],
-      ];
-    },
 
-    // S-piece - Rotation 1 (horizontal)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, f, { ...f }],
-        [{ ...f }, { ...f }, e],
-        [e, e, e],
+      const orientations = [
+        // Pointing up-left
+        [
+          [e, e, e, e],
+          [e, f, e, e],
+          [e, { ...f }, e, e],
+          [e, { ...f }, { ...f }, e],
+        ],
+        // Pointing down-left
+        [
+          [e, e, e, e],
+          [f, { ...f }, { ...f }, e],
+          [e, e, f, e],
+          [e, e, e, e],
+        ],
+        // Pointing down-right
+        [
+          [e, e, e, e],
+          [e, f, { ...f }, e],
+          [e, e, { ...f }, e],
+          [e, e, { ...f }, e],
+        ],
+        // Pointing up-right
+        [
+          [e, e, e, e],
+          [f, e, e, e],
+          [f, { ...f }, { ...f }, e],
+          [e, e, e, e],
+        ]
       ];
-    },
 
-    // S-piece - Rotation 2 (vertical)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, f, e],
-        [e, { ...f }, { ...f }],
-        [e, e, { ...f }],
-      ];
-    },
+      const randomOrientation = Math.floor(Math.random() * orientations.length);
+      return orientations[randomOrientation];
+    }
+  };
 
-    // Z-piece - Rotation 1 (horizontal)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [f, { ...f }, e],
-        [e, { ...f }, { ...f }],
-        [e, e, e],
-      ];
-    },
+  // Get all shape type names
+  const shapeTypeNames = Object.keys(shapeTypes);
 
-    // Z-piece - Rotation 2 (vertical)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, f],
-        [e, { ...f }, { ...f }],
-        [e, { ...f }, e],
-      ];
-    },
+  // Select a random shape type with equal probability
+  const randomShapeType = shapeTypeNames[Math.floor(Math.random() * shapeTypeNames.length)];
 
-    // L-piece - Rotation 1 (pointing up-right)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, f],
-        [e, e, { ...f }],
-        [e, { ...f }, { ...f }],
-      ];
-    },
-
-    // L-piece - Rotation 2 (pointing down-right)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, e],
-        [{ ...f }, { ...f }, { ...f }],
-        [{ ...f }, e, e],
-      ];
-    },
-
-    // L-piece - Rotation 3 (pointing down-left)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [{ ...f }, { ...f }, e],
-        [e, { ...f }, e],
-        [e, { ...f }, e],
-      ];
-    },
-
-    // L-piece - Rotation 4 (pointing up-left)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, { ...f }],
-        [{ ...f }, { ...f }, { ...f }],
-        [e, e, e],
-      ];
-    },
-
-    // J-piece - Rotation 1 (pointing up-left)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [f, e, e],
-        [{ ...f }, e, e],
-        [{ ...f }, { ...f }, e],
-      ];
-    },
-
-    // J-piece - Rotation 2 (pointing down-left)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, e],
-        [{ ...f }, { ...f }, { ...f }],
-        [e, e, { ...f }],
-      ];
-    },
-
-    // J-piece - Rotation 3 (pointing down-right)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, { ...f }, { ...f }],
-        [e, { ...f }, e],
-        [e, { ...f }, e],
-      ];
-    },
-
-    // J-piece - Rotation 4 (pointing up-right)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [{ ...f }, e, e],
-        [{ ...f }, { ...f }, { ...f }],
-        [e, e, e],
-      ];
-    },
-
-    // Single block (for variety)
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, e],
-        [e, f, e],
-        [e, e, e],
-      ];
-    },
-
-    // 2-block horizontal
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, e],
-        [e, f, { ...f }],
-        [e, e, e],
-      ];
-    },
-
-    // 2-block vertical
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, e],
-        [e, f, e],
-        [e, { ...f }, e],
-      ];
-    },
-
-    // Small L (3 blocks) - Rotation 1
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, f, e],
-        [e, { ...f }, e],
-        [e, { ...f }, { ...f }],
-      ];
-    },
-
-    // Small L (3 blocks) - Rotation 2
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, e],
-        [e, e, f],
-        [e, { ...f }, { ...f }],
-      ];
-    },
-
-    // Small L (3 blocks) - Rotation 3
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [{ ...f }, { ...f }, e],
-        [e, { ...f }, e],
-        [e, e, e],
-      ];
-    },
-
-    // Small L (3 blocks) - Rotation 4
-    () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [{ ...f }, { ...f }, e],
-        [{ ...f }, e, e],
-        [e, e, e],
-      ];
-    },
-  ];
-
-  const randomIndex = Math.floor(Math.random() * shapePatterns.length);
-  return shapePatterns[randomIndex]();
+  // Generate and return the shape with a random orientation
+  return shapeTypes[randomShapeType as keyof typeof shapeTypes]();
 }

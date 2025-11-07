@@ -23,19 +23,19 @@ describe('Debug Actions for Shape Management', () => {
 
     // Should have one more shape
     expect(newState.nextShapes.length).toBe(4);
-    
+
     // All original shapes should still be there
     expect(newState.nextShapes[0]).toBe(testShapes[0]);
     expect(newState.nextShapes[1]).toBe(testShapes[1]);
     expect(newState.nextShapes[2]).toBe(testShapes[2]);
-    
+
     // New shape should be added at the end
     expect(newState.nextShapes[3]).toBeDefined();
     expect(newState.nextShapes[3]).not.toBe(testShapes[0]);
-    
+
     // Rotation menus should be extended
     expect(newState.openRotationMenus).toEqual([false, true, false, false]);
-    
+
     // Bounds should be extended
     expect(newState.shapeOptionBounds).toEqual([null, null, null, null]);
   });
@@ -80,15 +80,15 @@ describe('Debug Actions for Shape Management', () => {
 
     // Should have one fewer shape
     expect(newState.nextShapes.length).toBe(3);
-    
+
     // First three shapes should still be there
     expect(newState.nextShapes[0]).toBe(testShapes[0]);
     expect(newState.nextShapes[1]).toBe(testShapes[1]);
     expect(newState.nextShapes[2]).toBe(testShapes[2]);
-    
+
     // Last shape should be removed
     expect(newState.nextShapes[3]).toBeUndefined();
-    
+
     // Arrays should be truncated
     expect(newState.openRotationMenus).toEqual([false, true, true]);
     expect(newState.shapeOptionBounds).toEqual([null, null, null]);

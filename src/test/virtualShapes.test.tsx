@@ -62,7 +62,7 @@ describe('Unified Shape Queue Management', () => {
     const containers = container.querySelectorAll('.shape-container');
     const actualHeight = Number.parseInt(globalThis.getComputedStyle(shapeSelector).height);
     const expectedHeight = containers.length * 118; // 118px per container
-    
+
     expect(actualHeight).toBe(expectedHeight);
     expect(containers.length).toBe(3); // Default shape count
   });

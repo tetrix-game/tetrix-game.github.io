@@ -1,7 +1,7 @@
 import { useReducer, useEffect } from "react";
 import { initialState, tetrixReducer } from "./TetrixReducer";
 import { TetrixStateContext, TetrixDispatchContext } from "./TetrixContext";
-import { loadCompleteGameState } from "../../utils/persistenceUtils";
+import { loadCompleteGameState, loadModifiers } from "../../utils/persistenceUtils";
 
 export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
@@ -11,7 +11,16 @@ export default function TetrixProvider({ children }: { readonly children: React.
     const loadSavedData = async () => {
       try {
         console.log('TetrixProvider: Attempting to load saved game state...');
-        const gameData = await loadCompleteGameState();
+        const [gameData, unlockedModifiers] = await Promise.all([
+          loadCompleteGameState(),
+          loadModifiers()
+        ]);
+
+        // Load modifiers first
+        dispatch({
+          type: 'LOAD_MODIFIERS',
+          value: { unlockedModifiers }
+        });
 
         // Only load if we have valid tile data (100 tiles for 10x10 grid)
         if (gameData?.tiles.length === 100) {

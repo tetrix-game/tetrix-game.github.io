@@ -4,7 +4,8 @@ import type {
   TilesPersistenceData,
   ShapesPersistenceData,
   GameSettingsPersistenceData,
-  MusicPersistenceData
+  MusicPersistenceData,
+  ModifiersPersistenceData
 } from './types';
 
 const DB_NAME = 'TetrixGameDB';
@@ -14,6 +15,7 @@ const SCORE_STORE = 'score';
 const TILES_STORE = 'tiles';
 const SHAPES_STORE = 'shapes';
 const SETTINGS_STORE = 'settings';
+const MODIFIERS_STORE = 'modifiers';
 
 /**
  * Check if IndexedDB is available (not in Node.js/testing environments)
@@ -59,7 +61,7 @@ function openDatabase(): Promise<IDBDatabase> {
       const db = request.result;
 
       // Verify all required stores exist
-      const requiredStores = [GAME_STATE_STORE, SCORE_STORE, TILES_STORE, SHAPES_STORE, SETTINGS_STORE];
+      const requiredStores = [GAME_STATE_STORE, SCORE_STORE, TILES_STORE, SHAPES_STORE, SETTINGS_STORE, MODIFIERS_STORE];
       const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
 
       if (missingStores.length > 0) {
@@ -108,6 +110,11 @@ function openDatabase(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
         console.log('Creating', SETTINGS_STORE, 'store');
         db.createObjectStore(SETTINGS_STORE);
+      }
+
+      if (!db.objectStoreNames.contains(MODIFIERS_STORE)) {
+        console.log('Creating', MODIFIERS_STORE, 'store');
+        db.createObjectStore(MODIFIERS_STORE);
       }
     };
   });
@@ -567,7 +574,8 @@ export async function clearAllSavedData(): Promise<void> {
         SCORE_STORE,
         TILES_STORE,
         SHAPES_STORE,
-        SETTINGS_STORE
+        SETTINGS_STORE,
+        MODIFIERS_STORE
       ], 'readwrite');
 
       // Clear all stores
@@ -576,12 +584,14 @@ export async function clearAllSavedData(): Promise<void> {
       const tilesStore = transaction.objectStore(TILES_STORE);
       const shapesStore = transaction.objectStore(SHAPES_STORE);
       const settingsStore = transaction.objectStore(SETTINGS_STORE);
+      const modifiersStore = transaction.objectStore(MODIFIERS_STORE);
 
       gameStore.delete('current');
       scoreStore.delete('current');
       tilesStore.delete('current');
       shapesStore.delete('current');
       settingsStore.delete('current');
+      modifiersStore.delete('current');
 
       transaction.oncomplete = () => {
         console.log('All saved data cleared successfully');
@@ -596,6 +606,72 @@ export async function clearAllSavedData(): Promise<void> {
   } catch (error) {
     console.error('Error clearing saved data:', error);
     throw error;
+  }
+}
+
+/**
+ * Save unlocked modifiers to IndexedDB
+ */
+export async function saveModifiers(unlockedModifiers: Set<number>): Promise<void> {
+  try {
+    const db = await initializeDatabase();
+    const data: ModifiersPersistenceData = { 
+      unlockedModifiers: Array.from(unlockedModifiers), 
+      lastUpdated: Date.now() 
+    };
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([MODIFIERS_STORE], 'readwrite');
+      const store = transaction.objectStore(MODIFIERS_STORE);
+
+      const request = store.put(data, 'current');
+
+      request.onsuccess = () => {
+        console.log('Modifiers saved successfully:', data.unlockedModifiers);
+        resolve();
+      };
+
+      request.onerror = () => {
+        console.error('Failed to save modifiers:', request.error);
+        reject(new Error(`Failed to save modifiers: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error saving modifiers:', error);
+    throw error;
+  }
+}
+
+/**
+ * Load unlocked modifiers from IndexedDB
+ */
+export async function loadModifiers(): Promise<Set<number>> {
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([MODIFIERS_STORE], 'readonly');
+      const store = transaction.objectStore(MODIFIERS_STORE);
+
+      const request = store.get('current');
+
+      request.onsuccess = () => {
+        const result = request.result;
+        if (result?.unlockedModifiers && Array.isArray(result.unlockedModifiers)) {
+          resolve(new Set(result.unlockedModifiers));
+        } else {
+          resolve(new Set()); // No modifiers unlocked yet
+        }
+      };
+
+      request.onerror = () => {
+        console.error('Failed to load modifiers:', request.error);
+        reject(new Error(`Failed to load modifiers: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error loading modifiers:', error);
+    return new Set(); // Return empty set on error
   }
 }
 

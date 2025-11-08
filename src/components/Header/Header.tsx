@@ -72,8 +72,8 @@ const Header = () => {
           <MenuDropdown />
         </div>
         <div className="tetrix_header_middle">
-          <button 
-            className="tetrix-title-button" 
+          <button
+            className="tetrix-title-button"
             onClick={handleModifiersClick}
             aria-label="Open game modifiers"
             type="button"
@@ -86,9 +86,9 @@ const Header = () => {
           <LocationButton />
         </div>
       </div>
-      <ModifiersOverlay 
-        isOpen={isModifiersOpen} 
-        onClose={handleModifiersClose} 
+      <ModifiersOverlay
+        isOpen={isModifiersOpen}
+        onClose={handleModifiersClose}
       />
     </MusicControlContext.Provider>
   );

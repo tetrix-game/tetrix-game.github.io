@@ -8,10 +8,10 @@ interface ModifierCardProps {
   showUnlockHint?: boolean;
 }
 
-const ModifierCard: React.FC<ModifierCardProps> = ({ 
-  modifier, 
-  onToggle, 
-  showUnlockHint = true 
+const ModifierCard: React.FC<ModifierCardProps> = ({
+  modifier,
+  onToggle,
+  showUnlockHint = true
 }) => {
   const getPrimeColor = (primeId: number) => {
     // Color coding based on prime number ranges
@@ -63,7 +63,7 @@ const ModifierCard: React.FC<ModifierCardProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={getCardClassName()}
       style={{ '--prime-color': getPrimeColor(modifier.primeId) } as React.CSSProperties}
     >
@@ -77,9 +77,9 @@ const ModifierCard: React.FC<ModifierCardProps> = ({
             <h3 className="modifier-name">{modifier.name}</h3>
             <span className="modifier-prime-id">#{modifier.primeId}</span>
           </div>
-          
+
           <p className="modifier-description">{getDescriptionText()}</p>
-          
+
           <div className="modifier-status">
             <span className={getStatusClassName()}>{getStatusText()}</span>
           </div>
@@ -92,15 +92,15 @@ const ModifierCard: React.FC<ModifierCardProps> = ({
             </h3>
             <span className="modifier-prime-id">#{modifier.primeId}</span>
           </div>
-          
+
           <p className="modifier-description">{getDescriptionText()}</p>
-          
+
           <div className="modifier-status">
             <span className={getStatusClassName()}>{getStatusText()}</span>
           </div>
         </div>
       )}
-      
+
       {!modifier.unlocked && (
         <div className="unlock-overlay">
           <div className="unlock-icon">🔒</div>

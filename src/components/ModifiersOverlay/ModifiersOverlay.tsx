@@ -10,13 +10,13 @@ interface ModifiersOverlayProps {
 }
 
 const ModifiersOverlay: React.FC<ModifiersOverlayProps> = ({ isOpen, onClose }) => {
-  const { currentLevel } = useTetrixStateContext();
+  const { currentLevel, unlockedModifiers } = useTetrixStateContext();
 
   if (!isOpen) return null;
 
-  // Check if a modifier is unlocked based on current level reaching its prime ID
+  // Check if a modifier is unlocked based on persistent unlocked modifiers
   const isModifierUnlocked = (primeId: number) => {
-    return currentLevel >= primeId;
+    return unlockedModifiers.has(primeId);
   };
 
   // Comprehensive list of modifiers with prime IDs
@@ -116,8 +116,8 @@ const ModifiersOverlay: React.FC<ModifiersOverlayProps> = ({ isOpen, onClose }) 
   };
 
   return (
-    <div 
-      className="modifiers-overlay" 
+    <div
+      className="modifiers-overlay"
       onClick={handleOverlayClick}
       onKeyDown={handleOverlayKeyDown}
       role="dialog"
@@ -132,7 +132,7 @@ const ModifiersOverlay: React.FC<ModifiersOverlayProps> = ({ isOpen, onClose }) 
             ✕
           </button>
         </div>
-        
+
         <div className="modifiers-content">
           <div className="modifiers-notice">
             <p>
@@ -141,7 +141,7 @@ const ModifiersOverlay: React.FC<ModifiersOverlayProps> = ({ isOpen, onClose }) 
               <small>Unlock modifiers by reaching levels that match prime numbers!</small>
             </p>
           </div>
-          
+
           <div className="modifiers-grid">
             {allModifiers.map((modifier) => (
               <ModifierCard
@@ -152,11 +152,11 @@ const ModifiersOverlay: React.FC<ModifiersOverlayProps> = ({ isOpen, onClose }) 
               />
             ))}
           </div>
-          
+
           <div className="modifiers-footer">
             <p>
-              {currentLevel < 2 
-                ? "Reach level 2 to unlock your first modifier!" 
+              {currentLevel < 2
+                ? "Reach level 2 to unlock your first modifier!"
                 : `Current level: ${currentLevel}. Next modifier unlocks depend on reaching prime number levels.`
               }
             </p>

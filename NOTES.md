@@ -31,10 +31,8 @@
       - Number of colors equals number of 2 factors in index
       - ROYGBP: Red, Orange, Yellow, Green, Blue, Purple
       - Full rainbow every 128 levels
-      - Reward is 10 X 2^n colors, 10, 20, 40, 80, 160, 320, 640
+      - Every 4th clearance pattern is color specific
     - 3:
-      - Clear 2^n solid 3 wide lines, where n is the number of powers of 3
-      - 10 pts per 3 line clear
     - 5:
     - 7:
     - 11:

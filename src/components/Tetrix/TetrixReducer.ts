@@ -3,7 +3,7 @@ import { TetrixReducerState } from '../../utils/types';
 import { getShapeGridPositions, generateRandomShape, rotateShape, cloneShape } from '../../utils/shapeUtils';
 import { clearFullLines } from '../../utils/lineUtils';
 import { calculateScore } from '../../utils/scoringUtils';
-import { safeBatchSave } from '../../utils/persistenceUtils';
+import { safeBatchSave, saveModifiers } from '../../utils/persistenceUtils';
 
 const emptyColor = {
   lightest: '#000000',
@@ -58,7 +58,8 @@ export const initialState: TetrixReducerState = {
   removingShapeIndex: null,
   shapesSliding: false,
   openRotationMenus: [], // Dynamic array based on actual shapes
-}
+  unlockedModifiers: new Set(), // Set of prime IDs that have been unlocked
+};
 
 export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
 
@@ -512,6 +513,30 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         isMapUnlocked: true,
+      };
+    }
+
+    case "UNLOCK_MODIFIER": {
+      const { primeId } = action.value;
+      const newUnlockedModifiers = new Set(state.unlockedModifiers);
+      newUnlockedModifiers.add(primeId);
+      
+      // Save unlocked modifiers to database
+      saveModifiers(newUnlockedModifiers).catch((error: Error) => {
+        console.error('Failed to save unlocked modifiers:', error);
+      });
+      
+      return {
+        ...state,
+        unlockedModifiers: newUnlockedModifiers,
+      };
+    }
+
+    case "LOAD_MODIFIERS": {
+      const { unlockedModifiers } = action.value;
+      return {
+        ...state,
+        unlockedModifiers,
       };
     }
   }

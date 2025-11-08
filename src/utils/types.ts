@@ -69,6 +69,11 @@ export type GameSettingsPersistenceData = {
   lastUpdated: number;
 };
 
+export type ModifiersPersistenceData = {
+  unlockedModifiers: number[]; // Array of prime IDs for JSON serialization
+  lastUpdated: number;
+};
+
 // Game state types - simplified for level-based play
 export type GameState = 'playing' | 'map';
 
@@ -111,6 +116,8 @@ export type TetrixReducerState = {
   shapesSliding: boolean; // Whether shapes are currently sliding up
   // Rotation menu visibility per shape
   openRotationMenus: boolean[]; // Track which shape rotation menus are open
+  // Modifier system
+  unlockedModifiers: Set<number>; // Set of prime IDs that have been unlocked
 }
 
 type SelectShapeAction = {
@@ -235,6 +242,16 @@ type UnlockMapAction = {
   type: 'UNLOCK_MAP';
 }
 
+type UnlockModifierAction = {
+  type: 'UNLOCK_MODIFIER';
+  value: { primeId: number };
+}
+
+type LoadModifiersAction = {
+  type: 'LOAD_MODIFIERS';
+  value: { unlockedModifiers: Set<number> };
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -258,7 +275,9 @@ export type TetrixAction =
   | SetLevelAction
   | OpenMapAction
   | CloseMapAction
-  | UnlockMapAction;
+  | UnlockMapAction
+  | UnlockModifierAction
+  | LoadModifiersAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

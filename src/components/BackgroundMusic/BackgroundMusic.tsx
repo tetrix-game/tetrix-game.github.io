@@ -12,9 +12,9 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
 
   // List of available tracks (using useMemo to prevent recreation on each render)
   const tracks = React.useMemo(() => [
-    '/bgm/Jazz2_KEY_C_in_C.mp3',
-    '/bgm/Jazz3_KEY_Ab_in_C.mp3',
-    '/bgm/Jazz4_KEY_C_in_C.mp3',
+    '/sound/bgm/Jazz2_KEY_C_in_C.mp3',
+    '/sound/bgm/Jazz3_KEY_Ab_in_C.mp3',
+    '/sound/bgm/Jazz4_KEY_C_in_C.mp3',
   ], []);
 
   // Simple user interaction detection - any click or keypress enables audio

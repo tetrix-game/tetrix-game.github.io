@@ -615,9 +615,9 @@ export async function clearAllSavedData(): Promise<void> {
 export async function saveModifiers(unlockedModifiers: Set<number>): Promise<void> {
   try {
     const db = await initializeDatabase();
-    const data: ModifiersPersistenceData = { 
-      unlockedModifiers: Array.from(unlockedModifiers), 
-      lastUpdated: Date.now() 
+    const data: ModifiersPersistenceData = {
+      unlockedModifiers: Array.from(unlockedModifiers),
+      lastUpdated: Date.now()
     };
 
     return new Promise((resolve, reject) => {

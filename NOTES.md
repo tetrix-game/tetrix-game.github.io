@@ -1,6 +1,5 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Game modifiers
 - Pickup shape sound (shoop uptone)
 - Place shape sound (pronounced click)
 - Invalid placement sound (sheew back)
@@ -8,6 +7,8 @@
 - Invalid placement calculation sound (tock)
 - clearance animations and sounds
 - ShapeOption borders are cut off
+- Character movement on the meta map
+- Game modifiers
 
 
 

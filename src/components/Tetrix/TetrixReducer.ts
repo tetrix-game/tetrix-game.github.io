@@ -520,12 +520,12 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const { primeId } = action.value;
       const newUnlockedModifiers = new Set(state.unlockedModifiers);
       newUnlockedModifiers.add(primeId);
-      
+
       // Save unlocked modifiers to database
       saveModifiers(newUnlockedModifiers).catch((error: Error) => {
         console.error('Failed to save unlocked modifiers:', error);
       });
-      
+
       return {
         ...state,
         unlockedModifiers: newUnlockedModifiers,

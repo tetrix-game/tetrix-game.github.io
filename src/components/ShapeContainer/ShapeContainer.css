@@ -1,9 +1,7 @@
 .shape-container {
   /* Base styles with simple height transition for removal animation */
   overflow: hidden;
-  height: 110px;
-  min-height: 110px;
-  /* Ensure minimum height is maintained */
+  /* Let container size itself to fit content */
   transition: height 0.4s ease-out;
   flex-shrink: 0;
   /* Prevent flex compression */
@@ -14,6 +12,5 @@
 .shape-container.removing {
   /* Shrink to height 0 for seamless removal */
   height: 0;
-  min-height: 0;
-  /* Override min-height during removal */
+  /* Override any sizing during removal */
 }

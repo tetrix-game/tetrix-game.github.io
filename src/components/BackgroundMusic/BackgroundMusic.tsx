@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import './BackgroundMusic.css';
 
 interface BackgroundMusicProps {
@@ -9,6 +10,7 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const hasUserInteractedRef = useRef(false);
   const [shouldPlay, setShouldPlay] = useState(false);
+  const { hasPlacedFirstShape } = useTetrixStateContext();
 
   // List of available tracks (using useMemo to prevent recreation on each render)
   const tracks = React.useMemo(() => [
@@ -17,24 +19,17 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
     '/sound/bgm/Jazz4_KEY_C_in_C.mp3',
   ], []);
 
-  // Simple user interaction detection - any click or keypress enables audio
+  // Trigger background music 1 second after first shape placement
   useEffect(() => {
-    const handleUserInteraction = () => {
-      if (!hasUserInteractedRef.current) {
+    if (hasPlacedFirstShape && !hasUserInteractedRef.current) {
+      const timer = setTimeout(() => {
         hasUserInteractedRef.current = true;
         setShouldPlay(true);
-      }
-    };
+      }, 1000); // 1 second delay
 
-    // Listen for any user interaction
-    document.addEventListener('click', handleUserInteraction, { once: true });
-    document.addEventListener('keydown', handleUserInteraction, { once: true });
-
-    return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-    };
-  }, []);
+      return () => clearTimeout(timer);
+    }
+  }, [hasPlacedFirstShape]);
 
   // Set up audio and handle track changes
   useEffect(() => {

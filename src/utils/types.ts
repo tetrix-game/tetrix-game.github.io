@@ -64,8 +64,14 @@ export type MusicPersistenceData = {
   lastUpdated: number;
 };
 
+export type SoundEffectsPersistenceData = {
+  isMuted: boolean;
+  lastUpdated: number;
+};
+
 export type GameSettingsPersistenceData = {
   music: MusicPersistenceData;
+  soundEffects: SoundEffectsPersistenceData;
   lastUpdated: number;
 };
 
@@ -116,6 +122,8 @@ export type TetrixReducerState = {
   shapesSliding: boolean; // Whether shapes are currently sliding up
   // Rotation menu visibility per shape
   openRotationMenus: boolean[]; // Track which shape rotation menus are open
+  // Background music trigger
+  hasPlacedFirstShape: boolean; // Track if first shape has been placed to trigger background music
   // Modifier system
   unlockedModifiers: Set<number>; // Set of prime IDs that have been unlocked
 }
@@ -252,6 +260,10 @@ type LoadModifiersAction = {
   value: { unlockedModifiers: Set<number> };
 }
 
+type TriggerBackgroundMusicAction = {
+  type: 'TRIGGER_BACKGROUND_MUSIC';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -277,7 +289,8 @@ export type TetrixAction =
   | CloseMapAction
   | UnlockMapAction
   | UnlockModifierAction
-  | LoadModifiersAction;
+  | LoadModifiersAction
+  | TriggerBackgroundMusicAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

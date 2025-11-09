@@ -5,6 +5,7 @@ import type {
   ShapesPersistenceData,
   GameSettingsPersistenceData,
   MusicPersistenceData,
+  SoundEffectsPersistenceData,
   ModifiersPersistenceData
 } from './types';
 
@@ -307,8 +308,22 @@ export async function saveShapes(nextShapes: ShapesPersistenceData['nextShapes']
 export async function saveMusicSettings(isMuted: boolean): Promise<void> {
   try {
     const db = await initializeDatabase();
+
+    // Load existing settings to preserve sound effects settings
+    let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    try {
+      const existingData = await loadGameSettings();
+      existingSoundEffects = existingData?.soundEffects || existingSoundEffects;
+    } catch {
+      // Use defaults if loading fails
+    }
+
     const musicData: MusicPersistenceData = { isMuted, lastUpdated: Date.now() };
-    const data: GameSettingsPersistenceData = { music: musicData, lastUpdated: Date.now() };
+    const data: GameSettingsPersistenceData = {
+      music: musicData,
+      soundEffects: existingSoundEffects,
+      lastUpdated: Date.now()
+    };
 
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([SETTINGS_STORE], 'readwrite');
@@ -328,6 +343,51 @@ export async function saveMusicSettings(isMuted: boolean): Promise<void> {
     });
   } catch (error) {
     console.error('Error saving music settings:', error);
+    throw error;
+  }
+}
+
+/**
+ * Save sound effects settings to IndexedDB
+ */
+export async function saveSoundEffectsSettings(isMuted: boolean): Promise<void> {
+  try {
+    const db = await initializeDatabase();
+
+    // Load existing settings to preserve music settings
+    let existingMusic: MusicPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    try {
+      const existingData = await loadGameSettings();
+      existingMusic = existingData?.music || existingMusic;
+    } catch {
+      // Use defaults if loading fails
+    }
+
+    const soundEffectsData: SoundEffectsPersistenceData = { isMuted, lastUpdated: Date.now() };
+    const data: GameSettingsPersistenceData = {
+      music: existingMusic,
+      soundEffects: soundEffectsData,
+      lastUpdated: Date.now()
+    };
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readwrite');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const request = store.put(data, 'current');
+
+      request.onsuccess = () => {
+        console.log('Sound effects settings saved successfully:', isMuted);
+        resolve();
+      };
+
+      request.onerror = () => {
+        console.error('Failed to save sound effects settings:', request.error);
+        reject(new Error(`Failed to save sound effects settings: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error saving sound effects settings:', error);
     throw error;
   }
 }
@@ -456,6 +516,64 @@ export async function loadMusicSettings(): Promise<boolean> {
   } catch (error) {
     console.error('Error loading music settings:', error);
     return false;
+  }
+}
+
+/**
+ * Load sound effects settings from IndexedDB
+ */
+export async function loadSoundEffectsSettings(): Promise<boolean> {
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readonly');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const request = store.get('current');
+
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(result?.soundEffects?.isMuted ?? false);
+      };
+
+      request.onerror = () => {
+        console.error('Failed to load sound effects settings:', request.error);
+        reject(new Error(`Failed to load sound effects settings: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error loading sound effects settings:', error);
+    return false;
+  }
+}
+
+/**
+ * Load complete game settings from IndexedDB (helper for saving functions)
+ */
+async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readonly');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const request = store.get('current');
+
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(result || null);
+      };
+
+      request.onerror = () => {
+        console.error('Failed to load game settings:', request.error);
+        reject(new Error(`Failed to load game settings: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error loading game settings:', error);
+    return null;
   }
 }
 

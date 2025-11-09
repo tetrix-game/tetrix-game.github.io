@@ -1,4 +1,4 @@
-import { loadMusicSettings } from './persistenceUtils';
+import { loadSoundEffectsSettings } from './persistenceUtils';
 
 // Sound Effects Utility
 // Handles playing various game sound effects
@@ -60,14 +60,14 @@ class SoundEffectsManager {
       return;
     }
 
-    // Check mute state fresh each time (in case user changed it)
+    // Check sound effects mute state fresh each time (in case user changed it)
     let isMuted = false;
     try {
-      isMuted = await loadMusicSettings();
+      isMuted = await loadSoundEffectsSettings();
     } catch {
       // Fallback to localStorage
       try {
-        const saved = localStorage.getItem('tetrix-music-muted');
+        const saved = localStorage.getItem('tetrix-soundeffects-muted');
         isMuted = saved ? JSON.parse(saved) : false;
       } catch {
         isMuted = false;

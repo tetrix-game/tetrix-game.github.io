@@ -4,6 +4,17 @@ import { getShapeGridPositions, generateRandomShape, rotateShape, cloneShape } f
 import { clearFullLines } from '../../utils/lineUtils';
 import { calculateScore } from '../../utils/scoringUtils';
 import { safeBatchSave, saveModifiers } from '../../utils/persistenceUtils';
+import { playSound } from '../../utils/soundEffects';
+
+// Helper function to play line clear sound effects
+function playLineClearSounds(clearedRows: number[], clearedColumns: number[]) {
+  if (clearedRows.length > 0 && clearedRows.length <= 4) {
+    playSound(`clear_combo_${clearedRows.length}` as 'clear_combo_1' | 'clear_combo_2' | 'clear_combo_3' | 'clear_combo_4');
+  }
+  if (clearedColumns.length > 0 && clearedColumns.length <= 4) {
+    playSound(`clear_combo_${clearedColumns.length}` as 'clear_combo_1' | 'clear_combo_2' | 'clear_combo_3' | 'clear_combo_4');
+  }
+}
 
 const emptyColor = {
   lightest: '#000000',
@@ -58,6 +69,7 @@ export const initialState: TetrixReducerState = {
   removingShapeIndex: null,
   shapesSliding: false,
   openRotationMenus: [], // Dynamic array based on actual shapes
+  hasPlacedFirstShape: false, // Track first shape placement for background music trigger
   unlockedModifiers: new Set(), // Set of prime IDs that have been unlocked
 };
 
@@ -169,6 +181,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Check for and clear full lines
       const { tiles: newTiles, clearedRows, clearedColumns } = clearFullLines(tilesWithShape);
 
+      // Play sound effects for line clearing
+      playLineClearSounds(clearedRows, clearedColumns);
+
       // Calculate score for lines cleared
       const scoreData = calculateScore(clearedRows.length, clearedColumns.length);
       const newScore = state.score + scoreData.pointsEarned;
@@ -198,6 +213,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         placementAnimationState: 'none' as const,
         animationStartPosition: null,
         animationTargetPosition: null,
+        hasPlacedFirstShape: true, // Mark that first shape has been placed
       };
 
       return newState;
@@ -538,6 +554,12 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         ...state,
         unlockedModifiers,
       };
+    }
+
+    case "TRIGGER_BACKGROUND_MUSIC": {
+      // This action doesn't modify state, just triggers background music
+      // The actual music trigger will be handled by the BackgroundMusic component
+      return state;
     }
   }
 

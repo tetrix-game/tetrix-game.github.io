@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMusicControl } from '../Header/MusicControlContext';
+import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { clearAllSavedData } from '../../utils/persistenceUtils';
 import './MenuDropdown.css';
@@ -12,6 +13,7 @@ const MenuDropdown: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { isMuted, toggleMute } = useMusicControl();
+  const { isMuted: isSoundEffectsMuted, toggleMute: toggleSoundEffectsMute } = useSoundEffectsControl();
   const dispatch = useTetrixDispatchContext();
 
   const toggleDropdown = () => {
@@ -165,6 +167,20 @@ const MenuDropdown: React.FC = () => {
                 <span className="toggle-slider"></span>
               </label>
               <span className="menu-label">Music</span>
+            </div>
+
+            <div className="menu-item">
+              <label className="toggle-switch" title={isSoundEffectsMuted ? 'Turn on sound effects' : 'Turn off sound effects'}>
+                <input
+                  type="checkbox"
+                  checked={!isSoundEffectsMuted}
+                  onChange={toggleSoundEffectsMute}
+                  className="toggle-input"
+                  aria-label={isSoundEffectsMuted ? 'Turn on sound effects' : 'Turn off sound effects'}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+              <span className="menu-label">Sound Effects</span>
             </div>
 
             <div className="menu-item debug-submenu">

@@ -22,7 +22,7 @@ export const useGameSizing = (): GameSizing => {
   const sizing = useMemo(() => {
     const { width: vw, height: vh } = windowSize;
     const aspectRatio = vw / vh;
-    
+
     // Calculate main grid size using same logic as CSS media queries
     let gridSize: number;
     if (aspectRatio >= 1) {
@@ -32,7 +32,7 @@ export const useGameSizing = (): GameSizing => {
       // max-aspect-ratio: 1/1 - use 90vw  
       gridSize = vw * 0.9;
     }
-    
+
     // Grid has 10 cells with 2px gaps (9 gaps total)
     const gapSpace = 2 * 9; // 18px total gap space
     const gridCellSize = (gridSize - gapSpace) / 10;

@@ -35,15 +35,10 @@ const ShapeSelector = (): JSX.Element => {
     }
   }, [dispatch, initialShapes, nextShapes.length]);
 
-  // Calculate height based on actual number of shapes
-  const containerHeight = nextShapes.length * 118; // 110px container + 8px gap
-
   return (
     <div
       className="shape-selector"
       style={{
-        height: `${containerHeight}px`,
-        overflow: 'hidden', // This clips the virtual shape below
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',

@@ -3,6 +3,7 @@ import BlockVisual from '../BlockVisual';
 import { getShapeAnchorBlock } from '../../utils/shapeUtils';
 import { playSound } from '../../utils/soundEffects';
 import { useEffect, useState } from 'react';
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 export default function DraggingShape() {
   const {
@@ -16,6 +17,7 @@ export default function DraggingShape() {
     animationTargetPosition,
   } = useTetrixStateContext();
 
+  const { gridBorderWidth } = useGameSizing();
   const dispatch = useTetrixDispatchContext();
   const [animationProgress, setAnimationProgress] = useState(0);
 
@@ -160,7 +162,7 @@ export default function DraggingShape() {
             }}
           >
             {block.isFilled && (
-              <BlockVisual block={block} />
+              <BlockVisual block={block} borderWidth={gridBorderWidth} />
             )}
           </div>
         ))

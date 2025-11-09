@@ -4,21 +4,7 @@ import BlockVisual from '../BlockVisual';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useCallback, useRef, useEffect, useState } from 'react';
 import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shapeUtils';
-
-const shapeContainerCss = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(4, 25px)',
-  gridTemplateRows: 'repeat(4, 25px)',
-  gap: '2px',
-  padding: '10px',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  touchAction: 'none' as const,
-  boxSizing: 'border-box' as const,
-  border: '3px solid rgba(255, 255, 255, 0.2)',
-};
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 type ShapeOptionProps = {
   shape: Shape;
@@ -28,8 +14,24 @@ type ShapeOptionProps = {
 const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
   const { selectedShapeIndex, tiles } = useTetrixStateContext();
+  const { shapeOptionCellSize, shapeOptionBorderWidth } = useGameSizing();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const shapeContainerCss = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(4, ${shapeOptionCellSize}px)`,
+    gridTemplateRows: `repeat(4, ${shapeOptionCellSize}px)`,
+    gap: '2px',
+    padding: '10px',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    touchAction: 'none' as const,
+    boxSizing: 'border-box' as const,
+    border: '3px solid rgba(255, 255, 255, 0.2)',
+  };
 
   // Detect if this is a touch device (mobile) - same logic as DraggingShape
   const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
@@ -250,7 +252,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
               opacity: isSelected ? 0.1 : 1,
             }}
           >
-            <BlockVisual block={block} />
+            <BlockVisual block={block} borderWidth={shapeOptionBorderWidth} />
           </div>
         ))
       ))}

@@ -3,6 +3,7 @@ import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 type TileVisualProps = {
   tile: Tile;
@@ -12,6 +13,7 @@ type TileVisualProps = {
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
   const { isValidPlacement } = useTetrixStateContext();
+  const { gridBorderWidth } = useGameSizing();
 
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
@@ -39,7 +41,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
 
   return (
     <div style={style(tile.location.row, tile.location.column)}>
-      <BlockVisual block={displayBlock} />
+      <BlockVisual block={displayBlock} borderWidth={gridBorderWidth} />
       {showShadow && (
         <div
           style={{

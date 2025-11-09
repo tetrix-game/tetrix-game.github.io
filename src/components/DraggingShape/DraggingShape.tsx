@@ -1,6 +1,7 @@
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual';
 import { getShapeAnchorBlock } from '../../utils/shapeUtils';
+import { playSound } from '../../utils/soundEffects';
 import { useEffect, useState } from 'react';
 
 export default function DraggingShape() {
@@ -30,15 +31,27 @@ export default function DraggingShape() {
       return;
     }
 
-    const ANIMATION_DURATION = 250; // 250ms total animation
+    const ANIMATION_DURATION = 300; // 500ms total animation (doubled from 250ms)
+    const SOUND_DURATION = 97; // Duration of click_into_place.mp3 in milliseconds
+    const SOUND_START_TIME = ANIMATION_DURATION - SOUND_DURATION; // Start sound so it ends with animation (343ms)
+
     const startTime = performance.now();
+    let soundTriggered = false;
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
 
-      // Ease-out cubic for smooth deceleration
-      const eased = 1 - Math.pow(1 - progress, 3);
+      // Trigger sound at the right time so it ends with the animation
+      if (!soundTriggered && elapsed >= SOUND_START_TIME) {
+        soundTriggered = true;
+        playSound('click_into_place').catch(error => {
+          console.error('Failed to play click_into_place sound:', error);
+        });
+      }
+
+      // Ease-in cubic for magnetic acceleration (like being pulled in)
+      const eased = Math.pow(progress, 3);
       setAnimationProgress(eased);
 
       if (progress < 1) {

@@ -182,7 +182,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           });
       }
 
-      // Start the shape removal animation
+      // Calculate currency breakdown for CoinShower
       const newState = {
         ...state,
         tiles: newTiles,

@@ -1,7 +1,7 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Pickup shape sound (shoop uptone)
 - Place shape sound (pronounced click)
+- Pickup shape sound
 - Invalid placement sound (sheew back)
 - Valid placement calculation sound (tick)
 - Invalid placement calculation sound (tock)

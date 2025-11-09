@@ -37,6 +37,9 @@
       "type": "image/png"
     }
   ],
-  "categories": ["games", "entertainment"],
+  "categories": [
+    "games",
+    "entertainment"
+  ],
   "lang": "en-US"
 }

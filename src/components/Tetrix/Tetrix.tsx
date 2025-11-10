@@ -1,7 +1,6 @@
 import './Tetrix.css';
 import Grid from '../Grid';
-import ShapeSelector from '../ShapeSelector';
-import PurchasesContainer from '../PurchasesContainer';
+import GameControlsPanel from '../GameControlsPanel';
 import DraggingShape from '../DraggingShape';
 import CoinShower from '../CoinShower';
 import { useTetrixStateContext, useTetrixDispatchContext } from './TetrixContext';
@@ -18,13 +17,13 @@ const Tetrix: React.FC = () => {
       if (!selectedShape) return;
 
       // Let Grid's pointerUp handle clicks within the grid
-      // Let ShapeSelector handle clicks within the shape selector
+      // Let GameControlsPanel handle clicks within the controls panel
       // This only handles pointerUp outside both areas
       const target = e.target as HTMLElement;
       const isInsideGrid = target.closest('.grid') !== null;
-      const isInsideSelector = target.closest('.shape-selector') !== null;
+      const isInsideControlsPanel = target.closest('.game-controls-panel') !== null;
 
-      if (!isInsideGrid && !isInsideSelector) {
+      if (!isInsideGrid && !isInsideControlsPanel) {
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
       }
     };
@@ -43,9 +42,8 @@ const Tetrix: React.FC = () => {
 
   return (
     <div className="tetrix">
-      <PurchasesContainer />
       <Grid />
-      <ShapeSelector />
+      <GameControlsPanel />
       <DraggingShape />
       <CoinShower />
     </div>

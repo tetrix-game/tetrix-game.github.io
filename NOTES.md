@@ -1,5 +1,6 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
+- Make the ShapeSelector look better
 - The white at the bottom of the screen
 - The emoji should be replaced by gem SVG's
 - The points should have only the gem SVG's applied

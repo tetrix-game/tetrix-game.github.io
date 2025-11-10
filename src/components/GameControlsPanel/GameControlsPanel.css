@@ -1,0 +1,22 @@
+.game-controls-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Portrait screens (taller than wide): Horizontal layout */
+@media (max-aspect-ratio: 1/1) {
+  .game-controls-panel {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* Landscape screens (wider than tall): Vertical layout */
+@media (min-aspect-ratio: 1/1) {
+  .game-controls-panel {
+    flex-direction: column;
+    align-items: center;
+  }
+}

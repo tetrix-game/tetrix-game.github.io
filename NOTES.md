@@ -7,6 +7,8 @@
 - Invalid placement calculation sound (tock)
 - clearance animations
 - Character movement on the meta map
+- GemShower should go from center out then to the points bar exactly where the gem is
+- Purchases shoudld have a falling gem with a negative sign, number, and sound
 - Tutorial
 - Game modifiers
 

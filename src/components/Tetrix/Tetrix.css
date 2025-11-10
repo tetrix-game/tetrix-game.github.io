@@ -9,21 +9,11 @@
   gap: 20px;
 }
 
-/* Portrait/Square screens: Grid on top, controls below */
+/* Portrait screens: Grid on top, controls below */
 @media (max-aspect-ratio: 1/1) {
   .tetrix {
     flex-direction: column;
     align-content: center;
-  }
-
-  .grid {
-    order: 1;
-    flex: 0 0 auto;
-  }
-
-  .game-controls-panel {
-    order: 2;
-    flex: 0 0 auto;
   }
 }
 
@@ -31,13 +21,5 @@
 @media (min-aspect-ratio: 1/1) {
   .tetrix {
     flex-direction: row;
-  }
-
-  .grid {
-    order: 1;
-  }
-
-  .game-controls-panel {
-    order: 2;
   }
 }

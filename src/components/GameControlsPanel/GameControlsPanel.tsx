@@ -6,8 +6,8 @@ import './GameControlsPanel.css';
 const GameControlsPanel: React.FC = () => {
   return (
     <div className="game-controls-panel">
-      <PurchasesContainer />
       <ShapeSelector />
+      <PurchasesContainer />
     </div>
   );
 };

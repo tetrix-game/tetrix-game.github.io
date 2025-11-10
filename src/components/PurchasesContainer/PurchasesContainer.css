@@ -7,7 +7,6 @@
   align-items: center;
   justify-content: center;
   min-width: 80px;
-  width: 80px;
   height: auto;
 }
 
@@ -99,27 +98,24 @@
   opacity: 0.6;
 }
 
-/* Portrait/Square screens: horizontal layout next to shape selector */
+/* Portrait screens (taller than wide): horizontal layout below shape selector */
 @media (max-aspect-ratio: 1/1) {
   .purchases-container {
     flex-direction: row;
     width: auto;
     height: 80px;
     gap: 8px;
-    /* Limit width to available space next to shape selector */
-    max-width: calc(50vw - 40px);
     min-height: auto;
   }
 }
 
-/* Landscape screens: vertical stacking */
+/* Landscape screens (wider than tall): vertical stacking next to shape selector */
 @media (min-aspect-ratio: 1/1) {
   .purchases-container {
     flex-direction: column;
-    width: 80px;
     height: auto;
     gap: 8px;
-    /* Constrain to available space next to the grid */
+    /* Constrain to available space */
     max-height: calc(100vh - 100px);
     overflow-y: auto;
     align-content: flex-start;

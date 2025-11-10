@@ -5,18 +5,20 @@
   gap: 20px;
 }
 
-/* Portrait screens (taller than wide): Horizontal layout */
+/* Portrait screens (taller than wide): ShapeSelector between Grid and PurchasesContainer */
 @media (max-aspect-ratio: 1/1) {
-  .game-controls-panel {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-}
-
-/* Landscape screens (wider than tall): Vertical layout */
-@media (min-aspect-ratio: 1/1) {
   .game-controls-panel {
     flex-direction: column;
     align-items: center;
+    gap: 16px;
+  }
+}
+
+/* Landscape screens (wider than tall): ShapeSelector next to PurchasesContainer */
+@media (min-aspect-ratio: 1/1) {
+  .game-controls-panel {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
   }
 }

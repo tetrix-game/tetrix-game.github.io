@@ -95,34 +95,4 @@ describe('Spend Coin Feature', () => {
     expect(newState.openRotationMenus).toEqual([false, false, false]);
     expect(newState.nextShapes).toEqual(newShapes);
   });
-
-  test('COMPLETE_SHAPE_REMOVAL preserves rotation menus for remaining shapes', () => {
-    // Create a test state with some opened rotation menus
-    const testShapes = [
-      generateRandomShape(),
-      generateRandomShape(),
-      generateRandomShape(),
-    ];
-
-    const state = {
-      ...initialState,
-      nextShapes: testShapes,
-      openRotationMenus: [true, true, false], // Some menus are open
-      removingShapeIndex: 0, // Remove the first shape
-      shapesSliding: true,
-    };
-
-    // Complete shape removal
-    const newState = tetrixReducer(state, {
-      type: 'COMPLETE_SHAPE_REMOVAL'
-    });
-
-    // Only the removed shape's menu should be gone, others preserved
-    // Original was [true, true, false] for indices [0, 1, 2]
-    // After removing index 0, we should have [true, false] for indices [0, 1] (previously 1, 2)
-    expect(newState.openRotationMenus[0]).toBe(true); // Was index 1, now index 0
-    expect(newState.openRotationMenus[1]).toBe(false); // Was index 2, now index 1
-    expect(newState.removingShapeIndex).toBe(null);
-    expect(newState.shapesSliding).toBe(false);
-  });
 });

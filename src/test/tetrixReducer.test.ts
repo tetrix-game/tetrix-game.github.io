@@ -214,38 +214,11 @@ describe('TetrixReducer - Bug Fixes', () => {
       expect(newState.isShapeDragging).toBe(false);
       expect(newState.mouseGridLocation).toBeNull();
 
-      // Should initiate shape removal animation
-      expect(newState.removingShapeIndex).toBe(0);
-      expect(newState.shapesSliding).toBe(true);
-
-      // nextShapes should remain unchanged during placement (shapes are removed later in animation)
+      // Should immediately remove the placed shape and add a new one
       expect(newState.nextShapes.length).toBe(3);
-      expect(newState.nextShapes[0]).toBe(shape1);
-      expect(newState.nextShapes[1]).toBe(shape2);
-      expect(newState.nextShapes[2]).toBe(shape3);
-    });
-
-    it('should complete shape removal and generate new shape', () => {
-      const shape1 = createTestShape();
-      const shape2 = createTestShape();
-      const shape3 = createTestShape();
-      const state = {
-        ...initialState,
-        removingShapeIndex: 0,
-        shapesSliding: true,
-        nextShapes: [shape1, shape2, shape3]
-      };
-
-      const newState = tetrixReducer(state, { type: 'COMPLETE_SHAPE_REMOVAL' });
-
-      // Should clear removal animation state
-      expect(newState.removingShapeIndex).toBeNull();
-      expect(newState.shapesSliding).toBe(false);
-
-      // Should have 3 shapes: shape2, shape3, and a new random shape
-      expect(newState.nextShapes.length).toBe(3);
-      expect(newState.nextShapes[0]).toBe(shape2);
+      expect(newState.nextShapes[0]).toBe(shape2); // First shape was removed
       expect(newState.nextShapes[1]).toBe(shape3);
+      // Third shape should be a new random shape, not the original shape1
       expect(newState.nextShapes[2]).not.toBe(shape1);
     });
 

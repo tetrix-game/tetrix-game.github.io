@@ -117,9 +117,7 @@ export type TetrixReducerState = {
   // Shape queue configuration
   queueSize: number; // Total shapes available (-1 = infinite)
   shapesUsed: number; // Track how many shapes have been used (for finite mode)
-  // Animation states for shape transitions
-  removingShapeIndex: number | null; // Index of shape being removed
-  shapesSliding: boolean; // Whether shapes are currently sliding up
+
   // Rotation menu visibility per shape
   openRotationMenus: boolean[]; // Track which shape rotation menus are open
   // Background music trigger
@@ -220,15 +218,6 @@ type SpendCoinAction = {
   };
 }
 
-type StartShapeRemovalAction = {
-  type: 'START_SHAPE_REMOVAL';
-  value: { shapeIndex: number };
-}
-
-type CompleteShapeRemovalAction = {
-  type: 'COMPLETE_SHAPE_REMOVAL';
-}
-
 type AddShapeOptionAction = {
   type: 'ADD_SHAPE_OPTION';
 }
@@ -301,8 +290,6 @@ export type TetrixAction =
   | HideCoinDisplayAction
   | RotateShapeAction
   | SpendCoinAction
-  | StartShapeRemovalAction
-  | CompleteShapeRemovalAction
   | AddShapeOptionAction
   | RemoveShapeOptionAction
   | SetLevelAction

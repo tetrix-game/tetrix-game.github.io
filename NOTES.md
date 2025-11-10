@@ -1,7 +1,7 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
 - Shape placement logic should be done before 
-- Make the ShapeSelector look better
+- Get rid of the ShapeSelector scrollbars
 - The white at the bottom of the screen
 - The emoji should be replaced by gem SVG's
 - The points should have only the gem SVG's applied

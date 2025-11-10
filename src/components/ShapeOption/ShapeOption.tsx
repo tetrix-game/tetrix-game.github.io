@@ -271,6 +271,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   return (
     <div
       ref={containerRef}
+      className="shape-container"
       style={{
         ...shapeContainerCss,
         border: isSelected ? '3px solid rgba(255, 255, 255, 0.5)' : '3px solid rgba(255, 255, 255, 0.2)',

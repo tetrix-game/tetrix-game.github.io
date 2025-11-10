@@ -15,7 +15,6 @@
 @media (max-aspect-ratio: 1/1) {
   .shape-selector {
     flex-direction: row;
-    width: 100%;
     /* Limit height to available space in the middle position */
     max-height: calc(90vh - 420px);
     min-height: auto;
@@ -26,7 +25,6 @@
 @media (min-aspect-ratio: 1/1) {
   .shape-selector {
     flex-direction: column;
-    width: fit-content;
     height: fit-content;
     overflow: visible;
     align-content: flex-start;

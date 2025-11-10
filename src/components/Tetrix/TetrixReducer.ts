@@ -66,8 +66,6 @@ export const initialState: TetrixReducerState = {
   showCoinDisplay: false,
   queueSize: -1, // Infinite by default
   shapesUsed: 0,
-  removingShapeIndex: null,
-  shapesSliding: false,
   openRotationMenus: [], // Dynamic array based on actual shapes
   hasPlacedFirstShape: false, // Track first shape placement for background music trigger
   isTurningModeActive: false, // Whether turning mode is currently active
@@ -201,13 +199,31 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       }
 
       // Emit gems for GemShower animation
+      // Directly remove the used shape and add a new one
+      const removedIndex = state.selectedShapeIndex as number;
+      const remainingShapes = state.nextShapes.filter((_, index) => index !== removedIndex);
+      const newShapesUsed = state.shapesUsed + 1;
+
+      // Maintain the same number of shapes by adding a new one when one is removed
+      const updatedNextShapes = [...remainingShapes];
+
+      if (state.queueSize === -1 || newShapesUsed < state.queueSize) {
+        // Add one new shape to replace the removed one
+        updatedNextShapes.push(generateRandomShape());
+      }
+
+      // Preserve rotation menu states for remaining shapes, removing the used shape's state
+      const newOpenRotationMenus = state.openRotationMenus
+        .filter((_, index) => index !== removedIndex) // Remove the state for the removed shape
+        .concat(new Array(Math.max(0, updatedNextShapes.length - remainingShapes.length)).fill(false)); // Add false for any new shapes
+
       const newState = {
         ...state,
         tiles: newTiles,
         score: newScore,
         totalLinesCleared: newTotalLinesCleared,
-        removingShapeIndex: state.selectedShapeIndex,
-        shapesSliding: true,
+        nextShapes: updatedNextShapes,
+        shapesUsed: newShapesUsed,
         selectedShape: null,
         selectedShapeIndex: null,
         mouseGridLocation: null,
@@ -216,6 +232,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         placementAnimationState: 'none' as const,
         animationStartPosition: null,
         animationTargetPosition: null,
+        openRotationMenus: newOpenRotationMenus,
+        shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
         hasPlacedFirstShape: true, // Mark that first shape has been placed
       };
 
@@ -363,57 +381,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       // Save updated shapes to database
       safeBatchSave(undefined, undefined, newShapes, newState.savedShape)
-        .catch((error: Error) => {
-          console.error('Failed to save shapes state:', error);
-        });
-
-      return newState;
-    }
-
-    case "START_SHAPE_REMOVAL": {
-      const { shapeIndex } = action.value;
-      return {
-        ...state,
-        removingShapeIndex: shapeIndex,
-        shapesSliding: true,
-      };
-    }
-
-    case "COMPLETE_SHAPE_REMOVAL": {
-      if (state.removingShapeIndex === null) {
-        return state;
-      }
-
-      // For virtual container system: remove the shape and shift remaining shapes
-      const removedIndex = state.removingShapeIndex;
-      const remainingShapes = state.nextShapes.filter((_, index) => index !== removedIndex);
-      const newShapesUsed = state.shapesUsed + 1;
-
-      // Maintain the same number of shapes by adding a new one when one is removed
-      const updatedNextShapes = [...remainingShapes];
-
-      if (state.queueSize === -1 || newShapesUsed < state.queueSize) {
-        // Add one new shape to replace the removed one
-        updatedNextShapes.push(generateRandomShape());
-      }
-
-      // Preserve rotation menu states for remaining shapes, removing the used shape's state
-      const newOpenRotationMenus = state.openRotationMenus
-        .filter((_, index) => index !== removedIndex) // Remove the state for the removed shape
-        .concat(new Array(Math.max(0, updatedNextShapes.length - remainingShapes.length)).fill(false)); // Add false for any new shapes
-
-      const newState = {
-        ...state,
-        nextShapes: updatedNextShapes,
-        shapesUsed: newShapesUsed,
-        removingShapeIndex: null,
-        shapesSliding: false,
-        openRotationMenus: newOpenRotationMenus,
-        shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
-      };
-
-      // Save shapes to database
-      safeBatchSave(undefined, undefined, updatedNextShapes, newState.savedShape)
         .catch((error: Error) => {
           console.error('Failed to save shapes state:', error);
         });

@@ -1,5 +1,5 @@
 import './ShapeSelector.css';
-import ShapeContainer from '../ShapeContainer'
+import ShapeOption from '../ShapeOption'
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
@@ -40,11 +40,10 @@ const ShapeSelector = (): JSX.Element => {
     <div className="shape-selector">
       {nextShapes.map((shape, index) => {
         return (
-          <ShapeContainer
+          <ShapeOption
             key={getShapeId(shape)}
             shape={shape}
             shapeIndex={index}
-            isVirtual={false} // No virtual shapes needed - height is dynamic
           />
         );
       })}

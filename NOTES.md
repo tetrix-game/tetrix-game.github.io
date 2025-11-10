@@ -1,11 +1,5 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Shape placement logic should be done before 
-- Get rid of the ShapeSelector scrollbars
-- The white at the bottom of the screen
-- The emoji should be replaced by gem SVG's
-- The points should have only the gem SVG's applied
-- ShapeOption needs centering
 - Slide into place animation doesn't start from where the DraggingShape left off.
 - Pickup shape sound
 - Invalid placement sound (sheew back)

@@ -5,6 +5,7 @@ export interface GameSizing {
   shapeOptionCellSize: number;
   gridBorderWidth: number;
   shapeOptionBorderWidth: number;
+  buttonSize: number;
 }
 
 export const useGameSizing = (): GameSizing => {
@@ -42,11 +43,24 @@ export const useGameSizing = (): GameSizing => {
     const shapeOptionCellSize = 25;
     const shapeOptionBorderWidth = shapeOptionCellSize / 2;
 
+    // Button sizing: responsive based on orientation
+    // If height < width: use 10vh for min size
+    // If width < height (mobile): use 10vw for min size
+    let buttonSize: number;
+    if (vh < vw) {
+      // Landscape orientation - use viewport height
+      buttonSize = vh * 0.1;
+    } else {
+      // Portrait orientation (mobile) - use viewport width
+      buttonSize = vw * 0.1;
+    }
+
     return {
       gridCellSize,
       shapeOptionCellSize,
       gridBorderWidth,
       shapeOptionBorderWidth,
+      buttonSize,
     };
   }, [windowSize]);
 

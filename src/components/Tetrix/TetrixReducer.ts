@@ -445,11 +445,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "ADD_SHAPE_OPTION": {
-      // Don't allow adding more than 7 shapes total
-      if (state.nextShapes.length >= 7) {
-        return state;
-      }
-
       const newShape = generateRandomShape();
       const updatedShapes = [...state.nextShapes, newShape];
 

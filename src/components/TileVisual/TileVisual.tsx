@@ -3,7 +3,6 @@ import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { useGameSizing } from '../../hooks/useGameSizing';
 
 type TileVisualProps = {
   tile: Tile;
@@ -13,7 +12,14 @@ type TileVisualProps = {
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
   const { isValidPlacement } = useTetrixStateContext();
-  const { gridBorderWidth } = useGameSizing();
+
+  // Fixed border width for consistent grid sizing
+  // Grid is 400px, with 10 tiles and 9 gaps of 2px = 38.2px per tile
+  const FIXED_GRID_SIZE = 400;
+  const GRID_GAP = 2;
+  const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+  const FIXED_TILE_SIZE = (FIXED_GRID_SIZE - GRID_GAPS_TOTAL) / 10;
+  const FIXED_BORDER_WIDTH = FIXED_TILE_SIZE / 2;
 
   const style = (row: number, column: number) => {
     const dark = (row + column) % 2 === 0;
@@ -41,7 +47,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
 
   return (
     <div style={style(tile.location.row, tile.location.column)}>
-      <BlockVisual block={displayBlock} borderWidth={gridBorderWidth} />
+      <BlockVisual block={displayBlock} borderWidth={FIXED_BORDER_WIDTH} />
       {showShadow && (
         <div
           style={{

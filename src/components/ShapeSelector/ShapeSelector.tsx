@@ -1,3 +1,4 @@
+import './ShapeSelector.css';
 import ShapeContainer from '../ShapeContainer'
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
@@ -36,14 +37,7 @@ const ShapeSelector = (): JSX.Element => {
   }, [dispatch, initialShapes, nextShapes.length]);
 
   return (
-    <div
-      className="shape-selector"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-      }}
-    >
+    <div className="shape-selector">
       {nextShapes.map((shape, index) => {
         return (
           <ShapeContainer

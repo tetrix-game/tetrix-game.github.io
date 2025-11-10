@@ -4,7 +4,6 @@ import BlockVisual from '../BlockVisual';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useCallback, useRef, useEffect, useState } from 'react';
 import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shapeUtils';
-import { useGameSizing } from '../../hooks/useGameSizing';
 
 type ShapeOptionProps = {
   shape: Shape;
@@ -14,15 +13,19 @@ type ShapeOptionProps = {
 const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
   const { selectedShapeIndex, tiles } = useTetrixStateContext();
-  const { shapeOptionCellSize, shapeOptionBorderWidth } = useGameSizing();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Fixed sizing for consistent shape options
+  const buttonSize = 80; // Fixed size instead of responsive
+  const cellSize = 16; // Fixed cell size
+  const cellGap = 1; // Fixed gap
+
   const shapeContainerCss = {
     display: 'grid',
-    gridTemplateColumns: `repeat(4, ${shapeOptionCellSize}px)`,
-    gridTemplateRows: `repeat(4, ${shapeOptionCellSize}px)`,
-    gap: '2px',
+    gridTemplateColumns: `repeat(4, ${cellSize}px)`,
+    gridTemplateRows: `repeat(4, ${cellSize}px)`,
+    gap: `${cellGap}px`,
     padding: '10px',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: '8px',
@@ -31,6 +34,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     touchAction: 'none' as const,
     boxSizing: 'border-box' as const,
     border: '3px solid rgba(255, 255, 255, 0.2)',
+    width: `${buttonSize}px`,
+    height: `${buttonSize}px`,
+    minWidth: `${buttonSize}px`,
+    minHeight: `${buttonSize}px`,
   };
 
   // Detect if this is a touch device (mobile) - same logic as DraggingShape
@@ -86,12 +93,17 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     const gridElement = document.querySelector('.grid') as HTMLElement;
     if (!gridElement) return;
 
+    // Use fixed grid calculations
+    const FIXED_GRID_SIZE = 400;
+    const GRID_GAP = 2;
+    const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+    const FIXED_TILE_SIZE = (FIXED_GRID_SIZE - GRID_GAPS_TOTAL) / 10;
+
     // Calculate grid bounds and tile size
     const gridRect = gridElement.getBoundingClientRect();
-    const tileSize = (gridRect.width - 9 * 2) / 10;
 
     // Apply mobile offset to match DraggingShape visual offset
-    const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
+    const MOBILE_TOUCH_OFFSET = isTouchDevice ? FIXED_TILE_SIZE * 2.5 : 0;
     const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
     // For touch devices, extend the grid bounds downward to allow placement
@@ -131,7 +143,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       value: {
         location,
         position: { x: e.clientX, y: e.clientY },
-        tileSize,
+        tileSize: FIXED_TILE_SIZE,
         gridBounds: {
           top: gridRect.top,
           left: gridRect.left,
@@ -156,12 +168,17 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       return;
     }
 
+    // Use fixed grid calculations
+    const FIXED_GRID_SIZE = 400;
+    const GRID_GAP = 2;
+    const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+    const FIXED_TILE_SIZE = (FIXED_GRID_SIZE - GRID_GAPS_TOTAL) / 10;
+
     // Calculate grid bounds and tile size
     const gridRect = gridElement.getBoundingClientRect();
-    const tileSize = (gridRect.width - 9 * 2) / 10;
 
     // Apply mobile offset to match DraggingShape visual offset
-    const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
+    const MOBILE_TOUCH_OFFSET = isTouchDevice ? FIXED_TILE_SIZE * 2.5 : 0;
     const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
     // For touch devices, extend the grid bounds downward to allow placement
@@ -252,7 +269,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
               opacity: isSelected ? 0.1 : 1,
             }}
           >
-            <BlockVisual block={block} borderWidth={shapeOptionBorderWidth} />
+            <BlockVisual block={block} borderWidth={cellSize / 4} />
           </div>
         ))
       ))}

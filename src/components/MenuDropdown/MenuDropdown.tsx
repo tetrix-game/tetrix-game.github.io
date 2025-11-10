@@ -218,7 +218,7 @@ const MenuDropdown: React.FC = () => {
                   <button
                     className="debug-action-button"
                     onClick={() => dispatch({ type: 'ADD_SHAPE_OPTION' })}
-                    title="Add a new shape option (max 7 total)"
+                    title="Add a new shape option"
                   >
                     Add ShapeOption
                   </button>

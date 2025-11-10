@@ -1,12 +1,12 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Place shape sound (pronounced click)
+- ShapeContainer needs updated button sizes
+- Slide into place animation doesn't start from where the DraggingShape left off.
 - Pickup shape sound
 - Invalid placement sound (sheew back)
 - Valid placement calculation sound (tick)
 - Invalid placement calculation sound (tock)
-- clearance animations and sounds
-- ShapeOption borders are cut off
+- clearance animations
 - Character movement on the meta map
 - Game modifiers
 

@@ -1,35 +1,6 @@
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useCallback } from 'react';
-
-const turnButtonCss = {
-  width: '102px',
-  height: '102px',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  border: '3px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '36px',
-  color: 'rgba(255, 255, 255, 0.8)',
-};
-
-const dollarButtonCss = {
-  width: '102px',
-  height: '102px',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  border: '3px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '48px',
-  color: 'rgba(255, 255, 255, 0.8)',
-};
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 const buttonGroupCss = {
   display: 'flex',
@@ -44,6 +15,43 @@ type PurchaseMenuProps = {
 
 const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => {
   const dispatch = useTetrixDispatchContext();
+  const { buttonSize } = useGameSizing();
+
+  const turnButtonCss = {
+    width: `${buttonSize}px`,
+    height: `${buttonSize}px`,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    border: '3px solid rgba(255, 255, 255, 0.2)',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: `${buttonSize * 0.35}px`,
+    color: 'rgba(255, 255, 255, 0.8)',
+    minWidth: `${buttonSize}px`,
+    minHeight: `${buttonSize}px`,
+    boxSizing: 'border-box' as const,
+  };
+
+  const dollarButtonCss = {
+    width: `${buttonSize}px`,
+    height: `${buttonSize}px`,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    border: '3px solid rgba(255, 255, 255, 0.2)',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: `${buttonSize * 0.47}px`,
+    color: 'rgba(255, 255, 255, 0.8)',
+    minWidth: `${buttonSize}px`,
+    minHeight: `${buttonSize}px`,
+    boxSizing: 'border-box' as const,
+  };
 
   const handleRotateClockwise = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();

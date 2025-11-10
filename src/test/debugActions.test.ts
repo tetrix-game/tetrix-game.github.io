@@ -3,7 +3,7 @@ import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer'
 import { generateRandomShape } from '../utils/shapeUtils';
 
 describe('Debug Actions for Shape Management', () => {
-  test('ADD_SHAPE_OPTION adds a new shape when under 7 shapes', () => {
+  test('ADD_SHAPE_OPTION adds a new shape to existing shapes', () => {
     const testShapes = [
       generateRandomShape(),
       generateRandomShape(),
@@ -38,25 +38,6 @@ describe('Debug Actions for Shape Management', () => {
 
     // Bounds should be extended
     expect(newState.shapeOptionBounds).toEqual([null, null, null, null]);
-  });
-
-  test('ADD_SHAPE_OPTION does not add when at 7 shapes (maximum)', () => {
-    const testShapes = new Array(7).fill(null).map(() => generateRandomShape());
-
-    const state = {
-      ...initialState,
-      nextShapes: testShapes,
-      openRotationMenus: new Array(7).fill(false),
-      shapeOptionBounds: new Array(7).fill(null),
-    };
-
-    const newState = tetrixReducer(state, {
-      type: 'ADD_SHAPE_OPTION'
-    });
-
-    // Should not change - still 7 shapes
-    expect(newState.nextShapes.length).toBe(7);
-    expect(newState).toEqual(state); // No changes at all
   });
 
   test('REMOVE_SHAPE_OPTION removes the last shape when above 1 shape', () => {

@@ -1,15 +1,8 @@
 import './ShapeContainer.css';
 import type { Shape } from '../../utils/types';
 import ShapeOption from '../ShapeOption';
-import PurchaseMenu from '../PurchaseMenu';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useEffect } from 'react';
-
-const containerWrapperCss = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '4px',
-};
 
 type ShapeContainerProps = {
   shape: Shape;
@@ -18,10 +11,16 @@ type ShapeContainerProps = {
 };
 
 const ShapeContainer = ({ shape, shapeIndex, isVirtual = false }: ShapeContainerProps) => {
-  const { openRotationMenus, removingShapeIndex } = useTetrixStateContext();
+  const { removingShapeIndex } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
-  const isRotationMenuOpen = openRotationMenus[shapeIndex] || false;
   const isRemoving = removingShapeIndex === shapeIndex;
+
+  const containerWrapperCss = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    height: 'fit-content',
+  };
 
   // Handle animation completion
   useEffect(() => {
@@ -39,10 +38,6 @@ const ShapeContainer = ({ shape, shapeIndex, isVirtual = false }: ShapeContainer
       style={containerWrapperCss}
     >
       <ShapeOption shape={shape} shapeIndex={shapeIndex} />
-      <PurchaseMenu
-        shapeIndex={shapeIndex}
-        isRotationMenuOpen={isRotationMenuOpen}
-      />
     </div>
   );
 };

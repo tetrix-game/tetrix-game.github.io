@@ -1,18 +1,6 @@
-/* Aspect ratio decides whether to favor flex-row for horizonral layouts and flex-column for vertical layouts */
-@media (min-aspect-ratio: 1/1) {
-  .grid {
-    width: calc(90vh - 1px);
-    height: calc(90vh - 1px);
-    gap: 2px;
-  }
-}
-
-@media (max-aspect-ratio: 1/1) {
-  .grid {
-    height: 90vw;
-    width: 90vw;
-    margin-left: 5vw;
-    margin-right: 5vw;
-    gap: 2px;
-  }
+.grid {
+  /* Fixed size grid - always maintain same tile proportions */
+  width: 400px;
+  height: 400px;
+  gap: 2px;
 }

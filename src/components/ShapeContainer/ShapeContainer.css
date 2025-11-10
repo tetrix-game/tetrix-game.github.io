@@ -1,10 +1,14 @@
 .shape-container {
   /* Base styles with simple height transition for removal animation */
-  overflow: hidden;
+  overflow: visible;
+  /* Changed from hidden to allow buttons to be fully visible */
   /* Let container size itself to fit content */
   transition: height 0.4s ease-out;
   flex-shrink: 0;
   /* Prevent flex compression */
+  /* Ensure container fits the button size without clipping */
+  width: fit-content;
+  height: fit-content;
 }
 
 /* Virtual containers are identical to regular containers - parent handles clipping */

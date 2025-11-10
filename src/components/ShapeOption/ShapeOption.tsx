@@ -26,7 +26,6 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     gridTemplateColumns: `repeat(4, ${cellSize}px)`,
     gridTemplateRows: `repeat(4, ${cellSize}px)`,
     gap: `${cellGap}px`,
-    padding: '10px',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: '8px',
     cursor: 'pointer',

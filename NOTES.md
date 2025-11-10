@@ -12,6 +12,7 @@
 - Invalid placement calculation sound (tock)
 - clearance animations
 - Character movement on the meta map
+- Tutorial
 - Game modifiers
 
 

@@ -48,7 +48,10 @@ const createMockState = (placementAnimationState: PlacementAnimationState): Tetr
   isTurningModeActive: false,
   turningDirection: null,
   isDoubleTurnModeActive: false,
-  unlockedModifiers: new Set()
+  unlockedModifiers: new Set(),
+  removingShapeIndex: null,
+  shapeRemovalAnimationState: 'none',
+  newShapeAnimationStates: []
 });
 
 describe('Sound Timing in DraggingShape', () => {

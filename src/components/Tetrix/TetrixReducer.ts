@@ -60,6 +60,9 @@ export const initialState: TetrixReducerState = {
   placementAnimationState: 'none',
   animationStartPosition: null,
   animationTargetPosition: null,
+  removingShapeIndex: null,
+  shapeRemovalAnimationState: 'none',
+  newShapeAnimationStates: [], // Initialize as empty array
   shapeOptionBounds: [],
   score: 0,
   totalLinesCleared: 0,
@@ -199,23 +202,26 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       }
 
       // Emit gems for GemShower animation
-      // Directly remove the used shape and add a new one
-      const removedIndex = state.selectedShapeIndex as number;
-      const remainingShapes = state.nextShapes.filter((_, index) => index !== removedIndex);
-      const newShapesUsed = state.shapesUsed + 1;
+      // Start the removal animation but keep the shape in the array until animation completes
+      const removedIndex = state.selectedShapeIndex;
 
-      // Maintain the same number of shapes by adding a new one when one is removed
-      const updatedNextShapes = [...remainingShapes];
-
-      if (state.queueSize === -1 || newShapesUsed < state.queueSize) {
-        // Add one new shape to replace the removed one
+      // Add a new shape immediately to create the 4th shape during removal animation
+      const updatedNextShapes = [...state.nextShapes];
+      if (state.queueSize === -1 || state.shapesUsed < state.queueSize) {
         updatedNextShapes.push(generateRandomShape());
       }
 
-      // Preserve rotation menu states for remaining shapes, removing the used shape's state
-      const newOpenRotationMenus = state.openRotationMenus
-        .filter((_, index) => index !== removedIndex) // Remove the state for the removed shape
-        .concat(new Array(Math.max(0, updatedNextShapes.length - remainingShapes.length)).fill(false)); // Add false for any new shapes
+      // Extend rotation menu states for the new shape
+      const newOpenRotationMenus = [...state.openRotationMenus];
+      if (updatedNextShapes.length > newOpenRotationMenus.length) {
+        newOpenRotationMenus.push(false); // New shape starts with menu closed
+      }
+
+      // Extend animation states for the new shape (no animation needed)
+      const newAnimationStates = [...state.newShapeAnimationStates];
+      if (updatedNextShapes.length > newAnimationStates.length) {
+        newAnimationStates.push('none'); // New shape appears normally
+      }
 
       const newState = {
         ...state,
@@ -223,7 +229,10 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         score: newScore,
         totalLinesCleared: newTotalLinesCleared,
         nextShapes: updatedNextShapes,
-        shapesUsed: newShapesUsed,
+        shapesUsed: state.shapesUsed, // Don't increment until shape is fully removed
+        openRotationMenus: newOpenRotationMenus,
+        newShapeAnimationStates: newAnimationStates,
+        shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
         selectedShape: null,
         selectedShapeIndex: null,
         mouseGridLocation: null,
@@ -232,12 +241,50 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         placementAnimationState: 'none' as const,
         animationStartPosition: null,
         animationTargetPosition: null,
-        openRotationMenus: newOpenRotationMenus,
-        shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
         hasPlacedFirstShape: true, // Mark that first shape has been placed
+        // Start the removal animation
+        removingShapeIndex: removedIndex,
+        shapeRemovalAnimationState: 'removing' as const,
       };
 
       return newState;
+    }
+
+    case "START_SHAPE_REMOVAL": {
+      const { shapeIndex } = action.value;
+      return {
+        ...state,
+        removingShapeIndex: shapeIndex,
+        shapeRemovalAnimationState: 'removing',
+      };
+    }
+
+    case "COMPLETE_SHAPE_REMOVAL": {
+      // This should be called when the removal animation completes
+      // Now actually remove the shape from the array
+      if (state.removingShapeIndex === null) {
+        return state; // No removal in progress
+      }
+
+      const removedIndex = state.removingShapeIndex;
+
+      // Remove the shape from the array and its associated states
+      const updatedNextShapes = state.nextShapes.filter((_, index) => index !== removedIndex);
+      const newOpenRotationMenus = state.openRotationMenus.filter((_, index) => index !== removedIndex);
+      const newAnimationStates = state.newShapeAnimationStates.filter((_, index) => index !== removedIndex);
+
+      // No need to add a new shape here - it was already added during COMPLETE_PLACEMENT
+
+      return {
+        ...state,
+        nextShapes: updatedNextShapes,
+        openRotationMenus: newOpenRotationMenus,
+        newShapeAnimationStates: newAnimationStates,
+        shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
+        removingShapeIndex: null,
+        shapeRemovalAnimationState: 'none',
+        shapesUsed: state.shapesUsed + 1, // Increment when shape is fully removed and replaced
+      };
     }
 
     case "CLEAR_SELECTION": {
@@ -266,6 +313,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         nextShapes: enhancedShapes,
         openRotationMenus: new Array(enhancedShapes.length).fill(false),
         shapeOptionBounds: new Array(enhancedShapes.length).fill(null),
+        newShapeAnimationStates: new Array(enhancedShapes.length).fill('none'),
       };
 
       // Save shapes to database when they are updated
@@ -423,6 +471,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         nextShapes: updatedShapes,
         openRotationMenus: [...state.openRotationMenus, false], // New shape starts with menu closed
         shapeOptionBounds: [...state.shapeOptionBounds, null], // New shape has no bounds initially
+        newShapeAnimationStates: [...state.newShapeAnimationStates, 'none' as const], // New shape appears immediately
       };
 
       // Save updated shapes to database
@@ -444,6 +493,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const updatedShapes = state.nextShapes.slice(0, -1);
       const updatedRotationMenus = state.openRotationMenus.slice(0, -1);
       const updatedBounds = state.shapeOptionBounds.slice(0, -1);
+      const updatedAnimationStates = state.newShapeAnimationStates.slice(0, -1);
 
       // If the currently selected shape is being removed, clear selection
       const isRemovingSelectedShape = state.selectedShapeIndex === state.nextShapes.length - 1;
@@ -453,6 +503,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         nextShapes: updatedShapes,
         openRotationMenus: updatedRotationMenus,
         shapeOptionBounds: updatedBounds,
+        newShapeAnimationStates: updatedAnimationStates,
         selectedShape: isRemovingSelectedShape ? null : state.selectedShape,
         selectedShapeIndex: isRemovingSelectedShape ? null : state.selectedShapeIndex,
         isShapeDragging: isRemovingSelectedShape ? false : state.isShapeDragging,

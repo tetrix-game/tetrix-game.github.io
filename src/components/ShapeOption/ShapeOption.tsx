@@ -2,7 +2,7 @@ import './ShapeOption.css';
 import type { Shape } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shapeUtils';
 
 type ShapeOptionProps = {
@@ -10,16 +10,82 @@ type ShapeOptionProps = {
   shapeIndex: number;
 };
 
+const getAnimationStyles = (
+  isAnimatingRemoval: boolean,
+  isVerticalAnimation: boolean,
+  buttonSize: number
+) => {
+  if (isAnimatingRemoval) {
+    return {
+      width: isVerticalAnimation ? `${buttonSize}px` : '0px',
+      height: isVerticalAnimation ? '0px' : `${buttonSize}px`,
+      minWidth: isVerticalAnimation ? `${buttonSize}px` : '0px',
+      minHeight: isVerticalAnimation ? '0px' : `${buttonSize}px`,
+      opacity: 0,
+      // Use negative margins to collapse the gap during removal
+      marginRight: isVerticalAnimation ? '0px' : '-12px',
+      marginBottom: isVerticalAnimation ? '-12px' : '0px',
+    };
+  }
+
+  // Normal state
+  return {
+    width: `${buttonSize}px`,
+    height: `${buttonSize}px`,
+    minWidth: `${buttonSize}px`,
+    minHeight: `${buttonSize}px`,
+    opacity: 1,
+    marginRight: '0px',
+    marginBottom: '0px',
+  };
+};
+
 const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
-  const { selectedShapeIndex, tiles, isTurningModeActive, turningDirection, isDoubleTurnModeActive } = useTetrixStateContext();
+  const { selectedShapeIndex, tiles, isTurningModeActive, turningDirection, isDoubleTurnModeActive, removingShapeIndex, shapeRemovalAnimationState } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAnimatingRemoval, setIsAnimatingRemoval] = useState(false);
+
+  // Track screen orientation for animation direction
+  const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fixed sizing for consistent shape options
   const buttonSize = 80; // Fixed size instead of responsive
   const cellSize = 16; // Fixed cell size
   const cellGap = 1; // Fixed gap
+
+  // Animation properties based on orientation
+  const isVerticalAnimation = isLandscape;
+  const verticalTransition = 'height 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+  const horizontalTransition = 'width 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+  const normalTransition = 'all 0.2s ease';
+
+  const animationTransition = useMemo(() => {
+    if (isAnimatingRemoval) {
+      return isVerticalAnimation ? verticalTransition : horizontalTransition;
+    }
+    return normalTransition;
+  }, [isAnimatingRemoval, isVerticalAnimation, normalTransition, verticalTransition, horizontalTransition]);
+
+  const removeTransform = isVerticalAnimation ? 'scaleY(0)' : 'scaleX(0)';
+  const normalTransform = isVerticalAnimation ? 'scaleY(1)' : 'scaleX(1)';
+
+  let animationTransform = normalTransform;
+  if (isAnimatingRemoval) {
+    animationTransform = removeTransform;
+  }
+
+  const animationStyles = getAnimationStyles(isAnimatingRemoval, isVerticalAnimation, buttonSize);
 
   const shapeContainerCss = {
     display: 'grid',
@@ -29,14 +95,15 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: '8px',
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
+    transition: animationTransition,
     touchAction: 'none' as const,
     boxSizing: 'border-box' as const,
     border: '3px solid rgba(255, 255, 255, 0.2)',
-    width: `${buttonSize}px`,
-    height: `${buttonSize}px`,
-    minWidth: `${buttonSize}px`,
-    minHeight: `${buttonSize}px`,
+    ...animationStyles,
+    transform: animationTransform,
+    transformOrigin: 'center',
+    overflow: 'hidden' as const,
+    pointerEvents: isAnimatingRemoval ? 'none' as const : 'auto' as const,
   };
 
   // Detect if this is a touch device (mobile) - same logic as DraggingShape
@@ -61,8 +128,28 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     }
   }, [dispatch, shapeIndex]);
 
+  // Handle removal animation
+  useEffect(() => {
+    if (removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing') {
+      setIsAnimatingRemoval(true);
+
+      // Start the animation and trigger completion after 300ms
+      const animationTimer = setTimeout(() => {
+        dispatch({ type: 'COMPLETE_SHAPE_REMOVAL' });
+        setIsAnimatingRemoval(false);
+      }, 300); // 0.3s animation duration
+
+      return () => clearTimeout(animationTimer);
+    } else {
+      setIsAnimatingRemoval(false);
+    }
+  }, [removingShapeIndex, shapeIndex, shapeRemovalAnimationState, dispatch]);
+
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
+
+    // Don't handle events during animation
+    if (isAnimatingRemoval) return;
 
     // Handle turning mode - rotate shape instead of dragging
     if (isTurningModeActive) {
@@ -117,10 +204,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         initialPosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive]);
+  }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || isTurningModeActive || isDoubleTurnModeActive) return;
+    if (!isDragging || isTurningModeActive || isDoubleTurnModeActive || isAnimatingRemoval) return;
 
     // Find the grid element
     const gridElement = document.querySelector('.grid') as HTMLElement;
@@ -186,10 +273,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         isValid,
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    if (!isDragging || isTurningModeActive || isDoubleTurnModeActive) return;
+    if (!isDragging || isTurningModeActive || isDoubleTurnModeActive || isAnimatingRemoval) return;
 
     e.currentTarget.releasePointerCapture(e.pointerId);
     setIsDragging(false);
@@ -264,9 +351,14 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         mousePosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval]);
 
   const isSelected = selectedShapeIndex === shapeIndex;
+
+  // Render empty blocks during removal animation
+  const displayShape = isAnimatingRemoval
+    ? shape.map(row => row.map(block => ({ ...block, isFilled: false })))
+    : shape;
 
   return (
     <div
@@ -292,7 +384,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         }
       }}
     >
-      {shape.map((row, rowIndex) => (
+      {displayShape.map((row, rowIndex) => (
         row.map((block, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}

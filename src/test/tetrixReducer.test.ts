@@ -214,12 +214,44 @@ describe('TetrixReducer - Bug Fixes', () => {
       expect(newState.isShapeDragging).toBe(false);
       expect(newState.mouseGridLocation).toBeNull();
 
-      // Should immediately remove the placed shape and add a new one
+      // Should start removal animation and add a new shape (4th shape temporarily)
+      expect(newState.nextShapes.length).toBe(4);
+      expect(newState.nextShapes.slice(0, 3)).toEqual([shape1, shape2, shape3]); // Original shapes remain
+      expect(newState.nextShapes[3]).toBeDefined(); // New shape added
+      expect(newState.removingShapeIndex).toBe(0);
+      expect(newState.shapeRemovalAnimationState).toBe('removing');
+    });
+
+    it('should handle COMPLETE_SHAPE_REMOVAL action', () => {
+      const shape1 = createTestShape();
+      const shape2 = createTestShape();
+      const shape3 = createTestShape();
+      const state = {
+        ...initialState,
+        removingShapeIndex: 0,
+        shapeRemovalAnimationState: 'removing' as const,
+        nextShapes: [shape1, shape2, shape3, createTestShape()], // Start with 4 shapes (post-placement state)
+        shapesUsed: 5,
+        openRotationMenus: [false, true, false, false]
+      };
+
+      const newState = tetrixReducer(state, { type: 'COMPLETE_SHAPE_REMOVAL' });
+
+      // Should remove the first shape, leaving 3 shapes total
       expect(newState.nextShapes.length).toBe(3);
       expect(newState.nextShapes[0]).toBe(shape2); // First shape was removed
       expect(newState.nextShapes[1]).toBe(shape3);
-      // Third shape should be a new random shape, not the original shape1
-      expect(newState.nextShapes[2]).not.toBe(shape1);
+      expect(newState.nextShapes[2]).not.toBe(shape1); // Third shape should be new
+
+      // Should update shapes used count
+      expect(newState.shapesUsed).toBe(6);
+
+      // Should reset removal animation state
+      expect(newState.removingShapeIndex).toBeNull();
+      expect(newState.shapeRemovalAnimationState).toBe('none');
+
+      // Should preserve rotation menu states for remaining shapes
+      expect(newState.openRotationMenus).toEqual([true, false, false]); // Adjusted for removal
     });
 
     it('should update grid tiles with shape blocks', () => {

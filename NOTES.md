@@ -1,6 +1,7 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Slide into place animation doesn't start from where the DraggingShape left off.
+- Mobile slide into place animation doesn't start from where the DraggingShape left off.
+- Starting a new game throws away things like music toggle
 - Pickup shape sound
 - Invalid placement sound (sheew back)
 - Valid placement calculation sound (tick)

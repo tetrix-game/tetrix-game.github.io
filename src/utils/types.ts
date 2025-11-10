@@ -18,6 +18,8 @@ export type Tile = {
 
 // Placement animation states
 export type PlacementAnimationState = 'none' | 'placing';
+export type ShapeRemovalAnimationState = 'none' | 'removing';
+export type ShapeCreationAnimationState = 'none' | 'animating-in';
 
 // Bounds for shape options (for return animation)
 export type ShapeOptionBounds = {
@@ -107,6 +109,11 @@ export type TetrixReducerState = {
   placementAnimationState: PlacementAnimationState;
   animationStartPosition: { x: number; y: number } | null;
   animationTargetPosition: { x: number; y: number } | null;
+  // Shape removal animation
+  removingShapeIndex: number | null;
+  shapeRemovalAnimationState: ShapeRemovalAnimationState;
+  // Shape creation animation
+  newShapeAnimationStates: ShapeCreationAnimationState[]; // Track animation state for each shape
   // Bounds of each shape option for return animation
   shapeOptionBounds: (ShapeOptionBounds | null)[];
   // Scoring system
@@ -162,6 +169,14 @@ type CompletePlacementAction = {
   type: 'COMPLETE_PLACEMENT';
 }
 
+type StartShapeRemovalAction = {
+  type: 'START_SHAPE_REMOVAL';
+  value: { shapeIndex: number };
+}
+
+type CompleteShapeRemovalAction = {
+  type: 'COMPLETE_SHAPE_REMOVAL';
+}
 type ClearSelectionAction = {
   type: 'CLEAR_SELECTION';
 }
@@ -279,6 +294,8 @@ export type TetrixAction =
   | UpdateMouseLocationAction
   | PlaceShapeAction
   | CompletePlacementAction
+  | StartShapeRemovalAction
+  | CompleteShapeRemovalAction
   | ClearSelectionAction
   | SetAvailableShapesAction
   | SetShapeOptionBoundsAction

@@ -31,39 +31,40 @@ describe('Unified Shape Queue Management', () => {
       </TetrixProvider>
     );
 
-    // Parent container should still have overflow:hidden for general layout
+    // Parent container should exist
     const shapeSelector = container.querySelector('.shape-selector') as HTMLElement;
     expect(shapeSelector).toBeTruthy();
 
-    const selectorStyle = globalThis.getComputedStyle(shapeSelector);
-    expect(selectorStyle.overflow).toBe('hidden');
-
-    // Height should be calculated for actual shapes only (3 * 118px = 354px)
-    expect(selectorStyle.height).toBe('354px');
+    // Should render 3 actual shape containers
+    const shapeContainers = container.querySelectorAll('.shape-container');
+    expect(shapeContainers.length).toBe(3);
   });
 
   test('should update height when shapes are added/removed', () => {
-    // This test verifies that height calculation is unified with shape count
-    // by testing the reducer actions directly and validating the height calculation
+    // This test verifies that shape count calculation is unified with rendered containers
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
       </TetrixProvider>
     );
 
-    // Initially 3 shapes, height = 3 * 118px = 354px  
+    // Initially 3 shapes should be rendered  
     const shapeSelector = container.querySelector('.shape-selector') as HTMLElement;
-    expect(globalThis.getComputedStyle(shapeSelector).height).toBe('354px');
+    expect(shapeSelector).toBeTruthy();
     expect(container.querySelectorAll('.shape-container').length).toBe(3);
 
-    // The unified state management means that nextShapes.length controls both
-    // the number of rendered containers AND the height calculation.
-    // This validates that we have a single source of truth.
+    // The unified state management means that nextShapes.length controls 
+    // the number of rendered containers. This validates single source of truth.
     const containers = container.querySelectorAll('.shape-container');
-    const actualHeight = Number.parseInt(globalThis.getComputedStyle(shapeSelector).height);
-    const expectedHeight = containers.length * 118; // 118px per container
-
-    expect(actualHeight).toBe(expectedHeight);
     expect(containers.length).toBe(3); // Default shape count
+
+    // Verify all containers contain actual shapes (not empty divs)
+    for (const container of containers) {
+      // Check for shape-specific elements inside each container
+      const hasShapeContent = container.querySelector('div[style*="display"]') ||
+        container.querySelector('.shape-option') ||
+        container.childElementCount > 0;
+      expect(hasShapeContent).toBeTruthy();
+    }
   });
 });

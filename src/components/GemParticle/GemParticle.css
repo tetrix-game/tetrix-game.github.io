@@ -1,0 +1,17 @@
+.gem-particle {
+  position: fixed;
+  font-size: 2rem;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 10002;
+  /* Above ScoreNotification */
+  user-select: none;
+
+  /* GPU acceleration hints */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+
+  /* Gem-specific styling */
+  filter: drop-shadow(0 0 6px rgba(65, 105, 225, 0.8));
+}

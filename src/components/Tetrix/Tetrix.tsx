@@ -2,7 +2,7 @@ import './Tetrix.css';
 import Grid from '../Grid';
 import GameControlsPanel from '../GameControlsPanel';
 import DraggingShape from '../DraggingShape';
-import CoinShower from '../CoinShower';
+import GemShower from '../GemShower';
 import { useTetrixStateContext, useTetrixDispatchContext } from './TetrixContext';
 import { useEffect } from 'react';
 
@@ -45,7 +45,7 @@ const Tetrix: React.FC = () => {
       <Grid />
       <GameControlsPanel />
       <DraggingShape />
-      <CoinShower />
+      <GemShower />
     </div>
   )
 }

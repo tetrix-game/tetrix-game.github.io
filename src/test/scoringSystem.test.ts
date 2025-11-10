@@ -63,12 +63,37 @@ describe('Scoring System', () => {
   });
 
   describe('formatScore', () => {
-    it('should format scores with thousand separators', () => {
+    it('should format scores with letter abbreviations', () => {
+      // Numbers under 1000 stay as-is
       expect(formatScore(0)).toBe('0');
       expect(formatScore(42)).toBe('42');
-      expect(formatScore(1000)).toBe('1,000');
-      expect(formatScore(12345)).toBe('12,345');
-      expect(formatScore(999999)).toBe('999,999');
+      expect(formatScore(999)).toBe('999');
+
+      // Thousands with k
+      expect(formatScore(1000)).toBe('1.0k');
+      expect(formatScore(1234)).toBe('1.2k');
+      expect(formatScore(12345)).toBe('12.3k');
+      expect(formatScore(99900)).toBe('99.9k');
+      expect(formatScore(123000)).toBe('123k');
+
+      // Millions with m
+      expect(formatScore(1000000)).toBe('1.0m');
+      expect(formatScore(1234567)).toBe('1.2m');
+      expect(formatScore(12345678)).toBe('12.3m');
+      expect(formatScore(123456789)).toBe('123m');
+
+      // Billions with b
+      expect(formatScore(1000000000)).toBe('1.0b');
+      expect(formatScore(1234567890)).toBe('1.2b');
+
+      // Trillions with t
+      expect(formatScore(1000000000000)).toBe('1.0t');
+
+      // Quadrillions with q
+      expect(formatScore(1000000000000000)).toBe('1.0q');
+
+      // Quintillions with Q
+      expect(formatScore(1000000000000000000)).toBe('1.0Q');
     });
   });
 

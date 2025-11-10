@@ -1,17 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import type { CurrencyDenomination } from '../../utils/currencyUtils';
-import './CoinParticle.css';
+import BlueGemIcon from '../BlueGemIcon';
+import './GemParticle.css';
 
-interface CoinParticleProps {
-  denomination: CurrencyDenomination;
+interface GemParticleProps {
   startPosition: { x: number; y: number };
   velocity: { x: number; y: number };
   onComplete: () => void;
   delay?: number; // Stagger animation start
 }
 
-const CoinParticle: React.FC<CoinParticleProps> = ({
-  denomination,
+const GemParticle: React.FC<GemParticleProps> = ({
   startPosition,
   velocity,
   onComplete,
@@ -28,13 +26,12 @@ const CoinParticle: React.FC<CoinParticleProps> = ({
     startPosition,
     velocity,
     onComplete,
-    delay,
-    denomination
+    delay
   });
 
   // Animation constants
   const ANIMATION_DURATION = 1500; // 1.5 seconds
-  const GRAVITY = 300; // pixels per second squared (reduced from 900)
+  const GRAVITY = 300; // pixels per second squared
   const FADE_START_PERCENT = 0.7; // Start fading at 70% through animation
 
   useEffect(() => {
@@ -93,17 +90,16 @@ const CoinParticle: React.FC<CoinParticleProps> = ({
 
   return (
     <div
-      className={`coin-particle ${denomination.name.toLowerCase()}`}
+      className="gem-particle"
       style={{
         transform: `translate3d(${currentPosition.x}px, ${currentPosition.y}px, 0) translate(-50%, -50%)`,
         opacity,
-        color: denomination.color,
         willChange: 'transform, opacity',
       }}
     >
-      {denomination.symbol}
+      <BlueGemIcon size={40} />
     </div>
   );
 };
 
-export default CoinParticle;
+export default GemParticle;

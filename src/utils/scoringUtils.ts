@@ -26,10 +26,37 @@ export function calculateScore(rowsCleared: number, columnsCleared: number): Sco
 }
 
 /**
- * Formats score for display with thousand separators
+ * Formats score for display with letter abbreviations (k, m, b, t, q, Q)
+ * Maximum of 3 digits with 1 decimal place, rounded to nearest tenth
  */
 export function formatScore(score: number): string {
-  return score.toLocaleString();
+  if (score < 1000) {
+    return score.toString();
+  }
+
+  const abbreviations = [
+    { value: 1e18, suffix: 'Q' }, // Quintillion
+    { value: 1e15, suffix: 'q' }, // Quadrillion  
+    { value: 1e12, suffix: 't' }, // Trillion
+    { value: 1e9, suffix: 'b' },  // Billion
+    { value: 1e6, suffix: 'm' },  // Million
+    { value: 1e3, suffix: 'k' }   // Thousand
+  ];
+
+  for (const { value, suffix } of abbreviations) {
+    if (score >= value) {
+      const formatted = score / value;
+      if (formatted >= 100) {
+        // 3 digits, no decimal (e.g., "123k")
+        return Math.round(formatted) + suffix;
+      } else {
+        // 2 digits + 1 decimal (e.g., "12.3k")
+        return (Math.round(formatted * 10) / 10).toFixed(1) + suffix;
+      }
+    }
+  }
+
+  return score.toString();
 }
 
 /**

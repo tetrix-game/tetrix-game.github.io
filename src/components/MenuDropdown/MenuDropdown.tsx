@@ -43,7 +43,7 @@ const MenuDropdown: React.FC = () => {
     }
   };
 
-  // Test notification function for debugging - opens prompt for custom currency amount
+  // Test notification function for debugging - opens prompt for custom points amount
   const testNotification = (e: React.MouseEvent) => {
     const input = globalThis.prompt('Enter amount of points to inject (try 100, 1000, or 999999):', '100');
 
@@ -59,19 +59,11 @@ const MenuDropdown: React.FC = () => {
       return;
     }
 
-    // Show the coin display
-    dispatch({ type: 'SHOW_COIN_DISPLAY' });
-
-    // Hide the coin display after 5 seconds
-    setTimeout(() => {
-      dispatch({ type: 'HIDE_COIN_DISPLAY' });
-    }, 5000);
-
-    // Capture the click position for coin emission
+    // Capture the click position for gem emission
     const clickPosition = { x: e.clientX, y: e.clientY };
 
     // Dispatch ADD_SCORE action to update the score
-    // This will trigger the coin shower animation automatically
+    // This will trigger the gem shower animation automatically
     dispatch({
       type: 'ADD_SCORE',
       value: {
@@ -209,7 +201,7 @@ const MenuDropdown: React.FC = () => {
                   <button
                     className="debug-action-button"
                     onClick={testNotification}
-                    title="Inject points to test the new coin shower system! Try 100, 1000, or 999999 points."
+                    title="Inject points to test the gem shower system! Try 100, 1000, or 999999 points."
                   >
                     Inject Points
                   </button>

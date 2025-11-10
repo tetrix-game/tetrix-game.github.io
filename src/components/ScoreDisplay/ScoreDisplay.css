@@ -1,7 +1,6 @@
 .score-display {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   font-family: 'Courier New', monospace;
   font-size: 1.2rem;
   color: #ffffff;
@@ -20,21 +19,32 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-.score-label {
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+.blue-gem-icon {
+  filter: drop-shadow(0 0 4px rgba(65, 105, 225, 0.6));
+  flex-shrink: 0;
 }
 
 .score-value {
   font-weight: bold;
-  text-shadow: 0 0 8px rgba(0, 255, 136, 0.8), 0 1px 3px rgba(0, 0, 0, 0.5);
+  color: #ffffff !important;
+  /* Force white color regardless of getGemColor() */
+  text-shadow:
+    /* Black border effect */
+    -1px -1px 0 #000000,
+    1px -1px 0 #000000,
+    -1px 1px 0 #000000,
+    1px 1px 0 #000000,
+    0 -1px 0 #000000,
+    0 1px 0 #000000,
+    -1px 0 0 #000000,
+    1px 0 0 #000000,
+    /* Very slight white glow */
+    0 0 3px rgba(255, 255, 255, 0.3);
   min-width: 6rem;
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  filter: drop-shadow(0 0 4px rgba(0, 255, 136, 0.3));
 }
 
 /* Responsive design */
@@ -46,5 +56,10 @@
 
   .score-value {
     min-width: 3rem;
+  }
+
+  .blue-gem-icon {
+    width: 16px;
+    height: 16px;
   }
 }

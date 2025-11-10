@@ -199,7 +199,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           });
       }
 
-      // Calculate currency breakdown for CoinShower
+      // Emit gems for GemShower animation
       const newState = {
         ...state,
         tiles: newTiles,

@@ -1,8 +1,8 @@
-/* CoinShower doesn't need its own styling since it's just a container 
-   Individual coins are styled in CoinParticle.css */
+/* GemShower doesn't need its own styling since it's just a container 
+   Individual gems are styled in GemParticle.css */
 
 /* Performance hints for the container */
-.coin-shower-container {
+.gem-shower-container {
   position: fixed;
   top: 0;
   left: 0;

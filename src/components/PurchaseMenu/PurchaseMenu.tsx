@@ -1,6 +1,7 @@
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useCallback } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
+import BlueGemIcon from '../BlueGemIcon';
 
 const buttonGroupCss = {
   display: 'flex',
@@ -130,9 +131,9 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
         e.currentTarget.style.transform = 'scale(1)';
       }}
-      title="Spend 1 coin to unlock rotation"
+      title="Spend 1 gem to unlock rotation"
     >
-      💲
+      <BlueGemIcon size={16} />
     </button>
   );
 };

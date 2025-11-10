@@ -72,6 +72,7 @@ export const initialState: TetrixReducerState = {
   hasPlacedFirstShape: false, // Track first shape placement for background music trigger
   isTurningModeActive: false, // Whether turning mode is currently active
   turningDirection: null, // Which direction turning is active for
+  isDoubleTurnModeActive: false, // Whether double turn mode is currently active
   unlockedModifiers: new Set(), // Set of prime IDs that have been unlocked
 };
 
@@ -573,6 +574,20 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         ...state,
         isTurningModeActive: false,
         turningDirection: null,
+      };
+    }
+
+    case "ACTIVATE_DOUBLE_TURN_MODE": {
+      return {
+        ...state,
+        isDoubleTurnModeActive: true,
+      };
+    }
+
+    case "DEACTIVATE_DOUBLE_TURN_MODE": {
+      return {
+        ...state,
+        isDoubleTurnModeActive: false,
       };
     }
   }

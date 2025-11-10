@@ -12,7 +12,7 @@ type ShapeOptionProps = {
 
 const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
-  const { selectedShapeIndex, tiles, isTurningModeActive, turningDirection } = useTetrixStateContext();
+  const { selectedShapeIndex, tiles, isTurningModeActive, turningDirection, isDoubleTurnModeActive } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -79,6 +79,25 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       return;
     }
 
+    // Handle double turn mode - rotate shape 180 degrees (2 rotations)
+    if (isDoubleTurnModeActive) {
+      // Perform two clockwise rotations for 180-degree turn
+      dispatch({
+        type: 'ROTATE_SHAPE',
+        value: { shapeIndex, clockwise: true }
+      });
+
+      dispatch({
+        type: 'ROTATE_SHAPE',
+        value: { shapeIndex, clockwise: true }
+      });
+
+      // Deactivate double turn mode after rotation
+      dispatch({ type: 'DEACTIVATE_DOUBLE_TURN_MODE' });
+
+      return;
+    }
+
     if (selectedShapeIndex === shapeIndex) {
       // Already selected - return to selector
       dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
@@ -98,10 +117,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         initialPosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection]);
+  }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive]);
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging || isTurningModeActive) return;
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || isTurningModeActive || isDoubleTurnModeActive) return;
 
     // Find the grid element
     const gridElement = document.querySelector('.grid') as HTMLElement;
@@ -167,10 +186,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         isValid,
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    if (!isDragging || isTurningModeActive) return;
+    if (!isDragging || isTurningModeActive || isDoubleTurnModeActive) return;
 
     e.currentTarget.releasePointerCapture(e.pointerId);
     setIsDragging(false);
@@ -245,7 +264,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         mousePosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive]);
 
   const isSelected = selectedShapeIndex === shapeIndex;
 
@@ -257,7 +276,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         border: isSelected ? '3px solid rgba(255, 255, 255, 0.5)' : '3px solid rgba(255, 255, 255, 0.2)',
       }}
       onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
+      onPointerMove={handleMouseMove}
       onPointerUp={handlePointerUp}
       onPointerEnter={(e) => {
         if (!isDragging) {

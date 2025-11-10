@@ -127,6 +127,7 @@ export type TetrixReducerState = {
   // Turning mode state (subset of 'playing' state)
   isTurningModeActive: boolean; // Whether turning mode is currently active
   turningDirection: 'cw' | 'ccw' | null; // Which direction turning is active for
+  isDoubleTurnModeActive: boolean; // Whether double turn mode is currently active
   // Modifier system
   unlockedModifiers: Set<number>; // Set of prime IDs that have been unlocked
 }
@@ -276,6 +277,14 @@ type DeactivateTurningModeAction = {
   type: 'DEACTIVATE_TURNING_MODE';
 }
 
+type ActivateDoubleTurnModeAction = {
+  type: 'ACTIVATE_DOUBLE_TURN_MODE';
+}
+
+type DeactivateDoubleTurnModeAction = {
+  type: 'DEACTIVATE_DOUBLE_TURN_MODE';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -304,7 +313,9 @@ export type TetrixAction =
   | LoadModifiersAction
   | TriggerBackgroundMusicAction
   | ActivateTurningModeAction
-  | DeactivateTurningModeAction;
+  | DeactivateTurningModeAction
+  | ActivateDoubleTurnModeAction
+  | DeactivateDoubleTurnModeAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

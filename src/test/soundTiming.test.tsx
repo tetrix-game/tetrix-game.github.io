@@ -49,6 +49,7 @@ const createMockState = (placementAnimationState: PlacementAnimationState): Tetr
   hasPlacedFirstShape: false,
   isTurningModeActive: false,
   turningDirection: null,
+  isDoubleTurnModeActive: false,
   unlockedModifiers: new Set()
 });
 

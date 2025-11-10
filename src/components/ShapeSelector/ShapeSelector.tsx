@@ -1,7 +1,8 @@
 import './ShapeSelector.css';
 import ShapeOption from '../ShapeOption'
+import ShapeQueueIndicator from '../ShapeQueueIndicator'
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
 
 // Use WeakMap to assign stable IDs to shapes
@@ -18,6 +19,18 @@ const getShapeId = (shape: object): string => {
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const { nextShapes } = useTetrixStateContext();
+
+  // Track screen orientation for queue indicator direction
+  const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Create initial shapes - start with 3 shapes (can be changed via debug menu)
   const initialShapes = useMemo(() => {
@@ -36,17 +49,25 @@ const ShapeSelector = (): JSX.Element => {
     }
   }, [dispatch, initialShapes, nextShapes.length]);
 
+  // Limit to maximum of 4 shapes to prevent wrapping
+  const displayedShapes = nextShapes.slice(0, 4);
+
   return (
     <div className="shape-selector">
-      {nextShapes.map((shape, index) => {
-        return (
-          <ShapeOption
-            key={getShapeId(shape)}
-            shape={shape}
-            shapeIndex={index}
-          />
-        );
-      })}
+      <div className="shapes-container">
+        {displayedShapes.map((shape, index) => {
+          return (
+            <ShapeOption
+              key={getShapeId(shape)}
+              shape={shape}
+              shapeIndex={index}
+            />
+          );
+        })}
+      </div>
+      <ShapeQueueIndicator
+        direction={isLandscape ? 'horizontal' : 'vertical'}
+      />
     </div>
   )
 }

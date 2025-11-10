@@ -11,10 +11,10 @@ const App = () => {
   return (
     <div className="App">
       <Header />
-      {gameState === 'playing' ? (
-        <Tetrix />
-      ) : (
+      {gameState === 'map' ? (
         <GameMap />
+      ) : (
+        <Tetrix />
       )}
       <FullScreenFloatingActionButton />
     </div>

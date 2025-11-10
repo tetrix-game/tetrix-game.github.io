@@ -12,7 +12,7 @@ type ShapeOptionProps = {
 
 const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
-  const { selectedShapeIndex, tiles } = useTetrixStateContext();
+  const { selectedShapeIndex, tiles, isTurningModeActive, turningDirection } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -65,6 +65,21 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
 
+    // Handle turning mode - rotate shape instead of dragging
+    if (isTurningModeActive) {
+      const clockwise = turningDirection === 'cw';
+
+      dispatch({
+        type: 'ROTATE_SHAPE',
+        value: { shapeIndex, clockwise }
+      });
+
+      // Deactivate turning mode after rotation
+      dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
+
+      return;
+    }
+
     if (selectedShapeIndex === shapeIndex) {
       // Already selected - return to selector
       dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
@@ -84,10 +99,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         initialPosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [dispatch, shape, shapeIndex, selectedShapeIndex]);
+  }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || isTurningModeActive) return;
 
     // Find the grid element
     const gridElement = document.querySelector('.grid') as HTMLElement;
@@ -153,10 +168,10 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         isValid,
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || isTurningModeActive) return;
 
     e.currentTarget.releasePointerCapture(e.pointerId);
     setIsDragging(false);
@@ -231,7 +246,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         mousePosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive]);
 
   const isSelected = selectedShapeIndex === shapeIndex;
 

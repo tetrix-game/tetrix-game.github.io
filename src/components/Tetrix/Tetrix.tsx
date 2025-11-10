@@ -1,6 +1,7 @@
 import './Tetrix.css';
 import Grid from '../Grid';
 import ShapeSelector from '../ShapeSelector';
+import PurchasesContainer from '../PurchasesContainer';
 import DraggingShape from '../DraggingShape';
 import CoinShower from '../CoinShower';
 import { useTetrixStateContext, useTetrixDispatchContext } from './TetrixContext';
@@ -42,6 +43,7 @@ const Tetrix: React.FC = () => {
 
   return (
     <div className="tetrix">
+      <PurchasesContainer />
       <Grid />
       <ShapeSelector />
       <DraggingShape />

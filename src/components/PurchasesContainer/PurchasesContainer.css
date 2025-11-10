@@ -1,0 +1,142 @@
+.purchases-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  width: 80px;
+  height: auto;
+}
+
+.buy-turn-button {
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #4a90e2;
+  border-radius: 8px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.buy-turn-button:hover:not(:disabled) {
+  background: rgba(74, 144, 226, 0.2);
+  border-color: #5ba3f5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.buy-turn-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.buy-turn-button:disabled {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: #666;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.buy-turn-button.active {
+  background: rgba(74, 144, 226, 0.6);
+  border-color: #5ba3f5;
+  box-shadow: 0 0 12px rgba(74, 144, 226, 0.6), 0 0 24px rgba(74, 144, 226, 0.4);
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 12px rgba(74, 144, 226, 0.6), 0 0 24px rgba(74, 144, 226, 0.4);
+  }
+
+  to {
+    box-shadow: 0 0 16px rgba(74, 144, 226, 0.8), 0 0 32px rgba(74, 144, 226, 0.6);
+  }
+}
+
+.turn-icon {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.cost {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-top: auto;
+}
+
+.buy-turn-button.active .turn-icon {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.buy-turn-button.active .cost {
+  opacity: 0.6;
+}
+
+/* Portrait/Square screens: horizontal layout next to shape selector */
+@media (max-aspect-ratio: 1/1) {
+  .purchases-container {
+    flex-direction: row;
+    width: auto;
+    height: 80px;
+    gap: 8px;
+    /* Limit width to available space next to shape selector */
+    max-width: calc(50vw - 40px);
+    min-height: auto;
+  }
+}
+
+/* Landscape screens: vertical stacking */
+@media (min-aspect-ratio: 1/1) {
+  .purchases-container {
+    flex-direction: column;
+    width: 80px;
+    height: auto;
+    gap: 8px;
+    /* Constrain to available space next to the grid */
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    align-content: flex-start;
+    justify-content: flex-start;
+  }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .purchases-container {
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .buy-turn-button {
+    width: 70px;
+    height: 70px;
+    font-size: 11px;
+  }
+
+  .turn-icon {
+    font-size: 20px;
+  }
+
+  .cost {
+    font-size: 9px;
+  }
+}

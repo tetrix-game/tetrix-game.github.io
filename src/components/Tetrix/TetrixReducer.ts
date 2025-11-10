@@ -70,6 +70,8 @@ export const initialState: TetrixReducerState = {
   shapesSliding: false,
   openRotationMenus: [], // Dynamic array based on actual shapes
   hasPlacedFirstShape: false, // Track first shape placement for background music trigger
+  isTurningModeActive: false, // Whether turning mode is currently active
+  turningDirection: null, // Which direction turning is active for
   unlockedModifiers: new Set(), // Set of prime IDs that have been unlocked
 };
 
@@ -555,6 +557,23 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // This action doesn't modify state, just triggers background music
       // The actual music trigger will be handled by the BackgroundMusic component
       return state;
+    }
+
+    case "ACTIVATE_TURNING_MODE": {
+      const { direction } = action.value;
+      return {
+        ...state,
+        isTurningModeActive: true,
+        turningDirection: direction,
+      };
+    }
+
+    case "DEACTIVATE_TURNING_MODE": {
+      return {
+        ...state,
+        isTurningModeActive: false,
+        turningDirection: null,
+      };
     }
   }
 

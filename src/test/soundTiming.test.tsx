@@ -47,6 +47,8 @@ const createMockState = (placementAnimationState: PlacementAnimationState): Tetr
   gridTileSize: 50,
   gridBounds: { top: 0, left: 0, width: 500, height: 500 },
   hasPlacedFirstShape: false,
+  isTurningModeActive: false,
+  turningDirection: null,
   unlockedModifiers: new Set()
 });
 

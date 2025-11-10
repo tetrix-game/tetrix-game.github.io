@@ -124,6 +124,9 @@ export type TetrixReducerState = {
   openRotationMenus: boolean[]; // Track which shape rotation menus are open
   // Background music trigger
   hasPlacedFirstShape: boolean; // Track if first shape has been placed to trigger background music
+  // Turning mode state (subset of 'playing' state)
+  isTurningModeActive: boolean; // Whether turning mode is currently active
+  turningDirection: 'cw' | 'ccw' | null; // Which direction turning is active for
   // Modifier system
   unlockedModifiers: Set<number>; // Set of prime IDs that have been unlocked
 }
@@ -264,6 +267,15 @@ type TriggerBackgroundMusicAction = {
   type: 'TRIGGER_BACKGROUND_MUSIC';
 }
 
+type ActivateTurningModeAction = {
+  type: 'ACTIVATE_TURNING_MODE';
+  value: { direction: 'cw' | 'ccw' };
+}
+
+type DeactivateTurningModeAction = {
+  type: 'DEACTIVATE_TURNING_MODE';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -290,7 +302,9 @@ export type TetrixAction =
   | UnlockMapAction
   | UnlockModifierAction
   | LoadModifiersAction
-  | TriggerBackgroundMusicAction;
+  | TriggerBackgroundMusicAction
+  | ActivateTurningModeAction
+  | DeactivateTurningModeAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

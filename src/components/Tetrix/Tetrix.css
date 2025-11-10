@@ -9,16 +9,46 @@
   gap: 20px;
 }
 
-/* Portrait/Square screens: ShapeOptions below the grid */
+/* Portrait/Square screens: Grid on top, containers side by side below */
 @media (max-aspect-ratio: 1/1) {
   .tetrix {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+  }
+
+  .purchases-container {
+    order: 2;
+    flex: 0 0 auto;
+  }
+
+  .grid {
+    order: 1;
+    flex: 0 0 100%;
+    margin-bottom: 20px;
+  }
+
+  .shape-selector {
+    order: 3;
+    flex: 0 0 auto;
   }
 }
 
-/* Landscape screens: ShapeOptions to the side of the grid */
+/* Landscape screens: Purchases left, Grid center, Shapes right */
 @media (min-aspect-ratio: 1/1) {
   .tetrix {
     flex-direction: row;
+  }
+
+  .purchases-container {
+    order: 1;
+  }
+
+  .grid {
+    order: 2;
+  }
+
+  .shape-selector {
+    order: 3;
   }
 }

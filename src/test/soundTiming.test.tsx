@@ -20,10 +20,10 @@ const createMockState = (placementAnimationState: PlacementAnimationState): Tetr
   nextShapes: [],
   savedShape: null,
   selectedShape: [
-    [{ isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: true, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }],
-    [{ isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: true, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }],
-    [{ isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: true, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }],
-    [{ isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }, { isFilled: false, color: { lightest: '', light: '', main: '', dark: '', darkest: '' } }]
+    [{ isFilled: false, color: 'grey' }, { isFilled: true, color: 'blue' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }],
+    [{ isFilled: false, color: 'grey' }, { isFilled: true, color: 'blue' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }],
+    [{ isFilled: false, color: 'grey' }, { isFilled: true, color: 'blue' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }],
+    [{ isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }]
   ],
   selectedShapeIndex: 0,
   mouseGridLocation: { row: 5, column: 5 },

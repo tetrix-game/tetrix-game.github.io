@@ -8,14 +8,14 @@ const GameControlsPanel: React.FC = () => {
   const { gameControlsLength, gameControlsWidth } = useGameSizing();
   const isLandscape = window.innerWidth >= window.innerHeight;
 
-  // gameControlsLength controls the longer dimension (matches grid exactly)
-  // gameControlsWidth controls the shorter dimension
-  const style = isLandscape
-    ? { height: `${gameControlsLength}px`, width: `${gameControlsWidth}px` }
-    : { width: `${gameControlsLength}px`, height: `${gameControlsWidth}px` };
-
   return (
-    <div className="game-controls-panel" style={style}>
+    <div
+      className="game-controls-panel"
+      style={{
+        '--controls-height': isLandscape ? `${gameControlsLength}px` : `${gameControlsWidth}px`,
+        '--controls-width': isLandscape ? `${gameControlsWidth}px` : `${gameControlsLength}px`,
+      } as React.CSSProperties}
+    >
       <ShapeSelector />
       <PurchasesContainer />
     </div>

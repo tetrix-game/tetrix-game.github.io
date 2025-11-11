@@ -64,19 +64,12 @@ export function clearRows(tiles: Tile[], rows: number[]): Tile[] {
   if (rows.length === 0) return tiles;
 
   const rowSet = new Set(rows);
-  const emptyColor = {
-    lightest: '#000000',
-    light: '#000000',
-    main: '#000000',
-    dark: '#000000',
-    darkest: '#000000'
-  };
 
   return tiles.map(tile => {
     if (rowSet.has(tile.location.row)) {
       return {
         ...tile,
-        block: { isFilled: false, color: emptyColor }
+        block: { isFilled: false, color: 'grey' }
       };
     }
     return tile;
@@ -93,19 +86,12 @@ export function clearColumns(tiles: Tile[], columns: number[]): Tile[] {
   if (columns.length === 0) return tiles;
 
   const columnSet = new Set(columns);
-  const emptyColor = {
-    lightest: '#000000',
-    light: '#000000',
-    main: '#000000',
-    dark: '#000000',
-    darkest: '#000000'
-  };
 
   return tiles.map(tile => {
     if (columnSet.has(tile.location.column)) {
       return {
         ...tile,
-        block: { isFilled: false, color: emptyColor }
+        block: { isFilled: false, color: 'grey' }
       };
     }
     return tile;

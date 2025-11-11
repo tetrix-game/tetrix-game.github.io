@@ -2,12 +2,7 @@ import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useCallback } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import BlueGemIcon from '../BlueGemIcon';
-
-const buttonGroupCss = {
-  display: 'flex',
-  flexDirection: 'row' as const,
-  gap: '4px',
-};
+import './PurchaseMenu.css';
 
 type PurchaseMenuProps = {
   shapeIndex: number;
@@ -17,42 +12,6 @@ type PurchaseMenuProps = {
 const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => {
   const dispatch = useTetrixDispatchContext();
   const { buttonSize } = useGameSizing();
-
-  const turnButtonCss = {
-    width: `${buttonSize}px`,
-    height: `${buttonSize}px`,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '3px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: `${buttonSize * 0.35}px`,
-    color: 'rgba(255, 255, 255, 0.8)',
-    minWidth: `${buttonSize}px`,
-    minHeight: `${buttonSize}px`,
-    boxSizing: 'border-box' as const,
-  };
-
-  const dollarButtonCss = {
-    width: `${buttonSize}px`,
-    height: `${buttonSize}px`,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    border: '3px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: `${buttonSize * 0.47}px`,
-    color: 'rgba(255, 255, 255, 0.8)',
-    minWidth: `${buttonSize}px`,
-    minHeight: `${buttonSize}px`,
-    boxSizing: 'border-box' as const,
-  };
 
   const handleRotateClockwise = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -83,34 +42,23 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
 
   if (isRotationMenuOpen) {
     return (
-      <div style={buttonGroupCss}>
+      <div
+        className="purchase-menu-button-group"
+        style={{
+          '--button-size': `${buttonSize}px`,
+        } as React.CSSProperties}
+      >
         <button
-          style={turnButtonCss}
+          className="purchase-menu-turn-button"
           onClick={handleRotateCounterClockwise}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
           title="Rotate Counter-Clockwise"
         >
           ↺
         </button>
 
         <button
-          style={turnButtonCss}
+          className="purchase-menu-turn-button"
           onClick={handleRotateClockwise}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
           title="Rotate Clockwise"
         >
           ↻
@@ -121,16 +69,11 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
 
   return (
     <button
-      style={dollarButtonCss}
+      className="purchase-menu-dollar-button"
+      style={{
+        '--button-size': `${buttonSize}px`,
+      } as React.CSSProperties}
       onClick={handleSpendCoin}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-        e.currentTarget.style.transform = 'scale(1.05)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-        e.currentTarget.style.transform = 'scale(1)';
-      }}
       title="Spend 1 gem to unlock rotation"
     >
       <BlueGemIcon size={16} />

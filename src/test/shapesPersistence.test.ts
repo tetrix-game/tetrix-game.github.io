@@ -36,30 +36,21 @@ describe('Shape Options Persistence', () => {
   });
 
   it('should save and load nextShapes correctly', async () => {
-    // Create sample shape data
-    const sampleColor = {
-      lightest: '#ff0000',
-      light: '#dd0000',
-      main: '#bb0000',
-      dark: '#990000',
-      darkest: '#770000'
-    };
-
     const sampleShape: Shape = [
       [
-        { color: sampleColor, isFilled: true },
-        { color: sampleColor, isFilled: false },
-        { color: sampleColor, isFilled: false }
+        { color: 'red', isFilled: true },
+        { color: 'red', isFilled: false },
+        { color: 'red', isFilled: false }
       ],
       [
-        { color: sampleColor, isFilled: true },
-        { color: sampleColor, isFilled: true },
-        { color: sampleColor, isFilled: false }
+        { color: 'red', isFilled: true },
+        { color: 'red', isFilled: true },
+        { color: 'red', isFilled: false }
       ],
       [
-        { color: sampleColor, isFilled: false },
-        { color: sampleColor, isFilled: false },
-        { color: sampleColor, isFilled: false }
+        { color: 'red', isFilled: false },
+        { color: 'red', isFilled: false },
+        { color: 'red', isFilled: false }
       ]
     ];
 

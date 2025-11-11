@@ -13,23 +13,27 @@
   transform-origin: center;
   overflow: hidden;
   padding: var(--shape-padding);
-  /* Dynamic properties set via inline styles:
-     - width, height, minWidth, minHeight (animation)
-     - opacity, marginRight, marginBottom (animation)
-     - transform (animation)
-     - transition (animation)
-     - pointerEvents (animation)
-     - border color (selection state)
-  */
+  transition: var(--animation-transition);
+  transform: var(--animation-transform);
+  pointer-events: auto;
 }
 
 .shape-container.selected {
   border-color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.shape-container-hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .shape-cell {
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 3px;
   position: relative;
-  /* opacity is dynamic based on selection state */
+  opacity: 1;
+}
+
+.shape-cell-selected {
+  opacity: 0.1;
 }

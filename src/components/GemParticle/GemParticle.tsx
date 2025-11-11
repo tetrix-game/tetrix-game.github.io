@@ -92,10 +92,10 @@ const GemParticle: React.FC<GemParticleProps> = ({
     <div
       className="gem-particle"
       style={{
-        transform: `translate3d(${currentPosition.x}px, ${currentPosition.y}px, 0) translate(-50%, -50%)`,
-        opacity,
-        willChange: 'transform, opacity',
-      }}
+        '--particle-x': `${currentPosition.x}px`,
+        '--particle-y': `${currentPosition.y}px`,
+        '--particle-opacity': opacity,
+      } as React.CSSProperties}
     >
       <BlueGemIcon size={40} />
     </div>

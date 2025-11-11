@@ -5,84 +5,84 @@ import type { Shape } from '../utils/types';
 // Helper to create a simple horizontal line shape (4 blocks in a row)
 const createHorizontalLineShape = (): Shape => [
   [
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false }
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false }
   ],
   [
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: true }
+    { color: 'red', isFilled: true },
+    { color: 'red', isFilled: true },
+    { color: 'red', isFilled: true },
+    { color: 'red', isFilled: true }
   ],
   [
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false }
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false }
   ],
   [
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false },
-    { color: { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }, isFilled: false }
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false },
+    { color: 'red', isFilled: false }
   ]
 ];
 
 // Helper to create a simple vertical line shape (4 blocks in a column)
 const createVerticalLineShape = (): Shape => [
   [
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: true },
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: false }
   ],
   [
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: true },
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: false }
   ],
   [
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: true },
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: false }
   ],
   [
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: true },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false },
-    { color: { lightest: '#6b6bff', light: '#5252ff', main: '#0000ff', dark: '#0000cc', darkest: '#000099' }, isFilled: false }
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: true },
+    { color: 'blue', isFilled: false },
+    { color: 'blue', isFilled: false }
   ]
 ];
 
 // Helper to create a single block shape (in 4x4 grid)
 const createSingleBlockShape = (): Shape => [
   [
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false }
   ],
   [
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: true },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: true },
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false }
   ],
   [
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false }
   ],
   [
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false },
-    { color: { lightest: '#6bff6b', light: '#52ff52', main: '#00ff00', dark: '#00cc00', darkest: '#009900' }, isFilled: false }
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false },
+    { color: 'green', isFilled: false }
   ]
 ];
 
@@ -149,7 +149,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Verify all tiles in row 5 are empty
       const row5Tiles = state.tiles.filter(t => t.location.row === 5);
       expect(row5Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(row5Tiles.every(t => t.block.color.main === '#000000')).toBe(true);
+      expect(row5Tiles.every(t => t.block.color === 'grey')).toBe(true);
     });
   });
 
@@ -213,7 +213,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Verify all tiles in column 3 are empty
       const col3Tiles = state.tiles.filter(t => t.location.column === 3);
       expect(col3Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(col3Tiles.every(t => t.block.color.main === '#000000')).toBe(true);
+      expect(col3Tiles.every(t => t.block.color === 'grey')).toBe(true);
     });
   });
 
@@ -351,7 +351,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Blocks should still be filled
       const filledTiles = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled);
-      expect(filledTiles.every(t => t.block.color.main !== '#000000')).toBe(true);
+      expect(filledTiles.every(t => t.block.color !== 'grey')).toBe(true);
     });
 
     it('should not clear a column with only 9 blocks', () => {
@@ -394,7 +394,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Blocks should still be filled
       const filledTiles = state.tiles.filter(t => t.location.column === 4 && t.block.isFilled);
-      expect(filledTiles.every(t => t.block.color.main !== '#000000')).toBe(true);
+      expect(filledTiles.every(t => t.block.color !== 'grey')).toBe(true);
     });
   });
 });

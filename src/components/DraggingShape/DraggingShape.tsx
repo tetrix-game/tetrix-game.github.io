@@ -27,7 +27,6 @@ export default function DraggingShape() {
   const GRID_GAP = gridGap;
   const GRID_GAPS_TOTAL = 9 * GRID_GAP;
   const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
-  const BORDER_WIDTH = TILE_SIZE / 2;
 
   // Detect if this is a touch device (mobile)
   const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
@@ -143,29 +142,25 @@ export default function DraggingShape() {
     return null;
   }
 
-  const containerStyle: React.CSSProperties = {
-    top: containerTop,
-    left: containerLeft,
-    gridTemplateColumns: `repeat(4, ${TILE_SIZE}px)`,
-    gridTemplateRows: `repeat(4, ${TILE_SIZE}px)`,
-    gap: `${GRID_GAP}px`,
-    transform: `scale(${scale})`,
-  };
-
   return (
-    <div className="dragging-shape-container" style={containerStyle}>
+    <div
+      className="dragging-shape-container"
+      style={{
+        '--container-top': `${containerTop}px`,
+        '--container-left': `${containerLeft}px`,
+        '--tile-size': `${TILE_SIZE}px`,
+        '--grid-gap': `${GRID_GAP}px`,
+        '--scale': scale,
+      } as React.CSSProperties}
+    >
       {selectedShape.map((row, rowIndex) => (
         row.map((block, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
             className="dragging-shape-cell"
-            style={{
-              width: `${TILE_SIZE}px`,
-              height: `${TILE_SIZE}px`,
-            }}
           >
             {block.isFilled && (
-              <BlockVisual block={block} borderWidth={BORDER_WIDTH} />
+              <BlockVisual block={block} />
             )}
           </div>
         ))

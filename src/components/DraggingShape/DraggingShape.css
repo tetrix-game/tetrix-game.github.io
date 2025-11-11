@@ -5,10 +5,16 @@
   z-index: 1000;
   display: grid;
   transition: none;
-  /* top, left, gridTemplateColumns, gridTemplateRows, gap, transform are dynamic via inline styles */
+  top: var(--container-top);
+  left: var(--container-left);
+  grid-template-columns: repeat(4, var(--tile-size));
+  grid-template-rows: repeat(4, var(--tile-size));
+  gap: var(--grid-gap);
+  transform: scale(var(--scale));
 }
 
 .dragging-shape-cell {
   position: relative;
-  /* width, height are dynamic via inline styles */
+  width: var(--tile-size);
+  height: var(--tile-size);
 }

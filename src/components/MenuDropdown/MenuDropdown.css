@@ -47,7 +47,8 @@
 .dropdown-overlay {
   position: fixed;
   z-index: 10000;
-  /* top, left set dynamically via inline styles */
+  top: var(--dropdown-top);
+  left: var(--dropdown-left);
 }
 
 @keyframes slideDown {

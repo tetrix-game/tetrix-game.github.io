@@ -38,10 +38,9 @@ export default function Grid() {
       ref={gridRef}
       className={`grid ${selectedShape ? 'grid-dragging' : ''}`}
       style={{
-        gap: `${gridGap}px`,
-        width: `${gridSize}px`,
-        height: `${gridSize}px`,
-      }}
+        '--grid-gap': `${gridGap}px`,
+        '--grid-size': `${gridSize}px`,
+      } as React.CSSProperties}
     >
       {
         tiles.map((tile: Tile) => {

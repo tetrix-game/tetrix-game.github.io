@@ -12,14 +12,10 @@ import type { Tile } from '../utils/types';
 
 // Helper to create a test tile
 const createTile = (row: number, column: number, isFilled: boolean): Tile => {
-  const color = isFilled
-    ? { lightest: '#ff6b6b', light: '#ff5252', main: '#ff0000', dark: '#cc0000', darkest: '#990000' }
-    : { lightest: '#000000', light: '#000000', main: '#000000', dark: '#000000', darkest: '#000000' };
-
   return {
     id: `(row: ${row}, column: ${column})`,
     location: { row, column },
-    block: { isFilled, color }
+    block: { isFilled, color: isFilled ? 'red' : 'grey' }
   };
 };
 
@@ -154,8 +150,8 @@ describe('Line Clearing Utilities', () => {
 
       expect(row2Tiles.every(t => !t.block.isFilled)).toBe(true);
       expect(row5Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(row2Tiles.every(t => t.block.color.main === '#000000')).toBe(true);
-      expect(row5Tiles.every(t => t.block.color.main === '#000000')).toBe(true);
+      expect(row2Tiles.every(t => t.block.color === 'grey')).toBe(true);
+      expect(row5Tiles.every(t => t.block.color === 'grey')).toBe(true);
     });
 
     it('should not modify other rows', () => {
@@ -201,8 +197,8 @@ describe('Line Clearing Utilities', () => {
 
       expect(col3Tiles.every(t => !t.block.isFilled)).toBe(true);
       expect(col8Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(col3Tiles.every(t => t.block.color.main === '#000000')).toBe(true);
-      expect(col8Tiles.every(t => t.block.color.main === '#000000')).toBe(true);
+      expect(col3Tiles.every(t => t.block.color === 'grey')).toBe(true);
+      expect(col8Tiles.every(t => t.block.color === 'grey')).toBe(true);
     });
 
     it('should not modify other columns', () => {

@@ -5,8 +5,9 @@
 // 4, 4 is the bottom right corner
 export type Shape = Block[][];
 export type Location = { row: number, column: number }
+export type ColorName = 'grey' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple';
 export type Block = {
-  color: { lightest: string, light: string, main: string, dark: string, darkest: string };
+  color: ColorName;
   isFilled: boolean;
   customAttribute?: string;
 }

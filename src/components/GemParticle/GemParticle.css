@@ -14,4 +14,9 @@
 
   /* Gem-specific styling */
   filter: drop-shadow(0 0 6px rgba(65, 105, 225, 0.8));
+
+  /* Dynamic positioning and opacity */
+  transform: translate3d(var(--particle-x), var(--particle-y), 0) translate(-50%, -50%);
+  opacity: var(--particle-opacity);
+  will-change: transform, opacity;
 }

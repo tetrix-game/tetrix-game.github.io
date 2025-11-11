@@ -339,6 +339,8 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     ? shape.map(row => row.map(block => ({ ...block, isFilled: false })))
     : shape;
 
+  const cellOpacityClass = isSelected ? 'shape-cell-selected' : '';
+
   return (
     <div
       ref={containerRef}
@@ -347,10 +349,9 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         '--shape-cell-size': `${shapeOptionCellSize}px`,
         '--shape-cell-gap': `${cellGap}px`,
         '--shape-padding': `${normalPadding}px`,
-        transition: animationTransition,
+        '--animation-transition': animationTransition,
+        '--animation-transform': animationTransform,
         ...animationStyles,
-        transform: animationTransform,
-        pointerEvents: isAnimatingRemoval ? 'none' : 'auto',
       } as React.CSSProperties}
       onPointerDown={handlePointerDown}
       onPointerMove={handleMouseMove}
@@ -359,14 +360,14 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         if (!isDragging) {
           // Scale up the grid content by removing padding
           e.currentTarget.style.setProperty('--shape-padding', '0px');
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          e.currentTarget.classList.add('shape-container-hover');
         }
       }}
       onPointerLeave={(e) => {
         if (!isDragging) {
           // Scale down by restoring padding
           e.currentTarget.style.setProperty('--shape-padding', `${normalPadding}px`);
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+          e.currentTarget.classList.remove('shape-container-hover');
         }
       }}
     >
@@ -374,12 +375,9 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         row.map((block, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
-            className="shape-cell"
-            style={{
-              opacity: isSelected ? 0.1 : 1,
-            }}
+            className={`shape-cell ${cellOpacityClass}`}
           >
-            <BlockVisual block={block} borderWidth={shapeOptionCellSize / 4} />
+            <BlockVisual block={block} />
           </div>
         ))
       ))}

@@ -1,0 +1,51 @@
+.purchase-menu-button-group {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.purchase-menu-turn-button {
+  width: var(--button-size);
+  height: var(--button-size);
+  min-width: var(--button-size);
+  min-height: var(--button-size);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--button-size) * 0.35);
+  color: rgba(255, 255, 255, 0.8);
+  box-sizing: border-box;
+}
+
+.purchase-menu-turn-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.purchase-menu-dollar-button {
+  width: var(--button-size);
+  height: var(--button-size);
+  min-width: var(--button-size);
+  min-height: var(--button-size);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--button-size) * 0.47);
+  color: rgba(255, 255, 255, 0.8);
+  box-sizing: border-box;
+}
+
+.purchase-menu-dollar-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}

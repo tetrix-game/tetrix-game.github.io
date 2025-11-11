@@ -4,34 +4,18 @@ import type { Shape, Location, Tile } from '../utils/types';
 
 // Helper to create test shapes
 const createLShape = (): Shape => {
-  const color = {
-    lightest: '#0274e6',
-    light: '#0059b2',
-    main: '#023f80',
-    dark: '#023468',
-    darkest: '#011e3f'
-  };
-
   return [
-    [{ color, isFilled: true }, { color, isFilled: false }, { color, isFilled: false }],
-    [{ color, isFilled: true }, { color, isFilled: false }, { color, isFilled: false }],
-    [{ color, isFilled: true }, { color, isFilled: true }, { color, isFilled: false }],
+    [{ color: 'blue', isFilled: true }, { color: 'blue', isFilled: false }, { color: 'blue', isFilled: false }],
+    [{ color: 'blue', isFilled: true }, { color: 'blue', isFilled: false }, { color: 'blue', isFilled: false }],
+    [{ color: 'blue', isFilled: true }, { color: 'blue', isFilled: true }, { color: 'blue', isFilled: false }],
   ];
 };
 
 const createSquareShape = (): Shape => {
-  const color = {
-    lightest: '#ff6b6b',
-    light: '#ff5252',
-    main: '#ff3838',
-    dark: '#ee2222',
-    darkest: '#cc0000'
-  };
-
   return [
-    [{ color, isFilled: true }, { color, isFilled: true }, { color, isFilled: false }],
-    [{ color, isFilled: true }, { color, isFilled: true }, { color, isFilled: false }],
-    [{ color, isFilled: false }, { color, isFilled: false }, { color, isFilled: false }],
+    [{ color: 'red', isFilled: true }, { color: 'red', isFilled: true }, { color: 'red', isFilled: false }],
+    [{ color: 'red', isFilled: true }, { color: 'red', isFilled: true }, { color: 'red', isFilled: false }],
+    [{ color: 'red', isFilled: false }, { color: 'red', isFilled: false }, { color: 'red', isFilled: false }],
   ];
 };
 
@@ -283,7 +267,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
           id: '1',
           location: { row: 5, column: 5 },
           block: {
-            color: { lightest: '#f00', light: '#e00', main: '#d00', dark: '#c00', darkest: '#b00' },
+            color: 'red',
             isFilled: true  // Already filled
           }
         },
@@ -291,7 +275,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
           id: '2',
           location: { row: 5, column: 5 },
           block: {
-            color: { lightest: '#fff', light: '#eee', main: '#ddd', dark: '#ccc', darkest: '#bbb' },
+            color: 'grey',
             isFilled: false  // Empty
           }
         }

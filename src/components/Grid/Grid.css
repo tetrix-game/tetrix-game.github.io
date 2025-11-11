@@ -6,5 +6,7 @@
   background-color: rgb(10, 10, 10);
   position: relative;
   touch-action: none;
-  /* gap, width, height are dynamic via inline styles from useGameSizing hook */
+  gap: var(--grid-gap);
+  width: var(--grid-size);
+  height: var(--grid-size);
 }

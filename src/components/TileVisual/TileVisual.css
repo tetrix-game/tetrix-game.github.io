@@ -1,3 +1,17 @@
+.tile-visual {
+  border-radius: 5px;
+  z-index: 1;
+  position: relative;
+}
+
+.tile-visual-dark {
+  background-color: rgb(59, 59, 62);
+}
+
+.tile-visual-light {
+  background-color: rgb(40, 40, 50);
+}
+
 .grid-block-visual {
   border-radius: 5%;
 }
@@ -11,5 +25,5 @@
   background-color: black;
   pointer-events: none;
   border-radius: 3px;
-  /* opacity is dynamic via inline styles */
+  opacity: var(--shadow-opacity, 0);
 }

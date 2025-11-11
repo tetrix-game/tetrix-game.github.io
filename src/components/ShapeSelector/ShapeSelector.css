@@ -26,6 +26,8 @@
   /* Never wrap - always stay in one line/column */
   /* Clip overflow to prevent size growth during animations */
   overflow: hidden;
+  width: var(--selector-width);
+  height: var(--selector-height);
 }
 
 .shape-selector-container-landscape {
@@ -34,6 +36,11 @@
 
 .shape-selector-container-portrait {
   flex-direction: row;
+}
+
+.shape-selector-option-wrapper {
+  width: var(--option-size);
+  height: var(--option-size);
 }
 
 /* Portrait screens (taller than wide): horizontal button flow */

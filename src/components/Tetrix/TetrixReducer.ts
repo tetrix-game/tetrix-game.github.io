@@ -16,14 +16,6 @@ function playLineClearSounds(clearedRows: number[], clearedColumns: number[]) {
   }
 }
 
-const emptyColor = {
-  lightest: '#000000',
-  light: '#000000',
-  main: '#000000',
-  dark: '#000000',
-  darkest: '#000000'
-};
-
 const makeTiles = () => {
   const tiles: Tile[] = [];
   for (let row = 1; row <= 10; row++) {
@@ -31,7 +23,7 @@ const makeTiles = () => {
       tiles.push({
         id: `(row: ${row}, column: ${column})`,
         location: { row, column },
-        block: { isFilled: false, color: emptyColor }
+        block: { isFilled: false, color: 'grey' }
       })
     }
   }

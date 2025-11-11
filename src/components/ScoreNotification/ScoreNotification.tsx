@@ -141,9 +141,10 @@ const ScoreNotification: React.FC = () => {
           key={notification.id}
           className="score-notification"
           style={{
-            transform: `translate(${notification.currentPos.x}px, ${notification.currentPos.y}px)`,
-            opacity: notification.opacity,
-          }}
+            '--notification-x': `${notification.currentPos.x}px`,
+            '--notification-y': `${notification.currentPos.y}px`,
+            '--notification-opacity': notification.opacity,
+          } as React.CSSProperties}
         >
           {notification.message}
         </div>

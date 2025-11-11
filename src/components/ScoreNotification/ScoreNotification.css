@@ -16,6 +16,9 @@
   pointer-events: none;
   /* Center the element around the transform origin */
   transform-origin: center;
+  /* Dynamic positioning and opacity */
+  transform: translate(var(--notification-x), var(--notification-y));
+  opacity: var(--notification-opacity);
 }
 
 /* Responsive design */

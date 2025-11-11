@@ -56,9 +56,9 @@ const ShapeSelector = (): JSX.Element => {
       <div
         className={`shape-selector-container ${isLandscape ? 'shape-selector-container-landscape' : 'shape-selector-container-portrait'}`}
         style={{
-          width: isLandscape ? '100%' : `${gameControlsLength}px`,
-          height: isLandscape ? `${gameControlsLength}px` : '100%',
-        }}
+          '--selector-width': isLandscape ? '100%' : `${gameControlsLength}px`,
+          '--selector-height': isLandscape ? `${gameControlsLength}px` : '100%',
+        } as React.CSSProperties}
       >
         {displayedShapes.map((shape, index) => {
           return (
@@ -66,9 +66,8 @@ const ShapeSelector = (): JSX.Element => {
               key={getShapeId(shape)}
               className="shape-selector-option-wrapper"
               style={{
-                width: `${shapeOptionFullSize}px`,
-                height: `${shapeOptionFullSize}px`,
-              }}
+                '--option-size': `${shapeOptionFullSize}px`,
+              } as React.CSSProperties}
             >
               <ShapeOption
                 shape={shape}

@@ -140,9 +140,9 @@ const MenuDropdown: React.FC = () => {
         <div
           className="dropdown-overlay"
           style={{
-            top: buttonRect.bottom + window.scrollY,
-            left: buttonRect.left + window.scrollX,
-          }}
+            '--dropdown-top': `${buttonRect.bottom + window.scrollY}px`,
+            '--dropdown-left': `${buttonRect.left + window.scrollX}px`,
+          } as React.CSSProperties}
         >
           <div className="dropdown-content">
             <div className="menu-item">

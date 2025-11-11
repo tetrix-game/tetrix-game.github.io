@@ -3,6 +3,8 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
+  height: var(--controls-height);
+  width: var(--controls-width);
 }
 
 /* Portrait screens (taller than wide): ShapeSelector between Grid and PurchasesContainer */

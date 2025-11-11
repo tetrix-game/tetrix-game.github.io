@@ -9,56 +9,18 @@ import { useGameSizing } from '../../hooks/useGameSizing';
 type ShapeOptionProps = {
   shape: Shape;
   shapeIndex: number;
+  shapeOptionFullSize: number;
 };
 
-const getAnimationStyles = (
-  isAnimatingRemoval: boolean,
-  isVerticalAnimation: boolean,
-  shapeOptionFullSize: number
-) => {
-  if (isAnimatingRemoval) {
-    return {
-      width: isVerticalAnimation ? `${shapeOptionFullSize}px` : '0px',
-      height: isVerticalAnimation ? '0px' : `${shapeOptionFullSize}px`,
-      minWidth: isVerticalAnimation ? `${shapeOptionFullSize}px` : '0px',
-      minHeight: isVerticalAnimation ? '0px' : `${shapeOptionFullSize}px`,
-      opacity: 0,
-      marginRight: '0px',
-      marginBottom: '0px',
-    };
-  }
-
-  // Normal state - sized to contain 1.05 scale
-  return {
-    width: `${shapeOptionFullSize}px`,
-    height: `${shapeOptionFullSize}px`,
-    minWidth: `${shapeOptionFullSize}px`,
-    minHeight: `${shapeOptionFullSize}px`,
-    opacity: 1,
-    marginRight: '0px',
-    marginBottom: '0px',
-  };
-};
-
-const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
+const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
   const { selectedShapeIndex, tiles, isTurningModeActive, turningDirection, isDoubleTurnModeActive, removingShapeIndex, shapeRemovalAnimationState } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isAnimatingRemoval, setIsAnimatingRemoval] = useState(false);
+  const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
 
   // Get dynamic sizing from hook
-  const { gameControlsLength, gridSize } = useGameSizing();
-
-  // ShapeOption sizing calculation matches ShapeSelector
-  // Fit 3 shapes with gaps, accounting for 1.05 hover scale
-  const shapeGap = 12;
-  const containerPadding = 12;
-  const totalGaps = shapeGap * 2; // 2 gaps between 3 shapes
-  const totalPadding = containerPadding * 2; // padding on both sides
-  const availableSpace = gameControlsLength - totalGaps - totalPadding;
-  const shapeOptionBaseSize = availableSpace / (3 * 1.05);
-  const shapeOptionFullSize = shapeOptionBaseSize * 1.05;
+  const { gridSize } = useGameSizing();
 
   // ShapeOption has 4x4 grid with 1px gaps (3 gaps total)
   const cellGap = 1;
@@ -89,31 +51,6 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
     return { x: offsetX, y: offsetY };
   }, [shapeBounds, shapeOptionCellSize, cellGap]);
-
-  // Determine if landscape for animation direction
-  const isLandscape = window.innerWidth >= window.innerHeight;
-  const isVerticalAnimation = isLandscape;
-
-  const animationTransition = useMemo(() => {
-    const verticalTransition = 'height 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-    const horizontalTransition = 'width 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-    const normalTransition = 'all 0.2s ease';
-
-    if (isAnimatingRemoval) {
-      return isVerticalAnimation ? verticalTransition : horizontalTransition;
-    }
-    return normalTransition;
-  }, [isAnimatingRemoval, isVerticalAnimation]);
-
-  const removeTransform = isVerticalAnimation ? 'scaleY(0)' : 'scaleX(0)';
-  const normalTransform = isVerticalAnimation ? 'scaleY(1)' : 'scaleX(1)';
-
-  let animationTransform = normalTransform;
-  if (isAnimatingRemoval) {
-    animationTransform = removeTransform;
-  }
-
-  const animationStyles = getAnimationStyles(isAnimatingRemoval, isVerticalAnimation, shapeOptionFullSize);
 
   // Detect if this is a touch device (mobile) - same logic as DraggingShape
   const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
@@ -185,20 +122,15 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     }
   }, [dispatch, shapeIndex]);
 
-  // Handle removal animation
+  // Handle removal animation - trigger completion after animation duration
   useEffect(() => {
     if (removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing') {
-      setIsAnimatingRemoval(true);
-
       // Start the animation and trigger completion after 300ms
       const animationTimer = setTimeout(() => {
         dispatch({ type: 'COMPLETE_SHAPE_REMOVAL' });
-        setIsAnimatingRemoval(false);
       }, 300); // 0.3s animation duration
 
       return () => clearTimeout(animationTimer);
-    } else {
-      setIsAnimatingRemoval(false);
     }
   }, [removingShapeIndex, shapeIndex, shapeRemovalAnimationState, dispatch]);
 
@@ -341,9 +273,6 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         '--shape-padding': `${normalPadding}px`,
         '--centering-offset-x': `${centeringOffset.x}px`,
         '--centering-offset-y': `${centeringOffset.y}px`,
-        '--animation-transition': animationTransition,
-        '--animation-transform': animationTransform,
-        ...animationStyles,
       } as React.CSSProperties}
       onPointerDown={handlePointerDown}
       onPointerMove={handleMouseMove}

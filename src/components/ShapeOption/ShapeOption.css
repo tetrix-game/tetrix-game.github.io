@@ -9,8 +9,7 @@
   transform-origin: center;
   overflow: hidden;
   padding: var(--shape-padding);
-  transition: var(--animation-transition);
-  transform: var(--animation-transform);
+  transition: all 0.2s ease;
   pointer-events: auto;
 }
 

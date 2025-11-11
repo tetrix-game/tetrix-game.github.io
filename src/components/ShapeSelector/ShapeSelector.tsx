@@ -18,7 +18,7 @@ const getShapeId = (shape: object): string => {
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes } = useTetrixStateContext();
+  const { nextShapes, removingShapeIndex, shapeRemovalAnimationState } = useTetrixStateContext();
 
   // Create initial shapes - start with 3 shapes (can be changed via debug menu)
   const initialShapes = useMemo(() => {
@@ -37,8 +37,9 @@ const ShapeSelector = (): JSX.Element => {
     }
   }, [dispatch, initialShapes, nextShapes.length]);
 
-  // Limit to maximum of 3 shapes to prevent wrapping
-  const displayedShapes = nextShapes.slice(0, 3);
+  // Display all shapes (including 4th during slide-in animation)
+  // The container will clip overflow, and the 4th shape slides in when another is removed
+  const displayedShapes = nextShapes;
 
   const { gameControlsLength } = useGameSizing();
   const isLandscape = window.innerWidth >= window.innerHeight;
@@ -69,17 +70,21 @@ const ShapeSelector = (): JSX.Element => {
         className={`shape-selector-shapes-container ${isLandscape ? 'shape-selector-shapes-container-landscape' : 'shape-selector-shapes-container-portrait'}`}
       >
         {displayedShapes.map((shape, index) => {
+          const isRemoving = removingShapeIndex === index && shapeRemovalAnimationState === 'removing';
           return (
             <div
               key={getShapeId(shape)}
-              className="shape-selector-shape-wrapper"
+              className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
+              data-landscape={isLandscape ? '1' : '0'}
               style={{
                 '--shape-wrapper-size': `${shapeOptionFullSize}px`,
+                '--is-landscape': isLandscape ? '1' : '0',
               } as React.CSSProperties}
             >
               <ShapeOption
                 shape={shape}
                 shapeIndex={index}
+                shapeOptionFullSize={shapeOptionFullSize}
               />
             </div>
           );

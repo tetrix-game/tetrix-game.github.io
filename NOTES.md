@@ -1,6 +1,5 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Starting a new game throws away things like music toggle
 - Pickup shape sound
 - Invalid placement sound (sheew back)
 - Valid placement calculation sound (tick)

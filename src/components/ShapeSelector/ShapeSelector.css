@@ -42,6 +42,26 @@
 .shape-selector-shape-wrapper {
   width: var(--shape-wrapper-size);
   height: var(--shape-wrapper-size);
+  /* Transition for smooth shrinking when shape is removed */
+  transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
+              height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  flex-shrink: 0; /* Prevent wrapper from shrinking on its own */
+}
+
+/* Animation state for removing shapes */
+.shape-selector-shape-wrapper.removing {
+  opacity: 0;
+}
+
+/* Portrait: shrink width when removing (horizontal layout) */
+.shape-selector-shape-wrapper.removing[data-landscape="0"] {
+  width: 0;
+}
+
+/* Landscape: shrink height when removing (vertical layout) */
+.shape-selector-shape-wrapper.removing[data-landscape="1"] {
+  height: 0;
 }
 
 /* Portrait screens (taller than wide): horizontal button flow */

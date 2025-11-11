@@ -39,8 +39,8 @@ describe('ShapeSelector 4-Element Limit', () => {
       </TetrixProvider>
     );
 
-    // Should have shapes-container div
-    const shapesContainer = container.querySelector('.shape-selector-container');
+    // Should have shapes-container div with new naming
+    const shapesContainer = container.querySelector('.shape-selector-shapes-container');
     expect(shapesContainer).toBeTruthy();
   });
 
@@ -79,7 +79,7 @@ describe('ShapeSelector 4-Element Limit', () => {
       </TetrixProvider>
     );
 
-    const shapesContainer = container.querySelector('.shape-selector-container');
+    const shapesContainer = container.querySelector('.shape-selector-shapes-container');
     expect(shapesContainer).toBeTruthy();
 
     // Queue indicator should be outside the shapes container but inside the shape selector
@@ -97,7 +97,7 @@ describe('ShapeSelector 4-Element Limit', () => {
 
     // Should contain both shapes-container and queue indicator as direct children
     const hasShapesContainer = Array.from(allChildren || []).some(child =>
-      child.classList.contains('shape-selector-container')
+      child.classList.contains('shape-selector-shapes-container')
     );
     const hasQueueIndicator = Array.from(allChildren || []).some(child =>
       child.classList.contains('shape-queue-indicator')

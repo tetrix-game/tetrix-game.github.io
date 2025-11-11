@@ -1,9 +1,17 @@
 import './PurchasesContainer.css';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 const PurchasesContainer = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const state = useTetrixStateContext();
+  const { gameControlsLength } = useGameSizing();
+
+  // Match ShapeOption sizing calculation
+  const shapeGap = 12;
+  const totalGaps = shapeGap * 3; // 3 gaps between 4 shapes
+  const shapeOptionBaseSize = (gameControlsLength - totalGaps) / (4 * 1.05);
+  const shapeOptionFullSize = shapeOptionBaseSize * 1.05; // Size with hover scale
 
   const handleBuyTurnClockwise = () => {
     if (state.isTurningModeActive && state.turningDirection === 'cw') {
@@ -94,7 +102,12 @@ const PurchasesContainer = (): JSX.Element => {
   const isDoubleTurnActive = state.isDoubleTurnModeActive;
 
   return (
-    <div className="purchases-container">
+    <div
+      className="purchases-container"
+      style={{
+        '--purchase-button-size': `${shapeOptionFullSize}px`,
+      } as React.CSSProperties}
+    >
       <button
         className={`purchases-container-button purchases-container-button-clockwise ${isClockwiseActive ? 'active' : ''}`}
         onClick={handleBuyTurnClockwise}

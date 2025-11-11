@@ -51,22 +51,30 @@ const ShapeSelector = (): JSX.Element => {
   const shapeOptionBaseSize = (gameControlsLength - totalGaps) / (4 * 1.05);
   const shapeOptionFullSize = shapeOptionBaseSize * 1.05; // Size with hover scale
 
+  // Calculate actual container size based on number of displayed shapes
+  const numShapes = displayedShapes.length;
+  const containerPadding = 12; // padding on each side
+  const actualGaps = numShapes > 1 ? (numShapes - 1) * shapeGap : 0;
+  const shapeSelectorSize = (numShapes * shapeOptionFullSize) + actualGaps + (containerPadding * 2);
+
   return (
-    <div className="shape-selector">
+    <div
+      className="shape-selector"
+      style={{
+        '--shape-selector-width': isLandscape ? 'auto' : `${shapeSelectorSize}px`,
+        '--shape-selector-height': isLandscape ? `${shapeSelectorSize}px` : 'auto',
+      } as React.CSSProperties}
+    >
       <div
-        className={`shape-selector-container ${isLandscape ? 'shape-selector-container-landscape' : 'shape-selector-container-portrait'}`}
-        style={{
-          '--selector-width': isLandscape ? '100%' : `${gameControlsLength}px`,
-          '--selector-height': isLandscape ? `${gameControlsLength}px` : '100%',
-        } as React.CSSProperties}
+        className={`shape-selector-shapes-container ${isLandscape ? 'shape-selector-shapes-container-landscape' : 'shape-selector-shapes-container-portrait'}`}
       >
         {displayedShapes.map((shape, index) => {
           return (
             <div
               key={getShapeId(shape)}
-              className="shape-selector-option-wrapper"
+              className="shape-selector-shape-wrapper"
               style={{
-                '--option-size': `${shapeOptionFullSize}px`,
+                '--shape-wrapper-size': `${shapeOptionFullSize}px`,
               } as React.CSSProperties}
             >
               <ShapeOption

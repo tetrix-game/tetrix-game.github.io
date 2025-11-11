@@ -16,9 +16,12 @@
   max-height: 100vh;
   overflow: visible;
   box-sizing: border-box;
+  /* Apply dynamic width and height */
+  width: var(--shape-selector-width);
+  height: var(--shape-selector-height);
 }
 
-.shape-selector-container {
+.shape-selector-shapes-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,21 +29,19 @@
   /* Never wrap - always stay in one line/column */
   /* Clip overflow to prevent size growth during animations */
   overflow: hidden;
-  width: var(--selector-width);
-  height: var(--selector-height);
 }
 
-.shape-selector-container-landscape {
+.shape-selector-shapes-container-landscape {
   flex-direction: column;
 }
 
-.shape-selector-container-portrait {
+.shape-selector-shapes-container-portrait {
   flex-direction: row;
 }
 
-.shape-selector-option-wrapper {
-  width: var(--option-size);
-  height: var(--option-size);
+.shape-selector-shape-wrapper {
+  width: var(--shape-wrapper-size);
+  height: var(--shape-wrapper-size);
 }
 
 /* Portrait screens (taller than wide): horizontal button flow */
@@ -52,7 +53,7 @@
     min-height: auto;
   }
 
-  .shape-selector-container {
+  .shape-selector-shapes-container {
     min-height: auto;
     /* Dynamic sizing via inline styles and useGameSizing hook */
     overflow: hidden;
@@ -74,7 +75,7 @@
     overflow-x: visible;
   }
 
-  .shape-selector-container {
+  .shape-selector-shapes-container {
     align-content: flex-start;
     justify-content: flex-start;
     /* Dynamic sizing via inline styles and useGameSizing hook */

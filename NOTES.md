@@ -1,6 +1,7 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- ShapeOptions get clipped on hover and it's gross.
+- Can't see the full shapeOption
+- Can't see the third shapeOption
 - Mobile slide into place animation doesn't start from where the DraggingShape left off.
 - Starting a new game throws away things like music toggle
 - Pickup shape sound

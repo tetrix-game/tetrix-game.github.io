@@ -121,18 +121,6 @@ const PurchasesContainer = (): JSX.Element => {
       </button>
 
       <button
-        className={`purchases-container-button purchases-container-button-counter-clockwise ${isCounterClockwiseActive ? 'active' : ''}`}
-        onClick={handleBuyTurnCounterClockwise}
-        disabled={isCounterClockwiseDisabled}
-        title={isCounterClockwiseDisabled ? 'Need 1 point to buy counter-clockwise turn' : 'Buy counter-clockwise turn (1 point)'}
-      >
-        <div className="purchases-container-icon">
-          ↺
-        </div>
-        <div className="purchases-container-cost">1</div>
-      </button>
-
-      <button
         className={`purchases-container-button purchases-container-button-double-turn ${isDoubleTurnActive ? 'active' : ''}`}
         onClick={handleBuyDoubleTurn}
         disabled={isDoubleTurnDisabled}
@@ -142,6 +130,18 @@ const PurchasesContainer = (): JSX.Element => {
           ↻↻
         </div>
         <div className="purchases-container-cost">2</div>
+      </button>
+
+      <button
+        className={`purchases-container-button purchases-container-button-counter-clockwise ${isCounterClockwiseActive ? 'active' : ''}`}
+        onClick={handleBuyTurnCounterClockwise}
+        disabled={isCounterClockwiseDisabled}
+        title={isCounterClockwiseDisabled ? 'Need 1 point to buy counter-clockwise turn' : 'Buy counter-clockwise turn (1 point)'}
+      >
+        <div className="purchases-container-icon">
+          ↺
+        </div>
+        <div className="purchases-container-cost">1</div>
       </button>
     </div>
   );

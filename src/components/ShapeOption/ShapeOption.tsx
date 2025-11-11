@@ -3,7 +3,7 @@ import type { Shape } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shapeUtils';
+import { isValidPlacement } from '../../utils/shapeUtils';
 import { useGameSizing } from '../../hooks/useGameSizing';
 
 type ShapeOptionProps = {
@@ -93,6 +93,54 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
   // Detect if this is a touch device (mobile) - same logic as DraggingShape
   const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
+
+  // Memoize grid calculations to avoid duplication
+  const gridCalculations = useMemo(() => {
+    const GRID_GAP = 2;
+    const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+    const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
+    const MOBILE_TOUCH_OFFSET = isTouchDevice ? TILE_SIZE * 2.5 : 0;
+
+    return { TILE_SIZE, MOBILE_TOUCH_OFFSET };
+  }, [gridSize, isTouchDevice]);
+
+  // Memoize location calculation function
+  const calculateLocationFromMouse = useCallback((clientX: number, clientY: number) => {
+    const gridElement = document.querySelector('.grid') as HTMLElement;
+    if (!gridElement) return null;
+
+    const gridRect = gridElement.getBoundingClientRect();
+    const { MOBILE_TOUCH_OFFSET } = gridCalculations;
+    const adjustedY = clientY - MOBILE_TOUCH_OFFSET;
+    const extendedBottom = gridRect.bottom + MOBILE_TOUCH_OFFSET;
+
+    // Boundary check with extended bottom boundary
+    if (
+      clientX < gridRect.left ||
+      clientX > gridRect.right ||
+      adjustedY < gridRect.top ||
+      adjustedY > gridRect.bottom ||
+      clientY > extendedBottom
+    ) {
+      return null;
+    }
+
+    const relativeX = clientX - gridRect.left;
+    const relativeY = adjustedY - gridRect.top;
+
+    const cellWidth = gridRect.width / 10;
+    const cellHeight = gridRect.height / 10;
+
+    const column = Math.floor(relativeX / cellWidth) + 1;
+    const row = Math.floor(relativeY / cellHeight) + 1;
+
+    // Ensure within bounds
+    if (row >= 1 && row <= 10 && column >= 1 && column <= 10) {
+      return { row, column, gridRect };
+    }
+
+    return null;
+  }, [gridCalculations]);
 
   // Register bounds when component mounts or updates
   useEffect(() => {
@@ -194,52 +242,8 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || isTurningModeActive || isDoubleTurnModeActive || isAnimatingRemoval) return;
 
-    // Find the grid element
-    const gridElement = document.querySelector('.grid') as HTMLElement;
-    if (!gridElement) return;
-
-    // Use dynamic grid calculations from hook
-    const GRID_GAP = 2;
-    const GRID_GAPS_TOTAL = 9 * GRID_GAP;
-    const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
-
-    // Calculate grid bounds and tile size
-    const gridRect = gridElement.getBoundingClientRect();
-
-    // Apply mobile offset to match DraggingShape visual offset
-    const MOBILE_TOUCH_OFFSET = isTouchDevice ? TILE_SIZE * 2.5 : 0;
-    const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
-
-    // For touch devices, extend the grid bounds downward to allow placement
-    // when thumb is below the grid but adjusted position is within
-    const extendedBottom = gridRect.bottom + MOBILE_TOUCH_OFFSET;
-
-    // Manual boundary check with extended bottom boundary
-    let location: ReturnType<typeof mousePositionToGridLocation> = null;
-
-    if (
-      e.clientX >= gridRect.left &&
-      e.clientX <= gridRect.right &&
-      adjustedY >= gridRect.top &&
-      adjustedY <= gridRect.bottom &&
-      e.clientY <= extendedBottom  // Allow thumb to be below grid
-    ) {
-      const relativeX = e.clientX - gridRect.left;
-      const relativeY = adjustedY - gridRect.top;
-
-      const cellWidth = gridRect.width / 10;
-      const cellHeight = gridRect.height / 10;
-
-      const column = Math.floor(relativeX / cellWidth) + 1;
-      const row = Math.floor(relativeY / cellHeight) + 1;
-
-      // Ensure within bounds
-      if (row >= 1 && row <= 10 && column >= 1 && column <= 10) {
-        location = { row, column };
-      }
-    }
-
-    // Check if placement is valid
+    const result = calculateLocationFromMouse(e.clientX, e.clientY);
+    const location = result ? { row: result.row, column: result.column } : null;
     const isValid = location ? isValidPlacement(shape, location, tiles) : false;
 
     dispatch({
@@ -247,17 +251,17 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       value: {
         location,
         position: { x: e.clientX, y: e.clientY },
-        tileSize: TILE_SIZE,
-        gridBounds: {
-          top: gridRect.top,
-          left: gridRect.left,
-          width: gridRect.width,
-          height: gridRect.height
-        },
+        tileSize: gridCalculations.TILE_SIZE,
+        gridBounds: result ? {
+          top: result.gridRect.top,
+          left: result.gridRect.left,
+          width: result.gridRect.width,
+          height: result.gridRect.height
+        } : { top: 0, left: 0, width: 0, height: 0 },
         isValid,
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, gridSize]);
+  }, [isDragging, shape, tiles, dispatch, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, calculateLocationFromMouse, gridCalculations]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     if (!isDragging || isTurningModeActive || isDoubleTurnModeActive || isAnimatingRemoval) return;
@@ -265,59 +269,15 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     e.currentTarget.releasePointerCapture(e.pointerId);
     setIsDragging(false);
 
-    // Find the grid element
-    const gridElement = document.querySelector('.grid') as HTMLElement;
-    if (!gridElement) {
-      dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
-      return;
-    }
-
-    // Use dynamic grid calculations from hook
-    const GRID_GAP = 2;
-    const GRID_GAPS_TOTAL = 9 * GRID_GAP;
-    const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
-
-    // Calculate grid bounds and tile size
-    const gridRect = gridElement.getBoundingClientRect();
-
-    // Apply mobile offset to match DraggingShape visual offset
-    const MOBILE_TOUCH_OFFSET = isTouchDevice ? TILE_SIZE * 2.5 : 0;
-    const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
-
-    // For touch devices, extend the grid bounds downward to allow placement
-    // when thumb is below the grid but adjusted position is within
-    const extendedBottom = gridRect.bottom + MOBILE_TOUCH_OFFSET;
-
-    // Manual boundary check with extended bottom boundary
-    let location: ReturnType<typeof mousePositionToGridLocation> = null;
-
-    if (
-      e.clientX >= gridRect.left &&
-      e.clientX <= gridRect.right &&
-      adjustedY >= gridRect.top &&
-      adjustedY <= gridRect.bottom &&
-      e.clientY <= extendedBottom  // Allow thumb to be below grid
-    ) {
-      const relativeX = e.clientX - gridRect.left;
-      const relativeY = adjustedY - gridRect.top;
-
-      const cellWidth = gridRect.width / 10;
-      const cellHeight = gridRect.height / 10;
-
-      const column = Math.floor(relativeX / cellWidth) + 1;
-      const row = Math.floor(relativeY / cellHeight) + 1;
-
-      // Ensure within bounds
-      if (row >= 1 && row <= 10 && column >= 1 && column <= 10) {
-        location = { row, column };
-      }
-    }
-
-    if (!location) {
+    const result = calculateLocationFromMouse(e.clientX, e.clientY);
+    
+    if (!result) {
       // Pointer up outside grid - return shape
       dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
       return;
     }
+
+    const location = { row: result.row, column: result.column };
 
     // Check if placement is valid
     if (!isValidPlacement(shape, location, tiles)) {
@@ -334,7 +294,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         mousePosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, gridSize]);
+  }, [isDragging, shape, tiles, dispatch, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, calculateLocationFromMouse]);
 
   const isSelected = selectedShapeIndex === shapeIndex;
 

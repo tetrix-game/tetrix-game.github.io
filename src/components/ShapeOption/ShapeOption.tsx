@@ -48,10 +48,14 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const [isAnimatingRemoval, setIsAnimatingRemoval] = useState(false);
 
   // Get dynamic sizing from hook
-  const { gameControlsWidth, gridSize } = useGameSizing();
+  const { gameControlsLength, gridSize } = useGameSizing();
 
-  // ShapeOption sizing: full width is 1/1.05 of gameControlsWidth (to account for 1.05 hover scale)
-  const shapeOptionFullSize = gameControlsWidth / 1.05;
+  // ShapeOption sizing calculation matches ShapeSelector
+  // Fit 4 shapes with gaps, accounting for 1.05 hover scale
+  const shapeGap = 12;
+  const totalGaps = shapeGap * 3; // 3 gaps between 4 shapes
+  const shapeOptionBaseSize = (gameControlsLength - totalGaps) / (4 * 1.05);
+  const shapeOptionFullSize = shapeOptionBaseSize * 1.05;
 
   // ShapeOption has 4x4 grid with 1px gaps (3 gaps total)
   const cellGap = 1;

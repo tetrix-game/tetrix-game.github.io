@@ -1,4 +1,5 @@
 import { Block } from "../../utils/types";
+import './BlockVisual.css';
 
 type BlockVisualProps = {
   readonly block: Block;
@@ -15,20 +16,13 @@ export default function BlockVisual({ block, borderWidth = 12.5 }: BlockVisualPr
 
   return (
     <div
+      className="block-visual"
       style={{
-        position: 'relative',
-        top: '-1px',
-        left: '-1px',
-        zIndex: 2,
         backgroundColor: block.color.main,
-        opacity: 1,
-        width: 'calc(100% + 2px)',
-        height: 'calc(100% + 2px)',
         borderTop: `${borderWidthPx} solid ${block.color.lightest}`,
         borderLeft: `${borderWidthPx} solid ${block.color.light}`,
         borderBottom: `${borderWidthPx} solid ${block.color.darkest}`,
         borderRight: `${borderWidthPx} solid ${block.color.dark}`,
-        boxSizing: 'border-box',
       }}
     />
   )

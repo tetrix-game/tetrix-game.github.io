@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './TestCrashButton.css';
 
 const TestCrashButton = () => {
   const [shouldCrash, setShouldCrash] = useState(false);
@@ -10,17 +11,7 @@ const TestCrashButton = () => {
   return (
     <button
       onClick={() => setShouldCrash(true)}
-      style={{
-        position: 'fixed',
-        top: '10px',
-        left: '10px',
-        zIndex: 1000,
-        padding: '10px',
-        backgroundColor: 'red',
-        color: 'white',
-        border: 'none',
-        cursor: 'pointer'
-      }}
+      className="test-crash-button"
     >
       TEST CRASH
     </button>

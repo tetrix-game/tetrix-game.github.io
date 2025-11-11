@@ -1,4 +1,4 @@
-.location_button {
+.location-button {
   background: none;
   border: none;
   cursor: pointer;
@@ -12,15 +12,15 @@
   transition: background-color 0.2s ease;
 }
 
-.location_button:hover {
+.location-button:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.location_button:active {
+.location-button:active {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-.location_button svg {
+.location-button svg {
   width: auto;
   height: 90%;
 }

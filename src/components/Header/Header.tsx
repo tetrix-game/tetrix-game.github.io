@@ -110,14 +110,14 @@ const Header = () => {
   return (
     <MusicControlContext.Provider value={musicContextValue}>
       <SoundEffectsControlContext.Provider value={soundEffectsContextValue}>
-        <div className="tetrix_header">
+        <div className="header">
           <BackgroundMusic isMuted={isMuted || isLoading} />
-          <div className="tetrix_header_start">
+          <div className="header-start">
             <MenuDropdown />
           </div>
-          <div className="tetrix_header_middle">
+          <div className="header-middle">
             <button
-              className="tetrix-title-button"
+              className="header-title-button"
               onClick={handleModifiersClick}
               aria-label="Open game modifiers"
               type="button"
@@ -125,7 +125,7 @@ const Header = () => {
               TETRIX{currentLevel !== 0 && ` (${currentLevel})`}
             </button>
           </div>
-          <div className="tetrix_header_end">
+          <div className="header-end">
             <ScoreDisplay />
             <LocationButton />
           </div>

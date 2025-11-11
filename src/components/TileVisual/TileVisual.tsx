@@ -50,16 +50,9 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
       <BlockVisual block={displayBlock} borderWidth={FIXED_BORDER_WIDTH} />
       {showShadow && (
         <div
+          className="tile-visual-shadow"
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'black',
             opacity: shadowOpacity,
-            pointerEvents: 'none',
-            borderRadius: '3px',
           }}
         />
       )}

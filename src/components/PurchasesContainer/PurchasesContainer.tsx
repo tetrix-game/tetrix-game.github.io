@@ -96,39 +96,39 @@ const PurchasesContainer = (): JSX.Element => {
   return (
     <div className="purchases-container">
       <button
-        className={`buy-turn-button clockwise ${isClockwiseActive ? 'active' : ''}`}
+        className={`purchases-container-button purchases-container-button-clockwise ${isClockwiseActive ? 'active' : ''}`}
         onClick={handleBuyTurnClockwise}
         disabled={isClockwiseDisabled}
         title={isClockwiseDisabled ? 'Need 1 point to buy clockwise turn' : 'Buy clockwise turn (1 point)'}
       >
-        <div className="turn-icon">
+        <div className="purchases-container-icon">
           ↻
         </div>
-        <div className="cost">1</div>
+        <div className="purchases-container-cost">1</div>
       </button>
 
       <button
-        className={`buy-turn-button counter-clockwise ${isCounterClockwiseActive ? 'active' : ''}`}
+        className={`purchases-container-button purchases-container-button-counter-clockwise ${isCounterClockwiseActive ? 'active' : ''}`}
         onClick={handleBuyTurnCounterClockwise}
         disabled={isCounterClockwiseDisabled}
         title={isCounterClockwiseDisabled ? 'Need 1 point to buy counter-clockwise turn' : 'Buy counter-clockwise turn (1 point)'}
       >
-        <div className="turn-icon">
+        <div className="purchases-container-icon">
           ↺
         </div>
-        <div className="cost">1</div>
+        <div className="purchases-container-cost">1</div>
       </button>
 
       <button
-        className={`buy-turn-button double-turn ${isDoubleTurnActive ? 'active' : ''}`}
+        className={`purchases-container-button purchases-container-button-double-turn ${isDoubleTurnActive ? 'active' : ''}`}
         onClick={handleBuyDoubleTurn}
         disabled={isDoubleTurnDisabled}
         title={isDoubleTurnDisabled ? 'Need 2 points to buy double turn' : 'Buy double turn (2 points)'}
       >
-        <div className="turn-icon">
+        <div className="purchases-container-icon">
           ↻↻
         </div>
-        <div className="cost">2</div>
+        <div className="purchases-container-cost">2</div>
       </button>
     </div>
   );

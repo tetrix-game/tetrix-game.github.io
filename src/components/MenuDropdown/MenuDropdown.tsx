@@ -140,10 +140,8 @@ const MenuDropdown: React.FC = () => {
         <div
           className="dropdown-overlay"
           style={{
-            position: 'fixed',
             top: buttonRect.bottom + window.scrollY,
             left: buttonRect.left + window.scrollX,
-            zIndex: 10000,
           }}
         >
           <div className="dropdown-content">

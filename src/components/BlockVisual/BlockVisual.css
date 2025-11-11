@@ -1,0 +1,12 @@
+/* Block visual styles */
+.block-visual {
+  position: relative;
+  top: -1px;
+  left: -1px;
+  z-index: 2;
+  opacity: 1;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  box-sizing: border-box;
+  /* backgroundColor, border colors, and border widths are dynamic via inline styles */
+}

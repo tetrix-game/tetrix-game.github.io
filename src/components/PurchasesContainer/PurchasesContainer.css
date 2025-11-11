@@ -10,7 +10,7 @@
   height: auto;
 }
 
-.buy-turn-button {
+.purchases-container-button {
   width: 80px;
   height: 80px;
   background: rgba(0, 0, 0, 0.8);
@@ -30,19 +30,19 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.buy-turn-button:hover:not(:disabled) {
+.purchases-container-button:hover:not(:disabled) {
   background: rgba(74, 144, 226, 0.2);
   border-color: #5ba3f5;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.buy-turn-button:active:not(:disabled) {
+.purchases-container-button:active:not(:disabled) {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.buy-turn-button:disabled {
+.purchases-container-button:disabled {
   background: rgba(0, 0, 0, 0.4);
   border-color: #666;
   color: #999;
@@ -51,14 +51,14 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.buy-turn-button.active {
+.purchases-container-button.active {
   background: rgba(74, 144, 226, 0.6);
   border-color: #5ba3f5;
   box-shadow: 0 0 12px rgba(74, 144, 226, 0.6), 0 0 24px rgba(74, 144, 226, 0.4);
-  animation: glow 1.5s ease-in-out infinite alternate;
+  animation: purchases-container-glow 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes glow {
+@keyframes purchases-container-glow {
   from {
     box-shadow: 0 0 12px rgba(74, 144, 226, 0.6), 0 0 24px rgba(74, 144, 226, 0.4);
   }
@@ -68,7 +68,7 @@
   }
 }
 
-.turn-icon {
+.purchases-container-icon {
   font-size: 32px;
   font-weight: bold;
   line-height: 1;
@@ -79,7 +79,7 @@
   height: calc(80px * 2/3);
 }
 
-.cost {
+.purchases-container-cost {
   font-size: 12px;
   opacity: 0.8;
   flex: 1;
@@ -89,12 +89,12 @@
   height: calc(80px * 1/3);
 }
 
-.buy-turn-button.active .turn-icon {
+.purchases-container-button.active .purchases-container-icon {
   color: #fff;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 
-.buy-turn-button.active .cost {
+.purchases-container-button.active .purchases-container-cost {
   opacity: 0.6;
 }
 
@@ -130,18 +130,18 @@
     padding: 6px;
   }
 
-  .buy-turn-button {
+  .purchases-container-button {
     width: 70px;
     height: 70px;
     font-size: 11px;
   }
 
-  .turn-icon {
+  .purchases-container-icon {
     font-size: 28px;
     height: calc(70px * 2/3);
   }
 
-  .cost {
+  .purchases-container-cost {
     font-size: 10px;
     height: calc(70px * 1/3);
   }

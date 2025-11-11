@@ -1,3 +1,15 @@
 .grid-block-visual {
   border-radius: 5%;
 }
+
+.tile-visual-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  pointer-events: none;
+  border-radius: 3px;
+  /* opacity is dynamic via inline styles */
+}

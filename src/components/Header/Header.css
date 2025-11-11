@@ -1,4 +1,4 @@
-.tetrix_header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -6,7 +6,7 @@
   height: 10vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   background-size: 200% 200%;
-  animation: gradientShift 8s ease infinite;
+  animation: header-gradient-shift 8s ease infinite;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   position: relative;
@@ -14,7 +14,7 @@
 }
 
 /* Animated gradient background */
-@keyframes gradientShift {
+@keyframes header-gradient-shift {
   0% {
     background-position: 0% 50%;
   }
@@ -29,7 +29,7 @@
 }
 
 /* Subtle overlay for depth */
-.tetrix_header::before {
+.header::before {
   content: '';
   position: absolute;
   top: 0;
@@ -40,15 +40,15 @@
   pointer-events: none;
 }
 
-.tetrix_header_start,
-.tetrix_header_middle,
-.tetrix_header_end {
+.header-start,
+.header-middle,
+.header-end {
   height: 100%;
   position: relative;
   z-index: 1;
 }
 
-.tetrix_header_start {
+.header-start {
   flex: 1;
   display: flex;
   justify-content: flex-start;
@@ -63,12 +63,12 @@
   transition: all 0.3s ease;
 }
 
-.tetrix_header_start:hover {
+.header-start:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateX(2px);
 }
 
-.tetrix_header_middle {
+.header-middle {
   flex: 4;
   display: flex;
   justify-content: center;
@@ -77,7 +77,7 @@
   text-align: center;
 }
 
-.tetrix-title-button {
+.header-title-button {
   background: none;
   border: none;
   font-family: 'Courier New', monospace;
@@ -94,7 +94,7 @@
   overflow: hidden;
 }
 
-.tetrix-title-button::before {
+.header-title-button::before {
   content: '';
   position: absolute;
   top: 0;
@@ -105,27 +105,27 @@
   transition: left 0.5s ease;
 }
 
-.tetrix-title-button:hover {
+.header-title-button:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.tetrix-title-button:hover::before {
+.header-title-button:hover::before {
   left: 100%;
 }
 
-.tetrix-title-button:active {
+.header-title-button:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.tetrix-title-button:focus {
+.header-title-button:focus {
   outline: 2px solid #4a9eff;
   outline-offset: 2px;
 }
 
-.tetrix_header_end {
+.header-end {
   flex: 1;
   display: flex;
   justify-content: flex-end;
@@ -140,24 +140,24 @@
   transition: all 0.3s ease;
 }
 
-.tetrix_header_end:hover {
+.header-end:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateX(-2px);
 }
 
 /* Responsive design improvements */
 @media (max-width: 768px) {
-  .tetrix_header {
+  .header {
     height: 8vh;
     min-height: 60px;
   }
 
-  .tetrix_header_middle {
+  .header-middle {
     display: none;
   }
 
-  .tetrix_header_start,
-  .tetrix_header_end {
+  .header-start,
+  .header-end {
     flex: 1;
     gap: 0.5rem;
     padding-left: 1rem;
@@ -165,40 +165,40 @@
     margin: 6px 0;
   }
 
-  .tetrix_header_start {
+  .header-start {
     border-radius: 0 12px 12px 0;
   }
 
-  .tetrix_header_end {
+  .header-end {
     border-radius: 12px 0 0 12px;
   }
 }
 
 @media (max-width: 480px) {
-  .tetrix_header {
+  .header {
     height: 7vh;
     min-height: 50px;
     animation: none;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   }
 
-  .tetrix_header_middle {
+  .header-middle {
     display: none;
   }
 
-  .tetrix_header_start,
-  .tetrix_header_end {
+  .header-start,
+  .header-end {
     gap: 0.25rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     margin: 4px 0;
   }
 
-  .tetrix_header_start {
+  .header-start {
     border-radius: 0 8px 8px 0;
   }
 
-  .tetrix_header_end {
+  .header-end {
     border-radius: 8px 0 0 8px;
   }
 }

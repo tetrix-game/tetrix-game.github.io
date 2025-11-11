@@ -14,7 +14,7 @@ const LocationButton = () => {
   };
 
   return (
-    <button className="location_button" onClick={handleClick} aria-label="Toggle Level Map">
+    <button className="location-button" onClick={handleClick} aria-label="Toggle Level Map">
       <svg
         width="24"
         height="24"

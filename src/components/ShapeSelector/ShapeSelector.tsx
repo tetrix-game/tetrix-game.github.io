@@ -44,23 +44,37 @@ const ShapeSelector = (): JSX.Element => {
   const { gameControlsLength } = useGameSizing();
   const isLandscape = window.innerWidth >= window.innerHeight;
 
+  // Calculate size for each shape button
+  // Need to fit 4 buttons with gaps between them, and allow for 1.05 hover scale
+  const shapeGap = 12;
+  const totalGaps = shapeGap * 3; // 3 gaps between 4 shapes
+  const shapeOptionBaseSize = (gameControlsLength - totalGaps) / (4 * 1.05);
+  const shapeOptionFullSize = shapeOptionBaseSize * 1.05; // Size with hover scale
+
   return (
     <div className="shape-selector">
-      <div className="shapes-container" style={{
-        display: 'flex',
-        flexDirection: isLandscape ? 'column' : 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: isLandscape ? `${gameControlsLength}px` : '100%',
-        height: isLandscape ? '100%' : `${gameControlsLength}px`,
-      }}>
+      <div
+        className={`shape-selector-container ${isLandscape ? 'shape-selector-container-landscape' : 'shape-selector-container-portrait'}`}
+        style={{
+          width: isLandscape ? '100%' : `${gameControlsLength}px`,
+          height: isLandscape ? `${gameControlsLength}px` : '100%',
+        }}
+      >
         {displayedShapes.map((shape, index) => {
           return (
-            <ShapeOption
+            <div
               key={getShapeId(shape)}
-              shape={shape}
-              shapeIndex={index}
-            />
+              className="shape-selector-option-wrapper"
+              style={{
+                width: `${shapeOptionFullSize}px`,
+                height: `${shapeOptionFullSize}px`,
+              }}
+            >
+              <ShapeOption
+                shape={shape}
+                shapeIndex={index}
+              />
+            </div>
           );
         })}
       </div>

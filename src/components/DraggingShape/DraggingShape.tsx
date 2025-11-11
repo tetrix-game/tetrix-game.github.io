@@ -4,6 +4,7 @@ import { getShapeAnchorBlock } from '../../utils/shapeUtils';
 import { playSound } from '../../utils/soundEffects';
 import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
+import './DraggingShape.css';
 
 export default function DraggingShape() {
   const {
@@ -143,29 +144,24 @@ export default function DraggingShape() {
   }
 
   const containerStyle: React.CSSProperties = {
-    position: 'fixed',
     top: containerTop,
     left: containerLeft,
-    pointerEvents: 'none',
-    zIndex: 1000,
-    display: 'grid',
     gridTemplateColumns: `repeat(4, ${TILE_SIZE}px)`,
     gridTemplateRows: `repeat(4, ${TILE_SIZE}px)`,
     gap: `${GRID_GAP}px`,
     transform: `scale(${scale})`,
-    transition: 'none',
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="dragging-shape-container" style={containerStyle}>
       {selectedShape.map((row, rowIndex) => (
         row.map((block, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
+            className="dragging-shape-cell"
             style={{
               width: `${TILE_SIZE}px`,
               height: `${TILE_SIZE}px`,
-              position: 'relative',
             }}
           >
             {block.isFilled && (

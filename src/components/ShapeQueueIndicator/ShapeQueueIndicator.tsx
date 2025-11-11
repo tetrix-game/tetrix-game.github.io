@@ -13,11 +13,11 @@ const ShapeQueueIndicator: React.FC<ShapeQueueIndicatorProps> = ({ direction }) 
   const displayText = remainingShapes === -1 ? '∞' : remainingShapes.toString();
 
   return (
-    <div className={`shape-queue-indicator ${direction}`}>
-      <div className="queue-arrow">
+    <div className={`shape-queue-indicator shape-queue-indicator-${direction}`}>
+      <div className="shape-queue-indicator-arrow">
         {direction === 'horizontal' ? '↑' : '←'}
       </div>
-      <div className="queue-count">
+      <div className="shape-queue-indicator-count">
         {displayText}
       </div>
     </div>

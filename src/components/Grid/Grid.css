@@ -1,1 +1,10 @@
-/* Grid sizing is dynamic via inline styles from useGameSizing hook */
+/* Grid styles */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  background-color: rgb(10, 10, 10);
+  position: relative;
+  touch-action: none;
+  /* gap, width, height are dynamic via inline styles from useGameSizing hook */
+}

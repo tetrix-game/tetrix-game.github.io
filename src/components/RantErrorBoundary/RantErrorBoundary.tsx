@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import './RantErrorBoundary.css';
 
 interface Props {
   children: ReactNode;
@@ -39,88 +40,30 @@ class RantErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: '#cccccc',
-          color: '#333333',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 2147483647, // Maximum z-index value
-          fontFamily: 'Arial, sans-serif',
-          fontSize: '16px',
-          textAlign: 'center',
-          padding: '40px',
-          boxSizing: 'border-box',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            backgroundColor: '#f5f5f5',
-            padding: '60px',
-            border: '1px solid #999999',
-            maxWidth: '600px',
-            width: '100%'
-          }}>
-            <h1 style={{
-              fontSize: '24px',
-              margin: '0 0 30px 0',
-              color: '#666666',
-              fontWeight: 'normal'
-            }}>
+        <div className="rant-error-boundary-container">
+          <div className="rant-error-boundary-content">
+            <h1 className="rant-error-boundary-title">
               Application Error
             </h1>
 
-            <div style={{
-              backgroundColor: '#eeeeee',
-              padding: '20px',
-              border: '1px solid #dddddd',
-              margin: '20px 0',
-              textAlign: 'left',
-              fontFamily: 'monospace',
-              fontSize: '14px',
-              color: '#555555'
-            }}>
+            <div className="rant-error-boundary-details">
               <strong>Error Details:</strong><br />
               {this.state.error?.message || 'Unknown error occurred'}
             </div>
 
-            <p style={{
-              fontSize: '14px',
-              color: '#777777',
-              margin: '30px 0',
-              lineHeight: '1.5'
-            }}>
+            <p className="rant-error-boundary-message">
               The application has encountered an error and cannot continue.
               Please refresh the page to restart the application.
             </p>
 
             <button
               onClick={() => globalThis.location.reload()}
-              style={{
-                backgroundColor: '#e0e0e0',
-                color: '#333333',
-                border: '1px solid #999999',
-                padding: '12px 24px',
-                fontSize: '14px',
-                cursor: 'pointer',
-                marginTop: '20px'
-              }}
+              className="rant-error-boundary-button"
             >
               Refresh Page
             </button>
 
-            <div style={{
-              marginTop: '40px',
-              fontSize: '12px',
-              color: '#aaaaaa',
-              borderTop: '1px solid #dddddd',
-              paddingTop: '20px'
-            }}>
+            <div className="rant-error-boundary-footer">
               If this problem persists, maybe try not clicking that button so much next time.
             </div>
           </div>

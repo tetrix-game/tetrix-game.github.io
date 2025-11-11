@@ -1,0 +1,14 @@
+/* Dragging shape styles */
+.dragging-shape-container {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  display: grid;
+  transition: none;
+  /* top, left, gridTemplateColumns, gridTemplateRows, gap, transform are dynamic via inline styles */
+}
+
+.dragging-shape-cell {
+  position: relative;
+  /* width, height are dynamic via inline styles */
+}

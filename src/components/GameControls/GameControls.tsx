@@ -22,7 +22,7 @@ const GameControls: React.FC = () => {
   return (
     <div className="game-controls">
       <button
-        className="new-game-button"
+        className="game-controls-button"
         onClick={handleNewGame}
         type="button"
       >

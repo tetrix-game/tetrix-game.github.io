@@ -87,27 +87,6 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
 
   const animationStyles = getAnimationStyles(isAnimatingRemoval, isVerticalAnimation, shapeOptionFullSize);
 
-  const shapeContainerCss = {
-    display: 'grid',
-    gridTemplateColumns: `repeat(4, ${shapeOptionCellSize}px)`,
-    gridTemplateRows: `repeat(4, ${shapeOptionCellSize}px)`,
-    gap: `${cellGap}px`,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: animationTransition,
-    touchAction: 'none' as const,
-    boxSizing: 'border-box' as const,
-    border: '3px solid rgba(255, 255, 255, 0.2)',
-    ...animationStyles,
-    transform: animationTransform,
-    transformOrigin: 'center',
-    overflow: 'hidden' as const,
-    pointerEvents: isAnimatingRemoval ? 'none' as const : 'auto' as const,
-    // Start at normal size (1/1.05 of full), center the grid within the full container
-    padding: `${normalPadding}px`,
-  };
-
   // Detect if this is a touch device (mobile) - same logic as DraggingShape
   const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
 
@@ -363,25 +342,30 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   return (
     <div
       ref={containerRef}
-      className="shape-container"
+      className={`shape-container${isSelected ? ' selected' : ''}`}
       style={{
-        ...shapeContainerCss,
-        border: isSelected ? '3px solid rgba(255, 255, 255, 0.5)' : '3px solid rgba(255, 255, 255, 0.2)',
-      }}
+        '--shape-cell-size': `${shapeOptionCellSize}px`,
+        '--shape-cell-gap': `${cellGap}px`,
+        '--shape-padding': `${normalPadding}px`,
+        transition: animationTransition,
+        ...animationStyles,
+        transform: animationTransform,
+        pointerEvents: isAnimatingRemoval ? 'none' : 'auto',
+      } as React.CSSProperties}
       onPointerDown={handlePointerDown}
       onPointerMove={handleMouseMove}
       onPointerUp={handlePointerUp}
       onPointerEnter={(e) => {
         if (!isDragging) {
           // Scale up the grid content by removing padding
-          e.currentTarget.style.padding = '0px';
+          e.currentTarget.style.setProperty('--shape-padding', '0px');
           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
         }
       }}
       onPointerLeave={(e) => {
         if (!isDragging) {
           // Scale down by restoring padding
-          e.currentTarget.style.padding = `${normalPadding}px`;
+          e.currentTarget.style.setProperty('--shape-padding', `${normalPadding}px`);
           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
         }
       }}
@@ -390,10 +374,8 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         row.map((block, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
+            className="shape-cell"
             style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              borderRadius: '3px',
-              position: 'relative',
               opacity: isSelected ? 0.1 : 1,
             }}
           >

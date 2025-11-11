@@ -24,7 +24,7 @@
   flex-shrink: 0;
 }
 
-.score-value {
+.score-display-value {
   font-weight: bold;
   color: #ffffff !important;
   /* Force white color regardless of getGemColor() */
@@ -54,7 +54,7 @@
     padding: 0.4rem 0.8rem;
   }
 
-  .score-value {
+  .score-display-value {
     min-width: 3rem;
   }
 

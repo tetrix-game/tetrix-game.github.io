@@ -11,18 +11,6 @@ export default function Grid() {
   const gridRef = useRef<HTMLDivElement>(null);
   const { gridSize, gridGap } = useGameSizing();
 
-  const gridCss = {
-    display: "grid",
-    gridTemplateColumns: "repeat(10, 1fr)",
-    gridTemplateRows: "repeat(10, 1fr)",
-    backgroundColor: "rgb(10, 10, 10)",
-    gap: `${gridGap}px`,
-    position: "relative" as const,
-    touchAction: "none" as const,
-    width: `${gridSize}px`,
-    height: `${gridSize}px`,
-  };
-
   // Handle escape key to cancel selection
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -48,8 +36,12 @@ export default function Grid() {
   return (
     <div
       ref={gridRef}
-      className={`grid ${selectedShape ? 'dragging' : ''}`}
-      style={gridCss}
+      className={`grid ${selectedShape ? 'grid-dragging' : ''}`}
+      style={{
+        gap: `${gridGap}px`,
+        width: `${gridSize}px`,
+        height: `${gridSize}px`,
+      }}
     >
       {
         tiles.map((tile: Tile) => {

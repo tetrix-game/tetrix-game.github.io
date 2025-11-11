@@ -680,7 +680,7 @@ export async function safeBatchSave(
 }
 
 /**
- * Clear all saved data (reset game)
+ * Clear game data only (preserves user settings like music/sound preferences)
  */
 export async function clearAllSavedData(): Promise<void> {
   try {
@@ -692,11 +692,58 @@ export async function clearAllSavedData(): Promise<void> {
         SCORE_STORE,
         TILES_STORE,
         SHAPES_STORE,
+        MODIFIERS_STORE
+      ], 'readwrite');
+
+      // Clear game data stores only - NOT settings
+      const gameStore = transaction.objectStore(GAME_STATE_STORE);
+      const scoreStore = transaction.objectStore(SCORE_STORE);
+      const tilesStore = transaction.objectStore(TILES_STORE);
+      const shapesStore = transaction.objectStore(SHAPES_STORE);
+      const modifiersStore = transaction.objectStore(MODIFIERS_STORE);
+
+      gameStore.delete('current');
+      scoreStore.delete('current');
+      tilesStore.delete('current');
+      shapesStore.delete('current');
+      modifiersStore.delete('current');
+
+      transaction.oncomplete = () => {
+        console.log('Game data cleared successfully (settings preserved)');
+        resolve();
+      };
+
+      transaction.onerror = () => {
+        console.error('Failed to clear game data:', transaction.error);
+        reject(new Error(`Failed to clear game data: ${transaction.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error clearing game data:', error);
+    throw error;
+  }
+}
+
+/**
+ * Clear ALL data including settings, then reload the page fresh from server
+ * This is the nuclear option for when the app gets into a bad state
+ */
+export async function clearAllDataAndReload(): Promise<void> {
+  try {
+    // Clear IndexedDB completely
+    const db = await initializeDatabase();
+
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction([
+        GAME_STATE_STORE,
+        SCORE_STORE,
+        TILES_STORE,
+        SHAPES_STORE,
         SETTINGS_STORE,
         MODIFIERS_STORE
       ], 'readwrite');
 
-      // Clear all stores
+      // Clear ALL stores including settings
       const gameStore = transaction.objectStore(GAME_STATE_STORE);
       const scoreStore = transaction.objectStore(SCORE_STORE);
       const tilesStore = transaction.objectStore(TILES_STORE);
@@ -712,18 +759,53 @@ export async function clearAllSavedData(): Promise<void> {
       modifiersStore.delete('current');
 
       transaction.oncomplete = () => {
-        console.log('All saved data cleared successfully');
+        console.log('All data (including settings) cleared successfully');
         resolve();
       };
 
       transaction.onerror = () => {
-        console.error('Failed to clear saved data:', transaction.error);
-        reject(new Error(`Failed to clear saved data: ${transaction.error}`));
+        console.error('Failed to clear all data:', transaction.error);
+        reject(new Error(`Failed to clear all data: ${transaction.error}`));
       };
     });
+
+    // Clear localStorage as fallback/legacy storage
+    try {
+      localStorage.clear();
+      console.log('localStorage cleared');
+    } catch (localStorageError) {
+      console.warn('Failed to clear localStorage:', localStorageError);
+    }
+
+    // Clear service worker caches if available
+    if ('caches' in globalThis) {
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        console.log('Service worker caches cleared');
+      } catch (cacheError) {
+        console.warn('Failed to clear caches:', cacheError);
+      }
+    }
+
+    // Unregister service workers if any
+    if ('serviceWorker' in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(registration => registration.unregister()));
+        console.log('Service workers unregistered');
+      } catch (swError) {
+        console.warn('Failed to unregister service workers:', swError);
+      }
+    }
+
+    // Force hard reload from server (bypass cache)
+    console.log('Reloading page from server...');
+    globalThis.location.reload();
   } catch (error) {
-    console.error('Error clearing saved data:', error);
-    throw error;
+    console.error('Error during full data clear:', error);
+    // Even if clearing fails, try to reload anyway
+    globalThis.location.reload();
   }
 }
 

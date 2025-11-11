@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import { clearAllSavedData } from '../../utils/persistenceUtils';
+import { clearAllSavedData, clearAllDataAndReload } from '../../utils/persistenceUtils';
 import './MenuDropdown.css';
 
 const MenuDropdown: React.FC = () => {
@@ -29,17 +29,34 @@ const MenuDropdown: React.FC = () => {
     setIsDebugOpen(!isDebugOpen);
   };
 
-  // New game function - same as GameControls
+  // New game function - clears game data but preserves settings
   const handleNewGame = async () => {
     try {
       await clearAllSavedData();
       dispatch({ type: 'RESET_GAME' });
-      // Refresh the page to fully reset state (music, etc.)
+      // Refresh the page to fully reset game state
       globalThis.location.reload();
     } catch (error) {
       console.error('Failed to reset game:', error);
       // Still reset the game state even if clearing storage fails
       dispatch({ type: 'RESET_GAME' });
+    }
+  };
+
+  // Clear all data including settings - nuclear option
+  const handleClearAllData = () => {
+    const confirmed = globalThis.confirm(
+      '⚠️ WARNING: This will delete ALL data including your settings, clear the cache, and reload the app from the server.\n\n' +
+      'This is only needed if the app is in a bad state.\n\n' +
+      'Are you sure you want to continue?'
+    );
+
+    if (confirmed) {
+      clearAllDataAndReload().catch((error: Error) => {
+        console.error('Failed to clear all data:', error);
+        alert('Failed to clear data completely. Reloading anyway...');
+        globalThis.location.reload();
+      });
     }
   };
 
@@ -173,6 +190,16 @@ const MenuDropdown: React.FC = () => {
               <span className="menu-label">Sound Effects</span>
             </div>
 
+            <div className="menu-item">
+              <button
+                className="menu-action-button"
+                onClick={handleNewGame}
+                title="Reset the game and clear all saved data (preserves settings)"
+              >
+                New Game
+              </button>
+            </div>
+
             <div className="menu-item debug-submenu">
               <button
                 className="debug-toggle"
@@ -189,19 +216,19 @@ const MenuDropdown: React.FC = () => {
                 <div className="menu-item submenu-item">
                   <button
                     className="debug-action-button"
-                    onClick={handleNewGame}
-                    title="Reset the game and clear all saved data"
-                  >
-                    New Game
-                  </button>
-                </div>
-                <div className="menu-item submenu-item">
-                  <button
-                    className="debug-action-button"
                     onClick={testNotification}
                     title="Inject points to test the gem shower system! Try 100, 1000, or 999999 points."
                   >
                     Inject Points
+                  </button>
+                </div>
+                <div className="menu-item submenu-item">
+                  <button
+                    className="debug-action-button danger"
+                    onClick={handleClearAllData}
+                    title="⚠️ Nuclear option: Clear ALL data including settings and reload fresh from server"
+                  >
+                    Clear All Data
                   </button>
                 </div>
               </div>

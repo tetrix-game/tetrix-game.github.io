@@ -311,14 +311,16 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     }
 
     // Valid placement - start animation
+    // Apply the same mobile touch offset to the mouse position so animation starts from where shape visually appears
+    const { MOBILE_TOUCH_OFFSET } = gridCalculations;
     dispatch({
       type: 'PLACE_SHAPE',
       value: {
         location,
-        mousePosition: { x: e.clientX, y: e.clientY }
+        mousePosition: { x: e.clientX, y: e.clientY - MOBILE_TOUCH_OFFSET }
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, calculateLocationFromMouse]);
+  }, [isDragging, shape, tiles, dispatch, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, calculateLocationFromMouse, gridCalculations]);
 
   const isSelected = selectedShapeIndex === shapeIndex;
 

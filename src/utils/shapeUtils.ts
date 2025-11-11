@@ -5,7 +5,7 @@ import type { Shape, Block, Location, ColorName } from './types';
  */
 
 /**
- * Get the bounding box of a shape (smallest rectangle that contains all filled blocks)
+ * Get the bounding box of a shape (smallest rectangle that contains all X blocks)
  */
 export function getShapeBounds(shape: Shape): {
   minRow: number;
@@ -42,7 +42,7 @@ export function getShapeBounds(shape: Shape): {
 }
 
 /**
- * Get the center point of a shape based on its filled blocks
+ * Get the center point of a shape based on its X blocks
  */
 export function getShapeCenter(shape: Shape): { row: number; col: number } {
   const bounds = getShapeBounds(shape);
@@ -65,7 +65,7 @@ export function getShapeCenter(shape: Shape): { row: number; col: number } {
 export function getShapeAnchorBlock(shape: Shape): { row: number; col: number } {
   const bounds = getShapeBounds(shape);
 
-  // For odd dimensions, use the mathematical center (which will be a filled block)
+  // For odd dimensions, use the mathematical center (which will be a X block)
   // For even dimensions, round down to prefer upper-left
   const anchorRow = bounds.minRow + Math.floor((bounds.height - 1) / 2);
   const anchorCol = bounds.minCol + Math.floor((bounds.width - 1) / 2);
@@ -77,7 +77,7 @@ export function getShapeAnchorBlock(shape: Shape): { row: number; col: number } 
 }
 
 /**
- * Get all filled block positions relative to the shape's anchor block
+ * Get all X block positions relative to the shape's anchor block
  */
 export function getFilledBlocksRelativeToCenter(shape: Shape): Array<{ row: number; col: number; block: Block }> {
   const anchor = getShapeAnchorBlock(shape);
@@ -220,7 +220,7 @@ export function mousePositionToGridLocation(
 }
 
 /**
- * Create an empty shape (4x4 grid)
+ * Create an _ shape (4x4 grid)
  */
 export function createEmptyShape(color: Block['color']): Shape {
   return new Array(4).fill(null).map(() =>
@@ -232,7 +232,7 @@ export function createEmptyShape(color: Block['color']): Shape {
 }
 
 /**
- * Get all filled blocks from a shape
+ * Get all X blocks from a shape
  */
 export function getFilledBlocks(shape: Shape): Array<{ row: number; col: number; block: Block }> {
   const filledBlocks: Array<{ row: number; col: number; block: Block }> = [];
@@ -293,245 +293,262 @@ export function makeRandomColor(colorCount: number = 7): ColorName {
 }
 
 /**
+ * Detect if there's a 4x4 super combo pattern on the grid.
+ * Pattern: 4 consecutive rows where each row has exactly 9 filled blocks (one missing),
+ * and the missing block position increases by 1 for each row (forming a diagonal).
+ * Same pattern must exist for columns.
+ * 
+ * Example pattern (X = filled, O = empty):
+ * Row 1: O X X X X X X X X X
+ * Row 2: X O X X X X X X X X
+ * Row 3: X X O X X X X X X X
+ * Row 4: X X X O X X X X X X
+ * 
+ * @param tiles - Array of tiles (10x10 grid, 1-indexed)
+ * @returns true if the pattern exists
+ */
+export function detectSuperComboPattern(
+  tiles: Array<{ location: Location; block: { isFilled: boolean } }>
+): boolean {
+  const grid = buildGrid(tiles);
+
+  // Check all possible 4x4 starting positions
+  for (let startRow = 1; startRow <= 7; startRow++) {
+    for (let startCol = 1; startCol <= 7; startCol++) {
+      if (checkDiagonalPattern(grid, startRow, startCol)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Build a 2D grid from tiles array
+ */
+function buildGrid(tiles: Array<{ location: Location; block: { isFilled: boolean } }>): boolean[][] {
+  const grid: boolean[][] = new Array(11).fill(null).map(() => new Array(11).fill(false));
+
+  for (const tile of tiles) {
+    if (tile.block.isFilled) {
+      grid[tile.location.row][tile.location.column] = true;
+    }
+  }
+
+  return grid;
+}
+
+/**
+ * Check if a diagonal pattern exists at the given starting position
+ */
+function checkDiagonalPattern(grid: boolean[][], startRow: number, startCol: number): boolean {
+  // Check row pattern
+  if (!checkRowPattern(grid, startRow, startCol)) {
+    return false;
+  }
+
+  // Check column pattern
+  return checkColumnPattern(grid, startRow, startCol);
+}
+
+/**
+ * Check if 4 consecutive rows have the diagonal empty pattern
+ */
+function checkRowPattern(grid: boolean[][], startRow: number, startCol: number): boolean {
+  for (let i = 0; i < 4; i++) {
+    const row = startRow + i;
+    const emptyCol = startCol + i;
+
+    if (!isRowValidWithEmptyAt(grid, row, emptyCol)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Check if 4 consecutive columns have the diagonal empty pattern
+ */
+function checkColumnPattern(grid: boolean[][], startRow: number, startCol: number): boolean {
+  for (let i = 0; i < 4; i++) {
+    const col = startCol + i;
+    const emptyRow = startRow + i;
+
+    if (!isColumnValidWithEmptyAt(grid, col, emptyRow)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Check if a row has exactly 9 filled blocks with empty at specified column
+ */
+function isRowValidWithEmptyAt(grid: boolean[][], row: number, emptyCol: number): boolean {
+  let filledCount = 0;
+  let hasEmptyAtPosition = false;
+
+  for (let col = 1; col <= 10; col++) {
+    if (grid[row][col]) {
+      filledCount++;
+    } else if (col === emptyCol) {
+      hasEmptyAtPosition = true;
+    }
+  }
+
+  return filledCount === 9 && hasEmptyAtPosition;
+}
+
+/**
+ * Check if a column has exactly 9 filled blocks with empty at specified row
+ */
+function isColumnValidWithEmptyAt(grid: boolean[][], col: number, emptyRow: number): boolean {
+  let filledCount = 0;
+  let hasEmptyAtPosition = false;
+
+  for (let row = 1; row <= 10; row++) {
+    if (grid[row][col]) {
+      filledCount++;
+    } else if (row === emptyRow) {
+      hasEmptyAtPosition = true;
+    }
+  }
+
+  return filledCount === 9 && hasEmptyAtPosition;
+}
+
+/**
+ * Generate the super combo shape - a 4x4 diagonal piece (easter egg)
+ */
+export function generateSuperShape(): Shape {
+  const color = makeRandomColor();
+  const _ = () => ({ color: makeRandomColor(), isFilled: false });
+  const X = () => ({ color, isFilled: true });
+
+  // Create diagonal pattern with random orientation
+  const baseTemplate = [
+    [X(), _(), _(), _()],
+    [_(), X(), _(), _()],
+    [_(), _(), X(), _()],
+    [_(), _(), _(), X()],
+  ];
+
+  // Randomly rotate 0 or 1 times (diagonal or anti-diagonal)
+  const rotations = Math.floor(Math.random() * 2);
+  let shape = cloneShape(baseTemplate);
+
+  for (let i = 0; i < rotations; i++) {
+    shape = rotateShape(shape);
+  }
+
+  return shape;
+}
+
+/**
  * Generate a random shape with balanced probability distribution
  * Each base shape type has equal likelihood of being selected, then orientation is randomly chosen
  * 
- * Shape types and their orientations:
- * - I-piece (4-block line): 2 orientations (horizontal/vertical)
- * - O-piece (square): 1 orientation 
- * - T-piece: 4 orientations
- * - S-piece: 2 orientations
- * - Z-piece: 2 orientations
- * - L-piece: 4 orientations
- * - J-piece: 4 orientations
+ * Shape types and their rotation counts:
+ * - I-piece (4-block line): 2 unique rotations
+ * - O-piece (square): 1 rotation (no change)
+ * - T-piece: 4 rotations
+ * - S-piece: 2 unique rotations
+ * - Z-piece: 2 unique rotations
+ * - L-piece: 4 rotations
+ * - J-piece: 4 rotations
+ * 
+ * Note: Super combo piece is not in regular rotation - only generated as easter egg
  */
 export function generateRandomShape(): Shape {
-  // Define shape generators by type - each creates all orientations for that shape type
-  const shapeTypes = {
-    // I-piece (4-block line) - 2 orientations (horizontal and vertical)
-    I: () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
+  const color = makeRandomColor();
+  const _ = () => ({ color: makeRandomColor(), isFilled: false }); // empty block
+  const X = () => ({ color, isFilled: true }); // filled block
 
-      const orientations = [
-        // Horizontal - 4 blocks in a row
-        [
-          [e, e, e, e],
-          [f, { ...f }, { ...f }, { ...f }],
-          [e, e, e, e],
-          [e, e, e, e],
-        ],
-        // Vertical - 4 blocks in a column
-        [
-          [e, f, e, e],
-          [e, { ...f }, e, e],
-          [e, { ...f }, e, e],
-          [e, { ...f }, e, e],
-        ]
-      ];
-
-      const randomOrientation = Math.floor(Math.random() * orientations.length);
-      return orientations[randomOrientation];
+  // Define base shape templates and their unique rotation counts
+  const shapeTemplates: Array<{ template: Shape; rotations: number }> = [
+    // I-piece (4-block line) - 2 unique rotations
+    {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), _(), _(), _()],
+        [X(), X(), X(), X()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 2
     },
-
-    // O-piece (2x2 square) - no rotations needed
-    O: () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-      return [
-        [e, e, e, e],
-        [e, f, { ...f }, e],
-        [e, { ...f }, { ...f }, e],
-        [e, e, e, e],
-      ];
+    // O-piece (2x2 square) - 1 rotation (all rotations are identical)
+    {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), X(), X(), _()],
+        [_(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 1
     },
-
-    // T-piece - 4 orientations
-    T: () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-
-      const orientations = [
-        // Pointing up
-        [
-          [e, e, e, e],
-          [e, f, e, e],
-          [f, { ...f }, { ...f }, e],
-          [e, e, e, e],
-        ],
-        // Pointing right
-        [
-          [e, e, e, e],
-          [e, f, e, e],
-          [e, { ...f }, { ...f }, e],
-          [e, { ...f }, e, e],
-        ],
-        // Pointing down
-        [
-          [e, e, e, e],
-          [f, { ...f }, { ...f }, e],
-          [e, { ...f }, e, e],
-          [e, e, e, e],
-        ],
-        // Pointing left
-        [
-          [e, e, e, e],
-          [e, f, e, e],
-          [{ ...f }, { ...f }, e, e],
-          [e, { ...f }, e, e],
-        ]
-      ];
-
-      const randomOrientation = Math.floor(Math.random() * orientations.length);
-      return orientations[randomOrientation];
+    // T-piece - 4 rotations
+    {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), X(), _(), _()],
+        [X(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 4
     },
-
-    // S-piece - 2 orientations
-    S: () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-
-      const orientations = [
-        // Horizontal
-        [
-          [e, e, e, e],
-          [e, f, { ...f }, e],
-          [f, { ...f }, e, e],
-          [e, e, e, e],
-        ],
-        // Vertical
-        [
-          [e, e, e, e],
-          [e, f, e, e],
-          [e, { ...f }, { ...f }, e],
-          [e, e, { ...f }, e],
-        ]
-      ];
-
-      const randomOrientation = Math.floor(Math.random() * orientations.length);
-      return orientations[randomOrientation];
+    // S-piece - 2 unique rotations
+    {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), X(), X(), _()],
+        [X(), X(), _(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 2
     },
-
-    // Z-piece - 2 orientations
-    Z: () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-
-      const orientations = [
-        // Horizontal
-        [
-          [e, e, e, e],
-          [f, { ...f }, e, e],
-          [e, { ...f }, { ...f }, e],
-          [e, e, e, e],
-        ],
-        // Vertical
-        [
-          [e, e, e, e],
-          [e, e, f, e],
-          [e, { ...f }, { ...f }, e],
-          [e, { ...f }, e, e],
-        ]
-      ];
-
-      const randomOrientation = Math.floor(Math.random() * orientations.length);
-      return orientations[randomOrientation];
+    // Z-piece - 2 unique rotations
+    {
+      template: [
+        [_(), _(), _(), _()],
+        [X(), X(), _(), _()],
+        [_(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 2
     },
-
-    // L-piece - 4 orientations
-    L: () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-
-      const orientations = [
-        // Standard up orientation (L-shaped, hook pointing right)
-        [
-          [e, e, e, e],
-          [f, { ...f }, e, e],
-          [e, { ...f }, e, e],
-          [e, { ...f }, e, e],
-        ],
-        // Rotated right (hook pointing down)
-        [
-          [e, e, e, e],
-          [f, { ...f }, { ...f }, e],
-          [f, e, e, e],
-          [e, e, e, e],
-        ],
-        // Rotated down (hook pointing left)
-        [
-          [e, e, e, e],
-          [e, { ...f }, e, e],
-          [e, { ...f }, e, e],
-          [e, { ...f }, f, e],
-        ],
-        // Rotated left (hook pointing up)
-        [
-          [e, e, e, e],
-          [e, e, f, e],
-          [f, { ...f }, { ...f }, e],
-          [e, e, e, e],
-        ]
-      ];
-
-      const randomOrientation = Math.floor(Math.random() * orientations.length);
-      return orientations[randomOrientation];
+    // J-piece - 4 rotations
+    {
+      template: [
+        [_(), _(), _(), _()],
+        [X(), _(), _(), _()],
+        [X(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 4
     },
-
-    // J-piece - 4 orientations
-    J: () => {
-      const color = makeRandomColor();
-      const e = { color: makeRandomColor(), isFilled: false };
-      const f = { color, isFilled: true };
-
-      const orientations = [
-        // Standard up orientation (L-shaped, hook pointing left)
-        [
-          [e, e, e, e],
-          [e, f, e, e],
-          [e, { ...f }, e, e],
-          [f, { ...f }, e, e],
-        ],
-        // Rotated right (hook pointing up)
-        [
-          [e, e, e, e],
-          [f, e, e, e],
-          [f, { ...f }, { ...f }, e],
-          [e, e, e, e],
-        ],
-        // Rotated down (hook pointing right)
-        [
-          [e, e, e, e],
-          [e, { ...f }, f, e],
-          [e, { ...f }, e, e],
-          [e, { ...f }, e, e],
-        ],
-        // Rotated left (hook pointing down)
-        [
-          [e, e, e, e],
-          [f, { ...f }, { ...f }, e],
-          [e, e, f, e],
-          [e, e, e, e],
-        ]
-      ];
-
-      const randomOrientation = Math.floor(Math.random() * orientations.length);
-      return orientations[randomOrientation];
+    // L-piece - 4 rotations
+    {
+      template: [
+        [_(), _(), _(), _()],
+        [X(), X(), X(), _()],
+        [X(), _(), _(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 4
     }
-  };
+  ];
 
-  // Get all shape type names
-  const shapeTypeNames = Object.keys(shapeTypes);
+  // Select a random shape template
+  const { template, rotations } = shapeTemplates[Math.floor(Math.random() * shapeTemplates.length)];
 
-  // Select a random shape type with equal probability
-  const randomShapeType = shapeTypeNames[Math.floor(Math.random() * shapeTypeNames.length)];
+  // Apply a random number of rotations (0 to rotations-1)
+  const numRotations = Math.floor(Math.random() * rotations);
+  let shape = cloneShape(template);
 
-  // Generate and return the shape with a random orientation
-  return shapeTypes[randomShapeType as keyof typeof shapeTypes]();
+  for (let i = 0; i < numRotations; i++) {
+    shape = rotateShape(shape);
+  }
+
+  return shape;
 }

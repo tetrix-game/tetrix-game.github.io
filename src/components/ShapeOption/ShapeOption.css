@@ -4,7 +4,6 @@
   grid-template-columns: repeat(4, var(--shape-cell-size));
   grid-template-rows: repeat(4, var(--shape-cell-size));
   gap: var(--shape-cell-gap);
-  background-color: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   touch-action: none;
   transform-origin: center;
@@ -15,17 +14,17 @@
   pointer-events: auto;
 }
 
+/* Apply centering offset to the grid contents */
+.shape-container>* {
+  transform: translate(var(--centering-offset-x, 0px), var(--centering-offset-y, 0px));
+}
+
 .shape-container.selected {
   border-color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
 }
 
-.shape-container-hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
 .shape-cell {
-  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 3px;
   position: relative;
   opacity: 1;

@@ -290,6 +290,10 @@ type DeactivateDoubleTurnModeAction = {
   type: 'DEACTIVATE_DOUBLE_TURN_MODE';
 }
 
+type GenerateSuperComboPatternAction = {
+  type: 'GENERATE_SUPER_COMBO_PATTERN';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -320,7 +324,8 @@ export type TetrixAction =
   | ActivateTurningModeAction
   | DeactivateTurningModeAction
   | ActivateDoubleTurnModeAction
-  | DeactivateDoubleTurnModeAction;
+  | DeactivateDoubleTurnModeAction
+  | GenerateSuperComboPatternAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

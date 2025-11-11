@@ -1,6 +1,6 @@
 import type { TetrixAction, Tile } from '../../utils/types';
 import { TetrixReducerState } from '../../utils/types';
-import { getShapeGridPositions, generateRandomShape, rotateShape, cloneShape } from '../../utils/shapeUtils';
+import { getShapeGridPositions, generateRandomShape, rotateShape, cloneShape, detectSuperComboPattern, generateSuperShape } from '../../utils/shapeUtils';
 import { clearFullLines } from '../../utils/lineUtils';
 import { calculateScore } from '../../utils/scoringUtils';
 import { safeBatchSave, saveModifiers } from '../../utils/persistenceUtils';
@@ -197,10 +197,15 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Start the removal animation but keep the shape in the array until animation completes
       const removedIndex = state.selectedShapeIndex;
 
+      // Check if super combo pattern exists after this placement
+      const hasSuperComboPattern = detectSuperComboPattern(newTiles);
+
       // Add a new shape immediately to create the 4th shape during removal animation
       const updatedNextShapes = [...state.nextShapes];
       if (state.queueSize === -1 || state.shapesUsed < state.queueSize) {
-        updatedNextShapes.push(generateRandomShape());
+        // Generate super shape if pattern detected, otherwise generate random shape
+        const newShape = hasSuperComboPattern ? generateSuperShape() : generateRandomShape();
+        updatedNextShapes.push(newShape);
       }
 
       // Extend rotation menu states for the new shape
@@ -598,6 +603,52 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         isDoubleTurnModeActive: false,
+      };
+    }
+
+    case "GENERATE_SUPER_COMBO_PATTERN": {
+      // Generate a 4x4 super combo pattern for testing
+      // Pattern: rows 4-7 are completely filled except for diagonal empty spaces
+      // AND columns 4-7 are completely filled except for diagonal empty spaces
+      const newTiles = state.tiles.map(tile => {
+        const { row, column } = tile.location;
+
+        // Check if this tile is in pattern rows (4-7) OR pattern columns (4-7)
+        const isInPatternRows = row >= 4 && row <= 7;
+        const isInPatternCols = column >= 4 && column <= 7;
+
+        // Check if this tile is on the diagonal of the 4x4 area
+        const isOnDiagonal = isInPatternRows && isInPatternCols && (row - 4) === (column - 4);
+
+        // Fill if in pattern rows OR pattern columns, but NOT on diagonal
+        if ((isInPatternRows || isInPatternCols) && !isOnDiagonal) {
+          return {
+            ...tile,
+            block: { color: 'blue' as const, isFilled: true }
+          };
+        }
+
+        // Empty if on diagonal
+        if (isOnDiagonal) {
+          return {
+            ...tile,
+            block: { ...tile.block, isFilled: false }
+          };
+        }
+
+        // Keep all other tiles as-is
+        return tile;
+      });
+
+      // Save the new tile state
+      safeBatchSave(undefined, newTiles)
+        .catch((error: Error) => {
+          console.error('Failed to save tiles after generating super combo pattern:', error);
+        });
+
+      return {
+        ...state,
+        tiles: newTiles,
       };
     }
   }

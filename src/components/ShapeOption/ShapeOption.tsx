@@ -3,7 +3,7 @@ import type { Shape } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { isValidPlacement } from '../../utils/shapeUtils';
+import { isValidPlacement, getShapeBounds } from '../../utils/shapeUtils';
 import { useGameSizing } from '../../hooks/useGameSizing';
 
 type ShapeOptionProps = {
@@ -68,6 +68,27 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   // Calculate padding for normal (non-hovered) state
   const shapeOptionNormalSize = shapeOptionFullSize / 1.05;
   const normalPadding = (shapeOptionFullSize - shapeOptionNormalSize) / 2;
+
+  // Calculate centering offset for shapes with odd dimensions
+  const shapeBounds = useMemo(() => getShapeBounds(shape), [shape]);
+  const centeringOffset = useMemo(() => {
+    // Calculate how much to shift the shape to center it in the 4x4 grid
+    // Each cell + gap is (shapeOptionCellSize + cellGap)
+    const cellWithGap = shapeOptionCellSize + cellGap;
+
+    // The shape's visual center in grid coordinates (0-based, fractional)
+    const shapeVisualCenterCol = shapeBounds.minCol + (shapeBounds.width - 1) / 2;
+    const shapeVisualCenterRow = shapeBounds.minRow + (shapeBounds.height - 1) / 2;
+
+    // The 4x4 grid's center (1.5, 1.5 in 0-based coordinates)
+    const gridCenter = 1.5;
+
+    // Calculate offset needed to center the shape
+    const offsetX = (gridCenter - shapeVisualCenterCol) * cellWithGap;
+    const offsetY = (gridCenter - shapeVisualCenterRow) * cellWithGap;
+
+    return { x: offsetX, y: offsetY };
+  }, [shapeBounds, shapeOptionCellSize, cellGap]);
 
   // Determine if landscape for animation direction
   const isLandscape = window.innerWidth >= window.innerHeight;
@@ -316,6 +337,8 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         '--shape-cell-size': `${shapeOptionCellSize}px`,
         '--shape-cell-gap': `${cellGap}px`,
         '--shape-padding': `${normalPadding}px`,
+        '--centering-offset-x': `${centeringOffset.x}px`,
+        '--centering-offset-y': `${centeringOffset.y}px`,
         '--animation-transition': animationTransition,
         '--animation-transform': animationTransform,
         ...animationStyles,

@@ -2,8 +2,9 @@ import './ShapeSelector.css';
 import ShapeOption from '../ShapeOption'
 import ShapeQueueIndicator from '../ShapeQueueIndicator'
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 // Use WeakMap to assign stable IDs to shapes
 const shapeIds = new WeakMap<object, string>();
@@ -19,18 +20,6 @@ const getShapeId = (shape: object): string => {
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const { nextShapes } = useTetrixStateContext();
-
-  // Track screen orientation for queue indicator direction
-  const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsLandscape(window.innerWidth > window.innerHeight);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Create initial shapes - start with 3 shapes (can be changed via debug menu)
   const initialShapes = useMemo(() => {
@@ -52,9 +41,19 @@ const ShapeSelector = (): JSX.Element => {
   // Limit to maximum of 4 shapes to prevent wrapping
   const displayedShapes = nextShapes.slice(0, 4);
 
+  const { gameControlsLength } = useGameSizing();
+  const isLandscape = window.innerWidth >= window.innerHeight;
+
   return (
     <div className="shape-selector">
-      <div className="shapes-container">
+      <div className="shapes-container" style={{
+        display: 'flex',
+        flexDirection: isLandscape ? 'column' : 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: isLandscape ? `${gameControlsLength}px` : '100%',
+        height: isLandscape ? '100%' : `${gameControlsLength}px`,
+      }}>
         {displayedShapes.map((shape, index) => {
           return (
             <ShapeOption

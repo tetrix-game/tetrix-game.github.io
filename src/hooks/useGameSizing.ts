@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 
 export interface GameSizing {
+  gridSize: number;
   gridCellSize: number;
-  shapeOptionCellSize: number;
-  gridBorderWidth: number;
-  shapeOptionBorderWidth: number;
+  gridGap: number;
+  gameControlsLength: number;
+  gameControlsWidth: number;
   buttonSize: number;
 }
 
@@ -22,44 +23,69 @@ export const useGameSizing = (): GameSizing => {
 
   const sizing = useMemo(() => {
     const { width: vw, height: vh } = windowSize;
-    const aspectRatio = vw / vh;
+    const isLandscape = vw >= vh;
 
-    // Calculate main grid size using same logic as CSS media queries
+    // Available space in the .tetrix container
+    // .tetrix is 90vh tall, full width, with 20px gap between grid and controls
+    const containerHeight = vh * 0.9; // 90vh
+    const containerWidth = vw;
+    const gap = 20; // Gap between grid and controls
+
+    // In landscape: grid and controls side-by-side (controls take ~1/3 width)
+    // In portrait: grid and controls stacked (controls take ~1/3 height)
+
     let gridSize: number;
-    if (aspectRatio >= 1) {
-      // min-aspect-ratio: 1/1 - use 90vh
-      gridSize = vh * 0.9 - 1;
+    let gameControlsLength: number;
+    let gameControlsWidth: number;
+
+    if (isLandscape) {
+      // Landscape: controls on the right
+      // Available width = containerWidth - gap
+      // Grid should be square and fit within containerHeight
+      // Controls get remaining width
+
+      // Target: grid takes ~2/3 of available width
+      const availableWidth = containerWidth - gap;
+      const targetGridWidth = availableWidth * 0.65; // ~2/3
+
+      // Grid must be square and fit in containerHeight
+      gridSize = Math.min(targetGridWidth, containerHeight * 0.95); // Leave 5% padding
+
+      // Controls take remaining space
+      gameControlsLength = gridSize; // Match grid height
+      gameControlsWidth = Math.min(availableWidth - gridSize, gridSize * 0.6); // Cap at 60% of grid size
+
     } else {
-      // max-aspect-ratio: 1/1 - use 90vw  
-      gridSize = vw * 0.9;
+      // Portrait: controls below
+      // Available height = containerHeight - gap
+      // Grid should be square and fit within containerWidth
+      // Controls get remaining height
+
+      const availableHeight = containerHeight - gap;
+      const targetGridHeight = availableHeight * 0.65; // ~2/3
+
+      // Grid must be square and fit in containerWidth
+      gridSize = Math.min(targetGridHeight, containerWidth * 0.95); // Leave 5% padding
+
+      // Controls take remaining space
+      gameControlsLength = gridSize; // Match grid width
+      gameControlsWidth = Math.min(availableHeight - gridSize, gridSize * 0.6); // Cap at 60% of grid size
     }
 
     // Grid has 10 cells with 2px gaps (9 gaps total)
-    const gapSpace = 2 * 9; // 18px total gap space
-    const gridCellSize = (gridSize - gapSpace) / 10;
-    const gridBorderWidth = gridCellSize / 2;
+    const gridGap = 2;
+    const gridGapSpace = gridGap * 9;
+    const gridCellSize = (gridSize - gridGapSpace) / 10;
 
-    // ShapeOption sizing - keep reasonable size for shape options
-    const shapeOptionCellSize = 25;
-    const shapeOptionBorderWidth = shapeOptionCellSize / 2;
-
-    // Button sizing: responsive based on orientation
-    // If height < width: use 10vh for min size
-    // If width < height (mobile): use 10vw for min size
-    let buttonSize: number;
-    if (vh < vw) {
-      // Landscape orientation - use viewport height
-      buttonSize = vh * 0.1;
-    } else {
-      // Portrait orientation (mobile) - use viewport width
-      buttonSize = vw * 0.1;
-    }
+    // Button sizing based on controls width
+    const buttonSize = gameControlsWidth * 0.95;
 
     return {
+      gridSize,
       gridCellSize,
-      shapeOptionCellSize,
-      gridBorderWidth,
-      shapeOptionBorderWidth,
+      gridGap,
+      gameControlsLength,
+      gameControlsWidth,
       buttonSize,
     };
   }, [windowSize]);

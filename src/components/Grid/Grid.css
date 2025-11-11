@@ -1,6 +1,1 @@
-.grid {
-  /* Fixed size grid - always maintain same tile proportions */
-  width: 400px;
-  height: 400px;
-  gap: 2px;
-}
+/* Grid sizing is dynamic via inline styles from useGameSizing hook */

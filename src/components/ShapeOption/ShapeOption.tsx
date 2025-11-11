@@ -4,6 +4,7 @@ import BlockVisual from '../BlockVisual';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shapeUtils';
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 type ShapeOptionProps = {
   shape: Shape;
@@ -13,27 +14,26 @@ type ShapeOptionProps = {
 const getAnimationStyles = (
   isAnimatingRemoval: boolean,
   isVerticalAnimation: boolean,
-  buttonSize: number
+  shapeOptionFullSize: number
 ) => {
   if (isAnimatingRemoval) {
     return {
-      width: isVerticalAnimation ? `${buttonSize}px` : '0px',
-      height: isVerticalAnimation ? '0px' : `${buttonSize}px`,
-      minWidth: isVerticalAnimation ? `${buttonSize}px` : '0px',
-      minHeight: isVerticalAnimation ? '0px' : `${buttonSize}px`,
+      width: isVerticalAnimation ? `${shapeOptionFullSize}px` : '0px',
+      height: isVerticalAnimation ? '0px' : `${shapeOptionFullSize}px`,
+      minWidth: isVerticalAnimation ? `${shapeOptionFullSize}px` : '0px',
+      minHeight: isVerticalAnimation ? '0px' : `${shapeOptionFullSize}px`,
       opacity: 0,
-      // Use negative margins to collapse the gap during removal
-      marginRight: isVerticalAnimation ? '0px' : '-12px',
-      marginBottom: isVerticalAnimation ? '-12px' : '0px',
+      marginRight: '0px',
+      marginBottom: '0px',
     };
   }
 
-  // Normal state
+  // Normal state - sized to contain 1.05 scale
   return {
-    width: `${buttonSize}px`,
-    height: `${buttonSize}px`,
-    minWidth: `${buttonSize}px`,
-    minHeight: `${buttonSize}px`,
+    width: `${shapeOptionFullSize}px`,
+    height: `${shapeOptionFullSize}px`,
+    minWidth: `${shapeOptionFullSize}px`,
+    minHeight: `${shapeOptionFullSize}px`,
     opacity: 1,
     marginRight: '0px',
     marginBottom: '0px',
@@ -47,35 +47,35 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isAnimatingRemoval, setIsAnimatingRemoval] = useState(false);
 
-  // Track screen orientation for animation direction
-  const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
+  // Get dynamic sizing from hook
+  const { gameControlsWidth, gridSize } = useGameSizing();
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsLandscape(window.innerWidth > window.innerHeight);
-    };
+  // ShapeOption sizing: full width is 1/1.05 of gameControlsWidth (to account for 1.05 hover scale)
+  const shapeOptionFullSize = gameControlsWidth / 1.05;
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // ShapeOption has 4x4 grid with 1px gaps (3 gaps total)
+  const cellGap = 1;
+  const cellGapSpace = cellGap * 3;
+  const shapeOptionCellSize = (shapeOptionFullSize - cellGapSpace) / 4;
 
-  // Fixed sizing for consistent shape options
-  const buttonSize = 80; // Fixed size instead of responsive
-  const cellSize = 16; // Fixed cell size
-  const cellGap = 1; // Fixed gap
+  // Calculate padding for normal (non-hovered) state
+  const shapeOptionNormalSize = shapeOptionFullSize / 1.05;
+  const normalPadding = (shapeOptionFullSize - shapeOptionNormalSize) / 2;
 
-  // Animation properties based on orientation
+  // Determine if landscape for animation direction
+  const isLandscape = window.innerWidth >= window.innerHeight;
   const isVerticalAnimation = isLandscape;
-  const verticalTransition = 'height 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-  const horizontalTransition = 'width 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-  const normalTransition = 'all 0.2s ease';
 
   const animationTransition = useMemo(() => {
+    const verticalTransition = 'height 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+    const horizontalTransition = 'width 0.3s cubic-bezier(0.25, 1, 0.5, 1), margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+    const normalTransition = 'all 0.2s ease';
+
     if (isAnimatingRemoval) {
       return isVerticalAnimation ? verticalTransition : horizontalTransition;
     }
     return normalTransition;
-  }, [isAnimatingRemoval, isVerticalAnimation, normalTransition, verticalTransition, horizontalTransition]);
+  }, [isAnimatingRemoval, isVerticalAnimation]);
 
   const removeTransform = isVerticalAnimation ? 'scaleY(0)' : 'scaleX(0)';
   const normalTransform = isVerticalAnimation ? 'scaleY(1)' : 'scaleX(1)';
@@ -85,12 +85,12 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     animationTransform = removeTransform;
   }
 
-  const animationStyles = getAnimationStyles(isAnimatingRemoval, isVerticalAnimation, buttonSize);
+  const animationStyles = getAnimationStyles(isAnimatingRemoval, isVerticalAnimation, shapeOptionFullSize);
 
   const shapeContainerCss = {
     display: 'grid',
-    gridTemplateColumns: `repeat(4, ${cellSize}px)`,
-    gridTemplateRows: `repeat(4, ${cellSize}px)`,
+    gridTemplateColumns: `repeat(4, ${shapeOptionCellSize}px)`,
+    gridTemplateRows: `repeat(4, ${shapeOptionCellSize}px)`,
     gap: `${cellGap}px`,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: '8px',
@@ -104,6 +104,8 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     transformOrigin: 'center',
     overflow: 'hidden' as const,
     pointerEvents: isAnimatingRemoval ? 'none' as const : 'auto' as const,
+    // Start at normal size (1/1.05 of full), center the grid within the full container
+    padding: `${normalPadding}px`,
   };
 
   // Detect if this is a touch device (mobile) - same logic as DraggingShape
@@ -213,17 +215,16 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     const gridElement = document.querySelector('.grid') as HTMLElement;
     if (!gridElement) return;
 
-    // Use fixed grid calculations
-    const FIXED_GRID_SIZE = 400;
+    // Use dynamic grid calculations from hook
     const GRID_GAP = 2;
     const GRID_GAPS_TOTAL = 9 * GRID_GAP;
-    const FIXED_TILE_SIZE = (FIXED_GRID_SIZE - GRID_GAPS_TOTAL) / 10;
+    const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
 
     // Calculate grid bounds and tile size
     const gridRect = gridElement.getBoundingClientRect();
 
     // Apply mobile offset to match DraggingShape visual offset
-    const MOBILE_TOUCH_OFFSET = isTouchDevice ? FIXED_TILE_SIZE * 2.5 : 0;
+    const MOBILE_TOUCH_OFFSET = isTouchDevice ? TILE_SIZE * 2.5 : 0;
     const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
     // For touch devices, extend the grid bounds downward to allow placement
@@ -263,7 +264,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       value: {
         location,
         position: { x: e.clientX, y: e.clientY },
-        tileSize: FIXED_TILE_SIZE,
+        tileSize: TILE_SIZE,
         gridBounds: {
           top: gridRect.top,
           left: gridRect.left,
@@ -273,7 +274,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         isValid,
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, gridSize]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     if (!isDragging || isTurningModeActive || isDoubleTurnModeActive || isAnimatingRemoval) return;
@@ -288,17 +289,16 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       return;
     }
 
-    // Use fixed grid calculations
-    const FIXED_GRID_SIZE = 400;
+    // Use dynamic grid calculations from hook
     const GRID_GAP = 2;
     const GRID_GAPS_TOTAL = 9 * GRID_GAP;
-    const FIXED_TILE_SIZE = (FIXED_GRID_SIZE - GRID_GAPS_TOTAL) / 10;
+    const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
 
     // Calculate grid bounds and tile size
     const gridRect = gridElement.getBoundingClientRect();
 
     // Apply mobile offset to match DraggingShape visual offset
-    const MOBILE_TOUCH_OFFSET = isTouchDevice ? FIXED_TILE_SIZE * 2.5 : 0;
+    const MOBILE_TOUCH_OFFSET = isTouchDevice ? TILE_SIZE * 2.5 : 0;
     const adjustedY = e.clientY - MOBILE_TOUCH_OFFSET;
 
     // For touch devices, extend the grid bounds downward to allow placement
@@ -351,7 +351,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
         mousePosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval]);
+  }, [isDragging, shape, tiles, dispatch, isTouchDevice, isTurningModeActive, isDoubleTurnModeActive, isAnimatingRemoval, gridSize]);
 
   const isSelected = selectedShapeIndex === shapeIndex;
 
@@ -373,13 +373,15 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
       onPointerUp={handlePointerUp}
       onPointerEnter={(e) => {
         if (!isDragging) {
-          e.currentTarget.style.transform = 'scale(1.05)';
+          // Scale up the grid content by removing padding
+          e.currentTarget.style.padding = '0px';
           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
         }
       }}
       onPointerLeave={(e) => {
         if (!isDragging) {
-          e.currentTarget.style.transform = 'scale(1)';
+          // Scale down by restoring padding
+          e.currentTarget.style.padding = `${normalPadding}px`;
           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
         }
       }}
@@ -395,7 +397,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
               opacity: isSelected ? 0.1 : 1,
             }}
           >
-            <BlockVisual block={block} borderWidth={cellSize / 4} />
+            <BlockVisual block={block} borderWidth={shapeOptionCellSize / 4} />
           </div>
         ))
       ))}

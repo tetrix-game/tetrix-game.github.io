@@ -3,6 +3,7 @@ import BlockVisual from '../BlockVisual';
 import { getShapeAnchorBlock } from '../../utils/shapeUtils';
 import { playSound } from '../../utils/soundEffects';
 import { useEffect, useState } from 'react';
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 export default function DraggingShape() {
   const {
@@ -18,19 +19,19 @@ export default function DraggingShape() {
   const dispatch = useTetrixDispatchContext();
   const [animationProgress, setAnimationProgress] = useState(0);
 
-  // Fixed grid dimensions - 400px grid with 2px gaps
-  // Grid has 10 cells with 9 gaps (2px each) = 18px total gap space
-  // Cell size = (400 - 18) / 10 = 38.2px
-  const FIXED_GRID_SIZE = 400;
-  const GRID_GAP = 2;
-  const GRID_GAPS_TOTAL = 9 * GRID_GAP; // 18px
-  const FIXED_TILE_SIZE = (FIXED_GRID_SIZE - GRID_GAPS_TOTAL) / 10; // 38.2px
-  const FIXED_BORDER_WIDTH = FIXED_TILE_SIZE / 2; // 19.1px
+  // Get dynamic sizing from hook
+  const { gridSize, gridGap } = useGameSizing();
+
+  // Calculate dynamic grid dimensions
+  const GRID_GAP = gridGap;
+  const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+  const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
+  const BORDER_WIDTH = TILE_SIZE / 2;
 
   // Detect if this is a touch device (mobile)
   const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
   // Offset shape above finger on mobile (in pixels) - roughly 2-3 shape heights
-  const MOBILE_TOUCH_OFFSET = isTouchDevice ? FIXED_TILE_SIZE * 2.5 : 0;
+  const MOBILE_TOUCH_OFFSET = isTouchDevice ? TILE_SIZE * 2.5 : 0;
 
   // Animate position during placement
   useEffect(() => {
@@ -84,7 +85,7 @@ export default function DraggingShape() {
 
   // Calculate the shape's anchor block
   const shapeAnchor = getShapeAnchorBlock(selectedShape);
-  const tileWithGap = FIXED_TILE_SIZE + GRID_GAP;
+  const tileWithGap = TILE_SIZE + GRID_GAP;
 
   let containerTop: number;
   let containerLeft: number;
@@ -102,8 +103,8 @@ export default function DraggingShape() {
       // Calculate target cell position
       const targetCellLeft = gridBounds.left + (mouseGridLocation.column - 1) * tileWithGap;
       const targetCellTop = gridBounds.top + (mouseGridLocation.row - 1) * tileWithGap;
-      const targetCellCenterX = targetCellLeft + FIXED_TILE_SIZE / 2;
-      const targetCellCenterY = targetCellTop + FIXED_TILE_SIZE / 2;
+      const targetCellCenterX = targetCellLeft + TILE_SIZE / 2;
+      const targetCellCenterY = targetCellTop + TILE_SIZE / 2;
 
       // Offset from animated position to target cell center
       const offsetX = currentX - targetCellCenterX;
@@ -121,8 +122,8 @@ export default function DraggingShape() {
     // Normal dragging: follow the mouse
     const hoveredCellLeft = gridBounds.left + (mouseGridLocation.column - 1) * tileWithGap;
     const hoveredCellTop = gridBounds.top + (mouseGridLocation.row - 1) * tileWithGap;
-    const hoveredCellCenterX = hoveredCellLeft + FIXED_TILE_SIZE / 2;
-    const hoveredCellCenterY = hoveredCellTop + FIXED_TILE_SIZE / 2;
+    const hoveredCellCenterX = hoveredCellLeft + TILE_SIZE / 2;
+    const hoveredCellCenterY = hoveredCellTop + TILE_SIZE / 2;
 
     const mouseOffsetX = mousePosition.x - hoveredCellCenterX;
     const mouseOffsetY = mousePosition.y - hoveredCellCenterY;
@@ -148,8 +149,8 @@ export default function DraggingShape() {
     pointerEvents: 'none',
     zIndex: 1000,
     display: 'grid',
-    gridTemplateColumns: `repeat(4, ${FIXED_TILE_SIZE}px)`,
-    gridTemplateRows: `repeat(4, ${FIXED_TILE_SIZE}px)`,
+    gridTemplateColumns: `repeat(4, ${TILE_SIZE}px)`,
+    gridTemplateRows: `repeat(4, ${TILE_SIZE}px)`,
     gap: `${GRID_GAP}px`,
     transform: `scale(${scale})`,
     transition: 'none',
@@ -162,13 +163,13 @@ export default function DraggingShape() {
           <div
             key={`${rowIndex}-${colIndex}`}
             style={{
-              width: `${FIXED_TILE_SIZE}px`,
-              height: `${FIXED_TILE_SIZE}px`,
+              width: `${TILE_SIZE}px`,
+              height: `${TILE_SIZE}px`,
               position: 'relative',
             }}
           >
             {block.isFilled && (
-              <BlockVisual block={block} borderWidth={FIXED_BORDER_WIDTH} />
+              <BlockVisual block={block} borderWidth={BORDER_WIDTH} />
             )}
           </div>
         ))

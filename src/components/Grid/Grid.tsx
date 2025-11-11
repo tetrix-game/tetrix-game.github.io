@@ -3,21 +3,25 @@ import TileVisual from '../TileVisual';
 import type { Tile } from '../../utils/types';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useRef, useEffect } from 'react';
-
-const gridCss = {
-  display: "grid",
-  gridTemplateColumns: "repeat(10, 1fr)",
-  gridTemplateRows: "repeat(10, 1fr)",
-  backgroundColor: "rgb(10, 10, 10)",
-  gap: "2px,",
-  position: "relative" as const,
-  touchAction: "none" as const,
-}
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 export default function Grid() {
   const { tiles, selectedShape, hoveredBlockPositions } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
+  const { gridSize, gridGap } = useGameSizing();
+
+  const gridCss = {
+    display: "grid",
+    gridTemplateColumns: "repeat(10, 1fr)",
+    gridTemplateRows: "repeat(10, 1fr)",
+    backgroundColor: "rgb(10, 10, 10)",
+    gap: `${gridGap}px`,
+    position: "relative" as const,
+    touchAction: "none" as const,
+    width: `${gridSize}px`,
+    height: `${gridSize}px`,
+  };
 
   // Handle escape key to cancel selection
   useEffect(() => {

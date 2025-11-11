@@ -51,10 +51,13 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
   const { gameControlsLength, gridSize } = useGameSizing();
 
   // ShapeOption sizing calculation matches ShapeSelector
-  // Fit 4 shapes with gaps, accounting for 1.05 hover scale
+  // Fit 3 shapes with gaps, accounting for 1.05 hover scale
   const shapeGap = 12;
-  const totalGaps = shapeGap * 3; // 3 gaps between 4 shapes
-  const shapeOptionBaseSize = (gameControlsLength - totalGaps) / (4 * 1.05);
+  const containerPadding = 12;
+  const totalGaps = shapeGap * 2; // 2 gaps between 3 shapes
+  const totalPadding = containerPadding * 2; // padding on both sides
+  const availableSpace = gameControlsLength - totalGaps - totalPadding;
+  const shapeOptionBaseSize = availableSpace / (3 * 1.05);
   const shapeOptionFullSize = shapeOptionBaseSize * 1.05;
 
   // ShapeOption has 4x4 grid with 1px gaps (3 gaps total)
@@ -270,7 +273,7 @@ const ShapeOption = ({ shape, shapeIndex }: ShapeOptionProps) => {
     setIsDragging(false);
 
     const result = calculateLocationFromMouse(e.clientX, e.clientY);
-    
+
     if (!result) {
       // Pointer up outside grid - return shape
       dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });

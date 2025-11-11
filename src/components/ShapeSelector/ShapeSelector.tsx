@@ -1,6 +1,5 @@
 import './ShapeSelector.css';
 import ShapeOption from '../ShapeOption'
-import ShapeQueueIndicator from '../ShapeQueueIndicator'
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
@@ -38,24 +37,25 @@ const ShapeSelector = (): JSX.Element => {
     }
   }, [dispatch, initialShapes, nextShapes.length]);
 
-  // Limit to maximum of 4 shapes to prevent wrapping
-  const displayedShapes = nextShapes.slice(0, 4);
+  // Limit to maximum of 3 shapes to prevent wrapping
+  const displayedShapes = nextShapes.slice(0, 3);
 
   const { gameControlsLength } = useGameSizing();
   const isLandscape = window.innerWidth >= window.innerHeight;
 
   // Calculate size for each shape button
-  // Need to fit 4 buttons with gaps between them, and allow for 1.05 hover scale
+  // Need to fit 3 buttons with gaps between them, and allow for 1.05 hover scale
   const shapeGap = 12;
-  const totalGaps = shapeGap * 3; // 3 gaps between 4 shapes
-  const shapeOptionBaseSize = (gameControlsLength - totalGaps) / (4 * 1.05);
+  const containerPadding = 12; // padding on each side
+  const totalGaps = shapeGap * 2; // 2 gaps between 3 shapes
+  const totalPadding = containerPadding * 2; // padding on both sides
+  const availableSpace = gameControlsLength - totalGaps - totalPadding;
+  const shapeOptionBaseSize = availableSpace / (3 * 1.05);
   const shapeOptionFullSize = shapeOptionBaseSize * 1.05; // Size with hover scale
 
-  // Calculate actual container size based on number of displayed shapes
-  const numShapes = displayedShapes.length;
-  const containerPadding = 12; // padding on each side
-  const actualGaps = numShapes > 1 ? (numShapes - 1) * shapeGap : 0;
-  const shapeSelectorSize = (numShapes * shapeOptionFullSize) + actualGaps + (containerPadding * 2);
+  // Fixed container size based on 4 shapes (always, regardless of actual count)
+  // This prevents the container from growing/shrinking and allows clipping
+  const shapeSelectorSize = gameControlsLength;
 
   return (
     <div
@@ -85,9 +85,6 @@ const ShapeSelector = (): JSX.Element => {
           );
         })}
       </div>
-      <ShapeQueueIndicator
-        direction={isLandscape ? 'horizontal' : 'vertical'}
-      />
     </div>
   )
 }

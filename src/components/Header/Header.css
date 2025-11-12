@@ -11,8 +11,6 @@
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  padding: 0 1.5rem;
-  gap: 1rem;
 }
 
 /* Animated gradient background */
@@ -48,56 +46,13 @@
   z-index: 1;
 }
 
-.header-title-button {
-  background: none;
-  border: none;
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  letter-spacing: 2px;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  overflow: hidden;
-  /* Ensure it doesn't interfere with clicks on other elements */
-  pointer-events: auto;
-}
-
-.header-title-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
+/* Center wrapper for score display */
+.header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.header-title-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.header-title-button:hover::before {
-  left: 100%;
-}
-
-.header-title-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.header-title-button:focus {
-  outline: 2px solid #4a9eff;
-  outline-offset: 2px;
 }
 
 /* Responsive design improvements */
@@ -105,12 +60,6 @@
   .header {
     height: 8vh;
     min-height: 60px;
-    padding: 0 1rem;
-    gap: 0.5rem;
-  }
-
-  .header-title-button {
-    display: none;
   }
 }
 
@@ -120,11 +69,5 @@
     min-height: 50px;
     animation: none;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    padding: 0 0.5rem;
-    gap: 0.25rem;
-  }
-
-  .header-title-button {
-    display: none;
   }
 }

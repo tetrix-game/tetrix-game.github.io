@@ -3,19 +3,15 @@ import MenuDropdown from '../MenuDropdown';
 import LocationButton from '../LocationButton';
 import BackgroundMusic from '../BackgroundMusic';
 import ScoreDisplay from '../ScoreDisplay';
-import ModifiersOverlay from '../ModifiersOverlay';
 import { MusicControlContext } from './MusicControlContext';
 import { SoundEffectsControlContext } from './SoundEffectsControlContext';
-import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { loadMusicSettings, saveMusicSettings, loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../utils/persistenceUtils';
 import './Header.css';
 
 const Header = () => {
-  const { currentLevel } = useTetrixStateContext();
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSoundEffectsMuted, setIsSoundEffectsMuted] = useState(false);
-  const [isModifiersOpen, setIsModifiersOpen] = useState(false);
 
   // Load music settings from IndexedDB on mount
   useEffect(() => {
@@ -93,14 +89,6 @@ const Header = () => {
     });
   }, [isSoundEffectsMuted]);
 
-  const handleModifiersClick = useCallback(() => {
-    setIsModifiersOpen(true);
-  }, []);
-
-  const handleModifiersClose = useCallback(() => {
-    setIsModifiersOpen(false);
-  }, []);
-
   const musicContextValue = useMemo(() => ({ isMuted, toggleMute }), [isMuted, toggleMute]);
   const soundEffectsContextValue = useMemo(() => ({
     isMuted: isSoundEffectsMuted,
@@ -113,21 +101,11 @@ const Header = () => {
         <div className="header">
           <BackgroundMusic isMuted={isMuted || isLoading} />
           <MenuDropdown />
-          <ScoreDisplay />
+          <div className="header-center">
+            <ScoreDisplay />
+          </div>
           <LocationButton />
-          <button
-            className="header-title-button"
-            onClick={handleModifiersClick}
-            aria-label="Open game modifiers"
-            type="button"
-          >
-            TETRIX{currentLevel !== 0 && ` (${currentLevel})`}
-          </button>
         </div>
-        <ModifiersOverlay
-          isOpen={isModifiersOpen}
-          onClose={handleModifiersClose}
-        />
       </SoundEffectsControlContext.Provider>
     </MusicControlContext.Provider>
   );

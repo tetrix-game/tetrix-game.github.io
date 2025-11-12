@@ -65,6 +65,7 @@
   text-overflow: ellipsis;
   flex: 1;
   text-align: right;
+  padding-right: 1rem;
 }
 
 /* Responsive design */

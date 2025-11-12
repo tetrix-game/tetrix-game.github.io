@@ -117,7 +117,7 @@ const PurchasesContainer = (): JSX.Element => {
         <div className="purchases-container-icon">
           ↻
         </div>
-        <div className="purchases-container-cost">1</div>
+        <div className="purchases-container-cost">-1</div>
       </button>
 
       <button
@@ -129,7 +129,7 @@ const PurchasesContainer = (): JSX.Element => {
         <div className="purchases-container-icon">
           ↻↻
         </div>
-        <div className="purchases-container-cost">2</div>
+        <div className="purchases-container-cost">-2</div>
       </button>
 
       <button
@@ -141,7 +141,7 @@ const PurchasesContainer = (): JSX.Element => {
         <div className="purchases-container-icon">
           ↺
         </div>
-        <div className="purchases-container-cost">1</div>
+        <div className="purchases-container-cost">-1</div>
       </button>
     </div>
   );

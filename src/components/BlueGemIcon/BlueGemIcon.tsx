@@ -5,11 +5,13 @@ interface BlueGemIconProps {
   className?: string;
 }
 
-const BlueGemIcon: React.FC<BlueGemIconProps> = ({ size = 24, className = '' }) => {
+const BlueGemIcon: React.FC<BlueGemIconProps> = ({ size, className = '' }) => {
+  // If size is provided, use it. Otherwise, let CSS control dimensions
+  const sizeProps = size ? { width: size, height: size } : {};
+
   return (
     <svg
-      width={size}
-      height={size}
+      {...sizeProps}
       viewBox="0 0 24 24"
       className={`blue-gem-icon ${className}`}
       xmlns="http://www.w3.org/2000/svg"

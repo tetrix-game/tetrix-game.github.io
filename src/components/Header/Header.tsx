@@ -112,23 +112,17 @@ const Header = () => {
       <SoundEffectsControlContext.Provider value={soundEffectsContextValue}>
         <div className="header">
           <BackgroundMusic isMuted={isMuted || isLoading} />
-          <div className="header-start">
-            <MenuDropdown />
-          </div>
-          <div className="header-middle">
-            <button
-              className="header-title-button"
-              onClick={handleModifiersClick}
-              aria-label="Open game modifiers"
-              type="button"
-            >
-              TETRIX{currentLevel !== 0 && ` (${currentLevel})`}
-            </button>
-          </div>
-          <div className="header-end">
-            <ScoreDisplay />
-            <LocationButton />
-          </div>
+          <MenuDropdown />
+          <ScoreDisplay />
+          <LocationButton />
+          <button
+            className="header-title-button"
+            onClick={handleModifiersClick}
+            aria-label="Open game modifiers"
+            type="button"
+          >
+            TETRIX{currentLevel !== 0 && ` (${currentLevel})`}
+          </button>
         </div>
         <ModifiersOverlay
           isOpen={isModifiersOpen}

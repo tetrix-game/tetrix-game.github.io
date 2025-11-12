@@ -17,6 +17,8 @@
   height: 100%;
   border-radius: 0;
   transition: background-color 0.2s ease;
+  /* Compensate for header padding to sit flush on the left */
+  margin-left: -1.5rem;
 }
 
 .hamburger-button:hover {
@@ -199,4 +201,19 @@
 
 .menu-dropdown .toggle-input:checked+.toggle-slider:before {
   transform: translateX(20px);
+}
+
+/* Responsive adjustments for hamburger button positioning */
+@media (max-width: 768px) {
+  .hamburger-button {
+    /* Compensate for smaller header padding on tablets */
+    margin-left: -1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hamburger-button {
+    /* Compensate for minimal header padding on mobile */
+    margin-left: -0.5rem;
+  }
 }

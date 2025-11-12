@@ -9,7 +9,7 @@ const ScoreDisplay: React.FC = () => {
 
   return (
     <div className="score-display">
-      <BlueGemIcon size={20} />
+      <BlueGemIcon />
       <span className="score-display-value">
         {formatScore(score)}
       </span>

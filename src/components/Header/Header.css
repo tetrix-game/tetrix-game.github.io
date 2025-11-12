@@ -11,6 +11,8 @@
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  padding: 0 1.5rem;
+  gap: 1rem;
 }
 
 /* Animated gradient background */
@@ -40,41 +42,10 @@
   pointer-events: none;
 }
 
-.header-start,
-.header-middle,
-.header-end {
-  height: 100%;
+/* Direct children positioning */
+.header>* {
   position: relative;
   z-index: 1;
-}
-
-.header-start {
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 1rem;
-  padding-left: 1.5rem;
-  min-width: 0;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0 15px 15px 0;
-  margin: 8px 0;
-  transition: all 0.3s ease;
-}
-
-.header-start:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(2px);
-}
-
-.header-middle {
-  flex: 4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 0;
-  text-align: center;
 }
 
 .header-title-button {
@@ -90,8 +61,12 @@
   padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: all 0.3s ease;
-  position: relative;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   overflow: hidden;
+  /* Ensure it doesn't interfere with clicks on other elements */
+  pointer-events: auto;
 }
 
 .header-title-button::before {
@@ -125,52 +100,17 @@
   outline-offset: 2px;
 }
 
-.header-end {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem;
-  padding-right: 1.5rem;
-  min-width: 0;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 15px 0 0 15px;
-  margin: 8px 0;
-  transition: all 0.3s ease;
-}
-
-.header-end:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(-2px);
-}
-
 /* Responsive design improvements */
 @media (max-width: 768px) {
   .header {
     height: 8vh;
     min-height: 60px;
-  }
-
-  .header-middle {
-    display: none;
-  }
-
-  .header-start,
-  .header-end {
-    flex: 1;
+    padding: 0 1rem;
     gap: 0.5rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin: 6px 0;
   }
 
-  .header-start {
-    border-radius: 0 12px 12px 0;
-  }
-
-  .header-end {
-    border-radius: 12px 0 0 12px;
+  .header-title-button {
+    display: none;
   }
 }
 
@@ -180,25 +120,11 @@
     min-height: 50px;
     animation: none;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  }
-
-  .header-middle {
-    display: none;
-  }
-
-  .header-start,
-  .header-end {
+    padding: 0 0.5rem;
     gap: 0.25rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    margin: 4px 0;
   }
 
-  .header-start {
-    border-radius: 0 8px 8px 0;
-  }
-
-  .header-end {
-    border-radius: 8px 0 0 8px;
+  .header-title-button {
+    display: none;
   }
 }

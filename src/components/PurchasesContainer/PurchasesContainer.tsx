@@ -106,7 +106,7 @@ const PurchasesContainer = (): JSX.Element => {
   const buttonSize = availableSpace / 3;
 
   return (
-    <div 
+    <div
       className="purchases-container"
       style={{
         '--button-size': `${buttonSize}px`,

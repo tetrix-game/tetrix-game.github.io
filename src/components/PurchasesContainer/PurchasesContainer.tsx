@@ -1,9 +1,11 @@
 import './PurchasesContainer.css';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useGameSizing } from '../../hooks/useGameSizing';
 
 const PurchasesContainer = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const state = useTetrixStateContext();
+  const { gameControlsWidth } = useGameSizing();
 
   const handleBuyTurnClockwise = () => {
     if (state.isTurningModeActive && state.turningDirection === 'cw') {
@@ -93,8 +95,23 @@ const PurchasesContainer = (): JSX.Element => {
   const isCounterClockwiseActive = state.isTurningModeActive && state.turningDirection === 'ccw';
   const isDoubleTurnActive = state.isDoubleTurnModeActive;
 
+  // Calculate button sizing based on available space
+  // In landscape: 3 buttons stacked vertically with gaps
+  // In portrait: 3 buttons side-by-side with gaps
+  const containerPadding = 12;
+  const buttonGap = 12;
+  const totalGaps = buttonGap * 2; // 2 gaps between 3 buttons
+  const totalPadding = containerPadding * 2;
+  const availableSpace = gameControlsWidth - totalGaps - totalPadding;
+  const buttonSize = availableSpace / 3;
+
   return (
-    <div className="purchases-container">
+    <div 
+      className="purchases-container"
+      style={{
+        '--button-size': `${buttonSize}px`,
+      } as React.CSSProperties}
+    >
       <button
         className={`purchases-container-button purchases-container-button-clockwise ${isClockwiseActive ? 'active' : ''}`}
         onClick={handleBuyTurnClockwise}

@@ -17,18 +17,13 @@
 }
 
 .purchases-container-button {
-  /* Flexible sizing - fill available space */
-  flex: 1;
-  aspect-ratio: 1;
-  /* Keep buttons square */
-  min-width: 60px;
-  /* Set reasonable minimum */
-  min-height: 60px;
-  /* Set reasonable minimum */
-  max-width: none;
-  /* Remove max cap to allow growth */
-  max-height: none;
-  /* Remove max cap to allow growth */
+  /* Use dynamically calculated button size */
+  width: var(--button-size);
+  height: var(--button-size);
+  min-width: var(--button-size);
+  min-height: var(--button-size);
+  max-width: var(--button-size);
+  max-height: var(--button-size);
   background: rgba(0, 0, 0, 0.8);
   border: 2px solid #4a90e2;
   border-radius: 8px;
@@ -86,8 +81,8 @@
 }
 
 .purchases-container-icon {
-  font-size: clamp(24px, 5vw, 60px);
-  /* Larger responsive sizing */
+  /* Scale icon size based on button size */
+  font-size: calc(var(--button-size) * 0.5);
   font-weight: bold;
   line-height: 1;
   flex: 2;
@@ -97,8 +92,8 @@
 }
 
 .purchases-container-cost {
-  font-size: clamp(12px, 2vw, 24px);
-  /* Larger responsive sizing */
+  /* Scale cost text based on button size */
+  font-size: calc(var(--button-size) * 0.25);
   opacity: 0.8;
   flex: 1;
   display: flex;

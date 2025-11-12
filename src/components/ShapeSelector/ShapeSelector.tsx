@@ -47,8 +47,9 @@ const ShapeSelector = (): JSX.Element => {
   // Calculate size for each shape button
   // Need to fit 3 buttons with gaps between them, and allow for 1.05 hover scale
   const shapeGap = 12;
+  const wrapperGap = 32; // Extra spacing between shape wrappers for breathing room
   const containerPadding = 12; // padding on each side
-  const totalGaps = shapeGap * 2; // 2 gaps between 3 shapes
+  const totalGaps = (shapeGap + wrapperGap) * 2; // 2 gaps between 3 shapes (includes wrapper gap)
   const totalPadding = containerPadding * 2; // padding on both sides
   const availableSpace = gameControlsLength - totalGaps - totalPadding;
   const shapeOptionBaseSize = availableSpace / (3 * 1.05);
@@ -68,6 +69,9 @@ const ShapeSelector = (): JSX.Element => {
     >
       <div
         className={`shape-selector-shapes-container ${isLandscape ? 'shape-selector-shapes-container-landscape' : 'shape-selector-shapes-container-portrait'}`}
+        style={{
+          '--wrapper-gap': `${wrapperGap}px`,
+        } as React.CSSProperties}
       >
         {displayedShapes.map((shape, index) => {
           const isRemoving = removingShapeIndex === index && shapeRemovalAnimationState === 'removing';

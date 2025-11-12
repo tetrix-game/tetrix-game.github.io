@@ -29,6 +29,8 @@
   /* Never wrap - always stay in one line/column */
   /* Clip overflow to prevent size growth during animations */
   overflow: hidden;
+  /* Add spacing between shape wrappers for breathing room */
+  gap: var(--wrapper-gap, 16px);
 }
 
 .shape-selector-shapes-container-landscape {
@@ -88,8 +90,10 @@
     gap: 12px;
     align-items: flex-start;
     height: fit-content;
-    max-height: 100%; /* Constrain to parent */
-    overflow: hidden; /* Never show scrollbars */
+    max-height: 100%;
+    /* Constrain to parent */
+    overflow: hidden;
+    /* Never show scrollbars */
     align-content: flex-start;
     justify-content: flex-start;
   }

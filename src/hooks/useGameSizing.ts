@@ -40,23 +40,23 @@ export const useGameSizing = (): GameSizing => {
       // Landscape: controls on the right, side-by-side layout
       // Total width constraint: gridSize + gap + gameControlsWidth <= containerWidth - padding
       // Total height constraint: max(gridSize, gameControlsLength) <= containerHeight - padding
-      
+
       const availableWidth = containerWidth - gap - padding;
       const availableHeight = containerHeight - padding;
 
       // Aim for controls to be ~35-40% of available width
       const targetControlsRatio = 0.35;
       const targetGridWidth = availableWidth * (1 - targetControlsRatio);
-      
+
       // Grid must be square and fit in available height
       gridSize = Math.min(targetGridWidth, availableHeight);
-      
+
       // Ensure grid + controls + gap actually fit
       gameControlsWidth = Math.min(
         availableWidth - gridSize,
         gridSize * 0.6  // Cap at 60% of grid size
       );
-      
+
       // Verify total width fits, shrink grid if needed
       const totalWidth = gridSize + gap + gameControlsWidth;
       if (totalWidth > containerWidth - padding) {
@@ -64,30 +64,30 @@ export const useGameSizing = (): GameSizing => {
         gridSize *= scale;
         gameControlsWidth *= scale;
       }
-      
+
       gameControlsLength = gridSize; // Match grid height
 
     } else {
       // Portrait: controls below, stacked layout
       // Total height constraint: gridSize + gap + gameControlsWidth <= containerHeight - padding
       // Total width constraint: max(gridSize, gameControlsLength) <= containerWidth - padding
-      
+
       const availableHeight = containerHeight - gap - padding;
       const availableWidth = containerWidth - padding;
 
       // Aim for controls to be ~35-40% of available height
       const targetControlsRatio = 0.35;
       const targetGridHeight = availableHeight * (1 - targetControlsRatio);
-      
+
       // Grid must be square and fit in available width
       gridSize = Math.min(targetGridHeight, availableWidth);
-      
+
       // Ensure grid + controls + gap actually fit
       gameControlsWidth = Math.min(
         availableHeight - gridSize,
         gridSize * 0.6  // Cap at 60% of grid size
       );
-      
+
       // Verify total height fits, shrink grid if needed
       const totalHeight = gridSize + gap + gameControlsWidth;
       if (totalHeight > containerHeight - padding) {
@@ -95,7 +95,7 @@ export const useGameSizing = (): GameSizing => {
         gridSize *= scale;
         gameControlsWidth *= scale;
       }
-      
+
       gameControlsLength = gridSize; // Match grid width
     }
 

@@ -85,7 +85,7 @@ const GemShower: React.FC = () => {
       } else {
         // Losing points: gems fall down from gem icon with slight random horizontal velocity
         // Random horizontal velocity between -30 and 30 pixels per second
-        velocityX = (Math.random() - 0.5) * 60; // Range: -30 to 30
+        velocityX = (Math.random() * 3 - 1.5) * 60; // Range: -30 to 30
         velocityY = 0; // Start with no vertical velocity (gravity will pull them down)
       }
 

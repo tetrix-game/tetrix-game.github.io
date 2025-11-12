@@ -32,7 +32,6 @@ describe('Spend Coin Feature', () => {
     expect(newState.openRotationMenus[0]).toBe(true);
     expect(newState.openRotationMenus[1]).toBe(false);
     expect(newState.openRotationMenus[2]).toBe(false);
-    expect(newState.showerLocation).toEqual({ x: 100, y: 100 });
   });
 
   test('SPEND_COIN action fails when score is 0', () => {

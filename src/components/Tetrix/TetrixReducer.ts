@@ -43,7 +43,7 @@ export const initialState: TetrixReducerState = {
   selectedShapeIndex: null,
   mouseGridLocation: null,
   mousePosition: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, // Default to center instead of null
-  showerLocation: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, // Default coin shower location
+  gemIconPosition: { x: 100, y: 50 }, // Default position, will be updated by ScoreDisplay
   gridTileSize: null,
   gridBounds: null,
   isShapeDragging: false,
@@ -139,7 +139,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         animationTargetPosition: { x: targetCellCenterX, y: targetCellCenterY },
         mouseGridLocation: location,
         mousePosition: useMousePosition, // Update current mouse position with click position
-        showerLocation: useMousePosition, // Set dedicated shower location for coin emission
         hoveredBlockPositions: shapePositions,
         isShapeDragging: false,
       };
@@ -363,7 +362,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         ...state,
         score: newScore,
         mousePosition: clickPosition || state.mousePosition, // Update mouse position if provided
-        // showerLocation intentionally NOT updated - only update on shape placement
       };
     }
 
@@ -455,7 +453,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         score: newScore,
         openRotationMenus: newOpenRotationMenus,
         mousePosition: clickPosition || state.mousePosition,
-        showerLocation: clickPosition || state.showerLocation, // Update shower location for coin effect
       };
     }
 
@@ -649,6 +646,14 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       return {
         ...state,
         tiles: newTiles,
+      };
+    }
+
+    case "UPDATE_GEM_ICON_POSITION": {
+      console.log('UPDATE_GEM_ICON_POSITION: new position =', action.value);
+      return {
+        ...state,
+        gemIconPosition: action.value,
       };
     }
   }

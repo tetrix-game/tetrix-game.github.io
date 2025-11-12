@@ -34,7 +34,7 @@ This is a Tetris-inspired puzzle game built with React, TypeScript, and Vite. Pl
   selectedShapeIndex: number | null;
   mouseGridLocation: Location | null;     // Current hover position
   mousePosition: { x: number; y: number }; // Always has a position
-  showerLocation: { x: number; y: number }; // For coin shower emission
+  gemIconPosition: { x: number; y: number }; // Position of score display gem icon (for gem shower origin)
   isShapeDragging: boolean;
   isValidPlacement: boolean;              // Track if current hover is valid
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;

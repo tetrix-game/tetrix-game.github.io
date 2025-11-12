@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import GemParticle from '../GemParticle';
 import './GemShower.css';
@@ -11,29 +11,37 @@ interface GemData {
 }
 
 const GemShower: React.FC = () => {
-  const { score, showerLocation } = useTetrixStateContext();
+  const { score, gemIconPosition } = useTetrixStateContext();
   const [gems, setGems] = useState<GemData[]>([]);
   const lastScoreRef = useRef(score);
 
   // Performance thresholds for different rendering strategies
   const DOM_PARTICLE_LIMIT = 20; // Lower limit since we're only showing one type
 
+  // Calculate the two possible emission origins
+  const centerScreenPosition = useMemo(() => ({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2
+  }), []);
+
+  const gemIconOrigin = useMemo(() => gemIconPosition, [gemIconPosition]);
+
   // Score change detection
   useEffect(() => {
     if (score !== lastScoreRef.current) {
       const scoreChange = score - lastScoreRef.current;
       const pointsForEffect = Math.abs(scoreChange); // Use absolute value for gem shower
+      const isGainingPoints = scoreChange > 0;
 
       if (pointsForEffect === 0) {
         lastScoreRef.current = score;
         return;
       }
 
-      // Capture emission origin at time of score change
-      const emissionOrigin: { x: number; y: number } = {
-        x: showerLocation.x,
-        y: showerLocation.y
-      };
+      // Use center screen for positive scores, gem icon for negative scores
+      const emissionOrigin: { x: number; y: number } = isGainingPoints
+        ? centerScreenPosition
+        : gemIconOrigin;
 
       // Calculate number of gems to show based on points
       // For small scores, show 1 gem per point
@@ -44,31 +52,42 @@ const GemShower: React.FC = () => {
         gemsToShow = Math.min(DOM_PARTICLE_LIMIT, Math.ceil(Math.log10(pointsForEffect + 1) * 3));
       }
 
-      const coinsToSpawn = generateGems(gemsToShow, emissionOrigin);
+      const coinsToSpawn = generateGems(gemsToShow, emissionOrigin, isGainingPoints);
       setGems(prevGems => [...prevGems, ...coinsToSpawn]);
     }
     lastScoreRef.current = score;
-  }, [score]); // Removed showerLocation dependency to prevent animation interruption
+  }, [score, centerScreenPosition, gemIconOrigin]);
 
   const generateGems = (
     gemCount: number,
-    origin: { x: number; y: number }
+    origin: { x: number; y: number },
+    isGainingPoints: boolean
   ): GemData[] => {
     const gems: GemData[] = [];
     const delayIncrement = 10; // 10ms between each gem
     let currentDelay = 0;
 
     for (let i = 0; i < gemCount; i++) {
-      // Generate random trajectory - spread in a cone upward and outward
-      const angle = (60 + Math.random() * 60) * (Math.PI / 180); // 60° to 120° (upward cone)
-      const baseSpeed = 100 + Math.random() * 200; // 100-300 pixels per second
+      let velocityX: number;
+      let velocityY: number;
 
-      // Random direction (left or right) with slight bias towards spreading
-      const direction = Math.random() > 0.5 ? 1 : -1;
-      const spreadBias = 0.3 + Math.random() * 0.7; // Add some spread bias
+      if (isGainingPoints) {
+        // Gaining points: gems shoot upward and outward from center screen
+        const angle = (60 + Math.random() * 60) * (Math.PI / 180); // 60° to 120° (upward cone)
+        const baseSpeed = 100 + Math.random() * 200; // 100-300 pixels per second
 
-      const velocityX = baseSpeed * Math.cos(angle) * direction * spreadBias;
-      const velocityY = -baseSpeed * Math.sin(angle); // Negative for upward
+        // Random direction (left or right) with slight bias towards spreading
+        const direction = Math.random() > 0.5 ? 1 : -1;
+        const spreadBias = 0.3 + Math.random() * 0.7; // Add some spread bias
+
+        velocityX = baseSpeed * Math.cos(angle) * direction * spreadBias;
+        velocityY = -baseSpeed * Math.sin(angle); // Negative for upward
+      } else {
+        // Losing points: gems fall straight down from gem icon with zero initial velocity
+        // They'll be affected by gravity in GemParticle component
+        velocityX = 0;
+        velocityY = 0;
+      }
 
       gems.push({
         id: `gem-${i}-${Date.now()}-${Math.random()}`,
@@ -88,7 +107,7 @@ const GemShower: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="gem-shower-container">
       {/* Render all gems */}
       {gems.map(gem => (
         <GemParticle
@@ -99,7 +118,7 @@ const GemShower: React.FC = () => {
           onComplete={() => handleGemComplete(gem.id)}
         />
       ))}
-    </>
+    </div>
   );
 };
 

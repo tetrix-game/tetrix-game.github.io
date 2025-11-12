@@ -28,7 +28,7 @@ const createMockState = (placementAnimationState: PlacementAnimationState): Tetr
   selectedShapeIndex: 0,
   mouseGridLocation: { row: 5, column: 5 },
   mousePosition: { x: 100, y: 100 },
-  showerLocation: { x: 100, y: 100 },
+  gemIconPosition: { x: 100, y: 50 },
   isShapeDragging: false,
   isValidPlacement: true,
   hoveredBlockPositions: [],

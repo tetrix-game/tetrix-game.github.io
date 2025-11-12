@@ -100,7 +100,7 @@ export type TetrixReducerState = {
   selectedShapeIndex: number | null;
   mouseGridLocation: Location | null;
   mousePosition: { x: number; y: number }; // Never null - always has a position
-  showerLocation: { x: number; y: number }; // Dedicated location for coin shower emission
+  gemIconPosition: { x: number; y: number }; // Position of the score display gem icon
   gridTileSize: number | null;
   gridBounds: { top: number; left: number; width: number; height: number } | null;
   isShapeDragging: boolean;
@@ -294,6 +294,11 @@ type GenerateSuperComboPatternAction = {
   type: 'GENERATE_SUPER_COMBO_PATTERN';
 }
 
+type UpdateGemIconPositionAction = {
+  type: 'UPDATE_GEM_ICON_POSITION';
+  value: { x: number; y: number };
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -325,7 +330,8 @@ export type TetrixAction =
   | DeactivateTurningModeAction
   | ActivateDoubleTurnModeAction
   | DeactivateDoubleTurnModeAction
-  | GenerateSuperComboPatternAction;
+  | GenerateSuperComboPatternAction
+  | UpdateGemIconPositionAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

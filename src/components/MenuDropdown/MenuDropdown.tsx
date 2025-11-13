@@ -9,7 +9,6 @@ import './MenuDropdown.css';
 const MenuDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
-  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { isMuted, toggleMute } = useMusicControl();
@@ -17,11 +16,6 @@ const MenuDropdown: React.FC = () => {
   const dispatch = useTetrixDispatchContext();
 
   const toggleDropdown = () => {
-    if (!isOpen && buttonRef.current) {
-      // Calculate button position when opening dropdown
-      const rect = buttonRef.current.getBoundingClientRect();
-      setButtonRect(rect);
-    }
     setIsOpen(!isOpen);
   };
 
@@ -94,33 +88,13 @@ const MenuDropdown: React.FC = () => {
     });
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      // Don't close if clicking on the button
-      if (buttonRef.current?.contains(target)) {
-        return;
-      }
-
-      // Don't close if clicking inside the dropdown
-      const dropdownElement = document.querySelector('.dropdown-overlay');
-      if (dropdownElement?.contains(target)) {
-        return;
-      }
-
-      // Close if clicking outside
+  // Handle clicking on the overlay background (not the content)
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only close if clicking directly on the overlay (not its children)
+    if (e.target === e.currentTarget) {
       setIsOpen(false);
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+    }
+  };
 
   // Close dropdown on escape key
   useEffect(() => {
@@ -153,13 +127,10 @@ const MenuDropdown: React.FC = () => {
         </div>
       </button>
 
-      {isOpen && buttonRect && createPortal(
+      {isOpen && createPortal(
         <div
           className="dropdown-overlay"
-          style={{
-            '--dropdown-top': `${buttonRect.bottom + window.scrollY}px`,
-            '--dropdown-left': `${buttonRect.left + window.scrollX}px`,
-          } as React.CSSProperties}
+          onClick={handleOverlayClick}
         >
           <div className="dropdown-content">
             <div className="menu-item">

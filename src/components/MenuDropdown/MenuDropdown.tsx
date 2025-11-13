@@ -171,6 +171,16 @@ const MenuDropdown: React.FC = () => {
               </button>
             </div>
 
+            <div className="menu-item">
+              <a
+                className="menu-action-button menu-link-button"
+                href="/how-to-play.html"
+                title="Learn how to play Tetrix"
+              >
+                How to Play
+              </a>
+            </div>
+
             <div className="menu-item debug-submenu">
               <button
                 className="debug-toggle"

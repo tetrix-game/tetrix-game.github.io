@@ -1,0 +1,247 @@
+.tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10001;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: tutorialFadeIn 0.3s ease;
+}
+
+@keyframes tutorialFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.tutorial-content {
+  position: relative;
+  width: 90vw;
+  max-width: 700px;
+  max-height: 85vh;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  animation: tutorialSlideUp 0.4s ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes tutorialSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tutorial-close-x {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.tutorial-close-x:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.tutorial-slide {
+  flex: 1;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tutorial-title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.tutorial-body {
+  flex: 1;
+  color: #555;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.tutorial-body p {
+  margin-bottom: 16px;
+}
+
+.tutorial-body ul {
+  margin-left: 24px;
+  margin-bottom: 16px;
+}
+
+.tutorial-body li {
+  margin-bottom: 12px;
+}
+
+.tutorial-body strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.tutorial-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  gap: 16px;
+}
+
+.tutorial-nav-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.tutorial-nav-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.tutorial-nav-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.tutorial-nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.tutorial-close-button {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.tutorial-close-button:hover {
+  box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+}
+
+.tutorial-dots {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tutorial-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.tutorial-dot:hover {
+  background: #bbb;
+  transform: scale(1.2);
+}
+
+.tutorial-dot.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: scale(1.3);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .tutorial-content {
+    width: 95vw;
+    padding: 32px 24px;
+    max-height: 90vh;
+  }
+
+  .tutorial-title {
+    font-size: 24px;
+  }
+
+  .tutorial-body {
+    font-size: 14px;
+  }
+
+  .tutorial-nav-button {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-width: 80px;
+  }
+
+  .tutorial-close-x {
+    top: 12px;
+    right: 12px;
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tutorial-content {
+    padding: 24px 16px;
+  }
+
+  .tutorial-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .tutorial-body {
+    font-size: 13px;
+  }
+
+  .tutorial-body ul {
+    margin-left: 16px;
+  }
+
+  .tutorial-navigation {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tutorial-nav-button {
+    width: 100%;
+  }
+
+  .tutorial-dots {
+    order: -1;
+  }
+}

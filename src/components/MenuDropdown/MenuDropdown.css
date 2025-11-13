@@ -137,6 +137,12 @@
   border-color: #999;
 }
 
+/* Link button styling for anchor tags */
+.menu-link-button {
+  display: block;
+  text-decoration: none;
+}
+
 /* Debug submenu styles */
 .debug-submenu {
   position: relative;

@@ -607,6 +607,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Generate a 4x4 super combo pattern for testing
       // Pattern: rows 4-7 are completely filled except for diagonal empty spaces
       // AND columns 4-7 are completely filled except for diagonal empty spaces
+      // Supports both ascending and descending diagonals
       const newTiles = state.tiles.map(tile => {
         const { row, column } = tile.location;
 
@@ -614,8 +615,15 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         const isInPatternRows = row >= 4 && row <= 7;
         const isInPatternCols = column >= 4 && column <= 7;
 
-        // Check if this tile is on the diagonal of the 4x4 area
-        const isOnDiagonal = isInPatternRows && isInPatternCols && (row - 4) === (column - 4);
+        // Check if this tile is on either diagonal of the 4x4 area
+        // Ascending diagonal: (4,4), (5,5), (6,6), (7,7)
+        const isOnAscendingDiagonal = isInPatternRows && isInPatternCols && (row - 4) === (column - 4);
+        // Descending diagonal: (4,7), (5,6), (6,5), (7,4)
+        const isOnDescendingDiagonal = isInPatternRows && isInPatternCols && (row + column) === 11;
+
+        // Randomly choose which diagonal to use (50/50 chance)
+        const useAscending = Math.random() > 0.5;
+        const isOnDiagonal = useAscending ? isOnAscendingDiagonal : isOnDescendingDiagonal;
 
         // Fill if in pattern rows OR pattern columns, but NOT on diagonal
         if ((isInPatternRows || isInPatternCols) && !isOnDiagonal) {

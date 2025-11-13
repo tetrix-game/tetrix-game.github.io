@@ -295,14 +295,22 @@ export function makeRandomColor(colorCount: number = 7): ColorName {
 /**
  * Detect if there's a 4x4 super combo pattern on the grid.
  * Pattern: 4 consecutive rows where each row has exactly 9 filled blocks (one missing),
- * and the missing block position increases by 1 for each row (forming a diagonal).
+ * and the missing block position increases or decreases by 1 for each row (forming a diagonal).
  * Same pattern must exist for columns.
  * 
- * Example pattern (X = filled, O = empty):
+ * Supports both ascending and descending diagonal patterns:
+ * 
+ * Ascending diagonal example (X = filled, O = empty):
  * Row 1: O X X X X X X X X X
  * Row 2: X O X X X X X X X X
  * Row 3: X X O X X X X X X X
  * Row 4: X X X O X X X X X X
+ * 
+ * Descending diagonal example (X = filled, O = empty):
+ * Row 1: X X X O X X X X X X
+ * Row 2: X X O X X X X X X X
+ * Row 3: X O X X X X X X X X
+ * Row 4: O X X X X X X X X X
  * 
  * @param tiles - Array of tiles (10x10 grid, 1-indexed)
  * @returns true if the pattern exists
@@ -341,24 +349,32 @@ function buildGrid(tiles: Array<{ location: Location; block: { isFilled: boolean
 
 /**
  * Check if a diagonal pattern exists at the given starting position
+ * Checks both ascending and descending diagonal patterns
  */
 function checkDiagonalPattern(grid: boolean[][], startRow: number, startCol: number): boolean {
-  // Check row pattern
-  if (!checkRowPattern(grid, startRow, startCol)) {
-    return false;
+  // Check ascending diagonal (top-left to bottom-right)
+  const ascendingRowPattern = checkRowPattern(grid, startRow, startCol, true);
+  const ascendingColPattern = checkColumnPattern(grid, startRow, startCol, true);
+
+  if (ascendingRowPattern && ascendingColPattern) {
+    return true;
   }
 
-  // Check column pattern
-  return checkColumnPattern(grid, startRow, startCol);
+  // Check descending diagonal (top-right to bottom-left)
+  const descendingRowPattern = checkRowPattern(grid, startRow, startCol, false);
+  const descendingColPattern = checkColumnPattern(grid, startRow, startCol, false);
+
+  return descendingRowPattern && descendingColPattern;
 }
 
 /**
  * Check if 4 consecutive rows have the diagonal empty pattern
+ * @param ascending - true for ascending diagonal, false for descending
  */
-function checkRowPattern(grid: boolean[][], startRow: number, startCol: number): boolean {
+function checkRowPattern(grid: boolean[][], startRow: number, startCol: number, ascending: boolean): boolean {
   for (let i = 0; i < 4; i++) {
     const row = startRow + i;
-    const emptyCol = startCol + i;
+    const emptyCol = ascending ? startCol + i : startCol + (3 - i);
 
     if (!isRowValidWithEmptyAt(grid, row, emptyCol)) {
       return false;
@@ -369,11 +385,12 @@ function checkRowPattern(grid: boolean[][], startRow: number, startCol: number):
 
 /**
  * Check if 4 consecutive columns have the diagonal empty pattern
+ * @param ascending - true for ascending diagonal, false for descending
  */
-function checkColumnPattern(grid: boolean[][], startRow: number, startCol: number): boolean {
+function checkColumnPattern(grid: boolean[][], startRow: number, startCol: number, ascending: boolean): boolean {
   for (let i = 0; i < 4; i++) {
     const col = startCol + i;
-    const emptyRow = startRow + i;
+    const emptyRow = ascending ? startRow + i : startRow + (3 - i);
 
     if (!isColumnValidWithEmptyAt(grid, col, emptyRow)) {
       return false;

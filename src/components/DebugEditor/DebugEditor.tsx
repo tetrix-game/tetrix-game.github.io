@@ -2,14 +2,14 @@ import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useDebugEditor } from './DebugEditorContext';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import { 
-  generateIPiece, 
-  generateOPiece, 
-  generateTPiece, 
-  generateSPiece, 
-  generateZPiece, 
-  generateJPiece, 
-  generateLPiece 
+import {
+  generateIPiece,
+  generateOPiece,
+  generateTPiece,
+  generateSPiece,
+  generateZPiece,
+  generateJPiece,
+  generateLPiece
 } from '../../utils/shapeUtils';
 import type { ColorName } from '../../utils/types';
 import './DebugEditor.css';

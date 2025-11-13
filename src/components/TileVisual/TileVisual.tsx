@@ -8,9 +8,10 @@ type TileVisualProps = {
   tile: Tile;
   isHovered?: boolean;
   hoveredBlock?: Block;
+  onClick?: () => void;
 }
 
-const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) => {
+const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisualProps) => {
   const { isValidPlacement } = useTetrixStateContext();
 
   // Fixed border width for consistent grid sizing
@@ -37,6 +38,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock }: TileVisualProps) 
         gridColumn: tile.location.column,
         gridRow: tile.location.row,
       }}
+      onClick={onClick}
     >
       <BlockVisual block={displayBlock} />
       {showShadow && (

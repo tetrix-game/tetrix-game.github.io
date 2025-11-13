@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { useDebugEditor } from '../DebugEditor';
 import { clearAllSavedData, clearAllDataAndReload } from '../../utils/persistenceUtils';
 import './MenuDropdown.css';
 
@@ -14,6 +15,7 @@ const MenuDropdown: React.FC = () => {
   const { isMuted, toggleMute } = useMusicControl();
   const { isMuted: isSoundEffectsMuted, toggleMute: toggleSoundEffectsMute } = useSoundEffectsControl();
   const dispatch = useTetrixDispatchContext();
+  const { openEditor } = useDebugEditor();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -201,6 +203,18 @@ const MenuDropdown: React.FC = () => {
                     title="Inject points to test the gem shower system! Try 100, 1000, or 999999 points."
                   >
                     Inject Points
+                  </button>
+                </div>
+                <div className="menu-item submenu-item">
+                  <button
+                    className="debug-action-button"
+                    onClick={() => {
+                      openEditor();
+                      setIsOpen(false);
+                    }}
+                    title="Open the debug editor to manually edit the game grid"
+                  >
+                    Debug Editor
                   </button>
                 </div>
                 <div className="menu-item submenu-item">

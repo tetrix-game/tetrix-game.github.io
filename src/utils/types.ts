@@ -299,6 +299,30 @@ type UpdateGemIconPositionAction = {
   value: { x: number; y: number };
 }
 
+type DebugFillRowAction = {
+  type: 'DEBUG_FILL_ROW';
+  value: { row: number; excludeColumn: number; color: ColorName };
+}
+
+type DebugFillColumnAction = {
+  type: 'DEBUG_FILL_COLUMN';
+  value: { column: number; excludeRow: number; color: ColorName };
+}
+
+type DebugRemoveBlockAction = {
+  type: 'DEBUG_REMOVE_BLOCK';
+  value: { location: Location };
+}
+
+type DebugAddBlockAction = {
+  type: 'DEBUG_ADD_BLOCK';
+  value: { location: Location; color: ColorName };
+}
+
+type DebugClearAllAction = {
+  type: 'DEBUG_CLEAR_ALL';
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -331,7 +355,12 @@ export type TetrixAction =
   | ActivateDoubleTurnModeAction
   | DeactivateDoubleTurnModeAction
   | GenerateSuperComboPatternAction
-  | UpdateGemIconPositionAction;
+  | UpdateGemIconPositionAction
+  | DebugFillRowAction
+  | DebugFillColumnAction
+  | DebugRemoveBlockAction
+  | DebugAddBlockAction
+  | DebugClearAllAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

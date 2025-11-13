@@ -664,6 +664,115 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         gemIconPosition: action.value,
       };
     }
+
+    case "DEBUG_FILL_ROW": {
+      const { row, excludeColumn, color } = action.value;
+      const newTiles = state.tiles.map(tile => {
+        if (tile.location.row === row && tile.location.column !== excludeColumn) {
+          return {
+            ...tile,
+            block: { color, isFilled: true }
+          };
+        }
+        return tile;
+      });
+
+      safeBatchSave(undefined, newTiles)
+        .catch((error: Error) => {
+          console.error('Failed to save tiles after debug fill row:', error);
+        });
+
+      return {
+        ...state,
+        tiles: newTiles,
+      };
+    }
+
+    case "DEBUG_FILL_COLUMN": {
+      const { column, excludeRow, color } = action.value;
+      const newTiles = state.tiles.map(tile => {
+        if (tile.location.column === column && tile.location.row !== excludeRow) {
+          return {
+            ...tile,
+            block: { color, isFilled: true }
+          };
+        }
+        return tile;
+      });
+
+      safeBatchSave(undefined, newTiles)
+        .catch((error: Error) => {
+          console.error('Failed to save tiles after debug fill column:', error);
+        });
+
+      return {
+        ...state,
+        tiles: newTiles,
+      };
+    }
+
+    case "DEBUG_REMOVE_BLOCK": {
+      const { location } = action.value;
+      const newTiles = state.tiles.map(tile => {
+        if (tile.location.row === location.row && tile.location.column === location.column) {
+          return {
+            ...tile,
+            block: { ...tile.block, isFilled: false }
+          };
+        }
+        return tile;
+      });
+
+      safeBatchSave(undefined, newTiles)
+        .catch((error: Error) => {
+          console.error('Failed to save tiles after debug remove block:', error);
+        });
+
+      return {
+        ...state,
+        tiles: newTiles,
+      };
+    }
+
+    case "DEBUG_ADD_BLOCK": {
+      const { location, color } = action.value;
+      const newTiles = state.tiles.map(tile => {
+        if (tile.location.row === location.row && tile.location.column === location.column) {
+          return {
+            ...tile,
+            block: { color, isFilled: true }
+          };
+        }
+        return tile;
+      });
+
+      safeBatchSave(undefined, newTiles)
+        .catch((error: Error) => {
+          console.error('Failed to save tiles after debug add block:', error);
+        });
+
+      return {
+        ...state,
+        tiles: newTiles,
+      };
+    }
+
+    case "DEBUG_CLEAR_ALL": {
+      const newTiles = state.tiles.map(tile => ({
+        ...tile,
+        block: { ...tile.block, isFilled: false }
+      }));
+
+      safeBatchSave(undefined, newTiles)
+        .catch((error: Error) => {
+          console.error('Failed to save tiles after debug clear all:', error);
+        });
+
+      return {
+        ...state,
+        tiles: newTiles,
+      };
+    }
   }
 
   return state;

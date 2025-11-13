@@ -4,17 +4,20 @@ import type { Tile } from '../../utils/types';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useRef, useEffect } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
+import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
 
 export default function Grid() {
   const { tiles, selectedShape, hoveredBlockPositions } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const { gridSize, gridGap } = useGameSizing();
+  const { isDebugMode, handleDebugClick } = useDebugGridInteractions();
 
   // Handle escape key to cancel selection
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && selectedShape) {
+      // Don't handle escape if debug editor is open
+      if (e.key === 'Escape' && selectedShape && !isDebugMode) {
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
       }
     };
@@ -23,7 +26,7 @@ export default function Grid() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedShape, dispatch]);
+  }, [selectedShape, dispatch, isDebugMode]);
 
   // Create a map of hovered block positions for quick lookup
   const hoveredBlockMap = new Map(
@@ -54,6 +57,7 @@ export default function Grid() {
               tile={tile}
               isHovered={isHovered}
               hoveredBlock={hoveredBlock}
+              onClick={isDebugMode ? () => handleDebugClick(tile.location) : undefined}
             />
           )
         })

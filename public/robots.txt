@@ -1,6 +1,0 @@
-# robots.txt for Tetrix Game
-User-agent: *
-Allow: /
-
-# Sitemaps
-Sitemap: https://tetrix-game.github.io/sitemap.xml

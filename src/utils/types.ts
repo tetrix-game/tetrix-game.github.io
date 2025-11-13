@@ -323,6 +323,11 @@ type DebugClearAllAction = {
   type: 'DEBUG_CLEAR_ALL';
 }
 
+type DebugReplaceFirstShapeAction = {
+  type: 'DEBUG_REPLACE_FIRST_SHAPE';
+  value: { shape: Shape };
+}
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -360,7 +365,8 @@ export type TetrixAction =
   | DebugFillColumnAction
   | DebugRemoveBlockAction
   | DebugAddBlockAction
-  | DebugClearAllAction;
+  | DebugClearAllAction
+  | DebugReplaceFirstShapeAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;
 

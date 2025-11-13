@@ -463,6 +463,125 @@ export function generateSuperShape(): Shape {
 }
 
 /**
+ * Helper function to create an empty block
+ */
+function createEmptyBlock(): Block {
+  return { color: makeRandomColor(), isFilled: false };
+}
+
+/**
+ * Helper function to create a filled block with a specific color
+ */
+function createFilledBlock(color: ColorName): Block {
+  return { color, isFilled: true };
+}
+
+/**
+ * Generate an I-piece (4-block line) in base orientation with specified color
+ */
+export function generateIPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [_(), _(), _(), _()],
+    [X(), X(), X(), X()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate an O-piece (2x2 square) with specified color
+ */
+export function generateOPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [_(), X(), X(), _()],
+    [_(), X(), X(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate a T-piece in base orientation with specified color
+ */
+export function generateTPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [_(), X(), _(), _()],
+    [X(), X(), X(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate an S-piece in base orientation with specified color
+ */
+export function generateSPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [_(), X(), X(), _()],
+    [X(), X(), _(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate a Z-piece in base orientation with specified color
+ */
+export function generateZPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [X(), X(), _(), _()],
+    [_(), X(), X(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate a J-piece in base orientation with specified color
+ */
+export function generateJPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [X(), _(), _(), _()],
+    [X(), X(), X(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate an L-piece in base orientation with specified color
+ */
+export function generateLPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [X(), X(), X(), _()],
+    [X(), _(), _(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
  * Generate a random shape with balanced probability distribution
  * Each base shape type has equal likelihood of being selected, then orientation is randomly chosen
  * 

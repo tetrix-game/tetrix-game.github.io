@@ -773,6 +773,44 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         tiles: newTiles,
       };
     }
+
+    case "DEBUG_REPLACE_FIRST_SHAPE": {
+      const { shape } = action.value;
+
+      // Remove the first shape and add the new shape to the end
+      if (state.nextShapes.length === 0) {
+        // If there are no shapes, just add this one
+        const newShapes = [shape];
+        safeBatchSave(undefined, undefined, newShapes, state.savedShape)
+          .catch((error: Error) => {
+            console.error('Failed to save shapes after debug replace:', error);
+          });
+
+        return {
+          ...state,
+          nextShapes: newShapes,
+          openRotationMenus: [false],
+          shapeOptionBounds: [null],
+          newShapeAnimationStates: ['none'],
+        };
+      }
+
+      // Remove first shape and add new shape to the end
+      const newShapes = [...state.nextShapes.slice(1), shape];
+
+      safeBatchSave(undefined, undefined, newShapes, state.savedShape)
+        .catch((error: Error) => {
+          console.error('Failed to save shapes after debug replace:', error);
+        });
+
+      return {
+        ...state,
+        nextShapes: newShapes,
+        openRotationMenus: [...state.openRotationMenus.slice(1), false],
+        shapeOptionBounds: [...state.shapeOptionBounds.slice(1), null],
+        newShapeAnimationStates: [...state.newShapeAnimationStates.slice(1), 'none'],
+      };
+    }
   }
 
   return state;

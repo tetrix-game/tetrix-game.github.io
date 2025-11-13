@@ -225,3 +225,38 @@
 .color-picker-button.color-purple {
   background: #aa44ff;
 }
+
+/* Shape picker grid */
+.shape-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.shape-picker-button {
+  width: 36px;
+  height: 36px;
+  background: #2a2a2a;
+  border: 2px solid #555;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  font-family: monospace;
+}
+
+.shape-picker-button:hover {
+  background: #3a3a3a;
+  border-color: #4a9eff;
+  transform: scale(1.05);
+}
+
+.shape-picker-button:active {
+  transform: scale(0.95);
+  background: #1a3a5a;
+}

@@ -1,6 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useDebugEditor } from './DebugEditorContext';
+import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { 
+  generateIPiece, 
+  generateOPiece, 
+  generateTPiece, 
+  generateSPiece, 
+  generateZPiece, 
+  generateJPiece, 
+  generateLPiece 
+} from '../../utils/shapeUtils';
 import type { ColorName } from '../../utils/types';
 import './DebugEditor.css';
 
@@ -8,6 +18,44 @@ const COLOR_OPTIONS: ColorName[] = ['grey', 'red', 'orange', 'yellow', 'green', 
 
 const DebugEditor: React.FC = () => {
   const { state, closeEditor, setTool, setColor, cycleTool, hideInstructions } = useDebugEditor();
+  const dispatch = useTetrixDispatchContext();
+
+  // Handle shape picker button clicks
+  const handleShapePicker = useCallback((shapeType: string) => {
+    const color = state.selectedColor;
+    let shape;
+
+    switch (shapeType) {
+      case 'I':
+        shape = generateIPiece(color);
+        break;
+      case 'O':
+        shape = generateOPiece(color);
+        break;
+      case 'T':
+        shape = generateTPiece(color);
+        break;
+      case 'S':
+        shape = generateSPiece(color);
+        break;
+      case 'Z':
+        shape = generateZPiece(color);
+        break;
+      case 'J':
+        shape = generateJPiece(color);
+        break;
+      case 'L':
+        shape = generateLPiece(color);
+        break;
+      default:
+        return;
+    }
+
+    dispatch({
+      type: 'DEBUG_REPLACE_FIRST_SHAPE',
+      value: { shape },
+    });
+  }, [state.selectedColor, dispatch]);
 
   // Handle mouse wheel for tool cycling
   useEffect(() => {
@@ -64,6 +112,7 @@ const DebugEditor: React.FC = () => {
                 <p><strong>Clear All Tool:</strong> Click any tile to remove all blocks from the entire grid.</p>
                 <p><strong>Mouse Wheel:</strong> Scroll to cycle between tools.</p>
                 <p><strong>Color Picker:</strong> Select the color for blocks placed by add and fill tools.</p>
+                <p><strong>Shape Picker:</strong> Click a shape button to remove the first shape and add that shape type (in the selected color) to the end of the queue.</p>
               </div>
               <div className="debug-instructions-actions">
                 <button className="debug-continue-button" onClick={hideInstructions}>
@@ -129,6 +178,61 @@ const DebugEditor: React.FC = () => {
                 title={color}
               />
             ))}
+          </div>
+        </div>
+
+        <div className="debug-tool-section">
+          <div className="debug-tool-label">Shape Picker</div>
+          <div className="shape-picker-grid">
+            <button
+              className="shape-picker-button"
+              onClick={() => handleShapePicker('I')}
+              title="I-Piece (4-block line)"
+            >
+              I
+            </button>
+            <button
+              className="shape-picker-button"
+              onClick={() => handleShapePicker('O')}
+              title="O-Piece (2x2 square)"
+            >
+              O
+            </button>
+            <button
+              className="shape-picker-button"
+              onClick={() => handleShapePicker('T')}
+              title="T-Piece"
+            >
+              T
+            </button>
+            <button
+              className="shape-picker-button"
+              onClick={() => handleShapePicker('S')}
+              title="S-Piece"
+            >
+              S
+            </button>
+            <button
+              className="shape-picker-button"
+              onClick={() => handleShapePicker('Z')}
+              title="Z-Piece"
+            >
+              Z
+            </button>
+            <button
+              className="shape-picker-button"
+              onClick={() => handleShapePicker('J')}
+              title="J-Piece"
+            >
+              J
+            </button>
+            <button
+              className="shape-picker-button"
+              onClick={() => handleShapePicker('L')}
+              title="L-Piece"
+            >
+              L
+            </button>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 {
-  "name": "Tetrix",
+  "name": "Tetrix - Free Relaxing Puzzle Game",
   "short_name": "Tetrix",
-  "description": "A Tetris-inspired puzzle game with drag-and-drop shapes",
+  "description": "A free, ad-free relaxing puzzle game. Drag and drop shapes, clear lines, and enjoy infinite gameplay with no interruptions. Perfect for casual gaming and brain training.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a2e",

@@ -40,6 +40,8 @@ const createMockState = (placementAnimationState: PlacementAnimationState): Tetr
   placementAnimationState,
   animationStartPosition: placementAnimationState === 'placing' ? { x: 100, y: 100 } : null,
   animationTargetPosition: placementAnimationState === 'placing' ? { x: 250, y: 250 } : null,
+  pickupAnimationState: 'none',
+  pickupStartPosition: null,
   shapeOptionBounds: [],
   openRotationMenus: [],
   score: 0,

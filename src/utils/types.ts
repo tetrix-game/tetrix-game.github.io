@@ -21,6 +21,7 @@ export type Tile = {
 export type PlacementAnimationState = 'none' | 'placing';
 export type ShapeRemovalAnimationState = 'none' | 'removing';
 export type ShapeCreationAnimationState = 'none' | 'animating-in';
+export type PickupAnimationState = 'none' | 'animating';
 
 // Bounds for shape options (for return animation)
 export type ShapeOptionBounds = {
@@ -110,6 +111,9 @@ export type TetrixReducerState = {
   placementAnimationState: PlacementAnimationState;
   animationStartPosition: { x: number; y: number } | null;
   animationTargetPosition: { x: number; y: number } | null;
+  // Pick-up animation state
+  pickupAnimationState: PickupAnimationState;
+  pickupStartPosition: { x: number; y: number } | null;
   // Shape removal animation
   removingShapeIndex: number | null;
   shapeRemovalAnimationState: ShapeRemovalAnimationState;
@@ -144,6 +148,7 @@ type SelectShapeAction = {
     shape: Shape;
     shapeIndex: number;
     initialPosition?: { x: number; y: number };
+    pickupStartPosition?: { x: number; y: number };
   };
 }
 

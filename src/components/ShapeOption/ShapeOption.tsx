@@ -189,15 +189,35 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
     // Play pickup sound with slight offset to skip silent lead-in
     playSound('pickup_shape', 0.05);
 
-    // Start drag by selecting this shape
-    dispatch({
-      type: 'SELECT_SHAPE',
-      value: {
-        shape,
-        shapeIndex,
-        initialPosition: { x: e.clientX, y: e.clientY }
-      }
-    });
+    // Calculate the center of the shape in screen coordinates for pick-up animation
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const pickupStartPosition = {
+        x: containerRect.left + containerRect.width / 2,
+        y: containerRect.top + containerRect.height / 2,
+      };
+
+      // Start drag by selecting this shape with pick-up animation
+      dispatch({
+        type: 'SELECT_SHAPE',
+        value: {
+          shape,
+          shapeIndex,
+          initialPosition: { x: e.clientX, y: e.clientY },
+          pickupStartPosition,
+        }
+      });
+    } else {
+      // Fallback if ref is not available
+      dispatch({
+        type: 'SELECT_SHAPE',
+        value: {
+          shape,
+          shapeIndex,
+          initialPosition: { x: e.clientX, y: e.clientY }
+        }
+      });
+    }
   }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval, playSound]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {

@@ -4,6 +4,7 @@ import GameMap from './components/GameMap';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
 import TutorialOverlay from './components/TutorialOverlay';
 import DebugEditor from './components/DebugEditor';
+import DraggingShape from './components/DraggingShape';
 import { useTetrixStateContext } from './components/Tetrix/TetrixContext';
 import { useState, useEffect } from 'react';
 import './App.css';
@@ -32,6 +33,7 @@ const App = () => {
       ) : (
         <Tetrix />
       )}
+      <DraggingShape />
       <FullScreenFloatingActionButton />
       {showTutorial && <TutorialOverlay onClose={handleCloseTutorial} />}
       <DebugEditor />

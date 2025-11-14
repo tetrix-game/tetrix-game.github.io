@@ -52,6 +52,8 @@ export const initialState: TetrixReducerState = {
   placementAnimationState: 'none',
   animationStartPosition: null,
   animationTargetPosition: null,
+  pickupAnimationState: 'none',
+  pickupStartPosition: null,
   removingShapeIndex: null,
   shapeRemovalAnimationState: 'none',
   newShapeAnimationStates: [], // Initialize as empty array
@@ -73,7 +75,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
   switch (action.type) {
     case "SELECT_SHAPE": {
-      const { shape, shapeIndex, initialPosition } = action.value;
+      const { shape, shapeIndex, initialPosition, pickupStartPosition } = action.value;
 
       return {
         ...state,
@@ -82,6 +84,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         isShapeDragging: true,
         mousePosition: initialPosition || state.mousePosition,
         hoveredBlockPositions: [],
+        pickupAnimationState: pickupStartPosition ? 'animating' : 'none',
+        pickupStartPosition: pickupStartPosition || null,
       };
     }
 
@@ -237,6 +241,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         placementAnimationState: 'none' as const,
         animationStartPosition: null,
         animationTargetPosition: null,
+        pickupAnimationState: 'none' as const,
+        pickupStartPosition: null,
         hasPlacedFirstShape: true, // Mark that first shape has been placed
         // Start the removal animation
         removingShapeIndex: removedIndex,
@@ -345,6 +351,8 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         placementAnimationState: 'none' as const,
         animationStartPosition: null,
         animationTargetPosition: null,
+        pickupAnimationState: 'none' as const,
+        pickupStartPosition: null,
       };
     }
 

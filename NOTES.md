@@ -1,6 +1,6 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Pickup shape sound
+- Pick up animation, and Dragging shape extends beyond the bounds of Grid
 - Invalid placement sound (sheew back)
 - Valid placement calculation sound (tick)
 - Invalid placement calculation sound (tock)

@@ -24,7 +24,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
   } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
-  
+
   // Track if bounds are currently null (need registration)
   const boundsAreNull = shapeOptionBounds[shapeIndex] === null || shapeOptionBounds[shapeIndex] === undefined;
 
@@ -129,8 +129,8 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
     }
 
     if (selectedShapeIndex === shapeIndex) {
-      // Already selected - return to selector
-      dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
+      // Already selected - do nothing, let the global pointerup handler in App.tsx
+      // handle the return logic (it will detect we're over a ShapeOption)
       return;
     }
 

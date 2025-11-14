@@ -153,9 +153,14 @@ export function canPlaceShape(
  */
 export function isValidPlacement(
   shape: Shape,
-  centerLocation: Location,
+  centerLocation: Location | null,
   tiles: Array<{ location: Location; block: { isFilled: boolean } }>
 ): boolean {
+  // Return false if location is null
+  if (centerLocation === null) {
+    return false;
+  }
+
   const positions = getShapeGridPositions(shape, centerLocation);
 
   // Create a map of occupied tiles for quick lookup
@@ -188,27 +193,32 @@ export function isValidPlacement(
 
 /**
  * Convert a mouse position to a grid location
+ * Returns null if the mouse is outside the grid bounds
  */
 export function mousePositionToGridLocation(
   mouseX: number,
   mouseY: number,
   gridElement: HTMLElement,
-  gridSize: { rows: number; columns: number }
+  gridSize: { rows: number; columns: number },
+  offsetY: number = 0
 ): Location | null {
   const rect = gridElement.getBoundingClientRect();
+
+  // Apply offset (for mobile touch positioning)
+  const adjustedY = mouseY - offsetY;
 
   // Check if mouse is within grid bounds
   if (
     mouseX < rect.left ||
     mouseX > rect.right ||
-    mouseY < rect.top ||
-    mouseY > rect.bottom
+    adjustedY < rect.top ||
+    adjustedY > rect.bottom
   ) {
     return null;
   }
 
   const relativeX = mouseX - rect.left;
-  const relativeY = mouseY - rect.top;
+  const relativeY = adjustedY - rect.top;
 
   const cellWidth = rect.width / gridSize.columns;
   const cellHeight = rect.height / gridSize.rows;

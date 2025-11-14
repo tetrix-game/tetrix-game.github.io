@@ -60,12 +60,17 @@ const App = () => {
             tileSize = rect.width / 10; // 10x10 grid
           }
 
-          // Calculate grid location
+          // Calculate mobile touch offset (same as DraggingShape)
+          const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
+          const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
+
+          // Calculate grid location with mobile offset
           location = mousePositionToGridLocation(
             e.clientX,
             e.clientY,
             gridElement,
-            { rows: 10, columns: 10 }
+            { rows: 10, columns: 10 },
+            MOBILE_TOUCH_OFFSET
           );
 
           // Validate placement if location is within grid
@@ -104,15 +109,12 @@ const App = () => {
       if (!selectedShape) return;
 
       const target = e.target as HTMLElement;
-      
-      // Check if releasing over a ShapeOption
-      const shapeOptionElement = target.closest('.shape-container');
-      if (shapeOptionElement) {
-        // If releasing over any ShapeOption, return the shape
-        // (ShapeOption's onPointerDown will handle reselection if clicking same shape)
-        dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
-        return;
-      }
+
+      console.log('[DEBUG] pointerup event:', {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        targetClass: target.className,
+      });
 
       // Get current grid element for validation
       if (!gridRef.current) {
@@ -121,6 +123,7 @@ const App = () => {
 
       const gridElement = gridRef.current as HTMLElement;
       if (!gridElement) {
+        console.log('[DEBUG] No grid element - returning shape');
         // No grid available - return shape
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
@@ -128,32 +131,41 @@ const App = () => {
 
       // Calculate if pointer is over the grid
       const rect = gridElement.getBoundingClientRect();
-      const isOverGrid = 
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom;
 
-      if (!isOverGrid) {
-        // Dropped outside grid - return shape
-        dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
-        return;
-      }
+      // Calculate mobile touch offset (same as DraggingShape)
+      const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
+      const tileSize = rect.width / 10;
+      const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
 
-      // Over grid - check if valid placement
+      console.log('[DEBUG] Grid check:', {
+        isTouchDevice,
+        MOBILE_TOUCH_OFFSET,
+        rect: { top: rect.top, left: rect.left, right: rect.right, bottom: rect.bottom },
+        pointer: { x: e.clientX, y: e.clientY },
+      });
+
+      // Over grid - check if valid placement using adjusted position
+
       const location = mousePositionToGridLocation(
         e.clientX,
         e.clientY,
         gridElement,
-        { rows: 10, columns: 10 }
+        { rows: 10, columns: 10 },
+        MOBILE_TOUCH_OFFSET
       );
 
-      if (!location || !isValidPlacement(selectedShape, location, tiles)) {
+      console.log('[DEBUG] Calculated location:', location);
+
+      if (location === null) {
+        console.log('[DEBUG] Not over grid - returning shape');
+      } else if (!isValidPlacement(selectedShape, location, tiles)) {
+        console.log('[DEBUG] Invalid placement - returning shape', { location, hasSelectedShape: !!selectedShape });
         // Invalid placement - return shape
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
       }
 
+      console.log('[DEBUG] Valid placement - placing shape at', location);
       // Valid placement - place the shape
       dispatch({
         type: 'PLACE_SHAPE',

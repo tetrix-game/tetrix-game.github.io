@@ -1,7 +1,7 @@
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual';
 import { getShapeAnchorBlock } from '../../utils/shapeUtils';
-import { playSound } from '../../utils/soundEffects';
+import { useSoundEffects } from '../SoundEffectsContext';
 import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import './DraggingShape.css';
@@ -18,6 +18,7 @@ export default function DraggingShape() {
   } = useTetrixStateContext();
 
   const dispatch = useTetrixDispatchContext();
+  const { playSound } = useSoundEffects();
   const [animationProgress, setAnimationProgress] = useState(0);
 
   // Get dynamic sizing from hook
@@ -54,9 +55,7 @@ export default function DraggingShape() {
       // Trigger sound at the right time so it ends with the animation
       if (!soundTriggered && elapsed >= SOUND_START_TIME) {
         soundTriggered = true;
-        playSound('click_into_place').catch(error => {
-          console.error('Failed to play click_into_place sound:', error);
-        });
+        playSound('click_into_place');
       }
 
       // Ease-in cubic for magnetic acceleration (like being pulled in)
@@ -72,7 +71,7 @@ export default function DraggingShape() {
     };
 
     requestAnimationFrame(animate);
-  }, [placementAnimationState, animationStartPosition, animationTargetPosition, dispatch]);
+  }, [placementAnimationState, animationStartPosition, animationTargetPosition, dispatch, playSound]);
 
   if (!selectedShape || !gridBounds) {
     return null;

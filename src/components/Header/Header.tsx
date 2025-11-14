@@ -5,13 +5,16 @@ import BackgroundMusic from '../BackgroundMusic';
 import ScoreDisplay from '../ScoreDisplay';
 import { MusicControlContext } from './MusicControlContext';
 import { SoundEffectsControlContext } from './SoundEffectsControlContext';
-import { loadMusicSettings, saveMusicSettings, loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../utils/persistenceUtils';
+import { useSoundEffects } from '../SoundEffectsContext';
+import { loadMusicSettings, saveMusicSettings } from '../../utils/persistenceUtils';
 import './Header.css';
 
 const Header = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSoundEffectsMuted, setIsSoundEffectsMuted] = useState(false);
+
+  // Use the main sound effects context
+  const { isMuted: isSoundEffectsMuted, setMuted: setSoundEffectsMuted } = useSoundEffects();
 
   // Load music settings from IndexedDB on mount
   useEffect(() => {
@@ -36,27 +39,6 @@ const Header = () => {
     loadSettings();
   }, []);
 
-  // Load sound effects settings from IndexedDB on mount
-  useEffect(() => {
-    const loadSFXSettings = async () => {
-      try {
-        const savedMuted = await loadSoundEffectsSettings();
-        setIsSoundEffectsMuted(savedMuted);
-      } catch (error) {
-        console.error('Failed to load sound effects settings:', error);
-        // Fallback to localStorage for backward compatibility
-        try {
-          const saved = localStorage.getItem('tetrix-soundeffects-muted');
-          setIsSoundEffectsMuted(saved ? JSON.parse(saved) : false);
-        } catch {
-          setIsSoundEffectsMuted(false);
-        }
-      }
-    };
-
-    loadSFXSettings();
-  }, []);
-
   const toggleMute = useCallback(() => {
     const newMutedState = !isMuted;
     setIsMuted(newMutedState);
@@ -74,20 +56,9 @@ const Header = () => {
   }, [isMuted]);
 
   const toggleSoundEffectsMute = useCallback(() => {
-    const newMutedState = !isSoundEffectsMuted;
-    setIsSoundEffectsMuted(newMutedState);
-
-    // Save to IndexedDB (primary storage)
-    saveSoundEffectsSettings(newMutedState).catch((error: Error) => {
-      console.error('Failed to save sound effects settings to IndexedDB:', error);
-      // Fallback to localStorage
-      try {
-        localStorage.setItem('tetrix-soundeffects-muted', JSON.stringify(newMutedState));
-      } catch (localError) {
-        console.error('Failed to save sound effects mute preference to localStorage:', localError);
-      }
-    });
-  }, [isSoundEffectsMuted]);
+    // Toggle and let context handle persistence
+    setSoundEffectsMuted(!isSoundEffectsMuted);
+  }, [isSoundEffectsMuted, setSoundEffectsMuted]);
 
   const musicContextValue = useMemo(() => ({ isMuted, toggleMute }), [isMuted, toggleMute]);
   const soundEffectsContextValue = useMemo(() => ({

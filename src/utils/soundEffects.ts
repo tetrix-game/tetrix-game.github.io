@@ -2,15 +2,25 @@ import { loadSoundEffectsSettings } from './persistenceUtils';
 
 // Sound Effects Utility
 // Handles playing various game sound effects
+// NOTE: This is legacy code kept for backwards compatibility with reducer
+// New components should use useSoundEffects hook from SoundEffectsContext
 
 export type SoundEffect =
   | 'click_into_place'
   | 'game_over'
+  | 'pickup_shape'
   | 'clear_combo_1'
   | 'clear_combo_2'
   | 'clear_combo_3'
   | 'clear_combo_4'
   | 'clear_combo_5';
+
+// Module-level callback that can be set by SoundEffectsContext
+let contextPlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | null = null;
+
+export function setContextPlaySound(callback: (soundEffect: SoundEffect, startTime?: number) => void) {
+  contextPlaySound = callback;
+}
 
 class SoundEffectsManager {
   private readonly audioElements = new Map<SoundEffect, HTMLAudioElement>();
@@ -39,6 +49,7 @@ class SoundEffectsManager {
     const soundFiles: Record<SoundEffect, string> = {
       click_into_place: '/sound/soundEffects/click_into_place.mp3',
       game_over: '/sound/soundEffects/game_over.mp3',
+      pickup_shape: '/sound/soundEffects/pickup_shape.mp3',
       clear_combo_1: '/sound/soundEffects/clear-combo-1.mp3',
       clear_combo_2: '/sound/soundEffects/clear-combo-2.mp3',
       clear_combo_3: '/sound/soundEffects/clear-combo-3.mp3',
@@ -54,7 +65,7 @@ class SoundEffectsManager {
     }
   }
 
-  public async playSound(soundEffect: SoundEffect) {
+  public async playSound(soundEffect: SoundEffect, startTime?: number) {
     // Don't play if user hasn't interacted yet
     if (!this.hasUserInteracted) {
       return;
@@ -81,8 +92,8 @@ class SoundEffectsManager {
 
     const audio = this.audioElements.get(soundEffect);
     if (audio) {
-      // Reset audio to start if it's already playing
-      audio.currentTime = 0;
+      // Set audio to start time (default 0)
+      audio.currentTime = startTime ?? 0;
 
       audio.play().catch(error => {
         console.log(`Sound effect '${soundEffect}' play was prevented:`, error);
@@ -104,6 +115,13 @@ class SoundEffectsManager {
 export const soundEffectsManager = new SoundEffectsManager();
 
 // Convenience function for easy usage
-export function playSound(soundEffect: SoundEffect) {
-  return soundEffectsManager.playSound(soundEffect);
+// Will use context callback if available (fast), otherwise falls back to manager (slow)
+export function playSound(soundEffect: SoundEffect, startTime?: number) {
+  if (contextPlaySound) {
+    // Use context for instant playback
+    contextPlaySound(soundEffect, startTime);
+  } else {
+    // Fallback to legacy manager (slower due to async DB check)
+    return soundEffectsManager.playSound(soundEffect, startTime);
+  }
 }

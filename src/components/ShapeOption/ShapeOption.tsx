@@ -5,6 +5,7 @@ import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/Tetri
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { isValidPlacement, getShapeBounds } from '../../utils/shapeUtils';
 import { useGameSizing } from '../../hooks/useGameSizing';
+import { useSoundEffects } from '../SoundEffectsContext';
 
 type ShapeOptionProps = {
   shape: Shape;
@@ -15,6 +16,7 @@ type ShapeOptionProps = {
 const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
   const { selectedShapeIndex, tiles, isTurningModeActive, turningDirection, isDoubleTurnModeActive, removingShapeIndex, shapeRemovalAnimationState } = useTetrixStateContext();
+  const { playSound } = useSoundEffects();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
@@ -184,6 +186,9 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
 
+    // Play pickup sound with slight offset to skip silent lead-in
+    playSound('pickup_shape', 0.05);
+
     // Start drag by selecting this shape
     dispatch({
       type: 'SELECT_SHAPE',
@@ -193,7 +198,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
         initialPosition: { x: e.clientX, y: e.clientY }
       }
     });
-  }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval]);
+  }, [dispatch, shape, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval, playSound]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || isTurningModeActive || isDoubleTurnModeActive || isAnimatingRemoval) return;

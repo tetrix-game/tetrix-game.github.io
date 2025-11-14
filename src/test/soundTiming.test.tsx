@@ -3,11 +3,16 @@ import { render } from '@testing-library/react';
 import DraggingShape from '../components/DraggingShape';
 import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
 import { TetrixReducerState, PlacementAnimationState } from '../utils/types';
-import * as soundEffects from '../utils/soundEffects';
+import * as soundEffects from '../components/SoundEffectsContext';
 
 // Mock the sound effects module
-vi.mock('../utils/soundEffects', () => ({
-  playSound: vi.fn().mockResolvedValue(undefined)
+vi.mock('../components/SoundEffectsContext', () => ({
+  playSound: vi.fn().mockResolvedValue(undefined),
+  useSoundEffects: () => ({
+    playSound: vi.fn(),
+    setMuted: vi.fn(),
+    isMuted: false
+  })
 }));
 
 const mockDispatch = vi.fn();

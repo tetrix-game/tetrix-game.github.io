@@ -4,7 +4,7 @@ import { getShapeGridPositions, generateRandomShape, rotateShape, cloneShape, de
 import { clearFullLines } from '../../utils/lineUtils';
 import { calculateScore } from '../../utils/scoringUtils';
 import { safeBatchSave, saveModifiers } from '../../utils/persistenceUtils';
-import { playSound } from '../../utils/soundEffects';
+import { playSound } from '../SoundEffectsContext';
 
 // Helper function to play line clear sound effects
 function playLineClearSounds(clearedRows: number[], clearedColumns: number[]) {

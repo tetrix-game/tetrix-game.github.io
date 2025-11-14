@@ -17,11 +17,20 @@ export type Tile = {
   block: Block
 }
 
-// Placement animation states
-export type PlacementAnimationState = 'none' | 'placing';
+// Drag phase-based animation system
+export type DragPhase = 'none' | 'picking-up' | 'dragging' | 'placing' | 'returning';
+
+export type DragState = {
+  phase: DragPhase;
+  sourcePosition: { x: number; y: number; width: number; height: number } | null; // ShapeOption bounds
+  targetPosition: { x: number; y: number } | null; // Grid cell position for placement
+  placementLocation: Location | null; // Locked-in grid location at release time
+  startTime: number | null;
+};
+
+// Legacy animation states (keep for shape removal and creation)
 export type ShapeRemovalAnimationState = 'none' | 'removing';
 export type ShapeCreationAnimationState = 'none' | 'animating-in';
-export type PickupAnimationState = 'none' | 'animating';
 
 // Bounds for shape options (for return animation)
 export type ShapeOptionBounds = {
@@ -107,13 +116,8 @@ export type TetrixReducerState = {
   isShapeDragging: boolean;
   isValidPlacement: boolean; // Track if current hover position is valid for placement
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
-  // Animation state for shape placement
-  placementAnimationState: PlacementAnimationState;
-  animationStartPosition: { x: number; y: number } | null;
-  animationTargetPosition: { x: number; y: number } | null;
-  // Pick-up animation state
-  pickupAnimationState: PickupAnimationState;
-  pickupStartPosition: { x: number; y: number } | null;
+  // Unified drag animation state
+  dragState: DragState;
   // Shape removal animation
   removingShapeIndex: number | null;
   shapeRemovalAnimationState: ShapeRemovalAnimationState;
@@ -145,10 +149,7 @@ export type TetrixReducerState = {
 type SelectShapeAction = {
   type: 'SELECT_SHAPE';
   value: {
-    shape: Shape;
     shapeIndex: number;
-    initialPosition?: { x: number; y: number };
-    pickupStartPosition?: { x: number; y: number };
   };
 }
 
@@ -199,6 +200,10 @@ type SetShapeOptionBoundsAction = {
 
 type ReturnShapeToSelectorAction = {
   type: 'RETURN_SHAPE_TO_SELECTOR';
+}
+
+type CompleteReturnAction = {
+  type: 'COMPLETE_RETURN';
 }
 
 type AddScoreAction = {
@@ -344,6 +349,7 @@ export type TetrixAction =
   | SetAvailableShapesAction
   | SetShapeOptionBoundsAction
   | ReturnShapeToSelectorAction
+  | CompleteReturnAction
   | AddScoreAction
   | LoadGameStateAction
   | ResetGameAction

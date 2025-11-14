@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from '@testing-library/react';
 import DraggingShape from '../components/DraggingShape';
 import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
-import { TetrixReducerState, PlacementAnimationState } from '../utils/types';
+import { TetrixReducerState, DragPhase } from '../utils/types';
 import * as soundEffects from '../components/SoundEffectsContext';
 
 // Mock the sound effects module
@@ -17,7 +17,7 @@ vi.mock('../components/SoundEffectsContext', () => ({
 
 const mockDispatch = vi.fn();
 
-const createMockState = (placementAnimationState: PlacementAnimationState): TetrixReducerState => ({
+const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   gameState: 'playing',
   currentLevel: 1,
   isMapUnlocked: false,
@@ -37,11 +37,13 @@ const createMockState = (placementAnimationState: PlacementAnimationState): Tetr
   isShapeDragging: false,
   isValidPlacement: true,
   hoveredBlockPositions: [],
-  placementAnimationState,
-  animationStartPosition: placementAnimationState === 'placing' ? { x: 100, y: 100 } : null,
-  animationTargetPosition: placementAnimationState === 'placing' ? { x: 250, y: 250 } : null,
-  pickupAnimationState: 'none',
-  pickupStartPosition: null,
+  dragState: {
+    phase: dragPhase,
+    sourcePosition: dragPhase === 'picking-up' ? { x: 50, y: 50, width: 100, height: 100 } : null,
+    targetPosition: dragPhase === 'placing' ? { x: 250, y: 250 } : null,
+    placementLocation: null,
+    startTime: dragPhase !== 'none' ? performance.now() : null,
+  },
   shapeOptionBounds: [],
   openRotationMenus: [],
   score: 0,

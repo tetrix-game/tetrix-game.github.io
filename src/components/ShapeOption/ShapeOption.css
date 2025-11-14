@@ -8,8 +8,6 @@
   touch-action: none;
   transform-origin: center;
   overflow: hidden;
-  padding: var(--shape-padding);
-  transition: all 0.2s ease;
   pointer-events: auto;
 }
 
@@ -19,7 +17,6 @@
 }
 
 .shape-container.selected {
-  border-color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
 }
 
@@ -27,8 +24,4 @@
   border-radius: 3px;
   position: relative;
   opacity: 1;
-}
-
-.shape-cell-selected {
-  opacity: 0.1;
 }

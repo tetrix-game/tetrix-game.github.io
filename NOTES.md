@@ -1,6 +1,7 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
-- Pick up animation, and Dragging shape extends beyond the bounds of Grid
+- COmpletely redoing DraggingShape and placement logic
+- Audio latency
 - Invalid placement sound (sheew back)
 - Valid placement calculation sound (tick)
 - Invalid placement calculation sound (tock)

@@ -34,25 +34,41 @@ describe('TetrixReducer - Bug Fixes', () => {
   describe('SELECT_SHAPE action', () => {
     it('should set selectedShape and isShapeDragging when selecting a shape', () => {
       const testShape = createTestShape();
+      // First set up state with shapes and bounds
+      const stateWithShapes = {
+        ...initialState,
+        nextShapes: [testShape],
+        shapeOptionBounds: [{ top: 50, left: 50, width: 100, height: 100 }]
+      };
       const action: TetrixAction = {
         type: 'SELECT_SHAPE',
-        value: { shape: testShape, shapeIndex: 0 }
+        value: { shapeIndex: 0 }
       };
 
-      const newState = tetrixReducer(initialState, action);
+      const newState = tetrixReducer(stateWithShapes, action);
 
       expect(newState.selectedShape).toBe(testShape);
       expect(newState.selectedShapeIndex).toBe(0);
       expect(newState.isShapeDragging).toBe(true);
+      expect(newState.dragState.phase).toBe('picking-up');
     });
 
     it('should allow selecting different shapes sequentially', () => {
       const shape1 = createTestShape();
       const shape2 = createTestShape();
 
-      let state = tetrixReducer(initialState, {
+      let state: typeof initialState = {
+        ...initialState,
+        nextShapes: [shape1, shape2],
+        shapeOptionBounds: [
+          { top: 50, left: 50, width: 100, height: 100 },
+          { top: 50, left: 200, width: 100, height: 100 }
+        ]
+      };
+
+      state = tetrixReducer(state, {
         type: 'SELECT_SHAPE',
-        value: { shape: shape1, shapeIndex: 0 }
+        value: { shapeIndex: 0 }
       });
 
       expect(state.selectedShape).toBe(shape1);
@@ -60,7 +76,7 @@ describe('TetrixReducer - Bug Fixes', () => {
 
       state = tetrixReducer(state, {
         type: 'SELECT_SHAPE',
-        value: { shape: shape2, shapeIndex: 1 }
+        value: { shapeIndex: 1 }
       });
 
       expect(state.selectedShape).toBe(shape2);
@@ -90,10 +106,9 @@ describe('TetrixReducer - Bug Fixes', () => {
       });
 
       // Should start placement animation
-      expect(newState.placementAnimationState).toBe('placing');
+      expect(newState.dragState.phase).toBe('placing');
       expect(newState.isShapeDragging).toBe(false);
-      expect(newState.animationStartPosition).toEqual({ x: 100, y: 100 });
-      expect(newState.animationTargetPosition).toBeDefined();
+      expect(newState.dragState.targetPosition).toBeDefined();
       // Should maintain selected shape during animation
       expect(newState.selectedShape).toBe(shape1);
       expect(newState.selectedShapeIndex).toBe(0);

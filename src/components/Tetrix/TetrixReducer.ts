@@ -49,11 +49,13 @@ export const initialState: TetrixReducerState = {
   isShapeDragging: false,
   isValidPlacement: false,
   hoveredBlockPositions: [],
-  placementAnimationState: 'none',
-  animationStartPosition: null,
-  animationTargetPosition: null,
-  pickupAnimationState: 'none',
-  pickupStartPosition: null,
+  dragState: {
+    phase: 'none',
+    sourcePosition: null,
+    targetPosition: null,
+    placementLocation: null,
+    startTime: null,
+  },
   removingShapeIndex: null,
   shapeRemovalAnimationState: 'none',
   newShapeAnimationStates: [], // Initialize as empty array
@@ -75,17 +77,32 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
   switch (action.type) {
     case "SELECT_SHAPE": {
-      const { shape, shapeIndex, initialPosition, pickupStartPosition } = action.value;
+      const { shapeIndex } = action.value;
+      const shape = state.nextShapes[shapeIndex];
+      const bounds = state.shapeOptionBounds[shapeIndex];
+
+      if (!shape || !bounds) {
+        return state;
+      }
 
       return {
         ...state,
         selectedShape: shape,
         selectedShapeIndex: shapeIndex,
         isShapeDragging: true,
-        mousePosition: initialPosition || state.mousePosition,
         hoveredBlockPositions: [],
-        pickupAnimationState: pickupStartPosition ? 'animating' : 'none',
-        pickupStartPosition: pickupStartPosition || null,
+        dragState: {
+          phase: 'picking-up',
+          sourcePosition: {
+            x: bounds.left,
+            y: bounds.top,
+            width: bounds.width,
+            height: bounds.height,
+          },
+          targetPosition: null,
+          placementLocation: null,
+          startTime: performance.now(),
+        },
       };
     }
 
@@ -97,6 +114,12 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         ? getShapeGridPositions(state.selectedShape, location)
         : [];
 
+      // Transition from picking-up to dragging after pickup animation completes
+      const newDragState = state.dragState.phase === 'picking-up' && state.dragState.startTime &&
+        (performance.now() - state.dragState.startTime > 300) // 300ms pickup duration
+        ? { ...state.dragState, phase: 'dragging' as const }
+        : state.dragState;
+
       return {
         ...state,
         mouseGridLocation: location,
@@ -105,6 +128,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         gridBounds: gridBounds ?? state.gridBounds ?? null,
         isValidPlacement: isValid ?? false,
         hoveredBlockPositions,
+        dragState: newDragState,
       };
     }
 
@@ -138,9 +162,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       return {
         ...state,
-        placementAnimationState: 'placing',
-        animationStartPosition: { ...useMousePosition },
-        animationTargetPosition: { x: targetCellCenterX, y: targetCellCenterY },
+        dragState: {
+          ...state.dragState,
+          phase: 'placing',
+          targetPosition: { x: targetCellCenterX, y: targetCellCenterY },
+          placementLocation: location, // Lock in the placement location at release time
+          startTime: performance.now(),
+        },
         mouseGridLocation: location,
         mousePosition: useMousePosition, // Update current mouse position with click position
         hoveredBlockPositions: shapePositions,
@@ -149,12 +177,19 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "COMPLETE_PLACEMENT": {
-      if (!state.selectedShape || !state.mouseGridLocation || state.selectedShapeIndex === null) {
+      if (!state.selectedShape || state.selectedShapeIndex === null) {
+        return state;
+      }
+
+      // Use the locked-in placement location from dragState (set during PLACE_SHAPE)
+      // Fall back to mouseGridLocation for backward compatibility with tests
+      const placementLocation = state.dragState.placementLocation || state.mouseGridLocation;
+      if (!placementLocation) {
         return state;
       }
 
       // Get the positions where the shape would be placed
-      const shapePositions = getShapeGridPositions(state.selectedShape, state.mouseGridLocation);
+      const shapePositions = getShapeGridPositions(state.selectedShape, placementLocation);
 
       // Create a map for quick lookup
       const positionMap = new Map<string, typeof shapePositions[0]>();
@@ -238,11 +273,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mouseGridLocation: null,
         isShapeDragging: false,
         hoveredBlockPositions: [],
-        placementAnimationState: 'none' as const,
-        animationStartPosition: null,
-        animationTargetPosition: null,
-        pickupAnimationState: 'none' as const,
-        pickupStartPosition: null,
+        dragState: {
+          phase: 'none' as const,
+          sourcePosition: null,
+          targetPosition: null,
+          placementLocation: null,
+          startTime: null,
+        },
         hasPlacedFirstShape: true, // Mark that first shape has been placed
         // Start the removal animation
         removingShapeIndex: removedIndex,
@@ -299,9 +336,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mousePosition: state.mousePosition, // Keep current mouse position
         isShapeDragging: false,
         hoveredBlockPositions: [],
-        placementAnimationState: 'none',
-        animationStartPosition: null,
-        animationTargetPosition: null,
+        dragState: {
+          phase: 'none',
+          sourcePosition: null,
+          targetPosition: null,
+          placementLocation: null,
+          startTime: null,
+        },
       };
     }
 
@@ -337,22 +378,69 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       };
     }
 
-    case "RETURN_SHAPE_TO_SELECTOR": {
-      // Return shape to selector (invalid placement or drag outside grid)
+    case "COMPLETE_RETURN": {
+      // Clear shape after return animation completes
       return {
         ...state,
         selectedShape: null,
         selectedShapeIndex: null,
         mouseGridLocation: null,
-        mousePosition: state.mousePosition, // Keep current mouse position
         isShapeDragging: false,
         isValidPlacement: false,
         hoveredBlockPositions: [],
-        placementAnimationState: 'none' as const,
-        animationStartPosition: null,
-        animationTargetPosition: null,
-        pickupAnimationState: 'none' as const,
-        pickupStartPosition: null,
+        dragState: {
+          phase: 'none',
+          sourcePosition: null,
+          targetPosition: null,
+          placementLocation: null,
+          startTime: null,
+        },
+      };
+    }
+
+    case "RETURN_SHAPE_TO_SELECTOR": {
+      // Return shape to selector (invalid placement or drag outside grid)
+      // If we have a selected shape and bounds, animate the return
+      if (state.selectedShape && state.selectedShapeIndex !== null) {
+        const bounds = state.shapeOptionBounds[state.selectedShapeIndex];
+        const canAnimate = bounds && (state.dragState.phase === 'dragging' || state.dragState.phase === 'picking-up');
+        if (canAnimate) {
+          // Start return animation
+          return {
+            ...state,
+            dragState: {
+              phase: 'returning',
+              sourcePosition: {
+                x: bounds.left,
+                y: bounds.top,
+                width: bounds.width,
+                height: bounds.height,
+              },
+              targetPosition: null,
+              placementLocation: null,
+              startTime: performance.now(),
+            },
+          };
+        }
+      }
+
+      // No animation needed - clear immediately
+      return {
+        ...state,
+        selectedShape: null,
+        selectedShapeIndex: null,
+        mouseGridLocation: null,
+        mousePosition: state.mousePosition,
+        isShapeDragging: false,
+        isValidPlacement: false,
+        hoveredBlockPositions: [],
+        dragState: {
+          phase: 'none',
+          sourcePosition: null,
+          targetPosition: null,
+          placementLocation: null,
+          startTime: null,
+        },
       };
     }
 

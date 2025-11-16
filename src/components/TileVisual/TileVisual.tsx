@@ -12,7 +12,7 @@ type TileVisualProps = {
 }
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisualProps) => {
-  const { isValidPlacement } = useTetrixStateContext();
+  const { dragState } = useTetrixStateContext();
 
   // Fixed border width for consistent grid sizing
   // Always display the actual tile block
@@ -28,7 +28,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
   // Calculate shadow opacity: 70% for valid placement, 40% for invalid
   let shadowOpacity = 0;
   if (showShadow) {
-    shadowOpacity = isValidPlacement ? 0.7 : 0.4;
+    shadowOpacity = dragState.isValidPlacement ? 0.7 : 0.4;
   }
 
   return (

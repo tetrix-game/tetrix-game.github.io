@@ -1,8 +1,15 @@
-import type { Shape, Block, Location, ColorName } from './types';
+import type { Shape, Block, Location, ColorName, TilesSet } from './types';
 
 /**
  * Shape utility functions - Work with shapes as a whole without worrying about individual blocks
  */
+
+/**
+ * Helper function to create a tile key from location
+ */
+export function makeTileKey(row: number, column: number): string {
+  return `R${row}C${column}`;
+}
 
 /**
  * Get the bounding box of a shape (smallest rectangle that contains all X blocks)
@@ -118,30 +125,53 @@ export function getShapeGridPositions(
 
 /**
  * Check if a shape can be placed at a given center location on the grid
+ * @param shape - The 4x4 shape grid
+ * @param centerLocation - Center location where the shape should be placed
+ * @param gridSize - Size of the grid (rows and columns)
+ * @param tiles - Map of tile keys to tile data for checking occupancy
+ * @returns true if the shape can be placed without overlapping or going out of bounds
  */
 export function canPlaceShape(
   shape: Shape,
   centerLocation: Location,
   gridSize: { rows: number; columns: number },
-  occupiedPositions: Set<string>
+  tiles: TilesSet
 ): boolean {
-  const positions = getShapeGridPositions(shape, centerLocation);
+  // Get the shape's anchor block
+  const anchor = getShapeAnchorBlock(shape);
 
-  for (const { location } of positions) {
-    // Check bounds
-    if (
-      location.row < 1 ||
-      location.row > gridSize.rows ||
-      location.column < 1 ||
-      location.column > gridSize.columns
-    ) {
-      return false;
-    }
+  // Iterate through the 4x4 shape grid
+  for (let shapeRow = 0; shapeRow < shape.length; shapeRow++) {
+    for (let shapeCol = 0; shapeCol < shape[shapeRow].length; shapeCol++) {
+      const block = shape[shapeRow][shapeCol];
 
-    // Check if position is already occupied
-    const key = `${location.row},${location.column}`;
-    if (occupiedPositions.has(key)) {
-      return false;
+      // Only check filled blocks
+      if (block.isFilled) {
+        // Calculate the grid position for this block
+        const rowOffset = shapeRow - anchor.row;
+        const colOffset = shapeCol - anchor.col;
+
+        const gridRow = centerLocation.row + rowOffset;
+        const gridCol = centerLocation.column + colOffset;
+
+        // Check bounds
+        if (
+          gridRow < 1 ||
+          gridRow > gridSize.rows ||
+          gridCol < 1 ||
+          gridCol > gridSize.columns
+        ) {
+          return false;
+        }
+
+        // Check if position is already occupied
+        const tileKey = makeTileKey(gridRow, gridCol);
+        const tileData = tiles.get(tileKey);
+
+        if (tileData?.isFilled) {
+          return false;
+        }
+      }
     }
   }
 
@@ -149,42 +179,57 @@ export function canPlaceShape(
 }
 
 /**
- * Check if a shape can be placed at a given location based on tile array
+ * Check if a shape can be placed at a given location based on tile Map
+ * This function iterates through the shape's 4x4 grid and checks each filled block
+ * against the tiles Map for O(1) lookup performance.
+ * 
+ * @param shape - The 4x4 shape grid to check
+ * @param centerLocation - The center location where the shape should be placed
+ * @param tiles - Map of tile keys to tile data for O(1) lookup
+ * @returns true if the shape can be placed without overlapping filled tiles or going out of bounds
  */
 export function isValidPlacement(
   shape: Shape,
   centerLocation: Location | null,
-  tiles: Array<{ location: Location; block: { isFilled: boolean } }>
+  tiles: TilesSet
 ): boolean {
   // Return false if location is null
   if (centerLocation === null) {
     return false;
   }
 
-  const positions = getShapeGridPositions(shape, centerLocation);
+  // Get the shape's anchor block (the block that should be centered on centerLocation)
+  const anchor = getShapeAnchorBlock(shape);
 
-  // Create a map of occupied tiles for quick lookup
-  const occupiedTiles = new Set(
-    tiles
-      .filter(tile => tile.block.isFilled)
-      .map(tile => `${tile.location.row},${tile.location.column}`)
-  );
+  // Iterate through the 4x4 shape grid
+  for (let shapeRow = 0; shapeRow < shape.length; shapeRow++) {
+    for (let shapeCol = 0; shapeCol < shape[shapeRow].length; shapeCol++) {
+      const block = shape[shapeRow][shapeCol];
 
-  for (const { location } of positions) {
-    // Check bounds (10x10 grid, 1-indexed)
-    if (
-      location.row < 1 ||
-      location.row > 10 ||
-      location.column < 1 ||
-      location.column > 10
-    ) {
-      return false;
-    }
+      // Only check filled blocks
+      if (block.isFilled) {
+        // Calculate the grid position for this block
+        // Offset relative to anchor block
+        const rowOffset = shapeRow - anchor.row;
+        const colOffset = shapeCol - anchor.col;
 
-    // Check if position is already occupied
-    const key = `${location.row},${location.column}`;
-    if (occupiedTiles.has(key)) {
-      return false;
+        // Absolute grid position (1-indexed)
+        const gridRow = centerLocation.row + rowOffset;
+        const gridCol = centerLocation.column + colOffset;
+
+        // Check bounds (10x10 grid, 1-indexed)
+        if (gridRow < 1 || gridRow > 10 || gridCol < 1 || gridCol > 10) {
+          return false;
+        }
+
+        // Check if position is already occupied using O(1) Map lookup
+        const tileKey = makeTileKey(gridRow, gridCol);
+        const tileData = tiles.get(tileKey);
+
+        if (tileData?.isFilled) {
+          return false;
+        }
+      }
     }
   }
 
@@ -325,10 +370,18 @@ export function makeRandomColor(colorCount: number = 7): ColorName {
  * @param tiles - Array of tiles (10x10 grid, 1-indexed)
  * @returns true if the pattern exists
  */
-export function detectSuperComboPattern(
-  tiles: Array<{ location: Location; block: { isFilled: boolean } }>
-): boolean {
-  const grid = buildGrid(tiles);
+export function detectSuperComboPattern(tiles: TilesSet): boolean {
+  // Build a 2D grid for easier pattern checking
+  const grid: boolean[][] = new Array(11).fill(null).map(() => new Array(11).fill(false));
+
+  for (let row = 1; row <= 10; row++) {
+    for (let column = 1; column <= 10; column++) {
+      const tile = tiles.get(makeTileKey(row, column));
+      if (tile?.isFilled) {
+        grid[row][column] = true;
+      }
+    }
+  }
 
   // Check all possible 4x4 starting positions
   for (let startRow = 1; startRow <= 7; startRow++) {
@@ -340,21 +393,6 @@ export function detectSuperComboPattern(
   }
 
   return false;
-}
-
-/**
- * Build a 2D grid from tiles array
- */
-function buildGrid(tiles: Array<{ location: Location; block: { isFilled: boolean } }>): boolean[][] {
-  const grid: boolean[][] = new Array(11).fill(null).map(() => new Array(11).fill(false));
-
-  for (const tile of tiles) {
-    if (tile.block.isFilled) {
-      grid[tile.location.row][tile.location.column] = true;
-    }
-  }
-
-  return grid;
 }
 
 /**

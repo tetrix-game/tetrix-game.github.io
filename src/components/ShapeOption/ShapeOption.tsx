@@ -14,7 +14,7 @@ type ShapeOptionProps = {
 const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
   const {
-    selectedShapeIndex,
+    dragState,
     isTurningModeActive,
     turningDirection,
     isDoubleTurnModeActive,
@@ -128,7 +128,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
       return;
     }
 
-    if (selectedShapeIndex === shapeIndex) {
+    if (dragState.selectedShapeIndex === shapeIndex) {
       // Already selected - do nothing, let the global pointerup handler in App.tsx
       // handle the return logic (it will detect we're over a ShapeOption)
       return;
@@ -139,9 +139,9 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
       type: 'SELECT_SHAPE',
       value: { shapeIndex }
     });
-  }, [dispatch, shapeIndex, selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval]);
+  }, [dispatch, shapeIndex, dragState.selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval]);
 
-  const isSelected = selectedShapeIndex === shapeIndex;
+  const isSelected = dragState.selectedShapeIndex === shapeIndex;
 
   // Render empty blocks during removal animation
   const displayShape = isAnimatingRemoval

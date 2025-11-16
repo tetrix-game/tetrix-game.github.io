@@ -11,7 +11,7 @@ import { mousePositionToGridLocation, isValidPlacement } from './utils/shapeUtil
 import './App.css';
 
 const App = () => {
-  const { gameState, selectedShape, gridTileSize, gridBounds, tiles } = useTetrixStateContext();
+  const { gameState, dragState, gridTileSize, gridBounds, tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const [showTutorial, setShowTutorial] = useState(false);
   const gridRef = useRef<HTMLElement | null>(null);
@@ -35,7 +35,7 @@ const App = () => {
       let bounds = gridBounds;
       let isValid = false;
 
-      if (selectedShape) {
+      if (dragState.selectedShape) {
         // Find the grid element if we don't have it cached
         if (!gridRef.current) {
           gridRef.current = document.querySelector('.grid');
@@ -75,7 +75,7 @@ const App = () => {
 
           // Validate placement if location is within grid
           if (location) {
-            isValid = isValidPlacement(selectedShape, location, tiles);
+            isValid = isValidPlacement(dragState.selectedShape, location, tiles);
           }
         }
       }
@@ -100,13 +100,13 @@ const App = () => {
       document.removeEventListener('pointermove', handlePointerMove);
       gridRef.current = null;
     };
-  }, [dispatch, selectedShape, gridTileSize, gridBounds, tiles]);
+  }, [dispatch, dragState.selectedShape, gridTileSize, gridBounds, tiles]);
 
   // Global pointerup handler - consolidates all placement/return logic
   useEffect(() => {
     const handleGlobalPointerUp = (e: PointerEvent) => {
       // Only handle if a shape is being dragged
-      if (!selectedShape) return;
+      if (!dragState.selectedShape) return;
 
       // Get current grid element for validation
       if (!gridRef.current) {
@@ -136,7 +136,7 @@ const App = () => {
       );
 
       // If location is null or placement is invalid, return the shape
-      if (location === null || !isValidPlacement(selectedShape, location, tiles)) {
+      if (location === null || !isValidPlacement(dragState.selectedShape, location, tiles)) {
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
       }
@@ -156,7 +156,7 @@ const App = () => {
     return () => {
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [dispatch, selectedShape, tiles]);
+  }, [dispatch, dragState.selectedShape, tiles]);
 
   const handleCloseTutorial = () => {
     setShowTutorial(false);

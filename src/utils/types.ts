@@ -17,11 +17,24 @@ export type Tile = {
   block: Block
 }
 
+// Tile data stored in the Set with keyed access (e.g., 'R1C1', 'R2C5')
+export type TileData = {
+  isFilled: boolean;
+  color: ColorName;
+}
+
+// Set of tile keys with their data
+export type TilesSet = Map<string, TileData>;
+
 // Drag phase-based animation system
 export type DragPhase = 'none' | 'picking-up' | 'dragging' | 'placing' | 'returning';
 
 export type DragState = {
   phase: DragPhase;
+  selectedShape: Shape | null;
+  selectedShapeIndex: number | null;
+  isValidPlacement: boolean;
+  hoveredBlockPositions: Array<{ location: Location; block: Block }>;
   sourcePosition: { x: number; y: number; width: number; height: number } | null; // ShapeOption bounds
   targetPosition: { x: number; y: number } | null; // Grid cell position for placement
   placementLocation: Location | null; // Locked-in grid location at release time
@@ -50,7 +63,7 @@ export type ScoreData = {
 // Game persistence data (legacy - for backward compatibility)
 export type GamePersistenceData = {
   score: number;
-  tiles: Tile[];
+  tiles: Tile[]; // Keep as array for backward compatibility
   nextShapes: Shape[];
   savedShape: Shape | null;
 };
@@ -62,7 +75,7 @@ export type ScorePersistenceData = {
 };
 
 export type TilesPersistenceData = {
-  tiles: Tile[];
+  tiles: Array<{ key: string; data: TileData }>; // Serialized from Map
   lastUpdated: number;
 };
 
@@ -103,20 +116,15 @@ export type TetrixReducerState = {
   currentLevel: number; // Current level being played
   isMapUnlocked: boolean; // Whether map has been unlocked
 
-  tiles: Tile[];
+  tiles: TilesSet; // Keyed tile storage for O(1) lookup
   nextShapes: Shape[];
   savedShape: Shape | null;
-  selectedShape: Shape | null;
-  selectedShapeIndex: number | null;
   mouseGridLocation: Location | null;
   mousePosition: { x: number; y: number }; // Never null - always has a position
   gemIconPosition: { x: number; y: number }; // Position of the score display gem icon
   gridTileSize: number | null;
   gridBounds: { top: number; left: number; width: number; height: number } | null;
-  isShapeDragging: boolean;
-  isValidPlacement: boolean; // Track if current hover position is valid for placement
-  hoveredBlockPositions: Array<{ location: Location; block: Block }>;
-  // Unified drag animation state
+  // Unified drag animation state with all drag-related properties
   dragState: DragState;
   // Shape removal animation
   removingShapeIndex: number | null;

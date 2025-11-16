@@ -7,11 +7,9 @@ import './DraggingShape.css';
 
 export default function DraggingShape() {
   const {
-    selectedShape,
-    mousePosition,
     dragState,
+    mousePosition,
     shapeOptionBounds,
-    selectedShapeIndex,
   } = useTetrixStateContext();
 
   const dispatch = useTetrixDispatchContext();
@@ -135,7 +133,7 @@ export default function DraggingShape() {
     requestAnimationFrame(animate);
   }, [dragState.phase, dragState.sourcePosition, dispatch]);
 
-  if (!selectedShape || selectedShapeIndex === null) {
+  if (!dragState.selectedShape || dragState.selectedShapeIndex === null) {
     return null;
   }
 
@@ -195,7 +193,7 @@ export default function DraggingShape() {
     cellGap = shapeOptionCellGap + (GRID_GAP - shapeOptionCellGap) * animationProgress;
 
     // Calculate shape bounds from ShapeOption bounds
-    const bounds = shapeOptionBounds[selectedShapeIndex];
+    const bounds = shapeOptionBounds[dragState.selectedShapeIndex];
     if (!bounds) {
       return null;
     }
@@ -270,7 +268,7 @@ export default function DraggingShape() {
         '--scale': scale,
       } as React.CSSProperties}
     >
-      {selectedShape.map((row, rowIndex) => (
+      {dragState.selectedShape.map((row, rowIndex) => (
         row.map((block, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}

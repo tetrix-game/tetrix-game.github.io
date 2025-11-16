@@ -1,4 +1,4 @@
-import type { TetrixAction, Tile } from '../../utils/types';
+import type { TetrixAction, TilesSet, TileData, ColorName } from '../../utils/types';
 import { TetrixReducerState } from '../../utils/types';
 import { getShapeGridPositions, generateRandomShape, rotateShape, cloneShape, detectSuperComboPattern, generateSuperShape } from '../../utils/shapeUtils';
 import { clearFullLines } from '../../utils/lineUtils';
@@ -16,19 +16,31 @@ function playLineClearSounds(clearedRows: number[], clearedColumns: number[]) {
   }
 }
 
-const makeTiles = () => {
-  const tiles: Tile[] = [];
+// Helper function to create a tile key from location
+export function makeTileKey(row: number, column: number): string {
+  return `R${row}C${column}`;
+}
+
+// Helper function to parse a tile key back to location
+export function parseTileKey(key: string): { row: number; column: number } {
+  const match = key.match(/R(\d+)C(\d+)/);
+  if (!match) throw new Error(`Invalid tile key: ${key}`);
+  return { row: parseInt(match[1], 10), column: parseInt(match[2], 10) };
+}
+
+// Helper function to create tiles Set
+const makeTiles = (): TilesSet => {
+  const tiles = new Map<string, TileData>();
   for (let row = 1; row <= 10; row++) {
     for (let column = 1; column <= 10; column++) {
-      tiles.push({
-        id: `(row: ${row}, column: ${column})`,
-        location: { row, column },
-        block: { isFilled: false, color: 'grey' }
-      })
+      tiles.set(makeTileKey(row, column), {
+        isFilled: false,
+        color: 'grey',
+      });
     }
   }
   return tiles;
-}
+};
 
 export const initialState: TetrixReducerState = {
   // Game state management - simplified
@@ -39,18 +51,17 @@ export const initialState: TetrixReducerState = {
   tiles: makeTiles(),
   nextShapes: [],
   savedShape: null,
-  selectedShape: null,
-  selectedShapeIndex: null,
   mouseGridLocation: null,
   mousePosition: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, // Default to center instead of null
   gemIconPosition: { x: 100, y: 50 }, // Default position, will be updated by ScoreDisplay
   gridTileSize: null,
   gridBounds: null,
-  isShapeDragging: false,
-  isValidPlacement: false,
-  hoveredBlockPositions: [],
   dragState: {
     phase: 'none',
+    selectedShape: null,
+    selectedShapeIndex: null,
+    isValidPlacement: false,
+    hoveredBlockPositions: [],
     sourcePosition: null,
     targetPosition: null,
     placementLocation: null,
@@ -87,12 +98,12 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       return {
         ...state,
-        selectedShape: shape,
-        selectedShapeIndex: shapeIndex,
-        isShapeDragging: true,
-        hoveredBlockPositions: [],
         dragState: {
           phase: 'picking-up',
+          selectedShape: shape,
+          selectedShapeIndex: shapeIndex,
+          isValidPlacement: false,
+          hoveredBlockPositions: [],
           sourcePosition: {
             x: bounds.left,
             y: bounds.top,
@@ -110,15 +121,17 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const { location, position, tileSize, gridBounds, isValid } = action.value;
 
       // Calculate hovered block positions based on selected shape and mouse location
-      const hoveredBlockPositions = state.selectedShape && location
-        ? getShapeGridPositions(state.selectedShape, location)
+      const hoveredBlockPositions = state.dragState.selectedShape && location
+        ? getShapeGridPositions(state.dragState.selectedShape, location)
         : [];
 
       // Transition from picking-up to dragging after pickup animation completes
-      const newDragState = state.dragState.phase === 'picking-up' && state.dragState.startTime &&
-        (performance.now() - state.dragState.startTime > 300) // 300ms pickup duration
-        ? { ...state.dragState, phase: 'dragging' as const }
-        : state.dragState;
+      const shouldTransitionToDragging = state.dragState.phase === 'picking-up' && state.dragState.startTime &&
+        (performance.now() - state.dragState.startTime > 300); // 300ms pickup duration
+
+      const newDragState = shouldTransitionToDragging
+        ? { ...state.dragState, phase: 'dragging' as const, hoveredBlockPositions, isValidPlacement: isValid ?? false }
+        : { ...state.dragState, hoveredBlockPositions, isValidPlacement: isValid ?? false };
 
       return {
         ...state,
@@ -126,8 +139,6 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         mousePosition: position ?? state.mousePosition ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 },
         gridTileSize: tileSize ?? state.gridTileSize ?? null,
         gridBounds: gridBounds ?? state.gridBounds ?? null,
-        isValidPlacement: isValid ?? false,
-        hoveredBlockPositions,
         dragState: newDragState,
       };
     }
@@ -135,7 +146,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     case "PLACE_SHAPE": {
       const { location, mousePosition: clickPosition } = action.value;
 
-      if (!state.selectedShape || state.selectedShapeIndex === null) {
+      if (!state.dragState.selectedShape || state.dragState.selectedShapeIndex === null) {
         return state;
       }
 
@@ -158,7 +169,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const targetCellCenterY = targetCellTop + state.gridTileSize / 2;
 
       // Get the positions where the shape will be placed
-      const shapePositions = getShapeGridPositions(state.selectedShape, location);
+      const shapePositions = getShapeGridPositions(state.dragState.selectedShape, location);
 
       return {
         ...state,
@@ -167,17 +178,16 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           phase: 'placing',
           targetPosition: { x: targetCellCenterX, y: targetCellCenterY },
           placementLocation: location, // Lock in the placement location at release time
+          hoveredBlockPositions: shapePositions,
           startTime: performance.now(),
         },
         mouseGridLocation: location,
         mousePosition: useMousePosition, // Update current mouse position with click position
-        hoveredBlockPositions: shapePositions,
-        isShapeDragging: false,
       };
     }
 
     case "COMPLETE_PLACEMENT": {
-      if (!state.selectedShape || state.selectedShapeIndex === null) {
+      if (!state.dragState.selectedShape || state.dragState.selectedShapeIndex === null) {
         return state;
       }
 
@@ -189,31 +199,22 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       }
 
       // Get the positions where the shape would be placed
-      const shapePositions = getShapeGridPositions(state.selectedShape, placementLocation);
+      const shapePositions = getShapeGridPositions(state.dragState.selectedShape, placementLocation);
 
-      // Create a map for quick lookup
-      const positionMap = new Map<string, typeof shapePositions[0]>();
+      // Update tiles with the placed shape (working with Map)
+      const newTiles = new Map(state.tiles);
       for (const pos of shapePositions) {
-        const key = `${pos.location.row},${pos.location.column}`;
-        positionMap.set(key, pos);
+        if (pos.block.isFilled) {
+          const key = makeTileKey(pos.location.row, pos.location.column);
+          newTiles.set(key, {
+            isFilled: true,
+            color: pos.block.color,
+          });
+        }
       }
 
-      // Update tiles with the placed shape
-      const tilesWithShape = state.tiles.map(tile => {
-        const key = `${tile.location.row},${tile.location.column}`;
-        const shapePos = positionMap.get(key);
-
-        if (shapePos?.block.isFilled) {
-          return {
-            ...tile,
-            block: { ...shapePos.block, isFilled: true }
-          };
-        }
-        return tile;
-      });
-
       // Check for and clear full lines
-      const { tiles: newTiles, clearedRows, clearedColumns } = clearFullLines(tilesWithShape);
+      const { tiles: finalTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
 
       // Play sound effects for line clearing
       playLineClearSounds(clearedRows, clearedColumns);
@@ -224,8 +225,10 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const newTotalLinesCleared = state.totalLinesCleared + clearedRows.length + clearedColumns.length;
 
       // Save game state to browser DB asynchronously (don't block UI)
-      if (scoreData.pointsEarned > 0 || newTiles.some(tile => tile.block.isFilled)) {
-        safeBatchSave(newScore, newTiles, state.nextShapes, state.savedShape)
+      // Convert tiles to serializable format for persistence
+      const tilesPersistenceData = Array.from(finalTiles.entries()).map(([key, data]) => ({ key, data }));
+      if (scoreData.pointsEarned > 0 || Array.from(finalTiles.values()).some(tileData => tileData.isFilled)) {
+        safeBatchSave(newScore, tilesPersistenceData, state.nextShapes, state.savedShape)
           .catch((error: Error) => {
             console.error('Failed to save game state:', error);
           });
@@ -233,10 +236,10 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       // Emit gems for GemShower animation
       // Start the removal animation but keep the shape in the array until animation completes
-      const removedIndex = state.selectedShapeIndex;
+      const removedIndex = state.dragState.selectedShapeIndex;
 
       // Check if super combo pattern exists after this placement
-      const hasSuperComboPattern = detectSuperComboPattern(newTiles);
+      const hasSuperComboPattern = detectSuperComboPattern(finalTiles);
 
       // Add a new shape immediately to create the 4th shape during removal animation
       const updatedNextShapes = [...state.nextShapes];
@@ -260,7 +263,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       const newState = {
         ...state,
-        tiles: newTiles,
+        tiles: finalTiles,
         score: newScore,
         totalLinesCleared: newTotalLinesCleared,
         nextShapes: updatedNextShapes,
@@ -268,13 +271,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         openRotationMenus: newOpenRotationMenus,
         newShapeAnimationStates: newAnimationStates,
         shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
-        selectedShape: null,
-        selectedShapeIndex: null,
         mouseGridLocation: null,
-        isShapeDragging: false,
-        hoveredBlockPositions: [],
         dragState: {
           phase: 'none' as const,
+          selectedShape: null,
+          selectedShapeIndex: null,
+          isValidPlacement: false,
+          hoveredBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -330,14 +333,14 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Clear selection immediately (ESC key)
       return {
         ...state,
-        selectedShape: null,
-        selectedShapeIndex: null,
         mouseGridLocation: null,
         mousePosition: state.mousePosition, // Keep current mouse position
-        isShapeDragging: false,
-        hoveredBlockPositions: [],
         dragState: {
           phase: 'none',
+          selectedShape: null,
+          selectedShapeIndex: null,
+          isValidPlacement: false,
+          hoveredBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -382,14 +385,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Clear shape after return animation completes
       return {
         ...state,
-        selectedShape: null,
-        selectedShapeIndex: null,
         mouseGridLocation: null,
-        isShapeDragging: false,
-        isValidPlacement: false,
-        hoveredBlockPositions: [],
         dragState: {
           phase: 'none',
+          selectedShape: null,
+          selectedShapeIndex: null,
+          isValidPlacement: false,
+          hoveredBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -401,14 +403,15 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     case "RETURN_SHAPE_TO_SELECTOR": {
       // Return shape to selector (invalid placement or drag outside grid)
       // If we have a selected shape and bounds, animate the return
-      if (state.selectedShape && state.selectedShapeIndex !== null) {
-        const bounds = state.shapeOptionBounds[state.selectedShapeIndex];
+      if (state.dragState.selectedShape && state.dragState.selectedShapeIndex !== null) {
+        const bounds = state.shapeOptionBounds[state.dragState.selectedShapeIndex];
         const canAnimate = bounds && (state.dragState.phase === 'dragging' || state.dragState.phase === 'picking-up');
         if (canAnimate) {
           // Start return animation
           return {
             ...state,
             dragState: {
+              ...state.dragState,
               phase: 'returning',
               sourcePosition: {
                 x: bounds.left,
@@ -427,15 +430,14 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // No animation needed - clear immediately
       return {
         ...state,
-        selectedShape: null,
-        selectedShapeIndex: null,
         mouseGridLocation: null,
         mousePosition: state.mousePosition,
-        isShapeDragging: false,
-        isValidPlacement: false,
-        hoveredBlockPositions: [],
         dragState: {
           phase: 'none',
+          selectedShape: null,
+          selectedShapeIndex: null,
+          isValidPlacement: false,
+          hoveredBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -463,10 +465,20 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "LOAD_GAME_STATE": {
       const { gameData } = action.value;
+      // Convert tiles from persistence format to Map
+      const tilesMap = new Map<string, TileData>();
+      if (Array.isArray(gameData.tiles)) {
+        gameData.tiles.forEach((tile: { location: { row: number; column: number }; block: { isFilled: boolean; color: string } }) => {
+          tilesMap.set(
+            makeTileKey(tile.location.row, tile.location.column),
+            { isFilled: tile.block.isFilled, color: tile.block.color as ColorName }
+          );
+        });
+      }
       return {
         ...state,
         score: gameData.score,
-        tiles: gameData.tiles,
+        tiles: tilesMap,
         nextShapes: gameData.nextShapes || state.nextShapes,
         savedShape: gameData.savedShape || state.savedShape,
       };
@@ -511,11 +523,15 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
       newShapes[shapeIndex] = rotatedShape;
 
+      // If this is the currently selected shape, update it in dragState too
+      const newDragState = state.dragState.selectedShapeIndex === shapeIndex
+        ? { ...state.dragState, selectedShape: rotatedShape }
+        : state.dragState;
+
       const newState = {
         ...state,
         nextShapes: newShapes,
-        // If this is the currently selected shape, update it too
-        selectedShape: state.selectedShapeIndex === shapeIndex ? rotatedShape : state.selectedShape,
+        dragState: newDragState,
       };
 
       // Save updated shapes to database
@@ -586,7 +602,21 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       const updatedAnimationStates = state.newShapeAnimationStates.slice(0, -1);
 
       // If the currently selected shape is being removed, clear selection
-      const isRemovingSelectedShape = state.selectedShapeIndex === state.nextShapes.length - 1;
+      const isRemovingSelectedShape = state.dragState.selectedShapeIndex === state.nextShapes.length - 1;
+
+      const newDragState = isRemovingSelectedShape
+        ? {
+          phase: 'none' as const,
+          selectedShape: null,
+          selectedShapeIndex: null,
+          isValidPlacement: false,
+          hoveredBlockPositions: [],
+          sourcePosition: null,
+          targetPosition: null,
+          placementLocation: null,
+          startTime: null,
+        }
+        : state.dragState;
 
       const newState = {
         ...state,
@@ -594,10 +624,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
         openRotationMenus: updatedRotationMenus,
         shapeOptionBounds: updatedBounds,
         newShapeAnimationStates: updatedAnimationStates,
-        selectedShape: isRemovingSelectedShape ? null : state.selectedShape,
-        selectedShapeIndex: isRemovingSelectedShape ? null : state.selectedShapeIndex,
-        isShapeDragging: isRemovingSelectedShape ? false : state.isShapeDragging,
-        hoveredBlockPositions: isRemovingSelectedShape ? [] : state.hoveredBlockPositions,
+        dragState: newDragState,
       };
 
       // Save updated shapes to database
@@ -704,45 +731,41 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
       // Pattern: rows 4-7 are completely filled except for diagonal empty spaces
       // AND columns 4-7 are completely filled except for diagonal empty spaces
       // Supports both ascending and descending diagonals
-      const newTiles = state.tiles.map(tile => {
-        const { row, column } = tile.location;
+      const newTiles = new Map(state.tiles);
 
-        // Check if this tile is in pattern rows (4-7) OR pattern columns (4-7)
-        const isInPatternRows = row >= 4 && row <= 7;
-        const isInPatternCols = column >= 4 && column <= 7;
+      // Randomly choose which diagonal to use (50/50 chance)
+      const useAscending = Math.random() > 0.5;
 
-        // Check if this tile is on either diagonal of the 4x4 area
-        // Ascending diagonal: (4,4), (5,5), (6,6), (7,7)
-        const isOnAscendingDiagonal = isInPatternRows && isInPatternCols && (row - 4) === (column - 4);
-        // Descending diagonal: (4,7), (5,6), (6,5), (7,4)
-        const isOnDescendingDiagonal = isInPatternRows && isInPatternCols && (row + column) === 11;
+      for (let row = 1; row <= 10; row++) {
+        for (let column = 1; column <= 10; column++) {
+          const key = makeTileKey(row, column);
 
-        // Randomly choose which diagonal to use (50/50 chance)
-        const useAscending = Math.random() > 0.5;
-        const isOnDiagonal = useAscending ? isOnAscendingDiagonal : isOnDescendingDiagonal;
+          // Check if this tile is in pattern rows (4-7) OR pattern columns (4-7)
+          const isInPatternRows = row >= 4 && row <= 7;
+          const isInPatternCols = column >= 4 && column <= 7;
 
-        // Fill if in pattern rows OR pattern columns, but NOT on diagonal
-        if ((isInPatternRows || isInPatternCols) && !isOnDiagonal) {
-          return {
-            ...tile,
-            block: { color: 'blue' as const, isFilled: true }
-          };
+          // Check if this tile is on either diagonal of the 4x4 area
+          // Ascending diagonal: (4,4), (5,5), (6,6), (7,7)
+          const isOnAscendingDiagonal = isInPatternRows && isInPatternCols && (row - 4) === (column - 4);
+          // Descending diagonal: (4,7), (5,6), (6,5), (7,4)
+          const isOnDescendingDiagonal = isInPatternRows && isInPatternCols && (row + column) === 11;
+
+          const isOnDiagonal = useAscending ? isOnAscendingDiagonal : isOnDescendingDiagonal;
+
+          // Fill if in pattern rows OR pattern columns, but NOT on diagonal
+          if ((isInPatternRows || isInPatternCols) && !isOnDiagonal) {
+            newTiles.set(key, { color: 'blue', isFilled: true });
+          } else if (isOnDiagonal) {
+            // Empty if on diagonal
+            newTiles.set(key, { color: 'grey', isFilled: false });
+          }
+          // Keep all other tiles as-is
         }
+      }
 
-        // Empty if on diagonal
-        if (isOnDiagonal) {
-          return {
-            ...tile,
-            block: { ...tile.block, isFilled: false }
-          };
-        }
-
-        // Keep all other tiles as-is
-        return tile;
-      });
-
-      // Save the new tile state
-      safeBatchSave(undefined, newTiles)
+      // Save the new tile state (convert to serializable format)
+      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      safeBatchSave(undefined, tilesPersistenceData)
         .catch((error: Error) => {
           console.error('Failed to save tiles after generating super combo pattern:', error);
         });
@@ -763,17 +786,17 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "DEBUG_FILL_ROW": {
       const { row, excludeColumn, color } = action.value;
-      const newTiles = state.tiles.map(tile => {
-        if (tile.location.row === row && tile.location.column !== excludeColumn) {
-          return {
-            ...tile,
-            block: { color, isFilled: true }
-          };
-        }
-        return tile;
-      });
+      const newTiles = new Map(state.tiles);
 
-      safeBatchSave(undefined, newTiles)
+      for (let column = 1; column <= 10; column++) {
+        if (column !== excludeColumn) {
+          const key = makeTileKey(row, column);
+          newTiles.set(key, { color, isFilled: true });
+        }
+      }
+
+      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      safeBatchSave(undefined, tilesPersistenceData)
         .catch((error: Error) => {
           console.error('Failed to save tiles after debug fill row:', error);
         });
@@ -786,17 +809,17 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "DEBUG_FILL_COLUMN": {
       const { column, excludeRow, color } = action.value;
-      const newTiles = state.tiles.map(tile => {
-        if (tile.location.column === column && tile.location.row !== excludeRow) {
-          return {
-            ...tile,
-            block: { color, isFilled: true }
-          };
-        }
-        return tile;
-      });
+      const newTiles = new Map(state.tiles);
 
-      safeBatchSave(undefined, newTiles)
+      for (let row = 1; row <= 10; row++) {
+        if (row !== excludeRow) {
+          const key = makeTileKey(row, column);
+          newTiles.set(key, { color, isFilled: true });
+        }
+      }
+
+      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      safeBatchSave(undefined, tilesPersistenceData)
         .catch((error: Error) => {
           console.error('Failed to save tiles after debug fill column:', error);
         });
@@ -809,17 +832,16 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "DEBUG_REMOVE_BLOCK": {
       const { location } = action.value;
-      const newTiles = state.tiles.map(tile => {
-        if (tile.location.row === location.row && tile.location.column === location.column) {
-          return {
-            ...tile,
-            block: { ...tile.block, isFilled: false }
-          };
-        }
-        return tile;
-      });
+      const newTiles = new Map(state.tiles);
+      const key = makeTileKey(location.row, location.column);
+      const currentTile = newTiles.get(key);
 
-      safeBatchSave(undefined, newTiles)
+      if (currentTile) {
+        newTiles.set(key, { ...currentTile, isFilled: false });
+      }
+
+      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      safeBatchSave(undefined, tilesPersistenceData)
         .catch((error: Error) => {
           console.error('Failed to save tiles after debug remove block:', error);
         });
@@ -832,17 +854,13 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
     case "DEBUG_ADD_BLOCK": {
       const { location, color } = action.value;
-      const newTiles = state.tiles.map(tile => {
-        if (tile.location.row === location.row && tile.location.column === location.column) {
-          return {
-            ...tile,
-            block: { color, isFilled: true }
-          };
-        }
-        return tile;
-      });
+      const newTiles = new Map(state.tiles);
+      const key = makeTileKey(location.row, location.column);
 
-      safeBatchSave(undefined, newTiles)
+      newTiles.set(key, { color, isFilled: true });
+
+      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      safeBatchSave(undefined, tilesPersistenceData)
         .catch((error: Error) => {
           console.error('Failed to save tiles after debug add block:', error);
         });
@@ -854,12 +872,17 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "DEBUG_CLEAR_ALL": {
-      const newTiles = state.tiles.map(tile => ({
-        ...tile,
-        block: { ...tile.block, isFilled: false }
-      }));
+      const newTiles = new Map<string, TileData>();
 
-      safeBatchSave(undefined, newTiles)
+      for (let row = 1; row <= 10; row++) {
+        for (let column = 1; column <= 10; column++) {
+          const key = makeTileKey(row, column);
+          newTiles.set(key, { isFilled: false, color: 'grey' });
+        }
+      }
+
+      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      safeBatchSave(undefined, tilesPersistenceData)
         .catch((error: Error) => {
           console.error('Failed to save tiles after debug clear all:', error);
         });

@@ -584,14 +584,37 @@ async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
 export async function loadCompleteGameState(): Promise<GamePersistenceData | null> {
   try {
     // Try to load from granular stores first
-    const [score, tiles, shapes] = await Promise.all([
+    const [score, tilesData, shapes] = await Promise.all([
       loadScore(),
       loadTiles(),
       loadShapes()
     ]);
 
+    // Convert serialized tiles data to Tile array for backward compatibility
+    let tiles: GamePersistenceData['tiles'] = [];
+    if (tilesData && Array.isArray(tilesData)) {
+      // Check if it's the new serialized format (array of {key, data})
+      if (tilesData.length > 0 && 'key' in tilesData[0] && 'data' in tilesData[0]) {
+        // New format: convert from serialized format to Tile array
+        tiles = tilesData.map((item: { key: string; data: { isFilled: boolean; color: string } }) => {
+          const match = item.key.match(/R(\d+)C(\d+)/);
+          if (!match) throw new Error(`Invalid tile key: ${item.key}`);
+          const row = parseInt(match[1], 10);
+          const column = parseInt(match[2], 10);
+          return {
+            id: `(row: ${row}, column: ${column})`,
+            location: { row, column },
+            block: { isFilled: item.data.isFilled, color: item.data.color as any },
+          };
+        });
+      } else {
+        // Old format: it's already Tile[]
+        tiles = tilesData as any;
+      }
+    }
+
     // Only return granular state if we have tiles (indicating a real game in progress)
-    if (tiles?.length === 100) {
+    if (tiles.length === 100) {
       console.log('Loaded game state from granular stores');
       return {
         score,
@@ -608,9 +631,15 @@ export async function loadCompleteGameState(): Promise<GamePersistenceData | nul
       console.log('Loaded game state from legacy store');
 
       // Migrate legacy data to granular stores for future use
+      // Convert tiles to serialized format for storage
+      const tilesPersistenceData = legacyData.tiles.map(tile => ({
+        key: `R${tile.location.row}C${tile.location.column}`,
+        data: { isFilled: tile.block.isFilled, color: tile.block.color }
+      }));
+
       safeBatchSave(
         legacyData.score,
-        legacyData.tiles,
+        tilesPersistenceData,
         legacyData.nextShapes,
         legacyData.savedShape
       ).catch((error: Error) => {

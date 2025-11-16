@@ -1,35 +1,50 @@
-import type { Tile } from './types';
+import type { TilesSet } from './types';
 
 const GRID_SIZE = 10;
 
+// Helper to create tile key
+function makeTileKey(row: number, column: number): string {
+  return `R${row}C${column}`;
+}
+
 /**
  * Checks if a specific row is completely filled with blocks
- * @param tiles - All tiles in the grid
+ * @param tiles - All tiles in the grid (Map)
  * @param row - The row number to check (1-indexed)
  * @returns true if all 10 tiles in the row have isFilled = true
  */
-export function isRowFull(tiles: Tile[], row: number): boolean {
-  const rowTiles = tiles.filter(tile => tile.location.row === row);
-  return rowTiles.length === GRID_SIZE && rowTiles.every(tile => tile.block.isFilled);
+export function isRowFull(tiles: TilesSet, row: number): boolean {
+  for (let column = 1; column <= GRID_SIZE; column++) {
+    const tile = tiles.get(makeTileKey(row, column));
+    if (!tile || !tile.isFilled) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
  * Checks if a specific column is completely filled with blocks
- * @param tiles - All tiles in the grid
+ * @param tiles - All tiles in the grid (Map)
  * @param column - The column number to check (1-indexed)
  * @returns true if all 10 tiles in the column have isFilled = true
  */
-export function isColumnFull(tiles: Tile[], column: number): boolean {
-  const columnTiles = tiles.filter(tile => tile.location.column === column);
-  return columnTiles.length === GRID_SIZE && columnTiles.every(tile => tile.block.isFilled);
+export function isColumnFull(tiles: TilesSet, column: number): boolean {
+  for (let row = 1; row <= GRID_SIZE; row++) {
+    const tile = tiles.get(makeTileKey(row, column));
+    if (!tile || !tile.isFilled) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
  * Finds all full rows in the grid
- * @param tiles - All tiles in the grid
+ * @param tiles - All tiles in the grid (Map)
  * @returns Array of row numbers that are completely filled (1-indexed)
  */
-export function findFullRows(tiles: Tile[]): number[] {
+export function findFullRows(tiles: TilesSet): number[] {
   const fullRows: number[] = [];
   for (let row = 1; row <= GRID_SIZE; row++) {
     if (isRowFull(tiles, row)) {
@@ -41,10 +56,10 @@ export function findFullRows(tiles: Tile[]): number[] {
 
 /**
  * Finds all full columns in the grid
- * @param tiles - All tiles in the grid
+ * @param tiles - All tiles in the grid (Map)
  * @returns Array of column numbers that are completely filled (1-indexed)
  */
-export function findFullColumns(tiles: Tile[]): number[] {
+export function findFullColumns(tiles: TilesSet): number[] {
   const fullColumns: number[] = [];
   for (let column = 1; column <= GRID_SIZE; column++) {
     if (isColumnFull(tiles, column)) {
@@ -56,56 +71,58 @@ export function findFullColumns(tiles: Tile[]): number[] {
 
 /**
  * Clears (empties) all tiles in the specified rows
- * @param tiles - All tiles in the grid
+ * @param tiles - All tiles in the grid (Map)
  * @param rows - Array of row numbers to clear (1-indexed)
- * @returns New tiles array with specified rows cleared
+ * @returns New tiles Map with specified rows cleared
  */
-export function clearRows(tiles: Tile[], rows: number[]): Tile[] {
+export function clearRows(tiles: TilesSet, rows: number[]): TilesSet {
   if (rows.length === 0) return tiles;
 
+  const newTiles = new Map(tiles);
   const rowSet = new Set(rows);
 
-  return tiles.map(tile => {
-    if (rowSet.has(tile.location.row)) {
-      return {
-        ...tile,
-        block: { isFilled: false, color: 'grey' }
-      };
+  for (let row = 1; row <= GRID_SIZE; row++) {
+    if (rowSet.has(row)) {
+      for (let column = 1; column <= GRID_SIZE; column++) {
+        newTiles.set(makeTileKey(row, column), { isFilled: false, color: 'grey' });
+      }
     }
-    return tile;
-  });
+  }
+
+  return newTiles;
 }
 
 /**
  * Clears (empties) all tiles in the specified columns
- * @param tiles - All tiles in the grid
+ * @param tiles - All tiles in the grid (Map)
  * @param columns - Array of column numbers to clear (1-indexed)
- * @returns New tiles array with specified columns cleared
+ * @returns New tiles Map with specified columns cleared
  */
-export function clearColumns(tiles: Tile[], columns: number[]): Tile[] {
+export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
   if (columns.length === 0) return tiles;
 
+  const newTiles = new Map(tiles);
   const columnSet = new Set(columns);
 
-  return tiles.map(tile => {
-    if (columnSet.has(tile.location.column)) {
-      return {
-        ...tile,
-        block: { isFilled: false, color: 'grey' }
-      };
+  for (let column = 1; column <= GRID_SIZE; column++) {
+    if (columnSet.has(column)) {
+      for (let row = 1; row <= GRID_SIZE; row++) {
+        newTiles.set(makeTileKey(row, column), { isFilled: false, color: 'grey' });
+      }
     }
-    return tile;
-  });
+  }
+
+  return newTiles;
 }
 
 /**
  * Finds and clears all full lines (both rows and columns) in the grid
  * This is the main function to call after placing a shape
- * @param tiles - All tiles in the grid
- * @returns Object containing the new tiles array and info about what was cleared
+ * @param tiles - All tiles in the grid (Map)
+ * @returns Object containing the new tiles Map and info about what was cleared
  */
-export function clearFullLines(tiles: Tile[]): {
-  tiles: Tile[];
+export function clearFullLines(tiles: TilesSet): {
+  tiles: TilesSet;
   clearedRows: number[];
   clearedColumns: number[];
   totalLinesCleared: number;

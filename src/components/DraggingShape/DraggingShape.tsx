@@ -218,23 +218,71 @@ export default function DraggingShape() {
     containerTop = currentY - shapeHeight / 2;
 
   } else if (dragState.phase === 'dragging') {
-    // During dragging: follow cursor smoothly without grid snapping
+    // During dragging: follow cursor smoothly, centered on filled blocks
     const shapeWidth = 4 * TILE_SIZE + 3 * GRID_GAP;
     const shapeHeight = 4 * TILE_SIZE + 3 * GRID_GAP;
 
-    containerLeft = mousePosition.x - shapeWidth / 2;
-    containerTop = mousePosition.y - MOBILE_TOUCH_OFFSET - shapeHeight / 2;
+    // Calculate the center of the filled blocks within the 4x4 grid
+    const shape = dragState.selectedShape;
+    let minShapeRow = 4, maxShapeRow = -1, minShapeCol = 4, maxShapeCol = -1;
+
+    for (let row = 0; row < shape.length; row++) {
+      for (let col = 0; col < shape[row].length; col++) {
+        if (shape[row][col].isFilled) {
+          minShapeRow = Math.min(minShapeRow, row);
+          maxShapeRow = Math.max(maxShapeRow, row);
+          minShapeCol = Math.min(minShapeCol, col);
+          maxShapeCol = Math.max(maxShapeCol, col);
+        }
+      }
+    }
+
+    // Calculate center of filled blocks
+    const filledCenterCol = minShapeCol + (maxShapeCol - minShapeCol) / 2;
+    const filledCenterRow = minShapeRow + (maxShapeRow - minShapeRow) / 2;
+
+    // Offset from 4x4 grid center (1.5, 1.5) to filled blocks center
+    const gridCenter = 1.5;
+    const centerOffsetX = (filledCenterCol - gridCenter) * (TILE_SIZE + GRID_GAP);
+    const centerOffsetY = (filledCenterRow - gridCenter) * (TILE_SIZE + GRID_GAP);
+
+    // Position container so filled blocks center is at cursor
+    containerLeft = mousePosition.x - shapeWidth / 2 - centerOffsetX;
+    containerTop = mousePosition.y - MOBILE_TOUCH_OFFSET - shapeHeight / 2 - centerOffsetY;
 
   } else if (dragState.phase === 'placing' && dragState.targetPosition) {
     // During placement: animate to target position
+    // Start from where the shape was during dragging (centered on filled blocks)
+
     const shapeWidth = 4 * TILE_SIZE + 3 * GRID_GAP;
     const shapeHeight = 4 * TILE_SIZE + 3 * GRID_GAP;
 
-    // Start position is current mouse
+    // Calculate the same filled blocks center offset as during dragging
+    const shape = dragState.selectedShape;
+    let minShapeRow = 4, maxShapeRow = -1, minShapeCol = 4, maxShapeCol = -1;
+
+    for (let row = 0; row < shape.length; row++) {
+      for (let col = 0; col < shape[row].length; col++) {
+        if (shape[row][col].isFilled) {
+          minShapeRow = Math.min(minShapeRow, row);
+          maxShapeRow = Math.max(maxShapeRow, row);
+          minShapeCol = Math.min(minShapeCol, col);
+          maxShapeCol = Math.max(maxShapeCol, col);
+        }
+      }
+    }
+
+    const filledCenterCol = minShapeCol + (maxShapeCol - minShapeCol) / 2;
+    const filledCenterRow = minShapeRow + (maxShapeRow - minShapeRow) / 2;
+    const gridCenter = 1.5;
+    const centerOffsetX = (filledCenterCol - gridCenter) * (TILE_SIZE + GRID_GAP);
+    const centerOffsetY = (filledCenterRow - gridCenter) * (TILE_SIZE + GRID_GAP);
+
+    // Start position is where the filled blocks center is (same as dragging)
     const startX = mousePosition.x;
     const startY = mousePosition.y - MOBILE_TOUCH_OFFSET;
 
-    // Target position from dragState
+    // Target position from dragState (center of the placement location)
     const targetX = dragState.targetPosition.x;
     const targetY = dragState.targetPosition.y;
 
@@ -245,8 +293,9 @@ export default function DraggingShape() {
     // Add a subtle scale effect (1.0 -> 0.95 -> 1.0)
     scale = 1 - 0.05 * Math.sin(animationProgress * Math.PI);
 
-    containerLeft = currentX - shapeWidth / 2;
-    containerTop = currentY - shapeHeight / 2;
+    // Apply the center offset to maintain filled blocks centering during animation
+    containerLeft = currentX - shapeWidth / 2 - centerOffsetX;
+    containerTop = currentY - shapeHeight / 2 - centerOffsetY;
 
   } else {
     return null;

@@ -71,7 +71,8 @@ const App = () => {
             e.clientY,
             gridElement,
             { rows: 10, columns: 10 },
-            MOBILE_TOUCH_OFFSET
+            MOBILE_TOUCH_OFFSET,
+            dragState.selectedShape || undefined
           );
 
           // Validate placement if location is within grid
@@ -136,7 +137,8 @@ const App = () => {
         e.clientY,
         gridElement,
         { rows: 10, columns: 10 },
-        MOBILE_TOUCH_OFFSET
+        MOBILE_TOUCH_OFFSET,
+        dragState.selectedShape || undefined
       );
 
       // If location is null or placement is invalid, return the shape

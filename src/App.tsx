@@ -108,14 +108,6 @@ const App = () => {
       // Only handle if a shape is being dragged
       if (!selectedShape) return;
 
-      const target = e.target as HTMLElement;
-
-      console.log('[DEBUG] pointerup event:', {
-        clientX: e.clientX,
-        clientY: e.clientY,
-        targetClass: target.className,
-      });
-
       // Get current grid element for validation
       if (!gridRef.current) {
         gridRef.current = document.querySelector('.grid');
@@ -123,29 +115,18 @@ const App = () => {
 
       const gridElement = gridRef.current as HTMLElement;
       if (!gridElement) {
-        console.log('[DEBUG] No grid element - returning shape');
         // No grid available - return shape
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
       }
 
-      // Calculate if pointer is over the grid
-      const rect = gridElement.getBoundingClientRect();
-
       // Calculate mobile touch offset (same as DraggingShape)
+      const rect = gridElement.getBoundingClientRect();
       const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
       const tileSize = rect.width / 10;
       const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
 
-      console.log('[DEBUG] Grid check:', {
-        isTouchDevice,
-        MOBILE_TOUCH_OFFSET,
-        rect: { top: rect.top, left: rect.left, right: rect.right, bottom: rect.bottom },
-        pointer: { x: e.clientX, y: e.clientY },
-      });
-
-      // Over grid - check if valid placement using adjusted position
-
+      // Calculate grid location with mobile offset
       const location = mousePositionToGridLocation(
         e.clientX,
         e.clientY,
@@ -154,18 +135,12 @@ const App = () => {
         MOBILE_TOUCH_OFFSET
       );
 
-      console.log('[DEBUG] Calculated location:', location);
-
-      if (location === null) {
-        console.log('[DEBUG] Not over grid - returning shape');
-      } else if (!isValidPlacement(selectedShape, location, tiles)) {
-        console.log('[DEBUG] Invalid placement - returning shape', { location, hasSelectedShape: !!selectedShape });
-        // Invalid placement - return shape
+      // If location is null or placement is invalid, return the shape
+      if (location === null || !isValidPlacement(selectedShape, location, tiles)) {
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
       }
 
-      console.log('[DEBUG] Valid placement - placing shape at', location);
       // Valid placement - place the shape
       dispatch({
         type: 'PLACE_SHAPE',

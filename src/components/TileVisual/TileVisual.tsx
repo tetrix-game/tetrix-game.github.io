@@ -25,10 +25,10 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
   const dark = (tile.location.row + tile.location.column) % 2 === 0;
   const tileClass = `tile-visual ${dark ? 'tile-visual-dark' : 'tile-visual-light'}`;
 
-  // Calculate shadow opacity: 50% for valid placement, 20% for invalid
+  // Calculate shadow opacity: 70% for valid placement, 40% for invalid
   let shadowOpacity = 0;
   if (showShadow) {
-    shadowOpacity = isValidPlacement ? 0.5 : 0.2;
+    shadowOpacity = isValidPlacement ? 0.7 : 0.4;
   }
 
   return (

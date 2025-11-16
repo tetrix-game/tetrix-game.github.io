@@ -185,7 +185,7 @@ export default function DraggingShape() {
     // Fade out during return
     scale = 1 - 0.2 * animationProgress;
 
-  } else if (dragState.phase === 'picking-up' && sourcePosition && animationProgress < 1) {
+  } else if (dragState.phase === 'picking-up' && sourcePosition) {
     // During pickup: interpolate from ShapeOption size to grid size
     const shapeOptionSize = sourcePosition.width;
     const shapeOptionCellGap = 1; // ShapeOption uses 1px gap

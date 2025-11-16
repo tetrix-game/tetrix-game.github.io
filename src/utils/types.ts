@@ -35,6 +35,7 @@ export type DragState = {
   selectedShapeIndex: number | null;
   isValidPlacement: boolean;
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
+  invalidBlockPositions: Array<{ shapeRow: number; shapeCol: number }>; // Blocks that don't fit
   sourcePosition: { x: number; y: number; width: number; height: number } | null; // ShapeOption bounds
   targetPosition: { x: number; y: number } | null; // Grid cell position for placement
   placementLocation: Location | null; // Locked-in grid location at release time
@@ -169,6 +170,7 @@ type UpdateMouseLocationAction = {
     tileSize?: number | null;
     gridBounds?: { top: number; left: number; width: number; height: number } | null;
     isValid?: boolean; // Whether the current placement is valid
+    invalidBlocks?: Array<{ shapeRow: number; shapeCol: number }>; // Blocks that don't fit
   };
 }
 

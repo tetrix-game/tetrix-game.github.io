@@ -62,6 +62,7 @@ export const initialState: TetrixReducerState = {
     selectedShapeIndex: null,
     isValidPlacement: false,
     hoveredBlockPositions: [],
+    invalidBlockPositions: [],
     sourcePosition: null,
     targetPosition: null,
     placementLocation: null,
@@ -104,6 +105,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           selectedShapeIndex: shapeIndex,
           isValidPlacement: false,
           hoveredBlockPositions: [],
+          invalidBlockPositions: [],
           sourcePosition: {
             x: bounds.left,
             y: bounds.top,
@@ -118,20 +120,23 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
     }
 
     case "UPDATE_MOUSE_LOCATION": {
-      const { location, position, tileSize, gridBounds, isValid } = action.value;
+      const { location, position, tileSize, gridBounds, isValid, invalidBlocks } = action.value;
 
       // Calculate hovered block positions based on selected shape and mouse location
       const hoveredBlockPositions = state.dragState.selectedShape && location
         ? getShapeGridPositions(state.dragState.selectedShape, location)
         : [];
 
+      // Get invalid block positions from action (or default to empty array)
+      const invalidBlockPositions = invalidBlocks ?? [];
+
       // Transition from picking-up to dragging after pickup animation completes
       const shouldTransitionToDragging = state.dragState.phase === 'picking-up' && state.dragState.startTime &&
         (performance.now() - state.dragState.startTime > 300); // 300ms pickup duration
 
       const newDragState = shouldTransitionToDragging
-        ? { ...state.dragState, phase: 'dragging' as const, hoveredBlockPositions, isValidPlacement: isValid ?? false }
-        : { ...state.dragState, hoveredBlockPositions, isValidPlacement: isValid ?? false };
+        ? { ...state.dragState, phase: 'dragging' as const, hoveredBlockPositions, invalidBlockPositions, isValidPlacement: isValid ?? false }
+        : { ...state.dragState, hoveredBlockPositions, invalidBlockPositions, isValidPlacement: isValid ?? false };
 
       return {
         ...state,
@@ -278,6 +283,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           selectedShapeIndex: null,
           isValidPlacement: false,
           hoveredBlockPositions: [],
+          invalidBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -341,6 +347,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           selectedShapeIndex: null,
           isValidPlacement: false,
           hoveredBlockPositions: [],
+          invalidBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -392,6 +399,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           selectedShapeIndex: null,
           isValidPlacement: false,
           hoveredBlockPositions: [],
+          invalidBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -438,6 +446,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           selectedShapeIndex: null,
           isValidPlacement: false,
           hoveredBlockPositions: [],
+          invalidBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
@@ -611,6 +620,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
           selectedShapeIndex: null,
           isValidPlacement: false,
           hoveredBlockPositions: [],
+          invalidBlockPositions: [],
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,

@@ -7,7 +7,7 @@ import DebugEditor from './components/DebugEditor';
 import DraggingShape from './components/DraggingShape';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
 import { useState, useEffect, useRef } from 'react';
-import { mousePositionToGridLocation, isValidPlacement } from './utils/shapeUtils';
+import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import './App.css';
 
 const App = () => {
@@ -34,6 +34,7 @@ const App = () => {
       let tileSize = gridTileSize;
       let bounds = gridBounds;
       let isValid = false;
+      let invalidBlocks: Array<{ shapeRow: number; shapeCol: number }> = [];
 
       if (dragState.selectedShape) {
         // Find the grid element if we don't have it cached
@@ -76,6 +77,8 @@ const App = () => {
           // Validate placement if location is within grid
           if (location) {
             isValid = isValidPlacement(dragState.selectedShape, location, tiles);
+            // Get invalid blocks even if placement is valid (some blocks might not fit)
+            invalidBlocks = getInvalidBlocks(dragState.selectedShape, location, tiles);
           }
         }
       }
@@ -89,6 +92,7 @@ const App = () => {
           tileSize,
           gridBounds: bounds,
           isValid,
+          invalidBlocks,
         },
       });
     };

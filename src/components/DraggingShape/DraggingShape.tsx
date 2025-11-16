@@ -257,6 +257,11 @@ export default function DraggingShape() {
     return null;
   }
 
+  // Create a Set of invalid block positions for quick lookup
+  const invalidBlockSet = new Set(
+    dragState.invalidBlockPositions.map(pos => `${pos.shapeRow},${pos.shapeCol}`)
+  );
+
   return (
     <div
       className="dragging-shape-container"
@@ -269,16 +274,28 @@ export default function DraggingShape() {
       } as React.CSSProperties}
     >
       {dragState.selectedShape.map((row, rowIndex) => (
-        row.map((block, colIndex) => (
-          <div
-            key={`${rowIndex}-${colIndex}`}
-            className="dragging-shape-cell"
-          >
-            {block.isFilled && (
-              <BlockVisual block={block} />
-            )}
-          </div>
-        ))
+        row.map((block, colIndex) => {
+          const blockKey = `${rowIndex},${colIndex}`;
+          const isInvalid = invalidBlockSet.has(blockKey);
+
+          return (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              className="dragging-shape-cell"
+              style={isInvalid ? {
+                // Shrink to half size while maintaining center position
+                width: `calc(var(--tile-size) * 0.5)`,
+                height: `calc(var(--tile-size) * 0.5)`,
+                // Offset to center the smaller block in its cell
+                transform: `translate(calc(var(--tile-size) * 0.25), calc(var(--tile-size) * 0.25))`,
+              } : undefined}
+            >
+              {block.isFilled && (
+                <BlockVisual block={block} />
+              )}
+            </div>
+          );
+        })
       ))}
     </div>
   );

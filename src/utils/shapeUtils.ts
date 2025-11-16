@@ -237,6 +237,68 @@ export function isValidPlacement(
 }
 
 /**
+ * Get the positions of blocks in the shape that cannot be placed (out of bounds or overlapping)
+ * Returns an array of shape-relative coordinates (row, col in the 4x4 grid)
+ * 
+ * @param shape - The 4x4 shape grid to check
+ * @param centerLocation - The center location where the shape should be placed
+ * @param tiles - Map of tile keys to tile data for O(1) lookup
+ * @returns Array of invalid block positions with their shape-relative coordinates
+ */
+export function getInvalidBlocks(
+  shape: Shape,
+  centerLocation: Location | null,
+  tiles: TilesSet
+): Array<{ shapeRow: number; shapeCol: number }> {
+  const invalidBlocks: Array<{ shapeRow: number; shapeCol: number }> = [];
+
+  // Return empty array if location is null
+  if (centerLocation === null) {
+    return invalidBlocks;
+  }
+
+  // Get the shape's anchor block (the block that should be centered on centerLocation)
+  const anchor = getShapeAnchorBlock(shape);
+
+  // Iterate through the 4x4 shape grid
+  for (let shapeRow = 0; shapeRow < shape.length; shapeRow++) {
+    for (let shapeCol = 0; shapeCol < shape[shapeRow].length; shapeCol++) {
+      const block = shape[shapeRow][shapeCol];
+
+      // Only check filled blocks
+      if (block.isFilled) {
+        // Calculate the grid position for this block
+        // Offset relative to anchor block
+        const rowOffset = shapeRow - anchor.row;
+        const colOffset = shapeCol - anchor.col;
+
+        // Absolute grid position (1-indexed)
+        const gridRow = centerLocation.row + rowOffset;
+        const gridCol = centerLocation.column + colOffset;
+
+        // Check bounds (10x10 grid, 1-indexed)
+        const outOfBounds = gridRow < 1 || gridRow > 10 || gridCol < 1 || gridCol > 10;
+
+        // Check if position is already occupied using O(1) Map lookup
+        let overlapping = false;
+        if (!outOfBounds) {
+          const tileKey = makeTileKey(gridRow, gridCol);
+          const tileData = tiles.get(tileKey);
+          overlapping = tileData?.isFilled ?? false;
+        }
+
+        // If invalid, add to the list
+        if (outOfBounds || overlapping) {
+          invalidBlocks.push({ shapeRow, shapeCol });
+        }
+      }
+    }
+  }
+
+  return invalidBlocks;
+}
+
+/**
  * Convert a mouse position to a grid location
  * Returns null if the mouse is outside the grid bounds
  */

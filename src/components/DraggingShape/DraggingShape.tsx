@@ -3,6 +3,7 @@ import BlockVisual from '../BlockVisual';
 import { useSoundEffects } from '../SoundEffectsContext';
 import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
+import { useDebugEditor } from '../DebugEditor';
 import './DraggingShape.css';
 
 export default function DraggingShape() {
@@ -15,6 +16,7 @@ export default function DraggingShape() {
   const dispatch = useTetrixDispatchContext();
   const { playSound } = useSoundEffects();
   const [animationProgress, setAnimationProgress] = useState(0);
+  const { state: debugState } = useDebugEditor();
 
   // Get dynamic sizing from hook
   const { gridSize, gridGap } = useGameSizing();
@@ -341,6 +343,22 @@ export default function DraggingShape() {
             >
               {block.isFilled && (
                 <BlockVisual block={block} />
+              )}
+              {!block.isFilled && debugState.isEditorOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: 'white',
+                    opacity: 0.6,
+                    pointerEvents: 'none',
+                  }}
+                />
               )}
             </div>
           );

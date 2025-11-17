@@ -1,7 +1,7 @@
 ## IMPORTANT NOTE: THIS FILE IS DEPRICATED. DO NOT USE!
 
 - COmpletely redoing DraggingShape and placement logic
-- Audio latency
+  - Flash during drop animation
 - Invalid placement sound (sheew back)
 - Valid placement calculation sound (tick)
 - Invalid placement calculation sound (tock)

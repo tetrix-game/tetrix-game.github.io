@@ -6,6 +6,9 @@ import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugEditor } from '../DebugEditor';
 import './DraggingShape.css';
 
+const positionsX = [];
+const positionsY = [];
+
 export default function DraggingShape() {
   const {
     dragState,
@@ -15,7 +18,9 @@ export default function DraggingShape() {
 
   const dispatch = useTetrixDispatchContext();
   const { playSound } = useSoundEffects();
-  const [animationProgress, setAnimationProgress] = useState(0);
+  const [pickupProgress, setPickupProgress] = useState(0);
+  const [placingProgress, setPlacingProgress] = useState(0);
+  const [returningProgress, setReturningProgress] = useState(0);
   const { state: debugState } = useDebugEditor();
 
   // Get dynamic sizing from hook
@@ -39,7 +44,7 @@ export default function DraggingShape() {
   // Animate pick-up from ShapeOption to cursor
   useEffect(() => {
     if (dragState.phase !== 'picking-up' || !dragState.sourcePosition) {
-      setAnimationProgress(dragState.phase === 'dragging' ? 1 : 0);
+      setPickupProgress(dragState.phase === 'dragging' ? 1 : 0);
       return;
     }
 
@@ -53,13 +58,13 @@ export default function DraggingShape() {
       // Ease-out cubic for smooth pick-up
       const eased = 1 - Math.pow(1 - progress, 3);
 
-      setAnimationProgress(eased);
+      setPickupProgress(eased);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
         // Animation complete - transition to dragging phase
-        setAnimationProgress(1);
+        setPickupProgress(1);
         // Note: The reducer will handle the phase transition via UPDATE_MOUSE_LOCATION
       }
     };
@@ -70,6 +75,7 @@ export default function DraggingShape() {
   // Animate placement
   useEffect(() => {
     if (dragState.phase !== 'placing' || !dragState.targetPosition) {
+      setPlacingProgress(0);
       return;
     }
 
@@ -92,11 +98,13 @@ export default function DraggingShape() {
 
       // Ease-in cubic for magnetic acceleration (like being pulled in)
       const eased = Math.pow(progress, 3);
-      setAnimationProgress(eased);
+      setPlacingProgress(eased);
 
       if (progress >= 1) {
         // Animation complete - dispatch completion which will place the shape and hide DraggingShape
         dispatch({ type: 'COMPLETE_PLACEMENT' });
+        console.log('Return positions X:', positionsX);
+        console.log('Return positions Y:', positionsY);
       } else {
         requestAnimationFrame(animate);
       }
@@ -108,6 +116,7 @@ export default function DraggingShape() {
   // Animate return to selector
   useEffect(() => {
     if (dragState.phase !== 'returning' || !dragState.sourcePosition) {
+      setReturningProgress(0);
       return;
     }
 
@@ -120,7 +129,7 @@ export default function DraggingShape() {
 
       // Ease-out cubic for smooth deceleration
       const eased = 1 - Math.pow(1 - progress, 3);
-      setAnimationProgress(eased);
+      setReturningProgress(eased);
 
       if (progress >= 1) {
         // Animation complete - dispatch completion to clear the shape
@@ -151,15 +160,15 @@ export default function DraggingShape() {
 
   const sourcePosition = dragState.sourcePosition;
 
-  if (dragState.phase === 'returning' && sourcePosition && animationProgress < 1) {
+  if (dragState.phase === 'returning' && sourcePosition && returningProgress < 1) {
     // During return: interpolate from current position back to ShapeOption
     const shapeOptionSize = sourcePosition.width;
     const shapeOptionCellGap = 1;
     const shapeOptionCellSize = (shapeOptionSize - 3 * shapeOptionCellGap) / 4;
 
     // Interpolate from grid size back to ShapeOption size
-    cellSize = TILE_SIZE + (shapeOptionCellSize - TILE_SIZE) * animationProgress;
-    cellGap = GRID_GAP + (shapeOptionCellGap - GRID_GAP) * animationProgress;
+    cellSize = TILE_SIZE + (shapeOptionCellSize - TILE_SIZE) * returningProgress;
+    cellGap = GRID_GAP + (shapeOptionCellGap - GRID_GAP) * returningProgress;
 
     // Start at cursor position
     const startX = mousePosition.x;
@@ -170,8 +179,8 @@ export default function DraggingShape() {
     const targetY = sourcePosition.y + sourcePosition.height / 2;
 
     // Interpolate position
-    const currentX = startX + (targetX - startX) * animationProgress;
-    const currentY = startY + (targetY - startY) * animationProgress;
+    const currentX = startX + (targetX - startX) * returningProgress;
+    const currentY = startY + (targetY - startY) * returningProgress;
 
     // Position the shape centered at the interpolated point
     const shapeWidth = 4 * cellSize + 3 * cellGap;
@@ -181,7 +190,7 @@ export default function DraggingShape() {
     containerTop = currentY - shapeHeight / 2;
 
     // Fade out during return
-    scale = 1 - 0.2 * animationProgress;
+    scale = 1 - 0.2 * returningProgress;
 
   } else if (dragState.phase === 'picking-up' && sourcePosition) {
     // During pickup: interpolate from ShapeOption size to grid size
@@ -189,8 +198,8 @@ export default function DraggingShape() {
     const shapeOptionCellGap = 1; // ShapeOption uses 1px gap
     const shapeOptionCellSize = (shapeOptionSize - 3 * shapeOptionCellGap) / 4; // 4x4 grid with 3 gaps
 
-    cellSize = shapeOptionCellSize + (TILE_SIZE - shapeOptionCellSize) * animationProgress;
-    cellGap = shapeOptionCellGap + (GRID_GAP - shapeOptionCellGap) * animationProgress;
+    cellSize = shapeOptionCellSize + (TILE_SIZE - shapeOptionCellSize) * pickupProgress;
+    cellGap = shapeOptionCellGap + (GRID_GAP - shapeOptionCellGap) * pickupProgress;
 
     // Calculate shape bounds from ShapeOption bounds
     const bounds = shapeOptionBounds[dragState.selectedShapeIndex];
@@ -207,8 +216,8 @@ export default function DraggingShape() {
     const targetY = mousePosition.y - MOBILE_TOUCH_OFFSET;
 
     // Interpolate position
-    const currentX = startX + (targetX - startX) * animationProgress;
-    const currentY = startY + (targetY - startY) * animationProgress;
+    const currentX = startX + (targetX - startX) * pickupProgress;
+    const currentY = startY + (targetY - startY) * pickupProgress;
 
     // Position the shape centered at the interpolated point
     const shapeWidth = 4 * cellSize + 3 * cellGap;
@@ -252,11 +261,11 @@ export default function DraggingShape() {
     const targetY = dragState.targetPosition.y;
 
     // Interpolate with easing
-    const currentX = startX + (targetX - startX) * animationProgress;
-    const currentY = startY + (targetY - startY) * animationProgress;
+    const currentX = startX + (targetX - startX) * placingProgress;
+    const currentY = startY + (targetY - startY) * placingProgress;
 
     // Add a subtle scale effect (1.0 -> 0.95 -> 1.0)
-    scale = 1 - 0.05 * Math.sin(animationProgress * Math.PI);
+    scale = 1 - 0.05 * Math.sin(placingProgress * Math.PI);
 
     // Position the 4x4 container so filled blocks center ends up at currentX/Y
     // currentX/Y represent filled blocks center positions (both start and target are filled centers)
@@ -267,6 +276,9 @@ export default function DraggingShape() {
     // Therefore: container top-left = filled center - shapeWidth/2 - centerOffsetX
     containerLeft = currentX - shapeWidth / 2 - centerOffsetX;
     containerTop = currentY - shapeHeight / 2 - centerOffsetY;
+
+    positionsX.push({ currentX, startX, targetX, animationProgress: placingProgress });
+    positionsY.push({ currentY, startY, targetY, animationProgress: placingProgress });
 
   } else {
     return null;

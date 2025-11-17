@@ -28,6 +28,7 @@ export type DragState = {
   sourcePosition: { x: number; y: number; width: number; height: number } | null; // ShapeOption bounds
   targetPosition: { x: number; y: number } | null; // Grid cell position for placement
   placementLocation: Location | null; // Locked-in grid location at release time
+  placementStartPosition: { x: number; y: number } | null; // Where the shape was visually when placement started
   startTime: number | null;
   dragOffsets: DragOffsets | null; // Pre-calculated offsets for this drag operation
 };

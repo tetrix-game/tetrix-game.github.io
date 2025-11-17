@@ -39,6 +39,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
             },
             targetPosition: null,
             placementLocation: null,
+            placementStartPosition: null,
             startTime: performance.now(),
             dragOffsets: null,
           },
@@ -91,6 +92,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           },
           targetPosition: null,
           placementLocation: null,
+          placementStartPosition: null,
           startTime: performance.now(),
           dragOffsets: {
             visualOffsetX,
@@ -152,15 +154,50 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
         return state;
       }
 
-      // Calculate the target position
-      const tileWithGap = state.gridTileSize + 2;
-      const targetCellLeft = state.gridBounds.left + (location.column - 1) * tileWithGap;
-      const targetCellTop = state.gridBounds.top + (location.row - 1) * tileWithGap;
-      const targetCellCenterX = targetCellLeft + state.gridTileSize / 2;
-      const targetCellCenterY = targetCellTop + state.gridTileSize / 2;
+      // Use the tile size that was captured when the shape was selected for consistency
+      // This ensures the target calculation matches the visual offsets and dragging behavior
+      // CRITICAL: Must use dragOffsets values, not state.gridTileSize, because:
+      // 1. The visual offsets were calculated with these exact values
+      // 2. The DraggingShape component uses the current grid size, which should match
+      // 3. If we use different values, the drop animation will be misaligned
+      const TILE_SIZE = state.dragState.dragOffsets?.tileSize ?? state.gridTileSize;
+      const GRID_GAP = state.dragState.dragOffsets?.gridGap ?? 2;
+
+      if (!TILE_SIZE || !state.gridBounds) {
+        return state;
+      }
+
+      // Calculate the target position - center of where the filled blocks will be placed
+      const tileWithGap = TILE_SIZE + GRID_GAP;
 
       // Get the positions where the shape will be placed
       const shapePositions = getShapeGridPositions(state.dragState.selectedShape, location);
+
+      // Calculate the center point of all filled blocks that will be placed
+      let minRow = Infinity, maxRow = -Infinity, minCol = Infinity, maxCol = -Infinity;
+      shapePositions.forEach(pos => {
+        minRow = Math.min(minRow, pos.location.row);
+        maxRow = Math.max(maxRow, pos.location.row);
+        minCol = Math.min(minCol, pos.location.column);
+        maxCol = Math.max(maxCol, pos.location.column);
+      });
+
+      // Center of the filled blocks on the grid (in grid coordinates, 1-indexed)
+      const centerRow = (minRow + maxRow) / 2;
+      const centerCol = (minCol + maxCol) / 2;
+
+      // Convert grid coordinates to pixel coordinates
+      // For 1-indexed column C, the tile's left edge is at: gridBounds.left + (C - 1) * tileWithGap
+      // The tile's center is at: left edge + TILE_SIZE / 2
+      const targetCellCenterX = state.gridBounds.left + (centerCol - 1) * tileWithGap + TILE_SIZE / 2;
+      const targetCellCenterY = state.gridBounds.top + (centerRow - 1) * tileWithGap + TILE_SIZE / 2;
+
+      // Store where the shape currently IS (before updating mousePosition)
+      // This is critical - the shape is visually at state.mousePosition during dragging,
+      // and we need to animate from there, not from the new click position
+      const placementStartPosition = state.mousePosition
+        ? { x: state.mousePosition.x, y: state.mousePosition.y }
+        : useMousePosition;
 
       return {
         ...state,
@@ -169,6 +206,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           phase: 'placing',
           targetPosition: { x: targetCellCenterX, y: targetCellCenterY },
           placementLocation: location, // Lock in the placement location at release time
+          placementStartPosition, // Where the shape visually was when placement started
           hoveredBlockPositions: shapePositions,
           startTime: performance.now(),
         },
@@ -192,6 +230,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
+          placementStartPosition: null,
           startTime: null,
           dragOffsets: null,
         },
@@ -219,6 +258,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
               },
               targetPosition: null,
               placementLocation: null,
+              placementStartPosition: null,
               startTime: performance.now(),
             },
           };
@@ -240,6 +280,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
+          placementStartPosition: null,
           startTime: null,
           dragOffsets: null,
         },
@@ -262,6 +303,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
+          placementStartPosition: null,
           startTime: null,
           dragOffsets: null,
         },

@@ -18,6 +18,7 @@ describe('Drag and Drop Return to Selector', () => {
         sourcePosition: { x: 50, y: 50, width: 100, height: 100 },
         targetPosition: null,
         placementLocation: null,
+        placementStartPosition: null,
         startTime: null,
       },
     } as TetrixReducerState;
@@ -50,6 +51,7 @@ describe('Drag and Drop Return to Selector', () => {
         sourcePosition: { x: 50, y: 50, width: 100, height: 100 },
         targetPosition: null,
         placementLocation: null,
+        placementStartPosition: null,
         startTime: performance.now(),
       },
     } as TetrixReducerState;
@@ -81,6 +83,7 @@ describe('Drag and Drop Return to Selector', () => {
         sourcePosition: null,
         targetPosition: null,
         placementLocation: null,
+        placementStartPosition: null,
         startTime: null,
       },
     } as TetrixReducerState;

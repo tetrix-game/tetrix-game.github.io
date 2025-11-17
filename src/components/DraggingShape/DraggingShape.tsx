@@ -241,9 +241,11 @@ export default function DraggingShape() {
     const centerOffsetX = dragState.dragOffsets?.visualOffsetX ?? 0;
     const centerOffsetY = dragState.dragOffsets?.visualOffsetY ?? 0;
 
-    // Start position is where the filled blocks center is (same as dragging)
-    const startX = mousePosition.x;
-    const startY = mousePosition.y - MOBILE_TOUCH_OFFSET;
+    // Start position is where the FILLED BLOCKS CENTER was when placement started
+    // This is the mouse position, which during dragging is where filled blocks are centered
+    const startPos = dragState.placementStartPosition ?? mousePosition;
+    const startX = startPos.x;
+    const startY = startPos.y - MOBILE_TOUCH_OFFSET;
 
     // Target position from dragState (center of the placement location)
     const targetX = dragState.targetPosition.x;
@@ -256,7 +258,13 @@ export default function DraggingShape() {
     // Add a subtle scale effect (1.0 -> 0.95 -> 1.0)
     scale = 1 - 0.05 * Math.sin(animationProgress * Math.PI);
 
-    // Apply the center offset to maintain filled blocks centering during animation
+    // Position the 4x4 container so filled blocks center ends up at currentX/Y
+    // currentX/Y represent filled blocks center positions (both start and target are filled centers)
+    // To position the container: find where 4x4 top-left should be
+    // 4x4 center is at (container top-left + shapeWidth/2, container top-left + shapeHeight/2)
+    // Filled blocks center is offset from 4x4 center by (centerOffsetX, centerOffsetY)
+    // So: filled center = container top-left + shapeWidth/2 + centerOffsetX
+    // Therefore: container top-left = filled center - shapeWidth/2 - centerOffsetX
     containerLeft = currentX - shapeWidth / 2 - centerOffsetX;
     containerTop = currentY - shapeHeight / 2 - centerOffsetY;
 

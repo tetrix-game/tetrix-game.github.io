@@ -4,7 +4,6 @@ import { useSoundEffects } from '../SoundEffectsContext';
 import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugEditor } from '../DebugEditor';
-import { getShapeVisualOffset } from '../../utils/shapes';
 import './DraggingShape.css';
 
 export default function DraggingShape() {
@@ -27,10 +26,8 @@ export default function DraggingShape() {
   const GRID_GAPS_TOTAL = 9 * GRID_GAP;
   const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
 
-  // Detect if this is a touch device (mobile)
-  const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
-  // Offset shape above finger on mobile (in pixels) - roughly 2-3 shape heights
-  const MOBILE_TOUCH_OFFSET = isTouchDevice ? TILE_SIZE * 2.5 : 0;
+  // Get touch offset from precomputed offsets or calculate fallback
+  const MOBILE_TOUCH_OFFSET = dragState.dragOffsets?.touchOffset ?? 0;
 
   // Play pickup sound when animation starts
   useEffect(() => {
@@ -225,12 +222,9 @@ export default function DraggingShape() {
     const shapeWidth = 4 * TILE_SIZE + 3 * GRID_GAP;
     const shapeHeight = 4 * TILE_SIZE + 3 * GRID_GAP;
 
-    // Get the visual offset using shared utility
-    const { offsetX: centerOffsetX, offsetY: centerOffsetY } = getShapeVisualOffset(
-      dragState.selectedShape,
-      TILE_SIZE,
-      GRID_GAP
-    );
+    // Use precomputed visual offset from dragState (calculated once on SELECT_SHAPE)
+    const centerOffsetX = dragState.dragOffsets?.visualOffsetX ?? 0;
+    const centerOffsetY = dragState.dragOffsets?.visualOffsetY ?? 0;
 
     // Position container so filled blocks center is at cursor
     containerLeft = mousePosition.x - shapeWidth / 2 - centerOffsetX;
@@ -243,12 +237,9 @@ export default function DraggingShape() {
     const shapeWidth = 4 * TILE_SIZE + 3 * GRID_GAP;
     const shapeHeight = 4 * TILE_SIZE + 3 * GRID_GAP;
 
-    // Get the visual offset using shared utility
-    const { offsetX: centerOffsetX, offsetY: centerOffsetY } = getShapeVisualOffset(
-      dragState.selectedShape,
-      TILE_SIZE,
-      GRID_GAP
-    );
+    // Use precomputed visual offset from dragState (calculated once on SELECT_SHAPE)
+    const centerOffsetX = dragState.dragOffsets?.visualOffsetX ?? 0;
+    const centerOffsetY = dragState.dragOffsets?.visualOffsetY ?? 0;
 
     // Start position is where the filled blocks center is (same as dragging)
     const startX = mousePosition.x;

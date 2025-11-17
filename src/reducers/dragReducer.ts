@@ -5,7 +5,7 @@
  */
 
 import type { TetrixReducerState, TetrixAction } from '../types';
-import { getShapeGridPositions } from '../utils/shapes';
+import { getShapeGridPositions, getShapeVisualOffset } from '../utils/shapes';
 
 export function dragReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
@@ -17,6 +17,62 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       if (!shape || !bounds) {
         return state;
       }
+
+      // Calculate grid dimensions - match the Grid component's calculation
+      const gridElement = document.querySelector('.grid');
+      if (!gridElement) {
+        // Can't calculate offsets without grid, proceed without them (fallback behavior)
+        return {
+          ...state,
+          dragState: {
+            phase: 'picking-up',
+            selectedShape: shape,
+            selectedShapeIndex: shapeIndex,
+            isValidPlacement: false,
+            hoveredBlockPositions: [],
+            invalidBlockPositions: [],
+            sourcePosition: {
+              x: bounds.left,
+              y: bounds.top,
+              width: bounds.width,
+              height: bounds.height,
+            },
+            targetPosition: null,
+            placementLocation: null,
+            startTime: performance.now(),
+            dragOffsets: null,
+          },
+        };
+      }
+
+      const rect = gridElement.getBoundingClientRect();
+      const GRID_GAP = 2; // Matches Grid component
+      const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+      const TILE_SIZE = (rect.width - GRID_GAPS_TOTAL) / 10;
+
+      // Calculate visual offset from 4x4 center to filled blocks center
+      const { offsetX: visualOffsetX, offsetY: visualOffsetY } = getShapeVisualOffset(
+        shape,
+        TILE_SIZE,
+        GRID_GAP
+      );
+
+      // Calculate grid offset from mouse to 4x4 top-left corner
+      // The 4x4 grid dimensions
+      const shapeWidth = 4 * TILE_SIZE + 3 * GRID_GAP;
+      const shapeHeight = 4 * TILE_SIZE + 3 * GRID_GAP;
+
+      // Grid offset = distance from mouse to 4x4 top-left corner
+      // When filled blocks are centered on mouse, top-left is at:
+      // mouse - shapeWidth/2 - visualOffset
+      // We want: gridTopLeft = mouse + gridOffset
+      // Therefore: gridOffset = -shapeWidth/2 - visualOffset
+      const gridOffsetX = -shapeWidth / 2 - visualOffsetX;
+      const gridOffsetY = -shapeHeight / 2 - visualOffsetY;
+
+      // Detect mobile and calculate touch offset
+      const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
+      const touchOffset = isTouchDevice ? TILE_SIZE * 2.5 : 0;
 
       return {
         ...state,
@@ -36,6 +92,15 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           targetPosition: null,
           placementLocation: null,
           startTime: performance.now(),
+          dragOffsets: {
+            visualOffsetX,
+            visualOffsetY,
+            gridOffsetX,
+            gridOffsetY,
+            touchOffset,
+            tileSize: TILE_SIZE,
+            gridGap: GRID_GAP,
+          },
         },
       };
     }
@@ -128,6 +193,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           targetPosition: null,
           placementLocation: null,
           startTime: null,
+          dragOffsets: null,
         },
       };
     }
@@ -175,6 +241,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           targetPosition: null,
           placementLocation: null,
           startTime: null,
+          dragOffsets: null,
         },
       };
     }
@@ -196,6 +263,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
           targetPosition: null,
           placementLocation: null,
           startTime: null,
+          dragOffsets: null,
         },
       };
     }

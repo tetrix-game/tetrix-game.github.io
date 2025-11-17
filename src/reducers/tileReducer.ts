@@ -131,6 +131,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           targetPosition: null,
           placementLocation: null,
           startTime: null,
+          dragOffsets: null,
         },
         hasPlacedFirstShape: true, // Mark that first shape has been placed
         // Start the removal animation

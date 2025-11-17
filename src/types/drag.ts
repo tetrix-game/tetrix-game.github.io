@@ -7,6 +7,17 @@ import type { Shape, Location, Block } from './core';
 // Drag phase-based animation system
 export type DragPhase = 'none' | 'picking-up' | 'dragging' | 'placing' | 'returning';
 
+// Pre-calculated offsets for drag operations - calculated once when shape is selected
+export type DragOffsets = {
+  visualOffsetX: number; // X offset from 4x4 center to filled blocks center
+  visualOffsetY: number; // Y offset from 4x4 center to filled blocks center
+  gridOffsetX: number; // X offset from mouse to 4x4 grid top-left corner
+  gridOffsetY: number; // Y offset from mouse to 4x4 grid top-left corner
+  touchOffset: number; // Y offset for mobile touch (shape above finger)
+  tileSize: number; // Grid tile size at time of selection
+  gridGap: number; // Gap between tiles at time of selection
+};
+
 export type DragState = {
   phase: DragPhase;
   selectedShape: Shape | null;
@@ -18,4 +29,5 @@ export type DragState = {
   targetPosition: { x: number; y: number } | null; // Grid cell position for placement
   placementLocation: Location | null; // Locked-in grid location at release time
   startTime: number | null;
+  dragOffsets: DragOffsets | null; // Pre-calculated offsets for this drag operation
 };

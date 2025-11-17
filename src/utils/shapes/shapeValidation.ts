@@ -1,5 +1,4 @@
 import type { Shape, Location, TilesSet } from '../types';
-import { getShapeAnchorBlock } from './shapeGeometry';
 
 /**
  * Shape validation functions - Placement validation and collision detection
@@ -13,35 +12,29 @@ export function makeTileKey(row: number, column: number): string {
 }
 
 /**
- * Check if a shape can be placed at a given center location on the grid
+ * Check if a shape can be placed at a given location on the grid
  * @param shape - The 4x4 shape grid
- * @param centerLocation - Center location where the shape should be placed
+ * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed
  * @param gridSize - Size of the grid (rows and columns)
  * @param tiles - Map of tile keys to tile data for checking occupancy
  * @returns true if the shape can be placed without overlapping or going out of bounds
  */
 export function canPlaceShape(
   shape: Shape,
-  centerLocation: Location,
+  gridTopLeftLocation: Location,
   gridSize: { rows: number; columns: number },
   tiles: TilesSet
 ): boolean {
-  // Get the shape's anchor block
-  const anchor = getShapeAnchorBlock(shape);
-
-  // Iterate through the 4x4 shape grid
-  for (let shapeRow = 0; shapeRow < shape.length; shapeRow++) {
-    for (let shapeCol = 0; shapeCol < shape[shapeRow].length; shapeCol++) {
+  // Iterate through all 16 tiles of the 4x4 shape
+  for (let shapeRow = 0; shapeRow < 4; shapeRow++) {
+    for (let shapeCol = 0; shapeCol < 4; shapeCol++) {
       const block = shape[shapeRow][shapeCol];
 
       // Only check filled blocks
       if (block.isFilled) {
         // Calculate the grid position for this block
-        const rowOffset = shapeRow - anchor.row;
-        const colOffset = shapeCol - anchor.col;
-
-        const gridRow = centerLocation.row + rowOffset;
-        const gridCol = centerLocation.column + colOffset;
+        const gridRow = gridTopLeftLocation.row + shapeRow;
+        const gridCol = gridTopLeftLocation.column + shapeCol;
 
         // Check bounds
         if (
@@ -73,38 +66,30 @@ export function canPlaceShape(
  * against the tiles Map for O(1) lookup performance.
  * 
  * @param shape - The 4x4 shape grid to check
- * @param centerLocation - The center location where the shape should be placed
+ * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed
  * @param tiles - Map of tile keys to tile data for O(1) lookup
  * @returns true if the shape can be placed without overlapping filled tiles or going out of bounds
  */
 export function isValidPlacement(
   shape: Shape,
-  centerLocation: Location | null,
+  gridTopLeftLocation: Location | null,
   tiles: TilesSet
 ): boolean {
   // Return false if location is null
-  if (centerLocation === null) {
+  if (gridTopLeftLocation === null) {
     return false;
   }
 
-  // Get the shape's anchor block (the block that should be centered on centerLocation)
-  const anchor = getShapeAnchorBlock(shape);
-
-  // Iterate through the 4x4 shape grid
-  for (let shapeRow = 0; shapeRow < shape.length; shapeRow++) {
-    for (let shapeCol = 0; shapeCol < shape[shapeRow].length; shapeCol++) {
+  // Iterate through all 16 tiles of the 4x4 shape
+  for (let shapeRow = 0; shapeRow < 4; shapeRow++) {
+    for (let shapeCol = 0; shapeCol < 4; shapeCol++) {
       const block = shape[shapeRow][shapeCol];
 
       // Only check filled blocks
       if (block.isFilled) {
         // Calculate the grid position for this block
-        // Offset relative to anchor block
-        const rowOffset = shapeRow - anchor.row;
-        const colOffset = shapeCol - anchor.col;
-
-        // Absolute grid position (1-indexed)
-        const gridRow = centerLocation.row + rowOffset;
-        const gridCol = centerLocation.column + colOffset;
+        const gridRow = gridTopLeftLocation.row + shapeRow;
+        const gridCol = gridTopLeftLocation.column + shapeCol;
 
         // Check bounds (10x10 grid, 1-indexed)
         if (gridRow < 1 || gridRow > 10 || gridCol < 1 || gridCol > 10) {
@@ -130,40 +115,32 @@ export function isValidPlacement(
  * Returns an array of shape-relative coordinates (row, col in the 4x4 grid)
  * 
  * @param shape - The 4x4 shape grid to check
- * @param centerLocation - The center location where the shape should be placed
+ * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed
  * @param tiles - Map of tile keys to tile data for O(1) lookup
  * @returns Array of invalid block positions with their shape-relative coordinates
  */
 export function getInvalidBlocks(
   shape: Shape,
-  centerLocation: Location | null,
+  gridTopLeftLocation: Location | null,
   tiles: TilesSet
 ): Array<{ shapeRow: number; shapeCol: number }> {
   const invalidBlocks: Array<{ shapeRow: number; shapeCol: number }> = [];
 
   // Return empty array if location is null
-  if (centerLocation === null) {
+  if (gridTopLeftLocation === null) {
     return invalidBlocks;
   }
 
-  // Get the shape's anchor block (the block that should be centered on centerLocation)
-  const anchor = getShapeAnchorBlock(shape);
-
-  // Iterate through the 4x4 shape grid
-  for (let shapeRow = 0; shapeRow < shape.length; shapeRow++) {
-    for (let shapeCol = 0; shapeCol < shape[shapeRow].length; shapeCol++) {
+  // Iterate through all 16 tiles of the 4x4 shape
+  for (let shapeRow = 0; shapeRow < 4; shapeRow++) {
+    for (let shapeCol = 0; shapeCol < 4; shapeCol++) {
       const block = shape[shapeRow][shapeCol];
 
       // Only check filled blocks
       if (block.isFilled) {
         // Calculate the grid position for this block
-        // Offset relative to anchor block
-        const rowOffset = shapeRow - anchor.row;
-        const colOffset = shapeCol - anchor.col;
-
-        // Absolute grid position (1-indexed)
-        const gridRow = centerLocation.row + rowOffset;
-        const gridCol = centerLocation.column + colOffset;
+        const gridRow = gridTopLeftLocation.row + shapeRow;
+        const gridCol = gridTopLeftLocation.column + shapeCol;
 
         // Check bounds (10x10 grid, 1-indexed)
         const outOfBounds = gridRow < 1 || gridRow > 10 || gridCol < 1 || gridCol > 10;

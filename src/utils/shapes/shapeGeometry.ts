@@ -99,21 +99,32 @@ export function getFilledBlocksRelativeToCenter(shape: Shape): Array<{ row: numb
 }
 
 /**
- * Calculate grid positions for a shape centered at a specific location
+ * Calculate grid positions for a shape placed at a specific location
+ * The location represents where the 4x4 grid's top-left corner (0,0) would be placed
  */
 export function getShapeGridPositions(
   shape: Shape,
-  centerLocation: Location
+  gridTopLeftLocation: Location
 ): Array<{ location: Location; block: Block }> {
-  const relativeBlocks = getFilledBlocksRelativeToCenter(shape);
+  const positions: Array<{ location: Location; block: Block }> = [];
 
-  return relativeBlocks.map(({ row, col, block }) => ({
-    location: {
-      row: Math.round(centerLocation.row + row),
-      column: Math.round(centerLocation.column + col),
-    },
-    block,
-  }));
+  // Iterate through all 16 tiles of the 4x4 shape
+  for (let shapeRow = 0; shapeRow < 4; shapeRow++) {
+    for (let shapeCol = 0; shapeCol < 4; shapeCol++) {
+      const block = shape[shapeRow][shapeCol];
+      if (block.isFilled) {
+        positions.push({
+          location: {
+            row: gridTopLeftLocation.row + shapeRow,
+            column: gridTopLeftLocation.column + shapeCol,
+          },
+          block,
+        });
+      }
+    }
+  }
+
+  return positions;
 }
 
 /**
@@ -162,14 +173,11 @@ export function getShapeVisualOffset(
  * Convert a mouse position to a grid location
  * Returns null if the mouse is outside the grid bounds
  * 
- * When a shape is provided, calculates the grid location based on where the visual
- * 4x4 container's top-left corner would be positioned. This matches the actual visual
- * appearance of the dragging shape.
+ * Uses pre-computed gridOffset to directly map mouse position to the 4x4 grid's top-left corner.
+ * The returned location represents where the top-left corner (row 0, col 0) of the 4x4 shape
+ * would be placed on the grid.
  * 
- * The shape visual is centered on filled blocks (not the 4x4 grid center), so we:
- * 1. Calculate the 4x4 container's top-left corner position
- * 2. Map that corner to grid coordinates
- * 3. Determine which grid cell that maps to
+ * @param precomputedOffsets - Pre-calculated offsets (REQUIRED when shape is provided)
  */
 export function mousePositionToGridLocation(
   mouseX: number,
@@ -177,57 +185,57 @@ export function mousePositionToGridLocation(
   gridElement: HTMLElement,
   gridSize: { rows: number; columns: number },
   offsetY: number = 0,
-  shape?: Shape
+  shape?: Shape,
+  precomputedOffsets?: {
+    gridOffsetX: number;
+    gridOffsetY: number;
+    tileSize: number;
+    gridGap: number;
+  }
 ): Location | null {
   const rect = gridElement.getBoundingClientRect();
 
-  // Grid has 10 cells with 2px gaps (9 gaps between cells)
-  const GRID_GAP = 2;
-  const gridGapSpace = GRID_GAP * 9;
-  const tileSize = (rect.width - gridGapSpace) / gridSize.columns;
-  const tileWithGap = tileSize + GRID_GAP; // Distance from one tile's left edge to the next
+  // When shape is provided, precomputedOffsets are REQUIRED
+  if (shape && !precomputedOffsets) {
+    console.error('mousePositionToGridLocation called with shape but no precomputedOffsets - this is a logic error');
+    return null;
+  }
+
+  const GRID_GAP = precomputedOffsets?.gridGap ?? 2;
+  const tileSize = precomputedOffsets?.tileSize ?? (rect.width - GRID_GAP * 9) / gridSize.columns;
+  const tileWithGap = tileSize + GRID_GAP;
 
   // Apply offset (for mobile touch positioning)
   const adjustedMouseX = mouseX;
   const adjustedMouseY = mouseY - offsetY;
 
-  // Calculate the 4x4 visual container's top-left corner position
-  let containerTopLeftX = adjustedMouseX;
-  let containerTopLeftY = adjustedMouseY;
+  // Calculate the 4x4 grid's top-left corner position using pre-computed offset
+  let gridTopLeftX = adjustedMouseX;
+  let gridTopLeftY = adjustedMouseY;
 
-  if (shape) {
-    // Calculate the visual offset (filled blocks center relative to 4x4 grid center)
-    const { offsetX, offsetY } = getShapeVisualOffset(shape, tileSize, GRID_GAP);
-
-    // The 4x4 container dimensions
-    const shapeWidth = 4 * tileSize + 3 * GRID_GAP;
-    const shapeHeight = 4 * tileSize + 3 * GRID_GAP;
-
-    // DraggingShape positions the container so filled blocks are centered on mouse:
-    // containerLeft = mouseX - shapeWidth/2 - centerOffsetX
-    // We reverse this to find where the container's top-left actually is
-    containerTopLeftX = adjustedMouseX - shapeWidth / 2 - offsetX;
-    containerTopLeftY = adjustedMouseY - shapeHeight / 2 - offsetY;
+  if (shape && precomputedOffsets) {
+    // Use pre-computed grid offset to directly get 4x4 top-left corner
+    gridTopLeftX = adjustedMouseX + precomputedOffsets.gridOffsetX;
+    gridTopLeftY = adjustedMouseY + precomputedOffsets.gridOffsetY;
   }
 
-  // Check if the container's top-left corner is within reasonable bounds
+  // Check if the grid's top-left corner is within reasonable bounds
   // Allow some tolerance for shapes near the edge
   const tolerance = tileSize * 2; // Allow up to 2 tiles outside
   if (
-    containerTopLeftX < rect.left - tolerance ||
-    containerTopLeftX > rect.right + tolerance ||
-    containerTopLeftY < rect.top - tolerance ||
-    containerTopLeftY > rect.bottom + tolerance
+    gridTopLeftX < rect.left - tolerance ||
+    gridTopLeftX > rect.right + tolerance ||
+    gridTopLeftY < rect.top - tolerance ||
+    gridTopLeftY > rect.bottom + tolerance
   ) {
     return null;
   }
 
-  // Calculate grid position relative to the container's top-left corner
-  const relativeX = containerTopLeftX - rect.left;
-  const relativeY = containerTopLeftY - rect.top;
+  // Calculate grid position relative to the grid element's top-left corner
+  const relativeX = gridTopLeftX - rect.left;
+  const relativeY = gridTopLeftY - rect.top;
 
-  // Calculate which tile the container's top-left corner is in
-  // Use tileWithGap to match the visual spacing
+  // Calculate which tile the 4x4 grid's top-left corner is in
   const exactColumn = relativeX / tileWithGap;
   const exactRow = relativeY / tileWithGap;
 

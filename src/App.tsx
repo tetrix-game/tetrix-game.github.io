@@ -56,30 +56,49 @@ const App = () => {
             };
           }
 
-          // Calculate tile size if needed
-          if (!tileSize) {
-            tileSize = rect.width / 10; // 10x10 grid
+          // Use precomputed offsets from dragState (required)
+          const offsets = dragState.dragOffsets;
+          if (!offsets) {
+            // No offsets means SELECT_SHAPE didn't properly calculate them
+            console.error('dragOffsets not available - this indicates a logic error in SELECT_SHAPE');
+            return;
           }
 
-          // Calculate mobile touch offset (same as DraggingShape)
-          const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
-          const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
+          // Use stored tile size and touch offset
+          tileSize = offsets.tileSize;
 
-          // Calculate grid location with mobile offset
+          // Calculate grid location with precomputed offsets
           location = mousePositionToGridLocation(
             e.clientX,
             e.clientY,
             gridElement,
             { rows: 10, columns: 10 },
-            MOBILE_TOUCH_OFFSET,
-            dragState.selectedShape || undefined
+            offsets.touchOffset,
+            dragState.selectedShape,
+            {
+              gridOffsetX: offsets.gridOffsetX,
+              gridOffsetY: offsets.gridOffsetY,
+              tileSize: offsets.tileSize,
+              gridGap: offsets.gridGap,
+            }
           );
 
-          // Validate placement if location is within grid
+          // Only validate placement if location changed
           if (location) {
-            isValid = isValidPlacement(dragState.selectedShape, location, tiles);
-            // Get invalid blocks even if placement is valid (some blocks might not fit)
-            invalidBlocks = getInvalidBlocks(dragState.selectedShape, location, tiles);
+            // Check if location actually changed to avoid unnecessary work
+            const locationChanged =
+              !dragState.hoveredBlockPositions.length ||
+              dragState.hoveredBlockPositions[0]?.location.row !== location.row ||
+              dragState.hoveredBlockPositions[0]?.location.column !== location.column;
+
+            if (locationChanged) {
+              isValid = isValidPlacement(dragState.selectedShape, location, tiles);
+              invalidBlocks = getInvalidBlocks(dragState.selectedShape, location, tiles);
+            } else {
+              // Location hasn't changed, reuse existing validation
+              isValid = dragState.isValidPlacement;
+              invalidBlocks = dragState.invalidBlockPositions;
+            }
           }
         }
       }
@@ -105,7 +124,7 @@ const App = () => {
       document.removeEventListener('pointermove', handlePointerMove);
       gridRef.current = null;
     };
-  }, [dispatch, dragState.selectedShape, gridTileSize, gridBounds, tiles]);
+  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, dragState.hoveredBlockPositions, dragState.isValidPlacement, dragState.invalidBlockPositions, gridTileSize, gridBounds, tiles]);
 
   // Global pointerup handler - consolidates all placement/return logic
   useEffect(() => {
@@ -125,20 +144,29 @@ const App = () => {
         return;
       }
 
-      // Calculate mobile touch offset (same as DraggingShape)
-      const rect = gridElement.getBoundingClientRect();
-      const isTouchDevice = 'ontouchstart' in globalThis || navigator.maxTouchPoints > 0;
-      const tileSize = rect.width / 10;
-      const MOBILE_TOUCH_OFFSET = isTouchDevice ? tileSize * 2.5 : 0;
+      // Use precomputed offsets (required)
+      const offsets = dragState.dragOffsets;
+      if (!offsets) {
+        // No offsets means SELECT_SHAPE didn't properly calculate them
+        console.error('dragOffsets not available - this indicates a logic error in SELECT_SHAPE');
+        dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
+        return;
+      }
 
-      // Calculate grid location with mobile offset
+      // Use precomputed offsets for grid location calculation
       const location = mousePositionToGridLocation(
         e.clientX,
         e.clientY,
         gridElement,
         { rows: 10, columns: 10 },
-        MOBILE_TOUCH_OFFSET,
-        dragState.selectedShape || undefined
+        offsets.touchOffset,
+        dragState.selectedShape,
+        {
+          gridOffsetX: offsets.gridOffsetX,
+          gridOffsetY: offsets.gridOffsetY,
+          tileSize: offsets.tileSize,
+          gridGap: offsets.gridGap,
+        }
       );
 
       // If location is null or placement is invalid, return the shape
@@ -162,7 +190,7 @@ const App = () => {
     return () => {
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [dispatch, dragState.selectedShape, tiles]);
+  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, tiles]);
 
   const handleCloseTutorial = () => {
     setShowTutorial(false);

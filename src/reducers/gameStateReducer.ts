@@ -50,6 +50,7 @@ export const initialGameState = {
     targetPosition: null,
     placementLocation: null,
     startTime: null,
+    dragOffsets: null,
   },
   removingShapeIndex: null,
   shapeRemovalAnimationState: 'none' as const,

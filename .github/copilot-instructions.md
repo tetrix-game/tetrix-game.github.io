@@ -7,6 +7,7 @@ This is a Tetris-inspired puzzle game built with React, TypeScript, and Vite. Pl
 
 
 ## Architecture & State Management
+Prefer changes that REMOVE complexity and state where possible.
 
 ### Core State Pattern (Reducer-Based)
 
@@ -18,58 +19,7 @@ This is a Tetris-inspired puzzle game built with React, TypeScript, and Vite. Pl
 
 
 ### State Shape (TetrixReducerState)
-
-```typescript
-{
-  // Game state management
-  gameState: GameState;                    // 'playing' | 'map'
-  currentLevel: number;                    // Current level being played
-  isMapUnlocked: boolean;                  // Whether map has been unlocked
-  
-  // Core game mechanics
-  tiles: Tile[];                          // 100 tiles (10x10 grid), 1-indexed locations
-  nextShapes: Shape[];                    // Available shapes to place
-  savedShape: Shape | null;               // Saved shape for later use
-  selectedShape: Shape | null;
-  selectedShapeIndex: number | null;
-  mouseGridLocation: Location | null;     // Current hover position
-  mousePosition: { x: number; y: number }; // Always has a position
-  gemIconPosition: { x: number; y: number }; // Position of score display gem icon (for gem shower origin)
-  isShapeDragging: boolean;
-  isValidPlacement: boolean;              // Track if current hover is valid
-  hoveredBlockPositions: Array<{ location: Location; block: Block }>;
-  
-  // Animation & UI state
-  placementAnimationState: PlacementAnimationState;
-  shapeOptionBounds: (ShapeOptionBounds | null)[];
-  removingShapeIndex: number | null;
-  shapesSliding: boolean;
-  openRotationMenus: boolean[];           // Track rotation menu state per shape
-  
-  // Scoring & currency system
-  score: number;
-  totalLinesCleared: number;              // Track for objectives
-  showCoinDisplay: boolean;               // Currency display visibility
-  
-  // Shape queue configuration
-  queueSize: number;                      // Total shapes available (-1 = infinite)
-  shapesUsed: number;                     // Track shapes used in finite mode
-}
-```
-
-
-
-### Reducer Actions
-
-Core actions have expanded significantly:
-- **Shape Management**: `SELECT_SHAPE`, `PLACE_SHAPE`, `ROTATE_SHAPE`, `SPEND_COIN`
-- **Mouse/UI**: `UPDATE_MOUSE_LOCATION`, `CLEAR_SELECTION`
-- **Shape Queue**: `SET_AVAILABLE_SHAPES`, `START_SHAPE_REMOVAL`, `COMPLETE_SHAPE_REMOVAL`
-- **Scoring**: `ADD_SCORE`, `SHOW_COIN_DISPLAY`, `HIDE_COIN_DISPLAY`
-- **Level/Map**: `SET_LEVEL`, `OPEN_MAP`, `CLOSE_MAP`, `UNLOCK_MAP`
-- **Persistence**: `LOAD_GAME_STATE`, `RESET_GAME`
-
-
+- found in `src/components/Tetrix/TetrixReducer.ts`
 
 ## Key Systems
 

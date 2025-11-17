@@ -101,6 +101,9 @@ export function getFilledBlocksRelativeToCenter(shape: Shape): Array<{ row: numb
 /**
  * Calculate grid positions for a shape placed at a specific location
  * The location represents where the 4x4 grid's top-left corner (0,0) would be placed
+ * 
+ * Handles any location values (including negative and > 10) gracefully.
+ * Simply calculates positions - validation happens elsewhere.
  */
 export function getShapeGridPositions(
   shape: Shape,
@@ -243,9 +246,7 @@ export function mousePositionToGridLocation(
   const column = Math.round(exactColumn) + 1; // +1 for 1-indexed
   const row = Math.round(exactRow) + 1; // +1 for 1-indexed
 
-  // Clamp to valid grid bounds
-  const clampedColumn = Math.max(1, Math.min(gridSize.columns, column));
-  const clampedRow = Math.max(1, Math.min(gridSize.rows, row));
-
-  return { row: clampedRow, column: clampedColumn };
+  // Return unclamped values - validation functions handle out-of-bounds gracefully
+  // This allows shapes to show "does not fit" visual when hovering outside the grid
+  return { row, column };
 }

@@ -83,22 +83,12 @@ const App = () => {
             }
           );
 
-          // Only validate placement if location changed
+          // Validate placement when we have a location
           if (location) {
-            // Check if location actually changed to avoid unnecessary work
-            const locationChanged =
-              !dragState.hoveredBlockPositions.length ||
-              dragState.hoveredBlockPositions[0]?.location.row !== location.row ||
-              dragState.hoveredBlockPositions[0]?.location.column !== location.column;
-
-            if (locationChanged) {
-              isValid = isValidPlacement(dragState.selectedShape, location, tiles);
-              invalidBlocks = getInvalidBlocks(dragState.selectedShape, location, tiles);
-            } else {
-              // Location hasn't changed, reuse existing validation
-              isValid = dragState.isValidPlacement;
-              invalidBlocks = dragState.invalidBlockPositions;
-            }
+            // Always calculate validation - the location might be the same but we need to ensure
+            // invalidBlocks is properly calculated for any location (including out of bounds)
+            isValid = isValidPlacement(dragState.selectedShape, location, tiles);
+            invalidBlocks = getInvalidBlocks(dragState.selectedShape, location, tiles);
           }
         }
       }

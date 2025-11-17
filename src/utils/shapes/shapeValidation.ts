@@ -13,8 +13,12 @@ export function makeTileKey(row: number, column: number): string {
 
 /**
  * Check if a shape can be placed at a given location on the grid
+ * 
+ * Gracefully handles any location values (including negative and beyond grid bounds).
+ * Short-circuits to false when any filled block is out of bounds or overlapping.
+ * 
  * @param shape - The 4x4 shape grid
- * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed
+ * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed (can be any value, even negative)
  * @param gridSize - Size of the grid (rows and columns)
  * @param tiles - Map of tile keys to tile data for checking occupancy
  * @returns true if the shape can be placed without overlapping or going out of bounds
@@ -36,14 +40,14 @@ export function canPlaceShape(
         const gridRow = gridTopLeftLocation.row + shapeRow;
         const gridCol = gridTopLeftLocation.column + shapeCol;
 
-        // Check bounds
+        // Check bounds - short circuit if out of bounds
         if (
           gridRow < 1 ||
           gridRow > gridSize.rows ||
           gridCol < 1 ||
           gridCol > gridSize.columns
         ) {
-          return false;
+          return false; // Block doesn't fit
         }
 
         // Check if position is already occupied
@@ -51,7 +55,7 @@ export function canPlaceShape(
         const tileData = tiles.get(tileKey);
 
         if (tileData?.isFilled) {
-          return false;
+          return false; // Block overlaps
         }
       }
     }
@@ -65,8 +69,11 @@ export function canPlaceShape(
  * This function iterates through the shape's 4x4 grid and checks each filled block
  * against the tiles Map for O(1) lookup performance.
  * 
+ * Gracefully handles any location values (including negative and > 10).
+ * Short-circuits to false when any filled block is out of bounds or overlapping.
+ * 
  * @param shape - The 4x4 shape grid to check
- * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed
+ * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed (can be any value, even negative)
  * @param tiles - Map of tile keys to tile data for O(1) lookup
  * @returns true if the shape can be placed without overlapping filled tiles or going out of bounds
  */
@@ -91,9 +98,9 @@ export function isValidPlacement(
         const gridRow = gridTopLeftLocation.row + shapeRow;
         const gridCol = gridTopLeftLocation.column + shapeCol;
 
-        // Check bounds (10x10 grid, 1-indexed)
+        // Check bounds (10x10 grid, 1-indexed) - short circuit if out of bounds
         if (gridRow < 1 || gridRow > 10 || gridCol < 1 || gridCol > 10) {
-          return false;
+          return false; // Block doesn't fit
         }
 
         // Check if position is already occupied using O(1) Map lookup
@@ -101,7 +108,7 @@ export function isValidPlacement(
         const tileData = tiles.get(tileKey);
 
         if (tileData?.isFilled) {
-          return false;
+          return false; // Block overlaps
         }
       }
     }
@@ -114,8 +121,11 @@ export function isValidPlacement(
  * Get the positions of blocks in the shape that cannot be placed (out of bounds or overlapping)
  * Returns an array of shape-relative coordinates (row, col in the 4x4 grid)
  * 
+ * Gracefully handles any location values (including negative and > 10).
+ * Marks filled blocks as invalid if they're out of bounds or overlapping.
+ * 
  * @param shape - The 4x4 shape grid to check
- * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed
+ * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed (can be any value, even negative)
  * @param tiles - Map of tile keys to tile data for O(1) lookup
  * @returns Array of invalid block positions with their shape-relative coordinates
  */

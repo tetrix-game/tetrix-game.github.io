@@ -17,6 +17,7 @@ export {
   getFilledBlocksRelativeToCenter,
   getShapeGridPositions,
   getFilledBlocks,
+  getShapeVisualOffset,
   mousePositionToGridLocation,
 } from './shapeGeometry';
 

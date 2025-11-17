@@ -134,15 +134,42 @@ export function getFilledBlocks(shape: Shape): Array<{ row: number; col: number;
 }
 
 /**
+ * Calculate the visual offset from 4x4 grid center to filled blocks center
+ * This is used to position the dragging shape visual so filled blocks appear centered on the mouse
+ */
+export function getShapeVisualOffset(
+  shape: Shape,
+  tileSize: number,
+  gridGap: number
+): { offsetX: number; offsetY: number } {
+  const bounds = getShapeBounds(shape);
+
+  // Calculate center of filled blocks within the 4x4 grid (0-indexed)
+  const filledCenterCol = bounds.minCol + (bounds.width - 1) / 2;
+  const filledCenterRow = bounds.minRow + (bounds.height - 1) / 2;
+
+  // The 4x4 grid's center is at (1.5, 1.5) in 0-indexed coordinates
+  const gridCenter = 1.5;
+
+  // Calculate offset from 4x4 center to filled blocks center
+  const offsetX = (filledCenterCol - gridCenter) * (tileSize + gridGap);
+  const offsetY = (filledCenterRow - gridCenter) * (tileSize + gridGap);
+
+  return { offsetX, offsetY };
+}
+
+/**
  * Convert a mouse position to a grid location
  * Returns null if the mouse is outside the grid bounds
  * 
- * The grid location changes only when the mouse moves more than half a tile away from
- * the current tile center. This ensures that shape blocks are at least halfway inside
- * their target tiles before the hover location changes.
+ * When a shape is provided, calculates the grid location based on where the visual
+ * 4x4 container's top-left corner would be positioned. This matches the actual visual
+ * appearance of the dragging shape.
  * 
- * When a shape is provided, accounts for the shape's filled blocks center offset
- * to determine which grid cell the shape's center should map to.
+ * The shape visual is centered on filled blocks (not the 4x4 grid center), so we:
+ * 1. Calculate the 4x4 container's top-left corner position
+ * 2. Map that corner to grid coordinates
+ * 3. Determine which grid cell that maps to
  */
 export function mousePositionToGridLocation(
   mouseX: number,
@@ -161,61 +188,54 @@ export function mousePositionToGridLocation(
   const tileWithGap = tileSize + GRID_GAP; // Distance from one tile's left edge to the next
 
   // Apply offset (for mobile touch positioning)
-  const adjustedY = mouseY - offsetY;
+  const adjustedMouseX = mouseX;
+  const adjustedMouseY = mouseY - offsetY;
 
-  // Calculate shape center offset if shape is provided
-  let shapeCenterOffsetX = 0;
-  let shapeCenterOffsetY = 0;
+  // Calculate the 4x4 visual container's top-left corner position
+  let containerTopLeftX = adjustedMouseX;
+  let containerTopLeftY = adjustedMouseY;
 
   if (shape) {
-    const bounds = getShapeBounds(shape);
-    // Calculate center of filled blocks in the 4x4 grid
-    const filledCenterCol = bounds.minCol + (bounds.width - 1) / 2;
-    const filledCenterRow = bounds.minRow + (bounds.height - 1) / 2;
-    // Offset from 4x4 grid center (1.5, 1.5)
-    const gridCenter = 1.5;
-    // Use tileWithGap to match how DraggingShape calculates its visual position
-    // This is the distance from one tile edge to the next tile edge
-    // NOTE: We ADD the offset because if filled blocks are right of center,
-    // the grid location should shift left (positive offset to mouse = earlier grid cell)
-    shapeCenterOffsetX = (filledCenterCol - gridCenter) * tileWithGap;
-    shapeCenterOffsetY = (filledCenterRow - gridCenter) * tileWithGap;
+    // Calculate the visual offset (filled blocks center relative to 4x4 grid center)
+    const { offsetX, offsetY } = getShapeVisualOffset(shape, tileSize, GRID_GAP);
+
+    // The 4x4 container dimensions
+    const shapeWidth = 4 * tileSize + 3 * GRID_GAP;
+    const shapeHeight = 4 * tileSize + 3 * GRID_GAP;
+
+    // DraggingShape positions the container so filled blocks are centered on mouse:
+    // containerLeft = mouseX - shapeWidth/2 - centerOffsetX
+    // We reverse this to find where the container's top-left actually is
+    containerTopLeftX = adjustedMouseX - shapeWidth / 2 - offsetX;
+    containerTopLeftY = adjustedMouseY - shapeHeight / 2 - offsetY;
   }
 
-  // Apply shape center offset to mouse position
-  // Add (not subtract) because we want to shift the grid calculation
-  // in the opposite direction of the visual offset
-  const offsetMouseX = mouseX + shapeCenterOffsetX;
-  const offsetMouseY = adjustedY + shapeCenterOffsetY;
-
-  // Check if adjusted mouse position is within grid bounds
+  // Check if the container's top-left corner is within reasonable bounds
+  // Allow some tolerance for shapes near the edge
+  const tolerance = tileSize * 2; // Allow up to 2 tiles outside
   if (
-    offsetMouseX < rect.left ||
-    offsetMouseX > rect.right ||
-    offsetMouseY < rect.top ||
-    offsetMouseY > rect.bottom
+    containerTopLeftX < rect.left - tolerance ||
+    containerTopLeftX > rect.right + tolerance ||
+    containerTopLeftY < rect.top - tolerance ||
+    containerTopLeftY > rect.bottom + tolerance
   ) {
     return null;
   }
 
-  const relativeX = offsetMouseX - rect.left;
-  const relativeY = offsetMouseY - rect.top;
+  // Calculate grid position relative to the container's top-left corner
+  const relativeX = containerTopLeftX - rect.left;
+  const relativeY = containerTopLeftY - rect.top;
 
-  // Calculate which tile the mouse is in using fractional coordinates
-  // Use tileWithGap to match the visual spacing used in DraggingShape
+  // Calculate which tile the container's top-left corner is in
+  // Use tileWithGap to match the visual spacing
   const exactColumn = relativeX / tileWithGap;
   const exactRow = relativeY / tileWithGap;
 
-  // Round to nearest integer using standard rounding (0.5 rounds up)
-  // This means:
-  // - When mouse is at tile center (0.5): rounds up to next tile
-  // - When mouse is < 0.5 from left edge: stays in current tile  
-  // - When mouse is >= 0.5 from left edge: moves to next tile
-  // Result: grid location changes when blocks are more than halfway into the next tile
+  // Round to nearest integer - when top-left is between tiles, pick the nearest
   const column = Math.round(exactColumn) + 1; // +1 for 1-indexed
   const row = Math.round(exactRow) + 1; // +1 for 1-indexed
 
-  // Clamp to valid grid bounds (should already be in bounds due to earlier check, but be safe)
+  // Clamp to valid grid bounds
   const clampedColumn = Math.max(1, Math.min(gridSize.columns, column));
   const clampedRow = Math.max(1, Math.min(gridSize.rows, row));
 

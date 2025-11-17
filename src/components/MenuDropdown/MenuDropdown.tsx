@@ -56,22 +56,8 @@ const MenuDropdown: React.FC = () => {
     }
   };
 
-  // Test notification function for debugging - opens prompt for custom points amount
+  // Test notification function for debugging - injects 1000 points
   const testNotification = (e: React.MouseEvent) => {
-    const input = globalThis.prompt('Enter amount of points to inject (try 100, 1000, or 999999):', '100');
-
-    // Check if user cancelled the prompt
-    if (input === null) {
-      return;
-    }
-
-    // Parse and validate the input
-    const amount = Number.parseInt(input.trim(), 10);
-    if (Number.isNaN(amount) || amount <= 0) {
-      alert('Please enter a valid positive number');
-      return;
-    }
-
     // Capture the click position for gem emission
     const clickPosition = { x: e.clientX, y: e.clientY };
 
@@ -83,7 +69,7 @@ const MenuDropdown: React.FC = () => {
         scoreData: {
           rowsCleared: 0,
           columnsCleared: 0,
-          pointsEarned: amount
+          pointsEarned: 1000
         },
         mousePosition: clickPosition
       }

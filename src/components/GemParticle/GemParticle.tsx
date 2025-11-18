@@ -7,13 +7,15 @@ interface GemParticleProps {
   velocity: { x: number; y: number };
   onComplete: () => void;
   delay?: number; // Stagger animation start
+  size?: number; // Size of the gem (default 40)
 }
 
 const GemParticle: React.FC<GemParticleProps> = ({
   startPosition,
   velocity,
   onComplete,
-  delay = 0
+  delay = 0,
+  size = 40
 }) => {
   const [currentPosition, setCurrentPosition] = useState(startPosition);
   const [opacity, setOpacity] = useState(0); // Start transparent for smooth fade-in
@@ -97,7 +99,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
         '--particle-opacity': opacity,
       } as React.CSSProperties}
     >
-      <BlueGemIcon size={40} />
+      <BlueGemIcon size={size} />
     </div>
   );
 };

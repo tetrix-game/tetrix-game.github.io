@@ -54,6 +54,8 @@ export type TetrixReducerState = {
   isDoubleTurnModeActive: boolean; // Whether double turn mode is currently active
   // Modifier system
   unlockedModifiers: Set<number>; // Set of prime IDs that have been unlocked
+  // Initialization tracking
+  hasLoadedPersistedState: boolean; // Whether we've loaded persisted data (prevents gem shower on load)
 };
 
 type SelectShapeAction = {

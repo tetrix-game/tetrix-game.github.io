@@ -2,18 +2,16 @@
 
 ## What's Up Next
 
-### High Priority
-- [ ] Clearance animations
-- [ ] Tutorial system
-- [ ] Game modifiers implementation
+### Ease scale
+- trivial (one shot)
+- easy: less than a day
+- moderate: 1+ days
+- hard: 1+ week
+- epic: 1+ months
+- ledgendary (multiple years)
 
-### In Progress
-- Reviewing and organizing development ideas
-
-### Recent Changes
-- Organized R&D documentation into separate files
-
----
+### Things
+- gem shower should shower the exact number of gems as the points won.
 
 ## Related Documentation
 - [Sound Effects Ideas](./SOUND_EFFECTS.md)

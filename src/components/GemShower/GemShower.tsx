@@ -8,15 +8,13 @@ interface GemData {
   startPosition: { x: number; y: number };
   velocity: { x: number; y: number };
   delay: number;
+  size?: number;
 }
 
 const GemShower: React.FC = () => {
-  const { score, gemIconPosition } = useTetrixStateContext();
+  const { score, gemIconPosition, hasLoadedPersistedState } = useTetrixStateContext();
   const [gems, setGems] = useState<GemData[]>([]);
-  const lastScoreRef = useRef(score);
-
-  // Performance thresholds for different rendering strategies
-  const DOM_PARTICLE_LIMIT = 20; // Lower limit since we're only showing one type
+  const lastScoreRef = useRef<number | null>(null);
 
   // Calculate the two possible emission origins
   const centerScreenPosition = useMemo(() => ({
@@ -28,43 +26,59 @@ const GemShower: React.FC = () => {
 
   // Score change detection
   useEffect(() => {
-    if (score !== lastScoreRef.current) {
-      const scoreChange = score - lastScoreRef.current;
-      const pointsForEffect = Math.abs(scoreChange); // Use absolute value for gem shower
-      const isGainingPoints = scoreChange > 0;
-
-      if (pointsForEffect === 0) {
-        lastScoreRef.current = score;
-        return;
-      }
-
-      // Use center screen for positive scores, gem icon for negative scores
-      const emissionOrigin: { x: number; y: number } = isGainingPoints
-        ? centerScreenPosition
-        : gemIconOrigin;
-
-      // Calculate number of gems to show based on points
-      // For small scores, show 1 gem per point
-      // For larger scores, limit the number of gems but make them more dramatic
-      let gemsToShow = Math.min(pointsForEffect, DOM_PARTICLE_LIMIT);
-      if (pointsForEffect > DOM_PARTICLE_LIMIT) {
-        // For large scores, show fewer gems but they represent more points
-        gemsToShow = Math.min(DOM_PARTICLE_LIMIT, Math.ceil(Math.log10(pointsForEffect + 1) * 3));
-      }
-
-      const coinsToSpawn = generateGems(gemsToShow, emissionOrigin, isGainingPoints);
-      setGems(prevGems => [...prevGems, ...coinsToSpawn]);
+    // Skip if we haven't loaded persisted state yet (prevents shower on async load)
+    if (!hasLoadedPersistedState) {
+      return;
     }
+    // Skip gem shower on initial mount until persisted state is loaded
+    if (lastScoreRef.current === null) {
+      lastScoreRef.current = score;
+      return;
+    }
+
+    // Only proceed if score actually changed
+    if (score === lastScoreRef.current) {
+      return;
+    }
+
+    const scoreChange = score - lastScoreRef.current;
+    const pointsForEffect = Math.abs(scoreChange);
+    const isGainingPoints = scoreChange > 0;
+
+    if (pointsForEffect === 0) {
+      lastScoreRef.current = score;
+      return;
+    }
+
+    // Emit from center screen when gaining points, from gem icon when losing points
+    const emissionOrigin: { x: number; y: number } = isGainingPoints
+      ? centerScreenPosition
+      : gemIconOrigin;
+
+    // Determine gem size and count based on points earned:
+    // - For 10+ points: show large gems (80px), 1 gem per 10 points, max 10 gems
+    // - For <10 points: show normal gems (40px), 1 gem per point, max 100 gems
+    const useLargeGems = pointsForEffect >= 10;
+    const gemsToShow = useLargeGems
+      ? Math.min(Math.floor(pointsForEffect / 10), 10)  // 10-100 points = 1-10 large gems
+      : pointsForEffect;                                  // 1-9 points = 1-9 normal gems
+    console.log(`GemShower: score change=${scoreChange}, pointsForEffect=${pointsForEffect}, gemsToShow=${gemsToShow}, useLargeGems=${useLargeGems}`);
+
+    const coinsToSpawn = generateGems(gemsToShow, emissionOrigin, isGainingPoints, useLargeGems);
+    console.log(`GemShower: generated ${coinsToSpawn.length} gems`);
+    setGems(prevGems => [...prevGems, ...coinsToSpawn]);
+
     lastScoreRef.current = score;
-  }, [score, centerScreenPosition, gemIconOrigin]);
+  }, [score, centerScreenPosition, gemIconOrigin, hasLoadedPersistedState]);
 
   const generateGems = (
     gemCount: number,
     origin: { x: number; y: number },
-    isGainingPoints: boolean
+    isGainingPoints: boolean,
+    useLargeGems: boolean = false
   ): GemData[] => {
     const gems: GemData[] = [];
-    const delayIncrement = 10; // 10ms between each gem
+    const delayIncrement = 10; // Stagger each gem by 10ms
     let currentDelay = 0;
 
     for (let i = 0; i < gemCount; i++) {
@@ -72,28 +86,26 @@ const GemShower: React.FC = () => {
       let velocityY: number;
 
       if (isGainingPoints) {
-        // Gaining points: gems shoot upward and outward from center screen
-        const angle = (60 + Math.random() * 60) * (Math.PI / 180); // 60° to 120° (upward cone)
-        const baseSpeed = 100 + Math.random() * 200; // 100-300 pixels per second
-
-        // Random direction (left or right) with slight bias towards spreading
-        const direction = Math.random() > 0.5 ? 1 : -1;
-        const spreadBias = 0.3 + Math.random() * 0.7; // Add some spread bias
+        // Gaining points: shoot gems upward in a cone pattern from center screen
+        const angle = (60 + Math.random() * 60) * (Math.PI / 180); // Random angle between 60° and 120°
+        const baseSpeed = 100 + Math.random() * 200; // Random speed between 100-300 px/s
+        const direction = Math.random() > 0.5 ? 1 : -1; // Randomly left or right
+        const spreadBias = 0.3 + Math.random() * 0.7; // Random spread factor
 
         velocityX = baseSpeed * Math.cos(angle) * direction * spreadBias;
-        velocityY = -baseSpeed * Math.sin(angle); // Negative for upward
+        velocityY = -baseSpeed * Math.sin(angle); // Negative Y = upward
       } else {
-        // Losing points: gems fall down from gem icon with slight random horizontal velocity
-        // Random horizontal velocity between -30 and 30 pixels per second
-        velocityX = (Math.random() * 3 - 1.5) * 60; // Range: -30 to 30
-        velocityY = 0; // Start with no vertical velocity (gravity will pull them down)
+        // Losing points: gems fall downward from gem icon with slight horizontal drift
+        velocityX = (Math.random() * 3 - 1.5) * 60; // Random drift between -30 and 30 px/s
+        velocityY = 0; // Gravity will pull them down
       }
 
       gems.push({
         id: `gem-${i}-${Date.now()}-${Math.random()}`,
         startPosition: { ...origin },
         velocity: { x: velocityX, y: velocityY },
-        delay: currentDelay
+        delay: currentDelay,
+        size: useLargeGems ? 80 : 40 // 80px for large gems, 40px for normal gems
       });
 
       currentDelay += delayIncrement;
@@ -115,6 +127,7 @@ const GemShower: React.FC = () => {
           startPosition={gem.startPosition}
           velocity={gem.velocity}
           delay={gem.delay}
+          size={gem.size}
           onComplete={() => handleGemComplete(gem.id)}
         />
       ))}

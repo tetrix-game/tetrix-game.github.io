@@ -67,6 +67,7 @@ export const initialGameState = {
   turningDirection: null,
   isDoubleTurnModeActive: false,
   unlockedModifiers: new Set<number>(),
+  hasLoadedPersistedState: false,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -179,6 +180,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         tiles: tilesMap,
         nextShapes: gameData.nextShapes || state.nextShapes,
         savedShape: gameData.savedShape || state.savedShape,
+        hasLoadedPersistedState: true,
       };
     }
 

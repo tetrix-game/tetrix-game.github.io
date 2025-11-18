@@ -73,14 +73,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         clearedColumns,
         {
           rows: {
-            single: { duration: 500, waveDelay: 75, startDelay: 0 },
-            double: { duration: 500, waveDelay: 50, startDelay: 100 },
-            triple: { duration: 500, waveDelay: 25, startDelay: 200 },
+            single: { duration: 500, waveDelay: 50, startDelay: 0 },
+            double: { duration: 500, waveDelay: 50, startDelay: 250 },
+            triple: { duration: 500, waveDelay: 50, startDelay: 500 },
           },
           columns: {
-            single: { duration: 500, waveDelay: 75, startDelay: 300 },
-            double: { duration: 500, waveDelay: 50, startDelay: 400 },
-            triple: { duration: 500, waveDelay: 25, startDelay: 500 },
+            single: { duration: 500, waveDelay: 50, startDelay: 0 },
+            double: { duration: 500, waveDelay: 50, startDelay: 250 },
+            triple: { duration: 500, waveDelay: 50, startDelay: 500 },
           },
         }
       );

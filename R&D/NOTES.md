@@ -1,9 +1,6 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-- Juice up combos
-  - Stackable custom animations for
-    - Quadruple
 - Size of DraggingShape needs to animate
 - Debug editor close button
 - Mouse movement is still caclulating fit after placement starts

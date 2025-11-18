@@ -288,7 +288,7 @@ export default function DraggingShape() {
 
   return (
     <div
-      className="dragging-shape-container"
+      className={`dragging-shape-container ${dragState.phase === 'dragging' ? 'dragging-phase' : ''}`}
       style={{
         '--container-top': `${containerTop}px`,
         '--container-left': `${containerLeft}px`,

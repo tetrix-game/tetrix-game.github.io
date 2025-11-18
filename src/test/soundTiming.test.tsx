@@ -1,15 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import DraggingShape from '../components/DraggingShape';
 import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
 import { TetrixReducerState, DragPhase } from '../utils/types';
-import * as soundEffects from '../components/SoundEffectsContext';
+import { DebugEditorProvider } from '../components/DebugEditor';
+
+const mocks = vi.hoisted(() => ({
+  playSound: vi.fn(),
+}));
 
 // Mock the sound effects module
 vi.mock('../components/SoundEffectsContext', () => ({
-  playSound: vi.fn().mockResolvedValue(undefined),
+  playSound: mocks.playSound,
   useSoundEffects: () => ({
-    playSound: vi.fn(),
+    playSound: mocks.playSound,
     setMuted: vi.fn(),
     isMuted: false
   })
@@ -66,7 +70,9 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
 describe('Sound Timing in DraggingShape', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    vi.useFakeTimers({
+      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance', 'Date']
+    });
   });
 
   afterEach(() => {
@@ -77,57 +83,67 @@ describe('Sound Timing in DraggingShape', () => {
     const mockState = createMockState('placing');
 
     render(
-      <TetrixStateContext.Provider value={mockState}>
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <DraggingShape />
-        </TetrixDispatchContext.Provider>
-      </TetrixStateContext.Provider>
+      <DebugEditorProvider>
+        <TetrixStateContext.Provider value={mockState}>
+          <TetrixDispatchContext.Provider value={mockDispatch}>
+            <DraggingShape />
+          </TetrixDispatchContext.Provider>
+        </TetrixStateContext.Provider>
+      </DebugEditorProvider>
     );
 
     // Fast-forward to the sound trigger point (203ms out of 300ms animation)
-    vi.advanceTimersByTime(203);
-
-    // Allow time for the next animation frame
-    await vi.runOnlyPendingTimersAsync();
+    await act(async () => {
+      vi.advanceTimersByTime(210);
+      // Allow time for the next animation frame
+      await vi.runOnlyPendingTimersAsync();
+    });
 
     // Verify that the sound was called at the correct timing
-    expect(soundEffects.playSound).toHaveBeenCalledWith('click_into_place');
+    expect(mocks.playSound).toHaveBeenCalledWith('click_into_place');
   });
 
-  it('should not trigger sound when not in placing animation state', () => {
+  it('should not trigger sound when not in placing animation state', async () => {
     const mockState = createMockState('none');
 
     render(
-      <TetrixStateContext.Provider value={mockState}>
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <DraggingShape />
-        </TetrixDispatchContext.Provider>
-      </TetrixStateContext.Provider>
+      <DebugEditorProvider>
+        <TetrixStateContext.Provider value={mockState}>
+          <TetrixDispatchContext.Provider value={mockDispatch}>
+            <DraggingShape />
+          </TetrixDispatchContext.Provider>
+        </TetrixStateContext.Provider>
+      </DebugEditorProvider>
     );
 
     // Fast-forward past the sound trigger point
-    vi.advanceTimersByTime(400);
+    await act(async () => {
+      vi.advanceTimersByTime(400);
+    });
 
     // Verify that no sound was triggered
-    expect(soundEffects.playSound).not.toHaveBeenCalled();
+    expect(mocks.playSound).not.toHaveBeenCalled();
   });
 
   it('should complete placement animation after 300ms', async () => {
     const mockState = createMockState('placing');
 
     render(
-      <TetrixStateContext.Provider value={mockState}>
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <DraggingShape />
-        </TetrixDispatchContext.Provider>
-      </TetrixStateContext.Provider>
+      <DebugEditorProvider>
+        <TetrixStateContext.Provider value={mockState}>
+          <TetrixDispatchContext.Provider value={mockDispatch}>
+            <DraggingShape />
+          </TetrixDispatchContext.Provider>
+        </TetrixStateContext.Provider>
+      </DebugEditorProvider>
     );
 
     // Fast-forward to completion (300ms)
-    vi.advanceTimersByTime(300);
-
-    // Allow time for the final animation frame
-    await vi.runOnlyPendingTimersAsync();
+    await act(async () => {
+      vi.advanceTimersByTime(300);
+      // Allow time for the final animation frame
+      await vi.runOnlyPendingTimersAsync();
+    });
 
     // Verify that COMPLETE_PLACEMENT was dispatched
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'COMPLETE_PLACEMENT' });

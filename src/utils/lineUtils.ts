@@ -124,21 +124,21 @@ export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
  */
 function getLineColor(tiles: TilesSet, index: number, isRow: boolean): string | undefined {
   let firstColor: string | undefined;
-  
+
   for (let i = 1; i <= GRID_SIZE; i++) {
     const row = isRow ? index : i;
     const col = isRow ? i : index;
     const tile = tiles.get(makeTileKey(row, col));
-    
+
     if (!tile || !tile.isFilled) return undefined;
-    
+
     if (!firstColor) {
       firstColor = tile.color;
     } else if (tile.color !== firstColor) {
       return undefined;
     }
   }
-  
+
   return firstColor;
 }
 

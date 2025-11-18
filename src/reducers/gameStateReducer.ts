@@ -49,6 +49,7 @@ export const initialGameState = {
     sourcePosition: null,
     targetPosition: null,
     placementLocation: null,
+    placementStartPosition: null,
     startTime: null,
     dragOffsets: null,
   },
@@ -68,6 +69,8 @@ export const initialGameState = {
   isDoubleTurnModeActive: false,
   unlockedModifiers: new Set<number>(),
   hasLoadedPersistedState: false,
+  clearingTiles: [],
+  clearingRotationDirection: null,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -187,6 +190,23 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     case "RESET_GAME": {
       return {
         ...initialGameState,
+      };
+    }
+
+    case "START_TILE_CLEARING": {
+      const { tiles, direction } = action.value;
+      return {
+        ...state,
+        clearingTiles: tiles,
+        clearingRotationDirection: direction,
+      };
+    }
+
+    case "COMPLETE_TILE_CLEARING": {
+      return {
+        ...state,
+        clearingTiles: [],
+        clearingRotationDirection: null,
       };
     }
 

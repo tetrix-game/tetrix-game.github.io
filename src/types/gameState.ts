@@ -56,6 +56,9 @@ export type TetrixReducerState = {
   unlockedModifiers: Set<number>; // Set of prime IDs that have been unlocked
   // Initialization tracking
   hasLoadedPersistedState: boolean; // Whether we've loaded persisted data (prevents gem shower on load)
+  // Tile clearing animation
+  clearingTiles: Array<{ row: number; column: number }>; // Tiles currently being cleared
+  clearingRotationDirection: 'cw' | 'ccw' | null; // Rotation direction for clearing animation
 };
 
 type SelectShapeAction = {
@@ -252,6 +255,18 @@ type DebugReplaceFirstShapeAction = {
   value: { shape: Shape };
 };
 
+type StartTileClearingAction = {
+  type: 'START_TILE_CLEARING';
+  value: {
+    tiles: Array<{ row: number; column: number }>;
+    direction: 'cw' | 'ccw';
+  };
+};
+
+type CompleteTileClearingAction = {
+  type: 'COMPLETE_TILE_CLEARING';
+};
+
 export type TetrixAction =
   | SelectShapeAction
   | UpdateMouseLocationAction
@@ -291,6 +306,8 @@ export type TetrixAction =
   | DebugRemoveBlockAction
   | DebugAddBlockAction
   | DebugClearAllAction
-  | DebugReplaceFirstShapeAction;
+  | DebugReplaceFirstShapeAction
+  | StartTileClearingAction
+  | CompleteTileClearingAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

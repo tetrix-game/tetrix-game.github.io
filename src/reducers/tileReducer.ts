@@ -64,6 +64,30 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Check for and clear full lines
       const { tiles: finalTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
 
+      // Collect tiles to animate if lines were cleared
+      let clearingTileLocations: Array<{ row: number; column: number }> = [];
+      let clearingDirection: 'cw' | 'ccw' | null = null;
+
+      if (clearedRows.length > 0 || clearedColumns.length > 0) {
+        // Collect all tile locations that will be cleared
+        clearedRows.forEach(row => {
+          for (let column = 1; column <= 10; column++) {
+            clearingTileLocations.push({ row, column });
+          }
+        });
+        clearedColumns.forEach(column => {
+          for (let row = 1; row <= 10; row++) {
+            // Avoid duplicates from row/column intersections
+            if (!clearedRows.includes(row)) {
+              clearingTileLocations.push({ row, column });
+            }
+          }
+        });
+
+        // Randomly choose rotation direction for this clearing event
+        clearingDirection = Math.random() > 0.5 ? 'cw' : 'ccw';
+      }
+
       // Play sound effects for line clearing
       playLineClearSounds(clearedRows, clearedColumns);
 
@@ -130,6 +154,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
+          placementStartPosition: null,
           startTime: null,
           dragOffsets: null,
         },
@@ -137,6 +162,9 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         // Start the removal animation
         removingShapeIndex: removedIndex,
         shapeRemovalAnimationState: 'removing' as const,
+        // Set clearing animation data
+        clearingTiles: clearingTileLocations,
+        clearingRotationDirection: clearingDirection,
       };
 
       return newState;

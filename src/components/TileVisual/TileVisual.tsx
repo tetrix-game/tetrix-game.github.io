@@ -12,7 +12,7 @@ type TileVisualProps = {
 }
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisualProps) => {
-  const { dragState } = useTetrixStateContext();
+  const { dragState, clearingTiles, clearingRotationDirection } = useTetrixStateContext();
 
   // Fixed border width for consistent grid sizing
   // Always display the actual tile block
@@ -20,6 +20,11 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
 
   // Show a shadow overlay when hovering
   const showShadow = isHovered && hoveredBlock;
+
+  // Check if this tile is being cleared
+  const isClearing = clearingTiles.some(
+    loc => loc.row === tile.location.row && loc.column === tile.location.column
+  );
 
   // Determine tile variant (dark vs light)
   const dark = (tile.location.row + tile.location.column) % 2 === 0;
@@ -47,6 +52,12 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
           style={{
             '--shadow-opacity': shadowOpacity,
           } as React.CSSProperties}
+        />
+      )}
+      {isClearing && (
+        <div
+          className={`tile-visual-clearing ${clearingRotationDirection === 'cw' ? 'rotate-cw' : 'rotate-ccw'
+            }`}
         />
       )}
     </div>

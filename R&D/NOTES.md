@@ -1,7 +1,6 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-- Debug editor close button
 - Mouse movement is still caclulating fit after placement starts
 - Better learning curve
   - Get rid of the level progression idea

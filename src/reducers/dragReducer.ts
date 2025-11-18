@@ -110,6 +110,20 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
     case "UPDATE_MOUSE_LOCATION": {
       const { location, position, tileSize, gridBounds, isValid, invalidBlocks } = action.value;
 
+      // If we are in the placing phase, we should NOT update the validity or hovered blocks
+      // The shape is animating into place and should not react to mouse movement anymore
+      if (state.dragState.phase === 'placing' || state.dragState.phase === 'returning') {
+        return {
+          ...state,
+          mouseGridLocation: location,
+          mousePosition: position ?? state.mousePosition ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+          gridTileSize: tileSize ?? state.gridTileSize ?? null,
+          gridBounds: gridBounds ?? state.gridBounds ?? null,
+          // Keep existing drag state exactly as is to preserve the placement visualization
+          dragState: state.dragState,
+        };
+      }
+
       // Calculate hovered block positions based on selected shape and mouse location
       const hoveredBlockPositions = state.dragState.selectedShape && location
         ? getShapeGridPositions(state.dragState.selectedShape, location)

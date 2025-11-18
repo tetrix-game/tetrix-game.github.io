@@ -29,6 +29,23 @@ const App = () => {
     const handlePointerMove = (e: PointerEvent) => {
       const position = { x: e.clientX, y: e.clientY };
 
+      // Optimization: If we are placing or returning, we don't need to calculate fit
+      // The reducer also guards against this, but we can save the calculation here
+      if (dragState.phase === 'placing' || dragState.phase === 'returning') {
+        dispatch({
+          type: 'UPDATE_MOUSE_LOCATION',
+          value: {
+            location: null,
+            position,
+            tileSize: gridTileSize,
+            gridBounds: gridBounds,
+            isValid: false,
+            invalidBlocks: [],
+          },
+        });
+        return;
+      }
+
       // Only calculate grid location if a shape is selected and grid is available
       let location = null;
       let tileSize = gridTileSize;
@@ -114,7 +131,7 @@ const App = () => {
       document.removeEventListener('pointermove', handlePointerMove);
       gridRef.current = null;
     };
-  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, dragState.hoveredBlockPositions, dragState.isValidPlacement, dragState.invalidBlockPositions, gridTileSize, gridBounds, tiles]);
+  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, dragState.hoveredBlockPositions, dragState.isValidPlacement, dragState.invalidBlockPositions, dragState.phase, gridTileSize, gridBounds, tiles]);
 
   // Global pointerup handler - consolidates all placement/return logic
   useEffect(() => {

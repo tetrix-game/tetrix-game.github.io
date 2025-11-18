@@ -83,7 +83,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
       {playingAnimations.map((anim) => {
         const elapsed = currentTime - anim.startTime;
         const progress = Math.min(elapsed / anim.duration, 1);
-        
+
         // Calculate delay: if startTime is in the future, we need to delay
         const delay = Math.max(0, anim.startTime - currentTime);
 

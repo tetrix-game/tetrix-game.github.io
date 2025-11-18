@@ -5,26 +5,50 @@
  * Animations are instanced per tile and persist independently of block state.
  * 
  * Animation Types:
- * - row-cw: Clockwise rotation for row clears
- * - column-ccw: Counterclockwise base rotation for column clears
- * - column-double: Dynamic grow/rotate effect for column clears
+ * - row-cw: Clockwise rotation for single row clears
+ * - row-double: Dynamic grow/rotate effect for double row clears
+ * - row-triple: Octagon with full 360° rotation for triple row clears
+ * - column-ccw: Counterclockwise base rotation for single column clears
+ * - column-double: Dynamic grow/rotate effect for double column clears
+ * - column-triple: Octagon with full 360° rotation for triple column clears
  */
 
 import type { TileAnimation, TilesSet } from '../types/core';
 
 export type AnimationConfig = {
-  rowDuration: number; // Duration for row animations (ms)
-  columnDuration: number; // Duration for column animations (ms)
-  rowWaveDelay: number; // Delay between each tile in a row (ms)
-  columnWaveDelay: number; // Delay between each tile in a column (ms)
+  // Duration for each animation type (ms)
+  rowSingleDuration: number;
+  rowDoubleDuration: number;
+  rowTripleDuration: number;
+  columnSingleDuration: number;
+  columnDoubleDuration: number;
+  columnTripleDuration: number;
+
+  // Wave delays for each animation type (ms)
+  rowSingleWaveDelay: number;
+  rowDoubleWaveDelay: number;
+  rowTripleWaveDelay: number;
+  columnSingleWaveDelay: number;
+  columnDoubleWaveDelay: number;
+  columnTripleWaveDelay: number;
+
   baseStartTime?: number; // Base timestamp (defaults to performance.now())
 };
 
 const DEFAULT_CONFIG: AnimationConfig = {
-  rowDuration: 500,
-  columnDuration: 500,
-  rowWaveDelay: 0,
-  columnWaveDelay: 0,
+  rowSingleDuration: 500,
+  rowDoubleDuration: 500,
+  rowTripleDuration: 600,
+  columnSingleDuration: 500,
+  columnDoubleDuration: 500,
+  columnTripleDuration: 600,
+
+  rowSingleWaveDelay: 30,
+  rowDoubleWaveDelay: 30,
+  rowTripleWaveDelay: 40,
+  columnSingleWaveDelay: 30,
+  columnDoubleWaveDelay: 30,
+  columnTripleWaveDelay: 40,
 };
 
 /**
@@ -67,6 +91,10 @@ export function generateClearingAnimations(
   // Helper to create tile key
   const makeTileKey = (row: number, column: number) => `R${row}C${column}`;
 
+  // Determine animation types based on count
+  const rowCount = clearedRows.length;
+  const columnCount = clearedColumns.length;
+
   // Process cleared rows
   for (const row of clearedRows) {
     for (let column = 1; column <= 10; column++) {
@@ -74,20 +102,42 @@ export function generateClearingAnimations(
       const tileData = newTiles.get(key);
       if (!tileData) continue;
 
-      // Calculate wave delay based on column index (0-9)
-      const waveOffset = calculateWaveOffset(column - 1, finalConfig.rowWaveDelay);
-      const startTime = baseStartTime + waveOffset;
+      const animations: TileAnimation[] = [];
 
-      const animation: TileAnimation = {
+      // Single row animation (always present)
+      const singleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rowSingleWaveDelay);
+      animations.push({
         id: generateAnimationId(),
         type: 'row-cw',
-        startTime,
-        duration: finalConfig.rowDuration,
-      };
+        startTime: baseStartTime + singleWaveOffset,
+        duration: finalConfig.rowSingleDuration,
+      });
+
+      // Double row animation (2+ rows)
+      if (rowCount >= 2) {
+        const doubleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rowDoubleWaveDelay);
+        animations.push({
+          id: generateAnimationId(),
+          type: 'row-double',
+          startTime: baseStartTime + doubleWaveOffset,
+          duration: finalConfig.rowDoubleDuration,
+        });
+      }
+
+      // Triple row animation (3+ rows)
+      if (rowCount >= 3) {
+        const tripleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rowTripleWaveDelay);
+        animations.push({
+          id: generateAnimationId(),
+          type: 'row-triple',
+          startTime: baseStartTime + tripleWaveOffset,
+          duration: finalConfig.rowTripleDuration,
+        });
+      }
 
       newTiles.set(key, {
         ...tileData,
-        activeAnimations: [...(tileData.activeAnimations || []), animation],
+        activeAnimations: [...(tileData.activeAnimations || []), ...animations],
       });
     }
   }
@@ -99,25 +149,36 @@ export function generateClearingAnimations(
       const tileData = newTiles.get(key);
       if (!tileData) continue;
 
-      // Calculate wave delay based on row index (0-9)
-      const waveOffset = calculateWaveOffset(row - 1, finalConfig.columnWaveDelay);
-      const startTime = baseStartTime + waveOffset;
+      const animations: TileAnimation[] = [];
 
-      // Columns get two animations: base CCW and double-rotation overlay
-      const animations: TileAnimation[] = [
-        {
+      // Single column animation (always present)
+      const singleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columnSingleWaveDelay);
+      animations.push({
+        id: generateAnimationId(),
+        type: 'column-ccw',
+        startTime: baseStartTime + singleWaveOffset,
+        duration: finalConfig.columnSingleDuration,
+      });
+
+      // Double column animation (always present, for backward compatibility)
+      const doubleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columnDoubleWaveDelay);
+      animations.push({
+        id: generateAnimationId(),
+        type: 'column-double',
+        startTime: baseStartTime + doubleWaveOffset,
+        duration: finalConfig.columnDoubleDuration,
+      });
+
+      // Triple column animation (2+ columns)
+      if (columnCount >= 2) {
+        const tripleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columnTripleWaveDelay);
+        animations.push({
           id: generateAnimationId(),
-          type: 'column-ccw',
-          startTime,
-          duration: finalConfig.columnDuration,
-        },
-        {
-          id: generateAnimationId(),
-          type: 'column-double',
-          startTime,
-          duration: finalConfig.columnDuration,
-        },
-      ];
+          type: 'column-triple',
+          startTime: baseStartTime + tripleWaveOffset,
+          duration: finalConfig.columnTripleDuration,
+        });
+      }
 
       newTiles.set(key, {
         ...tileData,

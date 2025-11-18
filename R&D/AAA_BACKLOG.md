@@ -6,7 +6,6 @@
     - Double
     - Tripple
     - Quadruple
-    - Rows + Columns
 - Better learning curve
   - Instructions are too lengthy
   - Instructions are just wrong

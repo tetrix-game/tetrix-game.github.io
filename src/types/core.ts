@@ -35,7 +35,7 @@ export type TileData = {
 // Animation instance running on a tile
 export type TileAnimation = {
   id: string; // Unique ID for this animation instance
-  type: 'row-cw' | 'column-ccw' | 'column-double';
+  type: 'row-cw' | 'row-double' | 'row-triple' | 'column-ccw' | 'column-double' | 'column-triple';
   startTime: number; // Performance.now() timestamp when animation should start
   duration: number; // Animation duration in milliseconds
 };

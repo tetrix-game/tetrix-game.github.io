@@ -66,16 +66,24 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const { tiles: clearedTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
 
       // Generate clearing animations and apply them to tiles
-      // Configure wave effects: delay each row tile by 30ms, each column tile by 40ms
+      // Configure wave effects and timing for single/double/triple animations
       const finalTiles = generateClearingAnimations(
         clearedTiles,
         clearedRows,
         clearedColumns,
         {
-          rowDuration: 15000,
-          columnDuration: 15000,
-          rowWaveDelay: 3000,
-          columnWaveDelay: 5000,
+          rowSingleDuration: 2000,
+          rowDoubleDuration: 2000,
+          rowTripleDuration: 2000,
+          columnSingleDuration: 2000,
+          columnDoubleDuration: 2000,
+          columnTripleDuration: 2000,
+          rowSingleWaveDelay: 500,
+          rowDoubleWaveDelay: 500,
+          rowTripleWaveDelay: 500,
+          columnSingleWaveDelay: 500,
+          columnDoubleWaveDelay: 500,
+          columnTripleWaveDelay: 500,
         }
       );
 

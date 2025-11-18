@@ -84,6 +84,22 @@
   border-width: 3px;
 }
 
+/* Row quad clearing animation - beating heart effect (4+ rows) */
+.tile-visual-clearing.row-quad {
+  animation: tile-clear-row-quad-beat var(--animation-duration, 1200ms) ease-in-out forwards;
+  animation-delay: var(--animation-delay, 0ms);
+  animation-iteration-count: var(--beat-count, 3);
+  z-index: 13;
+}
+
+/* Column quad clearing animation - beating heart effect (4+ columns) */
+.tile-visual-clearing.column-quad {
+  animation: tile-clear-column-quad-beat var(--animation-duration, 1200ms) ease-in-out forwards;
+  animation-delay: var(--animation-delay, 0ms);
+  animation-iteration-count: var(--beat-count, 3);
+  z-index: 13;
+}
+
 /* Row CW animation: rotates clockwise to circle */
 @keyframes tile-clear-row-cw {
   0% {
@@ -197,16 +213,14 @@
     transform: rotate(360deg) scale(1.2);
     border-radius: 15%;
     opacity: 1;
-    clip-path: polygon(
-      30% 0%,
-      70% 0%,
-      100% 30%,
-      100% 70%,
-      70% 100%,
-      30% 100%,
-      0% 70%,
-      0% 30%
-    );
+    clip-path: polygon(30% 0%,
+        70% 0%,
+        100% 30%,
+        100% 70%,
+        70% 100%,
+        30% 100%,
+        0% 70%,
+        0% 30%);
     top: 0;
     left: 0;
     right: 0;
@@ -217,16 +231,14 @@
     transform: rotate(360deg) scale(1.2);
     border-radius: 15%;
     opacity: 0;
-    clip-path: polygon(
-      30% 0%,
-      70% 0%,
-      100% 30%,
-      100% 70%,
-      70% 100%,
-      30% 100%,
-      0% 70%,
-      0% 30%
-    );
+    clip-path: polygon(30% 0%,
+        70% 0%,
+        100% 30%,
+        100% 70%,
+        70% 100%,
+        30% 100%,
+        0% 70%,
+        0% 30%);
     top: 0;
     left: 0;
     right: 0;
@@ -247,16 +259,14 @@
     transform: rotate(-360deg) scale(1.2);
     border-radius: 15%;
     opacity: 1;
-    clip-path: polygon(
-      30% 0%,
-      70% 0%,
-      100% 30%,
-      100% 70%,
-      70% 100%,
-      30% 100%,
-      0% 70%,
-      0% 30%
-    );
+    clip-path: polygon(30% 0%,
+        70% 0%,
+        100% 30%,
+        100% 70%,
+        70% 100%,
+        30% 100%,
+        0% 70%,
+        0% 30%);
     top: 0;
     left: 0;
     right: 0;
@@ -267,19 +277,181 @@
     transform: rotate(-360deg) scale(1.2);
     border-radius: 15%;
     opacity: 0;
-    clip-path: polygon(
-      30% 0%,
-      70% 0%,
-      100% 30%,
-      100% 70%,
-      70% 100%,
-      30% 100%,
-      0% 70%,
-      0% 30%
-    );
+    clip-path: polygon(30% 0%,
+        70% 0%,
+        100% 30%,
+        100% 70%,
+        70% 100%,
+        30% 100%,
+        0% 70%,
+        0% 30%);
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+  }
+}
+
+/* Row quad animation: single bump-bump-pause beat pattern */
+@keyframes tile-clear-row-quad-beat {
+
+  /* Start at rest */
+  0% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* WEAK BUMP - quick small expansion */
+  15% {
+    border-radius: 20%;
+    border-width: 4px;
+    opacity: 1;
+    top: 32%;
+    left: 32%;
+    right: 32%;
+    bottom: 32%;
+  }
+
+  /* Snap back */
+  24% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* Brief pause */
+  30% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* STRONG BUMP - bigger, sharper expansion */
+  42% {
+    border-radius: 10%;
+    border-width: 6px;
+    opacity: 1;
+    top: 25%;
+    left: 25%;
+    right: 25%;
+    bottom: 25%;
+  }
+
+  /* Snap back */
+  54% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* PAUSE - hold steady until next iteration */
+  60%,
+  100% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+}
+
+/* Column quad animation: single bump-bump-pause beat pattern */
+@keyframes tile-clear-column-quad-beat {
+
+  /* Start at rest */
+  0% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* WEAK BUMP - quick small expansion */
+  15% {
+    border-radius: 20%;
+    border-width: 4px;
+    opacity: 1;
+    top: 32%;
+    left: 32%;
+    right: 32%;
+    bottom: 32%;
+  }
+
+  /* Snap back */
+  24% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* Brief pause */
+  30% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* STRONG BUMP - bigger, sharper expansion */
+  42% {
+    border-radius: 10%;
+    border-width: 6px;
+    opacity: 1;
+    top: 25%;
+    left: 25%;
+    right: 25%;
+    bottom: 25%;
+  }
+
+  /* Snap back */
+  54% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  /* PAUSE - hold steady until next iteration */
+  60%,
+  100% {
+    border-radius: 50%;
+    border-width: 3px;
+    opacity: 1;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
   }
 }

@@ -8,9 +8,11 @@
  * - row-cw: Clockwise rotation for single row clears
  * - row-double: Dynamic grow/rotate effect for double row clears
  * - row-triple: Octagon with full 360° rotation for triple row clears
+ * - row-quad: Beating heart effect for quad row clears (4+ rows)
  * - column-ccw: Counterclockwise base rotation for single column clears
  * - column-double: Dynamic grow/rotate effect for double column clears
  * - column-triple: Octagon with full 360° rotation for triple column clears
+ * - column-quad: Beating heart effect for quad column clears (4+ columns)
  */
 
 import type { TileAnimation, TilesSet } from '../types/core';
@@ -19,6 +21,7 @@ export type AnimationTierConfig = {
   duration: number;    // Animation duration in ms
   waveDelay: number;   // Delay between each tile in ms
   startDelay: number;  // Delay before the first animation starts in ms
+  beatCount?: number;  // Number of heartbeats (for quad animations)
 };
 
 export type AnimationConfig = {
@@ -26,11 +29,13 @@ export type AnimationConfig = {
     single: AnimationTierConfig;
     double: AnimationTierConfig;
     triple: AnimationTierConfig;
+    quad: AnimationTierConfig;
   };
   columns: {
     single: AnimationTierConfig;
     double: AnimationTierConfig;
     triple: AnimationTierConfig;
+    quad: AnimationTierConfig;
   };
   baseStartTime?: number; // Base timestamp (defaults to performance.now())
 };
@@ -40,11 +45,13 @@ const DEFAULT_CONFIG: AnimationConfig = {
     single: { duration: 500, waveDelay: 30, startDelay: 0 },
     double: { duration: 500, waveDelay: 30, startDelay: 0 },
     triple: { duration: 600, waveDelay: 40, startDelay: 0 },
+    quad: { duration: 1200, waveDelay: 20, startDelay: 0, beatCount: 3 },
   },
   columns: {
     single: { duration: 500, waveDelay: 30, startDelay: 0 },
     double: { duration: 500, waveDelay: 30, startDelay: 0 },
     triple: { duration: 600, waveDelay: 40, startDelay: 0 },
+    quad: { duration: 1200, waveDelay: 20, startDelay: 0, beatCount: 3 },
   },
 };
 
@@ -87,11 +94,13 @@ export function generateClearingAnimations(
       single: { ...DEFAULT_CONFIG.rows.single, ...config.rows?.single },
       double: { ...DEFAULT_CONFIG.rows.double, ...config.rows?.double },
       triple: { ...DEFAULT_CONFIG.rows.triple, ...config.rows?.triple },
+      quad: { ...DEFAULT_CONFIG.rows.quad, ...config.rows?.quad },
     },
     columns: {
       single: { ...DEFAULT_CONFIG.columns.single, ...config.columns?.single },
       double: { ...DEFAULT_CONFIG.columns.double, ...config.columns?.double },
       triple: { ...DEFAULT_CONFIG.columns.triple, ...config.columns?.triple },
+      quad: { ...DEFAULT_CONFIG.columns.quad, ...config.columns?.quad },
     },
     baseStartTime: config.baseStartTime,
   };
@@ -145,6 +154,18 @@ export function generateClearingAnimations(
         });
       }
 
+      // Quad row animation (4+ rows) - beating heart
+      if (rowCount >= 4) {
+        const quadWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.quad.waveDelay);
+        animations.push({
+          id: generateAnimationId(),
+          type: 'row-quad',
+          startTime: baseStartTime + finalConfig.rows.quad.startDelay + quadWaveOffset,
+          duration: finalConfig.rows.quad.duration,
+          beatCount: finalConfig.rows.quad.beatCount,
+        });
+      }
+
       newTiles.set(key, {
         ...tileData,
         activeAnimations: [...(tileData.activeAnimations || []), ...animations],
@@ -189,6 +210,18 @@ export function generateClearingAnimations(
           type: 'column-triple',
           startTime: baseStartTime + finalConfig.columns.triple.startDelay + tripleWaveOffset,
           duration: finalConfig.columns.triple.duration,
+        });
+      }
+
+      // Quad column animation (4+ columns) - beating heart
+      if (columnCount >= 4) {
+        const quadWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.quad.waveDelay);
+        animations.push({
+          id: generateAnimationId(),
+          type: 'column-quad',
+          startTime: baseStartTime + finalConfig.columns.quad.startDelay + quadWaveOffset,
+          duration: finalConfig.columns.quad.duration,
+          beatCount: finalConfig.columns.quad.beatCount,
         });
       }
 

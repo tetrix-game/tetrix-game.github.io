@@ -87,15 +87,25 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
         // Calculate delay: if startTime is in the future, we need to delay
         const delay = Math.max(0, anim.startTime - currentTime);
 
+        // For quad animations, divide duration by beat count to get per-beat duration
+        // and set the iteration count
+        const style: Record<string, any> = {
+          '--animation-progress': progress,
+          '--animation-duration': `${anim.duration}ms`,
+          '--animation-delay': `${delay}ms`,
+        };
+
+        if (anim.type === 'row-quad' || anim.type === 'column-quad') {
+          const beatCount = anim.beatCount ?? 3;
+          style['--beat-count'] = beatCount;
+          style['--animation-duration'] = `${anim.duration / beatCount}ms`;
+        }
+
         return (
           <div
             key={anim.id}
             className={`tile-visual-clearing ${anim.type}`}
-            style={{
-              '--animation-progress': progress,
-              '--animation-duration': `${anim.duration}ms`,
-              '--animation-delay': `${delay}ms`,
-            } as React.CSSProperties}
+            style={style as React.CSSProperties}
           />
         );
       })}

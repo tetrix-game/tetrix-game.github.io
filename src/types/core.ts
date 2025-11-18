@@ -35,9 +35,11 @@ export type TileData = {
 // Animation instance running on a tile
 export type TileAnimation = {
   id: string; // Unique ID for this animation instance
-  type: 'row-cw' | 'row-double' | 'row-triple' | 'column-ccw' | 'column-double' | 'column-triple';
+  type: 'row-cw' | 'row-double' | 'row-triple' | 'row-quad' | 'column-ccw' | 'column-double' | 'column-triple' | 'column-quad';
   startTime: number; // Performance.now() timestamp when animation should start
   duration: number; // Animation duration in milliseconds
+  // Optional config for beating heart animations (quad)
+  beatCount?: number; // Number of heartbeats
 };
 
 // Set of tile keys with their data

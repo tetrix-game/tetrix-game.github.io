@@ -1,22 +1,22 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
+- Placing shapes along the edge isn't allowing for the shape to hover on the outer half of the edge tiles, making placing along the edge fairly difficult.
 - Juice up combos
   - Stackable custom animations for
-    - Double
-    - Tripple
     - Quadruple
+- Size of DraggingShape needs to animate
+- Debug editor close button
+- Mouse movement is still caclulating fit after placement starts
 - Better learning curve
-  - Instructions are too lengthy
-  - Instructions are just wrong
   - Get rid of the level progression idea
-  - Mouse movement is still caclulating fit after placement starts
   - Add GIF's explaining the game instead of words
     - Next button progress bar
-    - Number of screens in getting to know you
     - Skip button
 - Invalid placement sound
 - Valid placement sound
+- Sounds and Music sliders
+- Clearing the 10X10 should give a significant amount of points
 
 
 ## Related Documentation

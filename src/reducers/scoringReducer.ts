@@ -1,5 +1,5 @@
 /**
- * Scoring Reducer - Handles score, currency display, and coin spending
+ * Scoring Reducer - Handles score, gem display, and gem spending
  * Actions: ADD_SCORE, SHOW_COIN_DISPLAY, HIDE_COIN_DISPLAY, SPEND_COIN, UPDATE_GEM_ICON_POSITION
  */
 

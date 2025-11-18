@@ -38,7 +38,7 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
   // 3. Shape management (queue, rotation, addition/removal)
   newState = shapeReducer(newState, action);
 
-  // 4. Scoring operations (coin display, spending, gem icon positioning)
+  // 4. Scoring operations (gem display, spending, gem icon positioning)
   newState = scoringReducer(newState, action);
 
   // 5. Game state (levels, map, modifiers, reset, load)

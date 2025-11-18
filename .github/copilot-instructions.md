@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a Tetris-inspired puzzle game built with React, TypeScript, and Vite. Players drag and drop shapes (stored as 4x4 grids) onto a 10x10 grid. The game has evolved into a comprehensive system with currency, scoring, level progression, and advanced features.
+This is a Tetris-inspired puzzle game built with React, TypeScript, and Vite. Players drag and drop shapes (stored as 4x4 grids) onto a 10x10 grid. The game has evolved into a comprehensive system with scoring, level progression, and advanced features.
 
 
 
@@ -23,20 +23,19 @@ Prefer changes that REMOVE complexity and state where possible.
 
 ## Key Systems
 
-### Currency & Scoring System (`src/utils/currencyUtils.ts`)
+### Scoring System (`src/utils/currencyUtils.ts`)
 
 - **Exponential scoring**: `(rows)² + (columns)² + (rows × columns × 2)`
-- **6-tier currency**: Diamond 💎, Sapphire 💙, Ruby ♦️, Gold 🥇, Silver 🥈, Bronze 🥉
-- **CoinShower**: Animated particles show currency breakdown when scoring
-- **Performance tiers**: Different rendering strategies based on coin count
-- Key functions: `convertPointsToCurrency()`, `formatCurrencyBreakdown()`
+- **Gem shower**: Animated blue gem particles appear when scoring
+- **Performance tiers**: Different rendering strategies based on gem count
+- Key functions: Simplified currency system using only blue gems
 
 
 
 ### Shape Rotation & Purchase System
 
 - **Rotation menus**: Per-shape UI for clockwise/counterclockwise rotation
-- **Coin spending**: Spend 1 coin to unlock rotation for individual shapes
+- **Gem spending**: Spend 1 gem to unlock rotation for individual shapes
 - **State tracking**: `openRotationMenus[]` array tracks menu visibility per shape
 - **Animation states**: `removingShapeIndex`, `shapesSliding` for smooth transitions
 
@@ -70,8 +69,8 @@ Main.tsx (wraps with TetrixProvider)
     ├── Header (music controls, menu, score, location)
     │   ├── BackgroundMusic (with MusicControlContext)
     │   ├── MenuDropdown (settings, debug tools)
-    │   ├── ScoreDisplay (currency/numeric toggle)
-    │   └── LocationButton (rant progression system)
+    │   ├── ScoreDisplay (numeric score with gem count)
+    │   ├── LocationButton (rant progression system)
     ├── Tetrix (game container)
     │   ├── Grid (10x10 game board + mouse events)
     │   │   └── TileVisual × 100 → BlockVisual
@@ -79,7 +78,7 @@ Main.tsx (wraps with TetrixProvider)
     │       ├── ShapeOption × N → PurchaseMenu, rotation controls
     │       └── SavedShape (optional saved shape display)
     ├── GameMap (level selection overlay)
-    ├── CoinShower (animated currency particles)
+    ├── GemShower (animated gem particles)
     └── Various overlays/notifications
 ```
 
@@ -87,17 +86,17 @@ Main.tsx (wraps with TetrixProvider)
 
 ### Critical Components
 
-- **CoinShower + CoinParticle**: Physics-based currency animation system
+- **GemShower + GemParticle**: Physics-based gem animation system
 - **MenuDropdown**: Hamburger menu with music controls, debug tools, new game
-- **PurchaseMenu**: Coin spending UI for shape rotation unlock
+- **PurchaseMenu**: Gem spending UI for shape rotation unlock
 - **GameMap**: Level selection interface (placeholder for future expansion)
-- **ScoreDisplay**: Toggles between numeric score and currency breakdown
+- **ScoreDisplay**: Shows numeric score with gem count
 
 
 
 ### Data Flow Patterns
 
-- **Scoring events**: ADD_SCORE → CoinShower animation → Currency breakdown display
+- **Scoring events**: ADD_SCORE → GemShower animation → Score display update
 - **Shape management**: Drag → Place → Line clearing → Scoring → Auto-select next
 - **Persistence**: All major state changes trigger `safeBatchSave()` calls
 - **Music context**: Separate context in Header for music controls
@@ -142,8 +141,8 @@ npm start           # Development server
 
 ### Testing Strategy
 
-- **Comprehensive test suite**: currencySystem, scoringSystem, lineCleaning, spendCoin, etc.
-- **Integration tests**: lineClearingIntegration.test.ts for full score+currency flow
+- **Comprehensive test suite**: scoringSystem, lineCleaning, spendGem, etc.
+- **Integration tests**: lineClearingIntegration.test.ts for full score+gem flow
 - **Reducer testing**: TetrixReducer.test.ts for state transitions
 - **Feature-specific tests**: rotationMenuIsolation, shapeGeneration, virtualShapes
 - Tests cover both unit functionality and integration between systems
@@ -155,7 +154,7 @@ npm start           # Development server
 - **Main branch**: Development code (safe to push directly)
 - **gh-pages branch**: Live production site (created by `npm run publish`)
 - **Persistent data**: IndexedDB storage means users don't lose progress on updates
-- **Debug tools**: MenuDropdown has "New Game" to reset all data, "Test Score" for currency testing
+- **Debug tools**: MenuDropdown has "New Game" to reset all data, "Test Score" for gem testing
 
 
 
@@ -174,7 +173,7 @@ npm start           # Development server
 
 - **Memoization**: React.memo() for expensive renders (TileVisual, etc.)
 - **Animation optimization**: GPU hints, will-change, transform-based animations
-- **Coin particle limits**: Performance tiers for different currency amounts
+- **Gem particle limits**: Performance tiers for different gem amounts
 - **Batch operations**: Database saves bundled via `safeBatchSave()`
 
 
@@ -200,22 +199,22 @@ npm start           # Development server
 ## Common Gotchas
 
 1. **1-indexed locations**: Grid locations are 1-10, not 0-9 (`makeTiles()`)
-2. **Currency vs score**: Score is numeric, currency is breakdown for display
+2. **Score vs gems**: Score is numeric points, gems are used for rotation unlocks
 3. **Shape center positioning**: Always use `shapeUtils.ts` functions for coordinates
 4. **Context isolation**: TetrixContext vs MusicControlContext are separate
 5. **Persistence timing**: `safeBatchSave()` is async - don't block on it
 6. **Animation state**: Multiple animation states can be active simultaneously
 7. **IndexedDB first**: Always try IndexedDB before localStorage fallback
-8. **Coin shower performance**: Be aware of DOM particle limits for large currency amounts
+8. **Gem shower performance**: Be aware of DOM particle limits for large gem amounts
 
 
 
 ## When Making Changes
 
 - **New features**: Add reducer action + reducer state + tests + persistence if needed
-- **Currency changes**: Update `currencyUtils.ts` and related tests
+- **Gem changes**: Update `currencyUtils.ts` and related tests
 - **UI animations**: Consider performance implications and GPU optimization
-- **Scoring changes**: Update both `scoringUtils.ts` and currency conversion
+- **Scoring changes**: Update both `scoringUtils.ts` and gem conversion
 - **Shape modifications**: Check rotation, placement, and visualization systems
 - **Persistence**: Use `safeBatchSave()` for any state that should persist
 - **Adding actions**: Update `TetrixAction` union type + reducer switch + tests

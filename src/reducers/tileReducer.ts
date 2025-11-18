@@ -65,6 +65,10 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Check for and clear full lines
       const { tiles: clearedTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
 
+      // Extract indices for sound and score calculation
+      const clearedRowIndices = clearedRows.map(r => r.index);
+      const clearedColumnIndices = clearedColumns.map(c => c.index);
+
       // Generate clearing animations and apply them to tiles
       // Configure wave effects and timing for single/double/triple/quad animations
       const finalTiles = generateClearingAnimations(
@@ -76,24 +80,24 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
             single: { duration: 500, waveDelay: 100, startDelay: 0 },
             double: { duration: 500, waveDelay: 100, startDelay: 500 },
             triple: { duration: 500, waveDelay: 100, startDelay: 1000 },
-            quad: { duration: 2000, waveDelay: 100, startDelay: 1500, beatCount: 2 },
+            quad: { duration: 3000, waveDelay: 100, startDelay: 1500, beatCount: 3 },
           },
           columns: {
             single: { duration: 500, waveDelay: 100, startDelay: 0 },
             double: { duration: 500, waveDelay: 100, startDelay: 500 },
             triple: { duration: 500, waveDelay: 100, startDelay: 1000 },
-            quad: { duration: 2000, waveDelay: 100, startDelay: 1500, beatCount: 2 },
+            quad: { duration: 3000, waveDelay: 100, startDelay: 1500, beatCount: 3 },
           },
         }
       );
 
       // Play sound effects for line clearing
-      playLineClearSounds(clearedRows, clearedColumns);
+      playLineClearSounds(clearedRowIndices, clearedColumnIndices);
 
       // Calculate score for lines cleared
-      const scoreData = calculateScore(clearedRows.length, clearedColumns.length);
+      const scoreData = calculateScore(clearedRowIndices.length, clearedColumnIndices.length);
       const newScore = state.score + scoreData.pointsEarned;
-      const newTotalLinesCleared = state.totalLinesCleared + clearedRows.length + clearedColumns.length;
+      const newTotalLinesCleared = state.totalLinesCleared + clearedRowIndices.length + clearedColumnIndices.length;
 
       // Save game state to browser DB asynchronously (don't block UI)
       // Convert tiles to serializable format for persistence

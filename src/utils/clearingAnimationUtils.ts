@@ -16,6 +16,7 @@
  */
 
 import type { TileAnimation, TilesSet } from '../types/core';
+import type { ClearedLine } from './lineUtils';
 
 export type AnimationTierConfig = {
   duration: number;    // Animation duration in ms
@@ -77,15 +78,15 @@ function calculateWaveOffset(index: number, waveDelay: number): number {
  * Animations persist on tiles independently of block state changes.
  * 
  * @param tiles - The tiles map to update with animations
- * @param clearedRows - Array of row numbers being cleared (1-10)
- * @param clearedColumns - Array of column numbers being cleared (1-10)
+ * @param clearedRows - Array of row objects being cleared
+ * @param clearedColumns - Array of column objects being cleared
  * @param config - Animation timing configuration
  * @returns Updated tiles map with animations added
  */
 export function generateClearingAnimations(
   tiles: TilesSet,
-  clearedRows: number[],
-  clearedColumns: number[],
+  clearedRows: ClearedLine[],
+  clearedColumns: ClearedLine[],
   config: Partial<AnimationConfig> = {}
 ): TilesSet {
   // Deep merge config with defaults
@@ -115,7 +116,7 @@ export function generateClearingAnimations(
   const columnCount = clearedColumns.length;
 
   // Process cleared rows
-  for (const row of clearedRows) {
+  for (const { index: row, color } of clearedRows) {
     for (let column = 1; column <= 10; column++) {
       const key = makeTileKey(row, column);
       const tileData = newTiles.get(key);
@@ -130,6 +131,7 @@ export function generateClearingAnimations(
         type: 'row-cw',
         startTime: baseStartTime + finalConfig.rows.single.startDelay + singleWaveOffset,
         duration: finalConfig.rows.single.duration,
+        color,
       });
 
       // Double row animation (2+ rows)
@@ -140,6 +142,7 @@ export function generateClearingAnimations(
           type: 'row-double',
           startTime: baseStartTime + finalConfig.rows.double.startDelay + doubleWaveOffset,
           duration: finalConfig.rows.double.duration,
+          color,
         });
       }
 
@@ -151,6 +154,7 @@ export function generateClearingAnimations(
           type: 'row-triple',
           startTime: baseStartTime + finalConfig.rows.triple.startDelay + tripleWaveOffset,
           duration: finalConfig.rows.triple.duration,
+          color,
         });
       }
 
@@ -163,6 +167,7 @@ export function generateClearingAnimations(
           startTime: baseStartTime + finalConfig.rows.quad.startDelay + quadWaveOffset,
           duration: finalConfig.rows.quad.duration,
           beatCount: finalConfig.rows.quad.beatCount,
+          color,
         });
       }
 
@@ -174,7 +179,7 @@ export function generateClearingAnimations(
   }
 
   // Process cleared columns
-  for (const column of clearedColumns) {
+  for (const { index: column, color } of clearedColumns) {
     for (let row = 1; row <= 10; row++) {
       const key = makeTileKey(row, column);
       const tileData = newTiles.get(key);
@@ -189,6 +194,7 @@ export function generateClearingAnimations(
         type: 'column-ccw',
         startTime: baseStartTime + finalConfig.columns.single.startDelay + singleWaveOffset,
         duration: finalConfig.columns.single.duration,
+        color,
       });
 
       // Double column animation (2+ columns)
@@ -199,6 +205,7 @@ export function generateClearingAnimations(
           type: 'column-double',
           startTime: baseStartTime + finalConfig.columns.double.startDelay + doubleWaveOffset,
           duration: finalConfig.columns.double.duration,
+          color,
         });
       }
 
@@ -210,6 +217,7 @@ export function generateClearingAnimations(
           type: 'column-triple',
           startTime: baseStartTime + finalConfig.columns.triple.startDelay + tripleWaveOffset,
           duration: finalConfig.columns.triple.duration,
+          color,
         });
       }
 
@@ -222,6 +230,7 @@ export function generateClearingAnimations(
           startTime: baseStartTime + finalConfig.columns.quad.startDelay + quadWaveOffset,
           duration: finalConfig.columns.quad.duration,
           beatCount: finalConfig.columns.quad.beatCount,
+          color,
         });
       }
 

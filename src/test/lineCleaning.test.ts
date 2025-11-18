@@ -244,8 +244,10 @@ describe('Line Clearing Utilities', () => {
 
       const result = clearFullLines(tiles);
 
-      expect(result.clearedRows).toEqual([5]);
-      expect(result.clearedColumns).toEqual([3]);
+      // Row 5 is mixed (mostly red, but (5,3) is blue)
+      expect(result.clearedRows).toEqual([{ index: 5, color: undefined }]);
+      // Column 3 is all blue
+      expect(result.clearedColumns).toEqual([{ index: 3, color: 'blue' }]);
       expect(result.totalLinesCleared).toBe(2);
 
       // Check that row 5 and column 3 are cleared
@@ -265,8 +267,12 @@ describe('Line Clearing Utilities', () => {
 
       const result = clearFullLines(tiles);
 
-      expect(result.clearedRows).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-      expect(result.clearedColumns).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      // All rows and columns are full red
+      const expectedRows = Array.from({ length: 10 }, (_, i) => ({ index: i + 1, color: 'red' }));
+      const expectedCols = Array.from({ length: 10 }, (_, i) => ({ index: i + 1, color: 'red' }));
+
+      expect(result.clearedRows).toEqual(expectedRows);
+      expect(result.clearedColumns).toEqual(expectedCols);
       expect(result.totalLinesCleared).toBe(20);
 
       // All tiles should be cleared

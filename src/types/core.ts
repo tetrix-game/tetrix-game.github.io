@@ -40,6 +40,7 @@ export type TileAnimation = {
   duration: number; // Animation duration in milliseconds
   // Optional config for beating heart animations (quad)
   beatCount?: number; // Number of heartbeats
+  color?: string; // Optional color override for the animation border
 };
 
 // Set of tile keys with their data

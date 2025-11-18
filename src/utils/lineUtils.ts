@@ -116,6 +116,38 @@ export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
 }
 
 /**
+ * Checks if a line (row or column) has a uniform color
+ * @param tiles - All tiles in the grid (Map)
+ * @param index - The row or column index (1-indexed)
+ * @param isRow - True if checking a row, false for a column
+ * @returns The color if uniform, otherwise undefined
+ */
+function getLineColor(tiles: TilesSet, index: number, isRow: boolean): string | undefined {
+  let firstColor: string | undefined;
+  
+  for (let i = 1; i <= GRID_SIZE; i++) {
+    const row = isRow ? index : i;
+    const col = isRow ? i : index;
+    const tile = tiles.get(makeTileKey(row, col));
+    
+    if (!tile || !tile.isFilled) return undefined;
+    
+    if (!firstColor) {
+      firstColor = tile.color;
+    } else if (tile.color !== firstColor) {
+      return undefined;
+    }
+  }
+  
+  return firstColor;
+}
+
+export type ClearedLine = {
+  index: number;
+  color?: string;
+};
+
+/**
  * Finds and clears all full lines (both rows and columns) in the grid
  * This is the main function to call after placing a shape
  * @param tiles - All tiles in the grid (Map)
@@ -123,12 +155,22 @@ export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
  */
 export function clearFullLines(tiles: TilesSet): {
   tiles: TilesSet;
-  clearedRows: number[];
-  clearedColumns: number[];
+  clearedRows: ClearedLine[];
+  clearedColumns: ClearedLine[];
   totalLinesCleared: number;
 } {
   const fullRows = findFullRows(tiles);
   const fullColumns = findFullColumns(tiles);
+
+  const clearedRowsWithColor = fullRows.map(row => ({
+    index: row,
+    color: getLineColor(tiles, row, true)
+  }));
+
+  const clearedColumnsWithColor = fullColumns.map(col => ({
+    index: col,
+    color: getLineColor(tiles, col, false)
+  }));
 
   // Clear rows first, then columns
   let newTiles = clearRows(tiles, fullRows);
@@ -136,8 +178,8 @@ export function clearFullLines(tiles: TilesSet): {
 
   return {
     tiles: newTiles,
-    clearedRows: fullRows,
-    clearedColumns: fullColumns,
+    clearedRows: clearedRowsWithColor,
+    clearedColumns: clearedColumnsWithColor,
     totalLinesCleared: fullRows.length + fullColumns.length
   };
 }

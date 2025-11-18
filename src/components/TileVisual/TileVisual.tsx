@@ -95,6 +95,10 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
           '--animation-delay': `${delay}ms`,
         };
 
+        if (anim.color) {
+          style['--animation-color'] = anim.color;
+        }
+
         if (anim.type === 'row-quad' || anim.type === 'column-quad') {
           const beatCount = anim.beatCount ?? 3;
           style['--beat-count'] = beatCount;

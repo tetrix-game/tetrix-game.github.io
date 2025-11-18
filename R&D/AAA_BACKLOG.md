@@ -11,7 +11,12 @@
 - ledgendary (multiple years)
 
 ### Things
-- gem shower should shower the exact number of gems as the points won.
+- Line clearing visuals
+- Get rid of the level progression idea
+- Invalid placement sound
+- Valid placement sound
+- Escalating ine clearing steak combo
+
 
 ## Related Documentation
 - [Sound Effects Ideas](./SOUND_EFFECTS.md)

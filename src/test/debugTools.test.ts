@@ -1,6 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
-import type { Tile } from '../utils/types';
+import type { TilesSet } from '../utils/types';
+
+// Helper to get tile data from TilesSet
+function getTileData(tiles: TilesSet, row: number, column: number) {
+  return tiles.get(`R${row}C${column}`);
+}
+
+// Helper to count filled tiles
+function countFilledTiles(tiles: TilesSet): number {
+  let count = 0;
+  for (const tileData of tiles.values()) {
+    if (tileData.isFilled) count++;
+  }
+  return count;
+}
 
 describe('Debug Tools', () => {
   describe('DEBUG_ADD_BLOCK', () => {
@@ -8,10 +22,8 @@ describe('Debug Tools', () => {
       const location = { row: 5, column: 5 };
 
       // Verify initial state has no block
-      const initialTile = initialState.tiles.find(
-        (t: Tile) => t.location.row === location.row && t.location.column === location.column
-      );
-      expect(initialTile?.block.isFilled).toBe(false);
+      const initialTile = getTileData(initialState.tiles, location.row, location.column);
+      expect(initialTile?.isFilled).toBe(false);
 
       // Add block
       const newState = tetrixReducer(initialState, {
@@ -20,11 +32,9 @@ describe('Debug Tools', () => {
       });
 
       // Verify block was added
-      const updatedTile = newState.tiles.find(
-        (t: Tile) => t.location.row === location.row && t.location.column === location.column
-      );
-      expect(updatedTile?.block.isFilled).toBe(true);
-      expect(updatedTile?.block.color).toBe('blue');
+      const updatedTile = getTileData(newState.tiles, location.row, location.column);
+      expect(updatedTile?.isFilled).toBe(true);
+      expect(updatedTile?.color).toBe('blue');
     });
 
     it('should overwrite existing blocks', () => {
@@ -42,11 +52,9 @@ describe('Debug Tools', () => {
         value: { location, color: 'green' },
       });
 
-      const finalTile = stateWithGreenBlock.tiles.find(
-        (t: Tile) => t.location.row === location.row && t.location.column === location.column
-      );
-      expect(finalTile?.block.isFilled).toBe(true);
-      expect(finalTile?.block.color).toBe('green');
+      const finalTile = getTileData(stateWithGreenBlock.tiles, location.row, location.column);
+      expect(finalTile?.isFilled).toBe(true);
+      expect(finalTile?.color).toBe('green');
     });
   });
 
@@ -64,8 +72,8 @@ describe('Debug Tools', () => {
       }
 
       // Verify blocks were added
-      const filledTilesBefore = state.tiles.filter((t: Tile) => t.block.isFilled);
-      expect(filledTilesBefore.length).toBe(25);
+      const filledTilesBefore = countFilledTiles(state.tiles);
+      expect(filledTilesBefore).toBe(25);
 
       // Clear all blocks
       const clearedState = tetrixReducer(state, {
@@ -73,14 +81,14 @@ describe('Debug Tools', () => {
       });
 
       // Verify all blocks are removed
-      const filledTilesAfter = clearedState.tiles.filter((t: Tile) => t.block.isFilled);
-      expect(filledTilesAfter.length).toBe(0);
+      const filledTilesAfter = countFilledTiles(clearedState.tiles);
+      expect(filledTilesAfter).toBe(0);
     });
 
     it('should work on empty grid without issues', () => {
       // Verify grid is empty
-      const filledTilesBefore = initialState.tiles.filter((t: Tile) => t.block.isFilled);
-      expect(filledTilesBefore.length).toBe(0);
+      const filledTilesBefore = countFilledTiles(initialState.tiles);
+      expect(filledTilesBefore).toBe(0);
 
       // Clear all (should have no effect)
       const clearedState = tetrixReducer(initialState, {
@@ -88,8 +96,8 @@ describe('Debug Tools', () => {
       });
 
       // Verify grid is still empty
-      const filledTilesAfter = clearedState.tiles.filter((t: Tile) => t.block.isFilled);
-      expect(filledTilesAfter.length).toBe(0);
+      const filledTilesAfter = countFilledTiles(clearedState.tiles);
+      expect(filledTilesAfter).toBe(0);
     });
   });
 
@@ -108,8 +116,8 @@ describe('Debug Tools', () => {
       });
 
       // Count filled tiles
-      const filledAfterFill = state.tiles.filter((t: Tile) => t.block.isFilled);
-      expect(filledAfterFill.length).toBe(10); // 1 from add + 9 from fill row
+      const filledAfterFill = countFilledTiles(state.tiles);
+      expect(filledAfterFill).toBe(10); // 1 from add + 9 from fill row
 
       // Clear all
       state = tetrixReducer(state, {
@@ -117,8 +125,8 @@ describe('Debug Tools', () => {
       });
 
       // Verify everything is cleared
-      const filledAfterClear = state.tiles.filter((t: Tile) => t.block.isFilled);
-      expect(filledAfterClear.length).toBe(0);
+      const filledAfterClear = countFilledTiles(state.tiles);
+      expect(filledAfterClear).toBe(0);
 
       // Add blocks again after clear
       state = tetrixReducer(state, {
@@ -126,8 +134,8 @@ describe('Debug Tools', () => {
         value: { location: { row: 1, column: 1 }, color: 'yellow' },
       });
 
-      const filledFinal = state.tiles.filter((t: Tile) => t.block.isFilled);
-      expect(filledFinal.length).toBe(1);
+      const filledFinal = countFilledTiles(state.tiles);
+      expect(filledFinal).toBe(1);
     });
   });
 });

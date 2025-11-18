@@ -1,6 +1,27 @@
 import { describe, it, expect } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
 import type { Shape } from '../utils/types';
+import { getTileData, tilesToArray } from './testHelpers';
+
+// Helper to count filled tiles in a row
+const countFilledInRow = (tiles: Map<string, any>, row: number): number => {
+  let count = 0;
+  for (let col = 1; col <= 10; col++) {
+    const tile = getTileData(tiles, row, col);
+    if (tile?.isFilled) count++;
+  }
+  return count;
+};
+
+// Helper to count filled tiles in a column
+const countFilledInColumn = (tiles: Map<string, any>, column: number): number => {
+  let count = 0;
+  for (let row = 1; row <= 10; row++) {
+    const tile = getTileData(tiles, row, column);
+    if (tile?.isFilled) count++;
+  }
+  return count;
+};
 
 // Helper to create a simple horizontal line shape (4 blocks in a row)
 const createHorizontalLineShape = (): Shape => [
@@ -105,7 +126,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Verify blocks were placed
-      let row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
+      let row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(4);
 
       // Place second shape at column 6 (covers columns 5-8)
@@ -117,7 +138,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
+      row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(8);
 
       // Place single blocks to complete the row (columns 9 and 10)
@@ -130,7 +151,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
+      row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(9);
 
       // Place final single block at column 10
@@ -143,13 +164,15 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Row 5 should now be cleared (all blocks removed)
-      row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
+      row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(0);
 
       // Verify all tiles in row 5 are empty
-      const row5Tiles = state.tiles.filter(t => t.location.row === 5);
-      expect(row5Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(row5Tiles.every(t => t.block.color === 'grey')).toBe(true);
+      for (let col = 1; col <= 10; col++) {
+        const tile = getTileData(state.tiles, 5, col);
+        expect(tile?.isFilled).toBe(false);
+        expect(tile?.color).toBe('grey');
+      }
     });
   });
 
@@ -181,7 +204,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Should have 8 blocks in column 3
-      let col3Filled = state.tiles.filter(t => t.location.column === 3 && t.block.isFilled).length;
+      let col3Filled = countFilledInColumn(state.tiles, 3);
       expect(col3Filled).toBe(8);
 
       // Place single block for row 9
@@ -194,7 +217,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      col3Filled = state.tiles.filter(t => t.location.column === 3 && t.block.isFilled).length;
+      col3Filled = countFilledInColumn(state.tiles, 3);
       expect(col3Filled).toBe(9);
 
       // Place final block to complete column 3
@@ -207,13 +230,15 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Column 3 should now be cleared
-      col3Filled = state.tiles.filter(t => t.location.column === 3 && t.block.isFilled).length;
+      col3Filled = countFilledInColumn(state.tiles, 3);
       expect(col3Filled).toBe(0);
 
       // Verify all tiles in column 3 are empty
-      const col3Tiles = state.tiles.filter(t => t.location.column === 3);
-      expect(col3Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(col3Tiles.every(t => t.block.color === 'grey')).toBe(true);
+      for (let row = 1; row <= 10; row++) {
+        const tile = getTileData(state.tiles, row, 3);
+        expect(tile?.isFilled).toBe(false);
+        expect(tile?.color).toBe('grey');
+      }
     });
   });
 
@@ -263,7 +288,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Row 5 should be cleared now
-      const row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
+      const row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(0);
 
       // Now fill column 5 (which is already empty from row clearing)
@@ -305,7 +330,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Column 5 should now be cleared
-      const col5Filled = state.tiles.filter(t => t.location.column === 5 && t.block.isFilled).length;
+      const col5Filled = countFilledInColumn(state.tiles, 5);
       expect(col5Filled).toBe(0);
     });
   });
@@ -346,12 +371,15 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Should have 9 blocks, not cleared
-      const row5Filled = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled).length;
+      const row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(9);
 
-      // Blocks should still be filled
-      const filledTiles = state.tiles.filter(t => t.location.row === 5 && t.block.isFilled);
-      expect(filledTiles.every(t => t.block.color !== 'grey')).toBe(true);
+      // Blocks should still be filled (not grey)
+      for (let col = 1; col <= 9; col++) {
+        const tile = getTileData(state.tiles, 5, col);
+        expect(tile?.isFilled).toBe(true);
+        expect(tile?.color).not.toBe('grey');
+      }
     });
 
     it('should not clear a column with only 9 blocks', () => {
@@ -389,12 +417,15 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Should have 9 blocks, not cleared
-      const col4Filled = state.tiles.filter(t => t.location.column === 4 && t.block.isFilled).length;
+      const col4Filled = countFilledInColumn(state.tiles, 4);
       expect(col4Filled).toBe(9);
 
-      // Blocks should still be filled
-      const filledTiles = state.tiles.filter(t => t.location.column === 4 && t.block.isFilled);
-      expect(filledTiles.every(t => t.block.color !== 'grey')).toBe(true);
+      // Blocks should still be filled (not grey)
+      for (let row = 1; row <= 9; row++) {
+        const tile = getTileData(state.tiles, row, 4);
+        expect(tile?.isFilled).toBe(true);
+        expect(tile?.color).not.toBe('grey');
+      }
     });
   });
 });

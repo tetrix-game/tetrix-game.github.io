@@ -1,6 +1,25 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
-import type { TetrixReducerState } from '../utils/types';
+import type { TetrixReducerState, TilesSet } from '../utils/types';
+
+// Helper to get tile data from TilesSet
+function getTileData(tiles: TilesSet, row: number, column: number) {
+  return tiles.get(`R${row}C${column}`);
+}
+
+// Helper to convert TilesSet to array for filtering
+function tilesToArray(tiles: TilesSet) {
+  const result = [];
+  for (let row = 1; row <= 10; row++) {
+    for (let column = 1; column <= 10; column++) {
+      const tileData = tiles.get(`R${row}C${column}`);
+      if (tileData) {
+        result.push({ location: { row, column }, ...tileData });
+      }
+    }
+  }
+  return result;
+}
 
 describe('Debug Editor Actions', () => {
   let state: TetrixReducerState;
@@ -16,16 +35,16 @@ describe('Debug Editor Actions', () => {
     });
 
     // Check that row 5 is filled except column 5
-    const row5Tiles = newState.tiles.filter(tile => tile.location.row === 5);
-    const filledTiles = row5Tiles.filter(tile => tile.block.isFilled);
-    const excludedTile = row5Tiles.find(tile => tile.location.column === 5);
+    const row5Tiles = tilesToArray(newState.tiles).filter(tile => tile.location.row === 5);
+    const filledTiles = row5Tiles.filter(tile => tile.isFilled);
+    const excludedTile = getTileData(newState.tiles, 5, 5);
 
     expect(filledTiles.length).toBe(9); // 10 tiles - 1 excluded
-    expect(excludedTile?.block.isFilled).toBe(false);
+    expect(excludedTile?.isFilled).toBe(false);
 
     // All filled tiles should be blue
     filledTiles.forEach(tile => {
-      expect(tile.block.color).toBe('blue');
+      expect(tile.color).toBe('blue');
     });
   });
 
@@ -36,16 +55,16 @@ describe('Debug Editor Actions', () => {
     });
 
     // Check that column 3 is filled except row 7
-    const col3Tiles = newState.tiles.filter(tile => tile.location.column === 3);
-    const filledTiles = col3Tiles.filter(tile => tile.block.isFilled);
-    const excludedTile = col3Tiles.find(tile => tile.location.row === 7);
+    const col3Tiles = tilesToArray(newState.tiles).filter(tile => tile.location.column === 3);
+    const filledTiles = col3Tiles.filter(tile => tile.isFilled);
+    const excludedTile = getTileData(newState.tiles, 7, 3);
 
     expect(filledTiles.length).toBe(9); // 10 tiles - 1 excluded
-    expect(excludedTile?.block.isFilled).toBe(false);
+    expect(excludedTile?.isFilled).toBe(false);
 
     // All filled tiles should be red
     filledTiles.forEach(tile => {
-      expect(tile.block.color).toBe('red');
+      expect(tile.color).toBe('red');
     });
   });
 
@@ -57,10 +76,8 @@ describe('Debug Editor Actions', () => {
     });
 
     // Verify it's filled
-    const targetTile = filledState.tiles.find(
-      tile => tile.location.row === 5 && tile.location.column === 5
-    );
-    expect(targetTile?.block.isFilled).toBe(true);
+    const targetTile = getTileData(filledState.tiles, 5, 5);
+    expect(targetTile?.isFilled).toBe(true);
 
     // Now remove it
     const removedState = tetrixReducer(filledState, {
@@ -68,10 +85,8 @@ describe('Debug Editor Actions', () => {
       value: { location: { row: 5, column: 5 } },
     });
 
-    const removedTile = removedState.tiles.find(
-      tile => tile.location.row === 5 && tile.location.column === 5
-    );
-    expect(removedTile?.block.isFilled).toBe(false);
+    const removedTile = getTileData(removedState.tiles, 5, 5);
+    expect(removedTile?.isFilled).toBe(false);
   });
 
   it('should handle fill row with different colors', () => {
@@ -84,12 +99,12 @@ describe('Debug Editor Actions', () => {
         value: { row, excludeColumn: 1, color },
       });
 
-      const rowTiles = newState.tiles.filter(
-        tile => tile.location.row === row && tile.block.isFilled
+      const rowTiles = tilesToArray(newState.tiles).filter(
+        tile => tile.location.row === row && tile.isFilled
       );
 
       rowTiles.forEach(tile => {
-        expect(tile.block.color).toBe(color);
+        expect(tile.color).toBe(color);
       });
     });
   });

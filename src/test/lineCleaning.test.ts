@@ -8,50 +8,45 @@ import {
   clearColumns,
   clearFullLines
 } from '../utils/lineUtils';
-import type { Tile } from '../utils/types';
-
-// Helper to create a test tile
-const createTile = (row: number, column: number, isFilled: boolean): Tile => {
-  return {
-    id: `(row: ${row}, column: ${column})`,
-    location: { row, column },
-    block: { isFilled, color: isFilled ? 'red' : 'grey' }
-  };
-};
+import type { TilesSet, ColorName } from '../utils/types';
+import {
+  createTilesWithFilled,
+  tilesToArray,
+  getTileData,
+  countFilledTiles,
+  isRowFull as testIsRowFull,
+  isColumnFull as testIsColumnFull
+} from './testHelpers';
 
 // Helper to create a full grid of empty tiles
-const createEmptyGrid = (): Tile[] => {
-  const tiles: Tile[] = [];
-  for (let row = 1; row <= 10; row++) {
-    for (let column = 1; column <= 10; column++) {
-      tiles.push(createTile(row, column, false));
-    }
-  }
-  return tiles;
+const createEmptyGrid = (): TilesSet => {
+  return createTilesWithFilled([]);
 };
 
 describe('Line Clearing Utilities', () => {
   describe('isRowFull', () => {
     it('should return true when all 10 tiles in a row are filled', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill row 5
-      const tilesWithFullRow = tiles.map(tile =>
-        tile.location.row === 5 ? createTile(tile.location.row, tile.location.column, true) : tile
-      );
+      for (let column = 1; column <= 10; column++) {
+        positions.push({ row: 5, column, color: 'red' as ColorName });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      expect(isRowFull(tilesWithFullRow, 5)).toBe(true);
+      expect(isRowFull(tiles, 5)).toBe(true);
     });
 
     it('should return false when a row is not completely filled', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill row 5 except for one tile
-      const tilesWithPartialRow = tiles.map(tile =>
-        tile.location.row === 5 && tile.location.column !== 5
-          ? createTile(tile.location.row, tile.location.column, true)
-          : tile
-      );
+      for (let column = 1; column <= 10; column++) {
+        if (column !== 5) {
+          positions.push({ row: 5, column, color: 'red' as ColorName });
+        }
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      expect(isRowFull(tilesWithPartialRow, 5)).toBe(false);
+      expect(isRowFull(tiles, 5)).toBe(false);
     });
 
     it('should return false for an empty row', () => {
@@ -62,25 +57,27 @@ describe('Line Clearing Utilities', () => {
 
   describe('isColumnFull', () => {
     it('should return true when all 10 tiles in a column are filled', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill column 3
-      const tilesWithFullColumn = tiles.map(tile =>
-        tile.location.column === 3 ? createTile(tile.location.row, tile.location.column, true) : tile
-      );
+      for (let row = 1; row <= 10; row++) {
+        positions.push({ row, column: 3, color: 'red' as ColorName });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      expect(isColumnFull(tilesWithFullColumn, 3)).toBe(true);
+      expect(isColumnFull(tiles, 3)).toBe(true);
     });
 
     it('should return false when a column is not completely filled', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill column 3 except for one tile
-      const tilesWithPartialColumn = tiles.map(tile =>
-        tile.location.column === 3 && tile.location.row !== 7
-          ? createTile(tile.location.row, tile.location.column, true)
-          : tile
-      );
+      for (let row = 1; row <= 10; row++) {
+        if (row !== 7) {
+          positions.push({ row, column: 3, color: 'red' as ColorName });
+        }
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      expect(isColumnFull(tilesWithPartialColumn, 3)).toBe(false);
+      expect(isColumnFull(tiles, 3)).toBe(false);
     });
 
     it('should return false for an empty column', () => {
@@ -91,16 +88,16 @@ describe('Line Clearing Utilities', () => {
 
   describe('findFullRows', () => {
     it('should find all full rows', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill rows 2, 5, and 9
-      const tilesWithFullRows = tiles.map(tile => {
-        if (tile.location.row === 2 || tile.location.row === 5 || tile.location.row === 9) {
-          return createTile(tile.location.row, tile.location.column, true);
+      for (const row of [2, 5, 9]) {
+        for (let column = 1; column <= 10; column++) {
+          positions.push({ row, column, color: 'red' as ColorName });
         }
-        return tile;
-      });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const fullRows = findFullRows(tilesWithFullRows);
+      const fullRows = findFullRows(tiles);
       expect(fullRows).toEqual([2, 5, 9]);
     });
 
@@ -112,16 +109,16 @@ describe('Line Clearing Utilities', () => {
 
   describe('findFullColumns', () => {
     it('should find all full columns', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill columns 1, 4, and 10
-      const tilesWithFullColumns = tiles.map(tile => {
-        if (tile.location.column === 1 || tile.location.column === 4 || tile.location.column === 10) {
-          return createTile(tile.location.row, tile.location.column, true);
+      for (const column of [1, 4, 10]) {
+        for (let row = 1; row <= 10; row++) {
+          positions.push({ row, column, color: 'red' as ColorName });
         }
-        return tile;
-      });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const fullColumns = findFullColumns(tilesWithFullColumns);
+      const fullColumns = findFullColumns(tiles);
       expect(fullColumns).toEqual([1, 4, 10]);
     });
 
@@ -133,42 +130,46 @@ describe('Line Clearing Utilities', () => {
 
   describe('clearRows', () => {
     it('should clear specified rows', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill rows 2 and 5
-      const tilesWithFullRows = tiles.map(tile => {
-        if (tile.location.row === 2 || tile.location.row === 5) {
-          return createTile(tile.location.row, tile.location.column, true);
+      for (const row of [2, 5]) {
+        for (let column = 1; column <= 10; column++) {
+          positions.push({ row, column, color: 'red' as ColorName });
         }
-        return tile;
-      });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const clearedTiles = clearRows(tilesWithFullRows, [2, 5]);
+      const clearedTiles = clearRows(tiles, [2, 5]);
 
       // Check that rows 2 and 5 are now empty
-      const row2Tiles = clearedTiles.filter(t => t.location.row === 2);
-      const row5Tiles = clearedTiles.filter(t => t.location.row === 5);
+      expect(testIsRowFull(clearedTiles, 2)).toBe(false);
+      expect(testIsRowFull(clearedTiles, 5)).toBe(false);
 
-      expect(row2Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(row5Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(row2Tiles.every(t => t.block.color === 'grey')).toBe(true);
-      expect(row5Tiles.every(t => t.block.color === 'grey')).toBe(true);
+      // Verify all tiles in those rows are empty
+      for (let column = 1; column <= 10; column++) {
+        const tile2 = getTileData(clearedTiles, 2, column);
+        const tile5 = getTileData(clearedTiles, 5, column);
+        expect(tile2?.isFilled).toBe(false);
+        expect(tile5?.isFilled).toBe(false);
+        expect(tile2?.color).toBe('grey');
+        expect(tile5?.color).toBe('grey');
+      }
     });
 
     it('should not modify other rows', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill rows 2 and 7
-      const tilesWithFullRows = tiles.map(tile => {
-        if (tile.location.row === 2 || tile.location.row === 7) {
-          return createTile(tile.location.row, tile.location.column, true);
+      for (const row of [2, 7]) {
+        for (let column = 1; column <= 10; column++) {
+          positions.push({ row, column, color: 'red' as ColorName });
         }
-        return tile;
-      });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const clearedTiles = clearRows(tilesWithFullRows, [2]);
+      const clearedTiles = clearRows(tiles, [2]);
 
       // Row 7 should still be filled
-      const row7Tiles = clearedTiles.filter(t => t.location.row === 7);
-      expect(row7Tiles.every(t => t.block.isFilled)).toBe(true);
+      expect(testIsRowFull(clearedTiles, 7)).toBe(true);
     });
 
     it('should return unchanged tiles when clearing empty array', () => {
@@ -180,42 +181,46 @@ describe('Line Clearing Utilities', () => {
 
   describe('clearColumns', () => {
     it('should clear specified columns', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill columns 3 and 8
-      const tilesWithFullColumns = tiles.map(tile => {
-        if (tile.location.column === 3 || tile.location.column === 8) {
-          return createTile(tile.location.row, tile.location.column, true);
+      for (const column of [3, 8]) {
+        for (let row = 1; row <= 10; row++) {
+          positions.push({ row, column, color: 'red' as ColorName });
         }
-        return tile;
-      });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const clearedTiles = clearColumns(tilesWithFullColumns, [3, 8]);
+      const clearedTiles = clearColumns(tiles, [3, 8]);
 
       // Check that columns 3 and 8 are now empty
-      const col3Tiles = clearedTiles.filter(t => t.location.column === 3);
-      const col8Tiles = clearedTiles.filter(t => t.location.column === 8);
+      expect(testIsColumnFull(clearedTiles, 3)).toBe(false);
+      expect(testIsColumnFull(clearedTiles, 8)).toBe(false);
 
-      expect(col3Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(col8Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(col3Tiles.every(t => t.block.color === 'grey')).toBe(true);
-      expect(col8Tiles.every(t => t.block.color === 'grey')).toBe(true);
+      // Verify all tiles in those columns are empty
+      for (let row = 1; row <= 10; row++) {
+        const tile3 = getTileData(clearedTiles, row, 3);
+        const tile8 = getTileData(clearedTiles, row, 8);
+        expect(tile3?.isFilled).toBe(false);
+        expect(tile8?.isFilled).toBe(false);
+        expect(tile3?.color).toBe('grey');
+        expect(tile8?.color).toBe('grey');
+      }
     });
 
     it('should not modify other columns', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill columns 3 and 6
-      const tilesWithFullColumns = tiles.map(tile => {
-        if (tile.location.column === 3 || tile.location.column === 6) {
-          return createTile(tile.location.row, tile.location.column, true);
+      for (const column of [3, 6]) {
+        for (let row = 1; row <= 10; row++) {
+          positions.push({ row, column, color: 'red' as ColorName });
         }
-        return tile;
-      });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const clearedTiles = clearColumns(tilesWithFullColumns, [3]);
+      const clearedTiles = clearColumns(tiles, [3]);
 
       // Column 6 should still be filled
-      const col6Tiles = clearedTiles.filter(t => t.location.column === 6);
-      expect(col6Tiles.every(t => t.block.isFilled)).toBe(true);
+      expect(testIsColumnFull(clearedTiles, 6)).toBe(true);
     });
 
     it('should return unchanged tiles when clearing empty array', () => {
@@ -227,42 +232,45 @@ describe('Line Clearing Utilities', () => {
 
   describe('clearFullLines', () => {
     it('should clear both full rows and columns', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill row 5 and column 3
-      const tilesWithFullLines = tiles.map(tile => {
-        if (tile.location.row === 5 || tile.location.column === 3) {
-          return createTile(tile.location.row, tile.location.column, true);
-        }
-        return tile;
-      });
+      for (let column = 1; column <= 10; column++) {
+        positions.push({ row: 5, column, color: 'red' as ColorName });
+      }
+      for (let row = 1; row <= 10; row++) {
+        positions.push({ row, column: 3, color: 'blue' as ColorName });
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const result = clearFullLines(tilesWithFullLines);
+      const result = clearFullLines(tiles);
 
       expect(result.clearedRows).toEqual([5]);
       expect(result.clearedColumns).toEqual([3]);
       expect(result.totalLinesCleared).toBe(2);
 
       // Check that row 5 and column 3 are cleared
-      const row5Tiles = result.tiles.filter(t => t.location.row === 5);
-      const col3Tiles = result.tiles.filter(t => t.location.column === 3);
-
-      expect(row5Tiles.every(t => !t.block.isFilled)).toBe(true);
-      expect(col3Tiles.every(t => !t.block.isFilled)).toBe(true);
+      expect(testIsRowFull(result.tiles, 5)).toBe(false);
+      expect(testIsColumnFull(result.tiles, 3)).toBe(false);
     });
 
     it('should handle intersecting row and column clears', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
       // Fill entire grid
-      const tilesAllFilled = tiles.map(tile => createTile(tile.location.row, tile.location.column, true));
+      for (let row = 1; row <= 10; row++) {
+        for (let column = 1; column <= 10; column++) {
+          positions.push({ row, column, color: 'red' as ColorName });
+        }
+      }
+      const tiles = createTilesWithFilled(positions);
 
-      const result = clearFullLines(tilesAllFilled);
+      const result = clearFullLines(tiles);
 
       expect(result.clearedRows).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
       expect(result.clearedColumns).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
       expect(result.totalLinesCleared).toBe(20);
 
       // All tiles should be cleared
-      expect(result.tiles.every(t => !t.block.isFilled)).toBe(true);
+      expect(countFilledTiles(result.tiles)).toBe(0);
     });
 
     it('should return unchanged tiles when no lines are full', () => {

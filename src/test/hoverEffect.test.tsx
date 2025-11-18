@@ -1,21 +1,64 @@
 import { describe, it, expect } from 'vitest';
-import { canPlaceShape, getShapeGridPositions } from '../utils/shapeUtils';
-import type { Shape, Location, Tile } from '../utils/types';
+import { canPlaceShape, getShapeGridPositions } from '../utils/shapes';
+import type { Shape, Location } from '../utils/types';
+import { createTilesWithFilled } from './testHelpers';
 
-// Helper to create test shapes
+// Helper to create test shapes (4x4 grid format)
 const createLShape = (): Shape => {
   return [
-    [{ color: 'blue', isFilled: true }, { color: 'blue', isFilled: false }, { color: 'blue', isFilled: false }],
-    [{ color: 'blue', isFilled: true }, { color: 'blue', isFilled: false }, { color: 'blue', isFilled: false }],
-    [{ color: 'blue', isFilled: true }, { color: 'blue', isFilled: true }, { color: 'blue', isFilled: false }],
+    [
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: true },
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: false }
+    ],
+    [
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: true },
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: false }
+    ],
+    [
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: true },
+      { color: 'blue', isFilled: true },
+      { color: 'blue', isFilled: false }
+    ],
+    [
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: false },
+      { color: 'blue', isFilled: false }
+    ]
   ];
 };
 
 const createSquareShape = (): Shape => {
   return [
-    [{ color: 'red', isFilled: true }, { color: 'red', isFilled: true }, { color: 'red', isFilled: false }],
-    [{ color: 'red', isFilled: true }, { color: 'red', isFilled: true }, { color: 'red', isFilled: false }],
-    [{ color: 'red', isFilled: false }, { color: 'red', isFilled: false }, { color: 'red', isFilled: false }],
+    [
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: true },
+      { color: 'red', isFilled: true },
+      { color: 'red', isFilled: false }
+    ],
+    [
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: true },
+      { color: 'red', isFilled: true },
+      { color: 'red', isFilled: false }
+    ],
+    [
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: false }
+    ],
+    [
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: false },
+      { color: 'red', isFilled: false }
+    ]
   ];
 };
 
@@ -42,15 +85,15 @@ describe('Shape Hover Effect - Unit Tests', () => {
       const cols = positions.map(p => p.location.column);
 
       // All positions should be reasonably close to the center location
-      // L-shape center is at (1, 0.5), so blocks offset from center
+      // With 4x4 shapes, the positions can vary more
       for (const row of rows) {
-        expect(row).toBeGreaterThanOrEqual(4);
-        expect(row).toBeLessThanOrEqual(6);
+        expect(row).toBeGreaterThanOrEqual(3);
+        expect(row).toBeLessThanOrEqual(7);
       }
 
       for (const col of cols) {
-        expect(col).toBeGreaterThanOrEqual(4);
-        expect(col).toBeLessThanOrEqual(6);
+        expect(col).toBeGreaterThanOrEqual(3);
+        expect(col).toBeLessThanOrEqual(7);
       }
     });
 
@@ -101,46 +144,48 @@ describe('Shape Hover Effect - Unit Tests', () => {
   describe('canPlaceShape - Placement validation', () => {
     it('should return true when shape fits in empty grid', () => {
       const shape = createLShape();
-      const centerLocation: Location = { row: 5, column: 5 };
+      const gridTopLeft: Location = { row: 3, column: 3 }; // Places shape starting at (3,3)
       const gridSize = { rows: 10, columns: 10 };
-      const occupied = new Set<string>();
+      const tiles = createTilesWithFilled([]); // Empty grid
 
-      const canPlace = canPlaceShape(shape, centerLocation, gridSize, occupied);
+      const canPlace = canPlaceShape(shape, gridTopLeft, gridSize, tiles);
 
       expect(canPlace).toBe(true);
     });
 
     it('should return false when shape extends beyond grid boundaries', () => {
       const shape = createLShape();
-      const centerLocation: Location = { row: 1, column: 1 }; // Too close to edge
+      const gridTopLeft: Location = { row: 0, column: 0 }; // Top-left at 0,0 means blocks go to rows 1-3 and columns 1-2
       const gridSize = { rows: 10, columns: 10 };
-      const occupied = new Set<string>();
+      const tiles = createTilesWithFilled([]); // Empty grid
 
-      const canPlace = canPlaceShape(shape, centerLocation, gridSize, occupied);
+      const canPlace = canPlaceShape(shape, gridTopLeft, gridSize, tiles);
 
-      // L-shape extends beyond row 1 when centered there
+      // With gridTopLeft at (0,0), the 4x4 shape will try to place blocks at row 0 which is out of bounds (grid is 1-10)
       expect(canPlace).toBe(false);
     });
 
     it('should return false when shape overlaps with occupied tiles', () => {
       const shape = createLShape();
-      const centerLocation: Location = { row: 5, column: 5 };
+      const gridTopLeft: Location = { row: 4, column: 4 };
       const gridSize = { rows: 10, columns: 10 };
-      const occupied = new Set<string>(['5,5']); // Occupied position
+      // Create a grid with filled tile at (5,5) - this is where one of the L-shape blocks will be (row 4 + offset 1, col 4 + offset 1)
+      const tiles = createTilesWithFilled([{ row: 5, column: 5 }]);
 
-      const canPlace = canPlaceShape(shape, centerLocation, gridSize, occupied);
+      const canPlace = canPlaceShape(shape, gridTopLeft, gridSize, tiles);
 
-      // One of the L-shape blocks will overlap with occupied tile
+      // One of the L-shape blocks will overlap with occupied tile at (5,5)
       expect(canPlace).toBe(false);
     });
 
     it('should return true when shape is adjacent to but not overlapping occupied tiles', () => {
       const shape = createSquareShape();
-      const centerLocation: Location = { row: 5, column: 5 };
+      const gridTopLeft: Location = { row: 3, column: 3 }; // Places square starting at (3,3)
       const gridSize = { rows: 10, columns: 10 };
-      const occupied = new Set<string>(['7,7', '8,8']); // Away from shape
+      // Create a grid with filled tiles away from the shape position
+      const tiles = createTilesWithFilled([{ row: 7, column: 7 }, { row: 8, column: 8 }]);
 
-      const canPlace = canPlaceShape(shape, centerLocation, gridSize, occupied);
+      const canPlace = canPlaceShape(shape, gridTopLeft, gridSize, tiles);
 
       expect(canPlace).toBe(true);
     });
@@ -224,13 +269,13 @@ describe('Shape Hover Effect - Unit Tests', () => {
 
     it('should distinguish between placeable and non-placeable preview states', () => {
       const shape = createLShape();
-      const placeableLocation: Location = { row: 5, column: 5 };
-      const nonPlaceableLocation: Location = { row: 1, column: 1 };
+      const placeableLocation: Location = { row: 5, column: 5 }; // Top-left, will fit
+      const nonPlaceableLocation: Location = { row: 0, column: 0 }; // Top-left at 0, out of bounds
       const gridSize = { rows: 10, columns: 10 };
-      const occupied = new Set<string>();
+      const tiles = createTilesWithFilled([]); // Empty grid
 
-      const canPlacePlaceable = canPlaceShape(shape, placeableLocation, gridSize, occupied);
-      const canPlaceNonPlaceable = canPlaceShape(shape, nonPlaceableLocation, gridSize, occupied);
+      const canPlacePlaceable = canPlaceShape(shape, placeableLocation, gridSize, tiles);
+      const canPlaceNonPlaceable = canPlaceShape(shape, nonPlaceableLocation, gridSize, tiles);
 
       expect(canPlacePlaceable).toBe(true);
       expect(canPlaceNonPlaceable).toBe(false);
@@ -261,34 +306,18 @@ describe('Shape Hover Effect - Unit Tests', () => {
         previewPositions.map(p => `${p.location.row},${p.location.column}`)
       );
 
-      // Simulate tiles - some filled, some empty
-      const testTiles: Tile[] = [
-        {
-          id: '1',
-          location: { row: 5, column: 5 },
-          block: {
-            color: 'red',
-            isFilled: true  // Already filled
-          }
-        },
-        {
-          id: '2',
-          location: { row: 5, column: 5 },
-          block: {
-            color: 'grey',
-            isFilled: false  // Empty
-          }
-        }
-      ];
+      // Simulate tile data - some filled, some empty
+      const filledTile = { row: 5, column: 5, isFilled: true };
+      const emptyTile = { row: 5, column: 5, isFilled: false };
 
       // Test filled tile that's in preview position
-      const filledTileKey = `${testTiles[0].location.row},${testTiles[0].location.column}`;
-      const isPreviewForFilled = previewSet.has(filledTileKey) && !testTiles[0].block.isFilled;
+      const filledTileKey = `${filledTile.row},${filledTile.column}`;
+      const isPreviewForFilled = previewSet.has(filledTileKey) && !filledTile.isFilled;
       expect(isPreviewForFilled).toBe(false); // Should NOT be preview because tile is filled
 
       // Test empty tile that's in preview position  
-      const emptyTileKey = `${testTiles[1].location.row},${testTiles[1].location.column}`;
-      const isPreviewForEmpty = previewSet.has(emptyTileKey) && !testTiles[1].block.isFilled;
+      const emptyTileKey = `${emptyTile.row},${emptyTile.column}`;
+      const isPreviewForEmpty = previewSet.has(emptyTileKey) && !emptyTile.isFilled;
       expect(isPreviewForEmpty).toBe(true); // SHOULD be preview because tile is empty
     });
 

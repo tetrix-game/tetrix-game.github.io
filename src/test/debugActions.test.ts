@@ -106,10 +106,13 @@ describe('Debug Actions for Shape Management', () => {
       nextShapes: testShapes,
       openRotationMenus: [false, false, false],
       shapeOptionBounds: [null, null, null],
-      selectedShape: testShapes[2], // Last shape is selected
-      selectedShapeIndex: 2,
-      isShapeDragging: true,
-      hoveredBlockPositions: [{ location: { row: 1, column: 1 }, block: testShapes[2][0][0] }],
+      dragState: {
+        ...initialState.dragState,
+        selectedShape: testShapes[2],
+        selectedShapeIndex: 2,
+        phase: 'dragging' as const,
+        hoveredBlockPositions: [{ location: { row: 1, column: 1 }, block: testShapes[2][0][0] }],
+      },
     };
 
     const newState = tetrixReducer(state, {
@@ -118,10 +121,10 @@ describe('Debug Actions for Shape Management', () => {
 
     // Should have removed the selected shape and cleared selection
     expect(newState.nextShapes.length).toBe(2);
-    expect(newState.selectedShape).toBe(null);
-    expect(newState.selectedShapeIndex).toBe(null);
-    expect(newState.isShapeDragging).toBe(false);
-    expect(newState.hoveredBlockPositions).toEqual([]);
+    expect(newState.dragState.selectedShape).toBe(null);
+    expect(newState.dragState.selectedShapeIndex).toBe(null);
+    expect(newState.dragState.phase).toBe('none');
+    expect(newState.dragState.hoveredBlockPositions).toEqual([]);
   });
 
   test('REMOVE_SHAPE_OPTION preserves selection when removing non-selected shape', () => {
@@ -136,10 +139,13 @@ describe('Debug Actions for Shape Management', () => {
       nextShapes: testShapes,
       openRotationMenus: [false, false, false],
       shapeOptionBounds: [null, null, null],
-      selectedShape: testShapes[0], // First shape is selected
-      selectedShapeIndex: 0,
-      isShapeDragging: true,
-      hoveredBlockPositions: [{ location: { row: 1, column: 1 }, block: testShapes[0][0][0] }],
+      dragState: {
+        ...initialState.dragState,
+        selectedShape: testShapes[0],
+        selectedShapeIndex: 0,
+        phase: 'dragging' as const,
+        hoveredBlockPositions: [{ location: { row: 1, column: 1 }, block: testShapes[0][0][0] }],
+      },
     };
 
     const newState = tetrixReducer(state, {
@@ -148,9 +154,9 @@ describe('Debug Actions for Shape Management', () => {
 
     // Should preserve selection since we're not removing the selected shape
     expect(newState.nextShapes.length).toBe(2);
-    expect(newState.selectedShape).toBe(testShapes[0]);
-    expect(newState.selectedShapeIndex).toBe(0);
-    expect(newState.isShapeDragging).toBe(true);
-    expect(newState.hoveredBlockPositions).toEqual([{ location: { row: 1, column: 1 }, block: testShapes[0][0][0] }]);
+    expect(newState.dragState.selectedShape).toBe(testShapes[0]);
+    expect(newState.dragState.selectedShapeIndex).toBe(0);
+    expect(newState.dragState.phase).toBe('dragging');
+    expect(newState.dragState.hoveredBlockPositions).toEqual([{ location: { row: 1, column: 1 }, block: testShapes[0][0][0] }]);
   });
 });

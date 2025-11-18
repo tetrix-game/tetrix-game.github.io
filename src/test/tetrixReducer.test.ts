@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
 import type { Shape, TetrixAction } from '../utils/types';
+import { countFilledTiles } from './testHelpers';
 
 // Helper to create a test shape (in 4x4 grid)
 const createTestShape = (): Shape => [
@@ -281,11 +282,11 @@ describe('TetrixReducer - Bug Fixes', () => {
       const newState = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Find tiles that should have been filled
-      const filledTiles = newState.tiles.filter(tile => tile.block.isFilled);
-      const initialFilledTiles = initialState.tiles.filter(tile => tile.block.isFilled);
+      const filledTilesCount = countFilledTiles(newState.tiles);
+      const initialFilledTilesCount = countFilledTiles(initialState.tiles);
 
       // Should have more filled tiles than initial state
-      expect(filledTiles.length).toBeGreaterThan(initialFilledTiles.length);
+      expect(filledTilesCount).toBeGreaterThan(initialFilledTilesCount);
     });
 
     it('should not place shape if no shape is selected', () => {

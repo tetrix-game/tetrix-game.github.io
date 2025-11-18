@@ -8,7 +8,7 @@ describe('Edge Hover Positioning', () => {
   beforeEach(() => {
     // Create a mock grid element with a known size
     mockGridElement = document.createElement('div');
-    
+
     // Mock getBoundingClientRect to return a 500x500 grid starting at (100, 100)
     mockGridElement.getBoundingClientRect = () => ({
       left: 100,
@@ -19,7 +19,7 @@ describe('Edge Hover Positioning', () => {
       height: 500,
       x: 100,
       y: 100,
-      toJSON: () => {},
+      toJSON: () => { },
     });
   });
 
@@ -54,7 +54,7 @@ describe('Edge Hover Positioning', () => {
     // - Shape bounds: minCol=1, maxCol=1 (within 4x4)
     // - Anchor block (center): col = 1 + floor((1-1)/2) = 1
     // - Filled blocks relative to anchor: col offset = 1 - 1 = 0
-    
+
     // When placing this shape at grid location (1, 1):
     // - The 4x4 top-left corner is at grid position (1, 1)
     // - The single filled column is at grid position 1 + 1 = 2 (in 1-indexed)
@@ -63,7 +63,7 @@ describe('Edge Hover Positioning', () => {
     // Actually, for grid location {row: 1, column: 1}:
     // - This represents where the 4x4 grid's top-left (0,0) maps to grid position (1,1)
     // - A filled block at shape[0][1] maps to grid position (1 + 0, 1 + 1) = (1, 2)
-    
+
     // For this vertical I-piece with filled blocks at shape[0-3][1]:
     // - They map to grid positions: (1,2), (2,2), (3,2), (4,2)
     // So when the function returns {row: 1, column: 1}, it means the leftmost filled
@@ -124,14 +124,14 @@ describe('Edge Hover Positioning', () => {
     // Actually, we need to think about this differently...
     // When the mouse is at x=110, the user is hovering on grid tile column 1
     // Grid tile 1 spans x=100 to x=148.2
-    
+
     // For the shape to place its filled blocks at column 1, the 4x4 top-left needs to be at column 0
     // Grid tile 0 (which is off-grid) would be at x=49.8 to x=98 (if it existed)
-    
+
     // So the correct behavior is:
     // - When hovering at x=110 (within tile 1), and we want to place at tile 1
     // - The 4x4 top-left should map to column 0 (so filled block at shape[*][1] goes to grid column 1)
-    
+
     expect(location).not.toBeNull();
     expect(location?.column).toBe(0); // 4x4 top-left at column 0 places filled blocks at column 1
   });

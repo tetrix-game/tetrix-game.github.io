@@ -1,48 +1,19 @@
 import { describe, it, expect } from 'vitest';
-import { detectSuperComboPattern } from '../utils/shapeUtils';
-import type { Tile } from '../utils/types';
-
-/**
- * Helper to create a tile at a specific location
- */
-function createTile(row: number, column: number, isFilled: boolean): Tile {
-  return {
-    id: `tile-${row}-${column}`,
-    location: { row, column },
-    block: {
-      isFilled,
-      color: isFilled ? 'blue' : 'grey',
-    },
-  };
-}
+import { detectSuperComboPattern } from '../utils/shapes/shapePatterns';
+import type { TilesSet, ColorName } from '../utils/types';
+import { createTilesWithFilled, setTileData } from './testHelpers';
 
 /**
  * Helper to create a 10x10 grid with all tiles empty
  */
-function createEmptyGrid(): Tile[] {
-  const tiles: Tile[] = [];
-  for (let row = 1; row <= 10; row++) {
-    for (let col = 1; col <= 10; col++) {
-      tiles.push(createTile(row, col, false));
-    }
-  }
-  return tiles;
-}
-
-/**
- * Helper to set a tile as filled
- */
-function setTileFilled(tiles: Tile[], row: number, column: number, isFilled: boolean): void {
-  const tile = tiles.find(t => t.location.row === row && t.location.column === column);
-  if (tile) {
-    tile.block.isFilled = isFilled;
-  }
+function createEmptyGrid(): TilesSet {
+  return createTilesWithFilled([]);
 }
 
 describe('Diagonal Pattern Detection', () => {
   describe('Ascending Diagonal Pattern', () => {
     it('should detect ascending diagonal pattern starting at (4,4)', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
 
       // Create ascending diagonal pattern:
       // Row 4: empty at col 4, filled everywhere else
@@ -56,7 +27,7 @@ describe('Diagonal Pattern Detection', () => {
         for (let col = 1; col <= 10; col++) {
           const isOnDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4));
           if (!isOnDiagonal) {
-            setTileFilled(tiles, row, col, true);
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
@@ -65,17 +36,20 @@ describe('Diagonal Pattern Detection', () => {
       for (let col = 4; col <= 7; col++) {
         for (let row = 1; row <= 10; row++) {
           const isOnDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4));
-          if (!isOnDiagonal) {
-            setTileFilled(tiles, row, col, true);
+          // Skip if already added or on diagonal
+          const alreadyAdded = row >= 4 && row <= 7 && !isOnDiagonal;
+          if (!isOnDiagonal && !alreadyAdded) {
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
 
+      const tiles = createTilesWithFilled(positions);
       expect(detectSuperComboPattern(tiles)).toBe(true);
     });
 
     it('should detect ascending diagonal pattern starting at (1,1)', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
 
       // Create ascending diagonal at top-left corner
       // Rows 1-4, columns 1-4
@@ -83,7 +57,7 @@ describe('Diagonal Pattern Detection', () => {
         for (let col = 1; col <= 10; col++) {
           const isOnDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row - 1) === (col - 1));
           if (!isOnDiagonal) {
-            setTileFilled(tiles, row, col, true);
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
@@ -91,19 +65,21 @@ describe('Diagonal Pattern Detection', () => {
       for (let col = 1; col <= 4; col++) {
         for (let row = 1; row <= 10; row++) {
           const isOnDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row - 1) === (col - 1));
-          if (!isOnDiagonal) {
-            setTileFilled(tiles, row, col, true);
+          const alreadyAdded = row >= 1 && row <= 4 && !isOnDiagonal;
+          if (!isOnDiagonal && !alreadyAdded) {
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
 
+      const tiles = createTilesWithFilled(positions);
       expect(detectSuperComboPattern(tiles)).toBe(true);
     });
   });
 
   describe('Descending Diagonal Pattern', () => {
     it('should detect descending diagonal pattern at (4,4)-(7,7)', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
 
       // Create descending diagonal pattern:
       // Row 4: empty at col 7
@@ -121,7 +97,7 @@ describe('Diagonal Pattern Detection', () => {
         for (let col = 1; col <= 10; col++) {
           const isOnDescendingDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row + col) === 11);
           if (!isOnDescendingDiagonal) {
-            setTileFilled(tiles, row, col, true);
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
@@ -130,17 +106,19 @@ describe('Diagonal Pattern Detection', () => {
       for (let col = 4; col <= 7; col++) {
         for (let row = 1; row <= 10; row++) {
           const isOnDescendingDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row + col) === 11);
-          if (!isOnDescendingDiagonal) {
-            setTileFilled(tiles, row, col, true);
+          const alreadyAdded = row >= 4 && row <= 7 && !isOnDescendingDiagonal;
+          if (!isOnDescendingDiagonal && !alreadyAdded) {
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
 
+      const tiles = createTilesWithFilled(positions);
       expect(detectSuperComboPattern(tiles)).toBe(true);
     });
 
     it('should detect descending diagonal pattern starting at (1,4)', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
 
       // Create descending diagonal at top-right area
       // Rows 1-4, columns 1-4
@@ -155,7 +133,7 @@ describe('Diagonal Pattern Detection', () => {
         for (let col = 1; col <= 10; col++) {
           const isOnDescendingDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row + col) === 5);
           if (!isOnDescendingDiagonal) {
-            setTileFilled(tiles, row, col, true);
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
@@ -163,12 +141,14 @@ describe('Diagonal Pattern Detection', () => {
       for (let col = 1; col <= 4; col++) {
         for (let row = 1; row <= 10; row++) {
           const isOnDescendingDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row + col) === 5);
-          if (!isOnDescendingDiagonal) {
-            setTileFilled(tiles, row, col, true);
+          const alreadyAdded = row >= 1 && row <= 4 && !isOnDescendingDiagonal;
+          if (!isOnDescendingDiagonal && !alreadyAdded) {
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
 
+      const tiles = createTilesWithFilled(positions);
       expect(detectSuperComboPattern(tiles)).toBe(true);
     });
   });
@@ -180,37 +160,42 @@ describe('Diagonal Pattern Detection', () => {
     });
 
     it('should not detect pattern when diagonal positions are filled', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
 
       // Fill everything including diagonal - this breaks the pattern
       for (let row = 4; row <= 7; row++) {
         for (let col = 1; col <= 10; col++) {
-          setTileFilled(tiles, row, col, true);
+          positions.push({ row, column: col, color: 'blue' as ColorName });
         }
       }
 
       for (let col = 4; col <= 7; col++) {
         for (let row = 1; row <= 10; row++) {
-          setTileFilled(tiles, row, col, true);
+          // Skip already added
+          if (row < 4 || row > 7) {
+            positions.push({ row, column: col, color: 'blue' as ColorName });
+          }
         }
       }
 
+      const tiles = createTilesWithFilled(positions);
       expect(detectSuperComboPattern(tiles)).toBe(false);
     });
 
     it('should not detect pattern with incomplete rows', () => {
-      const tiles = createEmptyGrid();
+      const positions = [];
 
       // Only fill some rows, not all required for the pattern
       for (let row = 4; row <= 5; row++) { // Only 2 rows instead of 4
         for (let col = 1; col <= 10; col++) {
           const isOnDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4));
           if (!isOnDiagonal) {
-            setTileFilled(tiles, row, col, true);
+            positions.push({ row, column: col, color: 'blue' as ColorName });
           }
         }
       }
 
+      const tiles = createTilesWithFilled(positions);
       expect(detectSuperComboPattern(tiles)).toBe(false);
     });
   });

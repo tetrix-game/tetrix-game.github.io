@@ -223,8 +223,10 @@ export function mousePositionToGridLocation(
   }
 
   // Check if the grid's top-left corner is within reasonable bounds
-  // Allow some tolerance for shapes near the edge
-  const tolerance = tileSize * 2; // Allow up to 2 tiles outside
+  // Allow significant tolerance for shapes near the edge since the 4x4 grid's
+  // top-left corner will be outside the grid bounds for edge placements
+  // For a 4x4 shape, the top-left can be up to 3 tiles outside the grid
+  const tolerance = tileSize * 3.5; // Allow up to 3.5 tiles outside
   if (
     gridTopLeftX < rect.left - tolerance ||
     gridTopLeftX > rect.right + tolerance ||
@@ -242,9 +244,12 @@ export function mousePositionToGridLocation(
   const exactColumn = relativeX / tileWithGap;
   const exactRow = relativeY / tileWithGap;
 
-  // Round to nearest integer - when top-left is between tiles, pick the nearest
-  const column = Math.round(exactColumn) + 1; // +1 for 1-indexed
-  const row = Math.round(exactRow) + 1; // +1 for 1-indexed
+  // Use floor to map any position within a tile to that tile's location
+  // This ensures edge tiles are detected across their full width/height
+  // Adding 0.5 before floor effectively rounds to nearest, which gives better
+  // behavior when the position is between tiles
+  const column = Math.floor(exactColumn + 0.5) + 1; // +1 for 1-indexed
+  const row = Math.floor(exactRow + 0.5) + 1; // +1 for 1-indexed
 
   // Return unclamped values - validation functions handle out-of-bounds gracefully
   // This allows shapes to show "does not fit" visual when hovering outside the grid

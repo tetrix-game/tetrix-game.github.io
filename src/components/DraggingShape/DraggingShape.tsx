@@ -6,9 +6,6 @@ import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugEditor } from '../DebugEditor';
 import './DraggingShape.css';
 
-const positionsX = [];
-const positionsY = [];
-
 export default function DraggingShape() {
   const {
     dragState,
@@ -103,8 +100,6 @@ export default function DraggingShape() {
       if (progress >= 1) {
         // Animation complete - dispatch completion which will place the shape and hide DraggingShape
         dispatch({ type: 'COMPLETE_PLACEMENT' });
-        console.log('Return positions X:', positionsX);
-        console.log('Return positions Y:', positionsY);
       } else {
         requestAnimationFrame(animate);
       }
@@ -276,9 +271,6 @@ export default function DraggingShape() {
     // Therefore: container top-left = filled center - shapeWidth/2 - centerOffsetX
     containerLeft = currentX - shapeWidth / 2 - centerOffsetX;
     containerTop = currentY - shapeHeight / 2 - centerOffsetY;
-
-    positionsX.push({ currentX, startX, targetX, animationProgress: placingProgress });
-    positionsY.push({ currentY, startY, targetY, animationProgress: placingProgress });
 
   } else {
     return null;

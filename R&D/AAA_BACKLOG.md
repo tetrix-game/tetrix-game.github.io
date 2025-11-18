@@ -1,7 +1,6 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-- Placing shapes along the edge isn't allowing for the shape to hover on the outer half of the edge tiles, making placing along the edge fairly difficult.
 - Juice up combos
   - Stackable custom animations for
     - Quadruple

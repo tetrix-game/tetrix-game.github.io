@@ -22,3 +22,20 @@
 .dragging-phase .dragging-shape-cell {
   transition: width 200ms, height 200ms, transform 200ms;
 }
+
+.wiggle-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes wiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.invalid-cell .wiggle-wrapper {
+  animation: wiggle 0.2s linear infinite;
+  animation-delay: var(--wiggle-delay);
+}

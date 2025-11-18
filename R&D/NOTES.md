@@ -1,7 +1,6 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-- Size of DraggingShape needs to animate
 - Debug editor close button
 - Mouse movement is still caclulating fit after placement starts
 - Better learning curve

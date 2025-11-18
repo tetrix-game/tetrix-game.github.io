@@ -301,11 +301,12 @@ export default function DraggingShape() {
         row.map((block, colIndex) => {
           const blockKey = `${rowIndex},${colIndex}`;
           const isInvalid = invalidBlockSet.has(blockKey);
+          const wiggleDelay = (rowIndex * 4 + colIndex) * 50;
 
           return (
             <div
               key={`${rowIndex}-${colIndex}`}
-              className="dragging-shape-cell"
+              className={`dragging-shape-cell ${isInvalid ? 'invalid-cell' : ''}`}
               style={isInvalid ? {
                 // Shrink to half size while maintaining center position
                 width: `calc(var(--tile-size) * 0.5)`,
@@ -314,25 +315,32 @@ export default function DraggingShape() {
                 transform: `translate(calc(var(--tile-size) * 0.25), calc(var(--tile-size) * 0.25))`,
               } : undefined}
             >
-              {block.isFilled && (
-                <BlockVisual block={block} />
-              )}
-              {!block.isFilled && debugState.isEditorOpen && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: 'white',
-                    opacity: 0.6,
-                    pointerEvents: 'none',
-                  }}
-                />
-              )}
+              <div
+                className="wiggle-wrapper"
+                style={{
+                  '--wiggle-delay': `${wiggleDelay}ms`,
+                } as React.CSSProperties}
+              >
+                {block.isFilled && (
+                  <BlockVisual block={block} />
+                )}
+                {!block.isFilled && debugState.isEditorOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: 'white',
+                      opacity: 0.6,
+                      pointerEvents: 'none',
+                    }}
+                  />
+                )}
+              </div>
             </div>
           );
         })

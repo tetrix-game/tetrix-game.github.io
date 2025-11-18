@@ -8,6 +8,7 @@ type DebugEditorState = {
   currentTool: DebugTool;
   selectedColor: ColorName;
   showInstructions: boolean;
+  hasShownInstructions: boolean;
 };
 
 type DebugEditorContextValue = {
@@ -30,6 +31,7 @@ export function DebugEditorProvider({ children }: Readonly<{ children: ReactNode
     currentTool: 'none',
     selectedColor: 'blue',
     showInstructions: true,
+    hasShownInstructions: false,
   });
 
   const openEditor = () => {
@@ -37,7 +39,8 @@ export function DebugEditorProvider({ children }: Readonly<{ children: ReactNode
       ...prev,
       isEditorOpen: true,
       currentTool: prev.currentTool === 'none' ? 'add-block' : prev.currentTool,
-      showInstructions: true, // Always show instructions when opening
+      showInstructions: !prev.hasShownInstructions,
+      hasShownInstructions: true,
     }));
   };
 

@@ -260,3 +260,21 @@
   transform: scale(0.95);
   background: #1a3a5a;
 }
+
+.debug-close-editor-button {
+  width: 100%;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.debug-close-editor-button:hover {
+  background: #cc0000;
+}

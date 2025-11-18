@@ -235,6 +235,12 @@ const DebugEditor: React.FC = () => {
             </button>
           </div>
         </div>
+
+        <div className="debug-tool-section">
+          <button className="debug-close-editor-button" onClick={closeEditor}>
+            Close Editor
+          </button>
+        </div>
       </div>
     </>,
     document.body

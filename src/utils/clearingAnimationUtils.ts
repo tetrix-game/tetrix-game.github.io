@@ -170,17 +170,19 @@ export function generateClearingAnimations(
         duration: finalConfig.columns.single.duration,
       });
 
-      // Double column animation (always present, for backward compatibility)
-      const doubleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.double.waveDelay);
-      animations.push({
-        id: generateAnimationId(),
-        type: 'column-double',
-        startTime: baseStartTime + finalConfig.columns.double.startDelay + doubleWaveOffset,
-        duration: finalConfig.columns.double.duration,
-      });
-
-      // Triple column animation (2+ columns)
+      // Double column animation (2+ columns)
       if (columnCount >= 2) {
+        const doubleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.double.waveDelay);
+        animations.push({
+          id: generateAnimationId(),
+          type: 'column-double',
+          startTime: baseStartTime + finalConfig.columns.double.startDelay + doubleWaveOffset,
+          duration: finalConfig.columns.double.duration,
+        });
+      }
+
+      // Triple column animation (3+ columns)
+      if (columnCount >= 3) {
         const tripleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.triple.waveDelay);
         animations.push({
           id: generateAnimationId(),

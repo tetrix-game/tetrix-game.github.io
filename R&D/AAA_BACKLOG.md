@@ -11,11 +11,15 @@
 - ledgendary (multiple years)
 
 ### Things
-- Line clearing visuals
+- Juice up combos
+  - Stackable custom animations for
+    - Double
+    - Tripple
+    - Quadruple
+    - Rows + Columns
 - Get rid of the level progression idea
 - Invalid placement sound
 - Valid placement sound
-- Escalating ine clearing steak combo
 
 
 ## Related Documentation

@@ -94,6 +94,22 @@
       "screenshot": "https://tetrix-game.github.io/icons/icon-512x512.png"
     }
     </script>
+    
+    <!-- Prevent scrolling on mobile -->
+    <style>
+      html, body {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

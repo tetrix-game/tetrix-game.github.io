@@ -5,6 +5,7 @@ import FullScreenFloatingActionButton from './components/FullScreenButton';
 import TutorialOverlay from './components/TutorialOverlay';
 import DebugEditor from './components/DebugEditor';
 import DraggingShape from './components/DraggingShape';
+import ToastOverlay from './components/ToastOverlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
 import { useState, useEffect, useRef } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
@@ -215,6 +216,7 @@ const App = () => {
       <FullScreenFloatingActionButton />
       {showTutorial && <TutorialOverlay onClose={handleCloseTutorial} />}
       <DebugEditor />
+      <ToastOverlay />
     </div>
   )
 }

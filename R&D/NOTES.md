@@ -1,9 +1,8 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-- Mouse movement is still caclulating fit after placement starts
+
 - Better learning curve
-  - Get rid of the level progression idea
   - Add GIF's explaining the game instead of words
     - Next button progress bar
     - Skip button

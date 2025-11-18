@@ -205,6 +205,18 @@ const MenuDropdown: React.FC = () => {
                 </div>
                 <div className="menu-item submenu-item">
                   <button
+                    className="debug-action-button"
+                    onClick={() => {
+                      dispatch({ type: 'OPEN_MAP' });
+                      setIsOpen(false);
+                    }}
+                    title="Open the Level Map overlay (dev only)"
+                  >
+                    Open Level Map
+                  </button>
+                </div>
+                <div className="menu-item submenu-item">
+                  <button
                     className="debug-action-button danger"
                     onClick={handleClearAllData}
                     title="⚠️ Nuclear option: Clear ALL data including settings and reload fresh from server"

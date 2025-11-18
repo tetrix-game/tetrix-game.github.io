@@ -1,3 +1,4 @@
+import React from 'react';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import './LocationButton.css';
 
@@ -5,10 +6,25 @@ const LocationButton = () => {
   const { gameState } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    // Dev backdoor: Shift+Click to open the map
+    if (e.shiftKey) {
+      if (gameState === 'playing') {
+        dispatch({ type: 'OPEN_MAP' });
+      } else {
+        dispatch({ type: 'CLOSE_MAP' });
+      }
+      return;
+    }
+
+    // Standard behavior: Show "Coming Soon" toast
     if (gameState === 'playing') {
-      dispatch({ type: 'OPEN_MAP' });
+      const event = new CustomEvent('tetrix-show-toast', {
+        detail: { message: 'Level Map Coming Soon!' }
+      });
+      window.dispatchEvent(event);
     } else {
+      // If somehow in map mode without shift key (e.g. stuck), allow closing
       dispatch({ type: 'CLOSE_MAP' });
     }
   };

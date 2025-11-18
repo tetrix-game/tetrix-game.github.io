@@ -15,40 +15,37 @@
 
 import type { TileAnimation, TilesSet } from '../types/core';
 
+export type AnimationTierConfig = {
+  duration: number;    // Animation duration in ms
+  waveDelay: number;   // Delay between each tile in ms
+  startDelay: number;  // Delay before the first animation starts in ms
+};
+
 export type AnimationConfig = {
-  // Duration for each animation type (ms)
-  rowSingleDuration: number;
-  rowDoubleDuration: number;
-  rowTripleDuration: number;
-  columnSingleDuration: number;
-  columnDoubleDuration: number;
-  columnTripleDuration: number;
-
-  // Wave delays for each animation type (ms)
-  rowSingleWaveDelay: number;
-  rowDoubleWaveDelay: number;
-  rowTripleWaveDelay: number;
-  columnSingleWaveDelay: number;
-  columnDoubleWaveDelay: number;
-  columnTripleWaveDelay: number;
-
+  rows: {
+    single: AnimationTierConfig;
+    double: AnimationTierConfig;
+    triple: AnimationTierConfig;
+  };
+  columns: {
+    single: AnimationTierConfig;
+    double: AnimationTierConfig;
+    triple: AnimationTierConfig;
+  };
   baseStartTime?: number; // Base timestamp (defaults to performance.now())
 };
 
 const DEFAULT_CONFIG: AnimationConfig = {
-  rowSingleDuration: 500,
-  rowDoubleDuration: 500,
-  rowTripleDuration: 600,
-  columnSingleDuration: 500,
-  columnDoubleDuration: 500,
-  columnTripleDuration: 600,
-
-  rowSingleWaveDelay: 30,
-  rowDoubleWaveDelay: 30,
-  rowTripleWaveDelay: 40,
-  columnSingleWaveDelay: 30,
-  columnDoubleWaveDelay: 30,
-  columnTripleWaveDelay: 40,
+  rows: {
+    single: { duration: 500, waveDelay: 30, startDelay: 0 },
+    double: { duration: 500, waveDelay: 30, startDelay: 0 },
+    triple: { duration: 600, waveDelay: 40, startDelay: 0 },
+  },
+  columns: {
+    single: { duration: 500, waveDelay: 30, startDelay: 0 },
+    double: { duration: 500, waveDelay: 30, startDelay: 0 },
+    triple: { duration: 600, waveDelay: 40, startDelay: 0 },
+  },
 };
 
 /**
@@ -84,7 +81,20 @@ export function generateClearingAnimations(
   clearedColumns: number[],
   config: Partial<AnimationConfig> = {}
 ): TilesSet {
-  const finalConfig = { ...DEFAULT_CONFIG, ...config };
+  // Deep merge config with defaults
+  const finalConfig: AnimationConfig = {
+    rows: {
+      single: { ...DEFAULT_CONFIG.rows.single, ...config.rows?.single },
+      double: { ...DEFAULT_CONFIG.rows.double, ...config.rows?.double },
+      triple: { ...DEFAULT_CONFIG.rows.triple, ...config.rows?.triple },
+    },
+    columns: {
+      single: { ...DEFAULT_CONFIG.columns.single, ...config.columns?.single },
+      double: { ...DEFAULT_CONFIG.columns.double, ...config.columns?.double },
+      triple: { ...DEFAULT_CONFIG.columns.triple, ...config.columns?.triple },
+    },
+    baseStartTime: config.baseStartTime,
+  };
   const baseStartTime = finalConfig.baseStartTime ?? performance.now();
   const newTiles = new Map(tiles);
 
@@ -105,33 +115,33 @@ export function generateClearingAnimations(
       const animations: TileAnimation[] = [];
 
       // Single row animation (always present)
-      const singleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rowSingleWaveDelay);
+      const singleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.single.waveDelay);
       animations.push({
         id: generateAnimationId(),
         type: 'row-cw',
-        startTime: baseStartTime + singleWaveOffset,
-        duration: finalConfig.rowSingleDuration,
+        startTime: baseStartTime + finalConfig.rows.single.startDelay + singleWaveOffset,
+        duration: finalConfig.rows.single.duration,
       });
 
       // Double row animation (2+ rows)
       if (rowCount >= 2) {
-        const doubleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rowDoubleWaveDelay);
+        const doubleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.double.waveDelay);
         animations.push({
           id: generateAnimationId(),
           type: 'row-double',
-          startTime: baseStartTime + doubleWaveOffset,
-          duration: finalConfig.rowDoubleDuration,
+          startTime: baseStartTime + finalConfig.rows.double.startDelay + doubleWaveOffset,
+          duration: finalConfig.rows.double.duration,
         });
       }
 
       // Triple row animation (3+ rows)
       if (rowCount >= 3) {
-        const tripleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rowTripleWaveDelay);
+        const tripleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.triple.waveDelay);
         animations.push({
           id: generateAnimationId(),
           type: 'row-triple',
-          startTime: baseStartTime + tripleWaveOffset,
-          duration: finalConfig.rowTripleDuration,
+          startTime: baseStartTime + finalConfig.rows.triple.startDelay + tripleWaveOffset,
+          duration: finalConfig.rows.triple.duration,
         });
       }
 
@@ -152,31 +162,31 @@ export function generateClearingAnimations(
       const animations: TileAnimation[] = [];
 
       // Single column animation (always present)
-      const singleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columnSingleWaveDelay);
+      const singleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.single.waveDelay);
       animations.push({
         id: generateAnimationId(),
         type: 'column-ccw',
-        startTime: baseStartTime + singleWaveOffset,
-        duration: finalConfig.columnSingleDuration,
+        startTime: baseStartTime + finalConfig.columns.single.startDelay + singleWaveOffset,
+        duration: finalConfig.columns.single.duration,
       });
 
       // Double column animation (always present, for backward compatibility)
-      const doubleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columnDoubleWaveDelay);
+      const doubleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.double.waveDelay);
       animations.push({
         id: generateAnimationId(),
         type: 'column-double',
-        startTime: baseStartTime + doubleWaveOffset,
-        duration: finalConfig.columnDoubleDuration,
+        startTime: baseStartTime + finalConfig.columns.double.startDelay + doubleWaveOffset,
+        duration: finalConfig.columns.double.duration,
       });
 
       // Triple column animation (2+ columns)
       if (columnCount >= 2) {
-        const tripleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columnTripleWaveDelay);
+        const tripleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.triple.waveDelay);
         animations.push({
           id: generateAnimationId(),
           type: 'column-triple',
-          startTime: baseStartTime + tripleWaveOffset,
-          duration: finalConfig.columnTripleDuration,
+          startTime: baseStartTime + finalConfig.columns.triple.startDelay + tripleWaveOffset,
+          duration: finalConfig.columns.triple.duration,
         });
       }
 

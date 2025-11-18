@@ -197,10 +197,16 @@
     transform: rotate(360deg) scale(1.2);
     border-radius: 15%;
     opacity: 1;
-    clip-path: polygon(30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%);
+    clip-path: polygon(
+      30% 0%,
+      70% 0%,
+      100% 30%,
+      100% 70%,
+      70% 100%,
+      30% 100%,
+      0% 70%,
+      0% 30%
+    );
     top: 0;
     left: 0;
     right: 0;
@@ -211,10 +217,16 @@
     transform: rotate(360deg) scale(1.2);
     border-radius: 15%;
     opacity: 0;
-    clip-path: polygon(30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%);
+    clip-path: polygon(
+      30% 0%,
+      70% 0%,
+      100% 30%,
+      100% 70%,
+      70% 100%,
+      30% 100%,
+      0% 70%,
+      0% 30%
+    );
     top: 0;
     left: 0;
     right: 0;
@@ -235,10 +247,16 @@
     transform: rotate(-360deg) scale(1.2);
     border-radius: 15%;
     opacity: 1;
-    clip-path: polygon(30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%);
+    clip-path: polygon(
+      30% 0%,
+      70% 0%,
+      100% 30%,
+      100% 70%,
+      70% 100%,
+      30% 100%,
+      0% 70%,
+      0% 30%
+    );
     top: 0;
     left: 0;
     right: 0;
@@ -249,10 +267,16 @@
     transform: rotate(-360deg) scale(1.2);
     border-radius: 15%;
     opacity: 0;
-    clip-path: polygon(30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%);
+    clip-path: polygon(
+      30% 0%,
+      70% 0%,
+      100% 30%,
+      100% 70%,
+      70% 100%,
+      30% 100%,
+      0% 70%,
+      0% 30%
+    );
     top: 0;
     left: 0;
     right: 0;

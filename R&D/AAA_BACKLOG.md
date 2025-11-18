@@ -1,23 +1,21 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-
-### Ease scale
-- trivial (one shot)
-- easy: less than a day
-- moderate: 1+ days
-- hard: 1+ week
-- epic: 1+ months
-- ledgendary (multiple years)
-
-### Things
 - Juice up combos
   - Stackable custom animations for
     - Double
     - Tripple
     - Quadruple
     - Rows + Columns
-- Get rid of the level progression idea
+- Better learning curve
+  - Instructions are too lengthy
+  - Instructions are just wrong
+  - Get rid of the level progression idea
+  - Mouse movement is still caclulating fit after placement starts
+  - Add GIF's explaining the game instead of words
+    - Next button progress bar
+    - Number of screens in getting to know you
+    - Skip button
 - Invalid placement sound
 - Valid placement sound
 

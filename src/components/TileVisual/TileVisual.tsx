@@ -1,7 +1,7 @@
 import './TileVisual.css';
 import type { Tile, Block } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
@@ -12,7 +12,38 @@ type TileVisualProps = {
 }
 
 const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisualProps) => {
-  const { dragState, clearingTiles, clearingRotationDirection } = useTetrixStateContext();
+  const { dragState, tiles } = useTetrixStateContext();
+  const [, setTick] = useState(0);
+
+  // Force re-render on animation frame to track animation timing
+  useEffect(() => {
+    const tileKey = `R${tile.location.row}C${tile.location.column}`;
+    const tileData = tiles.get(tileKey);
+
+    if (!tileData?.activeAnimations || tileData.activeAnimations.length === 0) {
+      return;
+    }
+
+    let rafId: number;
+    const animate = () => {
+      setTick(t => t + 1);
+      rafId = requestAnimationFrame(animate);
+    };
+    rafId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(rafId);
+  }, [tiles, tile.location.row, tile.location.column]);
+
+  // Get active animations for this tile
+  const tileKey = `R${tile.location.row}C${tile.location.column}`;
+  const tileData = tiles.get(tileKey);
+  const activeAnimations = tileData?.activeAnimations || [];
+
+  // Filter to only currently-playing animations
+  const currentTime = performance.now();
+  const playingAnimations = activeAnimations.filter(
+    anim => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration
+  );
 
   // Fixed border width for consistent grid sizing
   // Always display the actual tile block
@@ -20,11 +51,6 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
 
   // Show a shadow overlay when hovering
   const showShadow = isHovered && hoveredBlock;
-
-  // Check if this tile is being cleared
-  const isClearing = clearingTiles.some(
-    loc => loc.row === tile.location.row && loc.column === tile.location.column
-  );
 
   // Determine tile variant (dark vs light)
   const dark = (tile.location.row + tile.location.column) % 2 === 0;
@@ -54,12 +80,25 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
           } as React.CSSProperties}
         />
       )}
-      {isClearing && (
-        <div
-          className={`tile-visual-clearing ${clearingRotationDirection === 'cw' ? 'rotate-cw' : 'rotate-ccw'
-            }`}
-        />
-      )}
+      {playingAnimations.map((anim) => {
+        const elapsed = currentTime - anim.startTime;
+        const progress = Math.min(elapsed / anim.duration, 1);
+        
+        // Calculate delay: if startTime is in the future, we need to delay
+        const delay = Math.max(0, anim.startTime - currentTime);
+
+        return (
+          <div
+            key={anim.id}
+            className={`tile-visual-clearing ${anim.type}`}
+            style={{
+              '--animation-progress': progress,
+              '--animation-duration': `${anim.duration}ms`,
+              '--animation-delay': `${delay}ms`,
+            } as React.CSSProperties}
+          />
+        );
+      })}
     </div>
   )
 }

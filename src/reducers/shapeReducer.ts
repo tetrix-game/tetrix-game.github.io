@@ -118,6 +118,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
           sourcePosition: null,
           targetPosition: null,
           placementLocation: null,
+          placementStartPosition: null,
           startTime: null,
           dragOffsets: null,
         }

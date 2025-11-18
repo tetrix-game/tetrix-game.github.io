@@ -9,6 +9,7 @@ import { clearFullLines } from '../utils/lineUtils';
 import { calculateScore } from '../utils/scoringUtils';
 import { safeBatchSave } from '../utils/persistenceUtils';
 import { playSound } from '../components/SoundEffectsContext';
+import { generateClearingAnimations, cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
 
 // Helper function to create a tile key from location
 export function makeTileKey(row: number, column: number): string {
@@ -62,31 +63,21 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       }
 
       // Check for and clear full lines
-      const { tiles: finalTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
+      const { tiles: clearedTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
 
-      // Collect tiles to animate if lines were cleared
-      let clearingTileLocations: Array<{ row: number; column: number }> = [];
-      let clearingDirection: 'cw' | 'ccw' | null = null;
-
-      if (clearedRows.length > 0 || clearedColumns.length > 0) {
-        // Collect all tile locations that will be cleared
-        clearedRows.forEach(row => {
-          for (let column = 1; column <= 10; column++) {
-            clearingTileLocations.push({ row, column });
-          }
-        });
-        clearedColumns.forEach(column => {
-          for (let row = 1; row <= 10; row++) {
-            // Avoid duplicates from row/column intersections
-            if (!clearedRows.includes(row)) {
-              clearingTileLocations.push({ row, column });
-            }
-          }
-        });
-
-        // Randomly choose rotation direction for this clearing event
-        clearingDirection = Math.random() > 0.5 ? 'cw' : 'ccw';
-      }
+      // Generate clearing animations and apply them to tiles
+      // Configure wave effects: delay each row tile by 30ms, each column tile by 40ms
+      const finalTiles = generateClearingAnimations(
+        clearedTiles,
+        clearedRows,
+        clearedColumns,
+        {
+          rowDuration: 15000,
+          columnDuration: 15000,
+          rowWaveDelay: 3000,
+          columnWaveDelay: 5000,
+        }
+      );
 
       // Play sound effects for line clearing
       playLineClearSounds(clearedRows, clearedColumns);
@@ -162,12 +153,23 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         // Start the removal animation
         removingShapeIndex: removedIndex,
         shapeRemovalAnimationState: 'removing' as const,
-        // Set clearing animation data
-        clearingTiles: clearingTileLocations,
-        clearingRotationDirection: clearingDirection,
       };
 
       return newState;
+    }
+
+    case "CLEANUP_ANIMATIONS": {
+      const cleanedTiles = cleanupExpiredAnimations(state.tiles);
+
+      // Only update state if tiles actually changed
+      if (cleanedTiles === state.tiles) {
+        return state;
+      }
+
+      return {
+        ...state,
+        tiles: cleanedTiles,
+      };
     }
 
     case "DEBUG_FILL_ROW": {

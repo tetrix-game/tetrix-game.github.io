@@ -8,22 +8,20 @@ import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
 import { parseTileKey } from '../Tetrix/TetrixReducer';
 
 export default function Grid() {
-  const { tiles, dragState, clearingTiles } = useTetrixStateContext();
+  const { tiles, dragState } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const { gridSize, gridGap } = useGameSizing();
   const { isDebugMode, handleDebugClick } = useDebugGridInteractions();
 
-  // Handle clearing animation completion
+  // Periodically clean up expired animations
   useEffect(() => {
-    if (clearingTiles.length > 0) {
-      const timer = setTimeout(() => {
-        dispatch({ type: 'COMPLETE_TILE_CLEARING' });
-      }, 300); // Match animation duration
+    const intervalId = setInterval(() => {
+      dispatch({ type: 'CLEANUP_ANIMATIONS' });
+    }, 1000); // Cleanup every second
 
-      return () => clearTimeout(timer);
-    }
-  }, [clearingTiles.length, dispatch]);
+    return () => clearInterval(intervalId);
+  }, [dispatch]);
 
   // Handle escape key to cancel selection
   useEffect(() => {

@@ -29,6 +29,15 @@ export type Tile = {
 export type TileData = {
   isFilled: boolean;
   color: ColorName;
+  activeAnimations?: TileAnimation[]; // Animations currently running on this tile
+};
+
+// Animation instance running on a tile
+export type TileAnimation = {
+  id: string; // Unique ID for this animation instance
+  type: 'row-cw' | 'column-ccw' | 'column-double';
+  startTime: number; // Performance.now() timestamp when animation should start
+  duration: number; // Animation duration in milliseconds
 };
 
 // Set of tile keys with their data

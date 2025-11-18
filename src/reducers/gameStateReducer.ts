@@ -69,8 +69,7 @@ export const initialGameState = {
   isDoubleTurnModeActive: false,
   unlockedModifiers: new Set<number>(),
   hasLoadedPersistedState: false,
-  clearingTiles: [],
-  clearingRotationDirection: null,
+  clearingAnimations: [],
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -193,21 +192,10 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "START_TILE_CLEARING": {
-      const { tiles, direction } = action.value;
-      return {
-        ...state,
-        clearingTiles: tiles,
-        clearingRotationDirection: direction,
-      };
-    }
-
-    case "COMPLETE_TILE_CLEARING": {
-      return {
-        ...state,
-        clearingTiles: [],
-        clearingRotationDirection: null,
-      };
+    case "CLEANUP_ANIMATIONS": {
+      // Import cleanup function at top of file if needed
+      // For now, this is a placeholder - actual cleanup happens in tiles
+      return state;
     }
 
     default:

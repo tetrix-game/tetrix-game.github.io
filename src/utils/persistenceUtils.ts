@@ -9,6 +9,7 @@ import type {
   ModifiersPersistenceData,
   StatsPersistenceData
 } from './types';
+import { INITIAL_GAME_STATS } from '../types/stats';
 
 const DB_NAME = 'TetrixGameDB';
 const DB_VERSION = 3; // Increment for new stores
@@ -860,6 +861,14 @@ export async function safeBatchSave(
  */
 export async function clearAllSavedData(): Promise<void> {
   try {
+    // Load existing stats first so we can preserve all-time/best game records
+    let existingStats: StatsPersistenceData | null = null;
+    try {
+      existingStats = await loadStats();
+    } catch (e) {
+      console.warn('Failed to load stats during clear:', e);
+    }
+
     const db = await initializeDatabase();
 
     return new Promise((resolve, reject) => {
@@ -885,7 +894,19 @@ export async function clearAllSavedData(): Promise<void> {
       tilesStore.delete('current');
       shapesStore.delete('current');
       modifiersStore.delete('current');
-      statsStore.delete('current');
+      
+      // Handle stats: preserve allTime/highScore, reset current
+      if (existingStats) {
+        const resetStats: StatsPersistenceData = {
+          ...existingStats,
+          current: JSON.parse(JSON.stringify(INITIAL_GAME_STATS)),
+          lastUpdated: Date.now()
+        };
+        statsStore.put(resetStats, 'current');
+        console.log('Game stats reset (history preserved)');
+      } else {
+        statsStore.delete('current');
+      }
 
       transaction.oncomplete = () => {
         console.log('Game data cleared successfully (settings preserved)');

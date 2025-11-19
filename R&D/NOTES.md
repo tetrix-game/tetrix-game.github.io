@@ -7,8 +7,7 @@
     - Next button progress bar
     - Skip button
     - descriptive alt text for the gif images
-- QR code in the menu overlay.
-- Accessibility for all butotns
+- Accessibility for all buttons
 - Invalid placement sound
 - Valid placement sound
 - Sounds and Music sliders

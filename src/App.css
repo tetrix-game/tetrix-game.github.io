@@ -10,16 +10,26 @@
     --z-background: 0;
     --z-board: 10;
     --z-block: 20;
-    --z-ui: 100;        /* Header, standard buttons */
-    --z-floating: 200;  /* Floating controls like music, crash button */
-    --z-drag: 500;      /* Dragging elements */
-    --z-overlay: 1000;  /* Game Over, Map */
-    --z-modal: 2000;    /* Modifiers, Stats */
-    --z-particles: 3000; /* Gem shower */
-    --z-tutorial: 4000; /* Tutorial overlay */
-    --z-toast: 5000;    /* Toasts/Notifications */
-    --z-debug: 9000;    /* Debug tools */
-    --z-critical: 10000; /* Error boundaries */
+    --z-ui: 100;
+    /* Header, standard buttons */
+    --z-floating: 200;
+    /* Floating controls like music, crash button */
+    --z-drag: 500;
+    /* Dragging elements */
+    --z-overlay: 1000;
+    /* Game Over, Map */
+    --z-modal: 2000;
+    /* Modifiers, Stats */
+    --z-particles: 3000;
+    /* Gem shower */
+    --z-tutorial: 4000;
+    /* Tutorial overlay */
+    --z-toast: 5000;
+    /* Toasts/Notifications */
+    --z-debug: 9000;
+    /* Debug tools */
+    --z-critical: 10000;
+    /* Error boundaries */
 }
 
 .App {

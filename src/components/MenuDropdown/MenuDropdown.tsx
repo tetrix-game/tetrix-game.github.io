@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { QRCodeSVG } from 'qrcode.react';
 import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
@@ -237,6 +238,11 @@ const MenuDropdown: React.FC = () => {
                 </div>
               </div>
             )}
+
+            <div className="menu-qr-code">
+              <p className="qr-label">Share this game</p>
+              <QRCodeSVG value="https://tetrix-game.github.io" size={128} />
+            </div>
           </div>
         </div>,
         document.body

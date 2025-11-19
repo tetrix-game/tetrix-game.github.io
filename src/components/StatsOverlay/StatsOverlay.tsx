@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { StatCategory } from '../../types/stats';
 import { ColorName } from '../../types/core';
 import './StatsOverlay.css';
@@ -79,10 +78,16 @@ const CATEGORY_LABELS: Record<StatCategory, string> = {
   quadrupleRowByQuadrupleColumn: "4R x 4C"
 };
 
-const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange', 'cyan', 'magenta'];
+const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
 
 const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
-  const { stats } = useTetrixStateContext();
+  const { stats, gameState } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
+
+  const handleNewGame = () => {
+    dispatch({ type: 'RESET_GAME' });
+    onClose();
+  };
 
   const renderStatRow = (category: StatCategory) => {
     const allTime = stats.allTime[category];
@@ -161,6 +166,14 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
             );
           })}
         </div>
+
+        {gameState === 'gameover' && (
+          <div className="stats-footer">
+            <button className="new-game-button" onClick={handleNewGame}>
+              New Game
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

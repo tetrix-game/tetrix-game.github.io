@@ -6,10 +6,9 @@ import StatsOverlay from '../StatsOverlay/StatsOverlay';
 import './ScoreDisplay.css';
 
 const ScoreDisplay: React.FC = () => {
-  const { score } = useTetrixStateContext();
+  const { score, gameState, isStatsOpen } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
-  const [showStats, setShowStats] = useState(false);
 
   // Update gem icon position whenever it changes
   useEffect(() => {
@@ -36,9 +35,22 @@ const ScoreDisplay: React.FC = () => {
     }
   }, [dispatch]);
 
+  const handleOpenStats = () => {
+    dispatch({ type: 'OPEN_STATS' });
+  };
+
+  const handleCloseStats = () => {
+    dispatch({ type: 'CLOSE_STATS' });
+  };
+
   return (
     <>
-      <div className="score-display" onClick={() => setShowStats(true)} style={{ cursor: 'pointer' }} title="Click to view stats">
+      <div 
+        className={`score-display ${gameState === 'gameover' ? 'score-display-pulsing' : ''}`} 
+        onClick={handleOpenStats} 
+        style={{ cursor: 'pointer' }} 
+        title="Click to view stats"
+      >
         <div ref={gemIconRef}>
           <BlueGemIcon />
         </div>
@@ -46,7 +58,7 @@ const ScoreDisplay: React.FC = () => {
           {formatScore(score)}
         </span>
       </div>
-      {showStats && <StatsOverlay onClose={() => setShowStats(false)} />}
+      {isStatsOpen && <StatsOverlay onClose={handleCloseStats} />}
     </>
   );
 };

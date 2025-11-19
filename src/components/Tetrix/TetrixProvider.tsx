@@ -1,10 +1,11 @@
-import { useReducer, useEffect } from "react";
+import { useReducer, useEffect, useState } from "react";
 import { initialState, tetrixReducer } from "./TetrixReducer";
 import { TetrixStateContext, TetrixDispatchContext } from "./TetrixContext";
 import { loadCompleteGameState, loadModifiers, loadStats } from "../../utils/persistenceUtils";
 
 export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Load saved game state on startup
   useEffect(() => {
@@ -48,11 +49,17 @@ export default function TetrixProvider({ children }: { readonly children: React.
         }
       } catch (error) {
         console.error('Failed to load saved game state:', error);
+      } finally {
+        setIsInitialized(true);
       }
     };
 
     loadSavedData();
   }, []);
+
+  if (!isInitialized) {
+    return null; // Or a loading spinner if desired
+  }
 
   return (
     <TetrixStateContext.Provider value={state}>

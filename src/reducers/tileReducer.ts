@@ -11,6 +11,7 @@ import { safeBatchSave } from '../utils/persistenceUtils';
 import { playSound } from '../components/SoundEffectsContext';
 import { generateClearingAnimations, cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
 import { updateStats } from '../utils/statsUtils';
+import { checkGameOver } from '../utils/gameOverUtils';
 
 // Helper function to create a tile key from location
 export function makeTileKey(row: number, column: number): string {
@@ -140,8 +141,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         newAnimationStates.push('none'); // New shape appears normally
       }
 
+      // Check for game over
+      // We check if ANY of the shapes (including the new one) can be placed
+      // We pass the finalTiles which includes the newly placed shape
+      const isGameOver = checkGameOver(finalTiles, updatedNextShapes);
+
       const newState = {
         ...state,
+        gameState: isGameOver ? 'gameover' : state.gameState,
         tiles: finalTiles,
         score: newScore,
         totalLinesCleared: newTotalLinesCleared,

@@ -74,6 +74,7 @@ export const initialGameState = {
   hasLoadedPersistedState: false,
   clearingAnimations: [],
   stats: INITIAL_STATS_PERSISTENCE,
+  isStatsOpen: false,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -210,6 +211,22 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         unlockedModifiers: state.unlockedModifiers,
         // Preserve map unlock status
         isMapUnlocked: state.isMapUnlocked,
+        // Ensure stats are closed on reset
+        isStatsOpen: false,
+      };
+    }
+
+    case "OPEN_STATS": {
+      return {
+        ...state,
+        isStatsOpen: true,
+      };
+    }
+
+    case "CLOSE_STATS": {
+      return {
+        ...state,
+        isStatsOpen: false,
       };
     }
 
@@ -221,7 +238,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "DEBUG_INCREMENT_STATS": {
       let newStats = JSON.parse(JSON.stringify(state.stats));
-      const colors: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange', 'cyan', 'magenta'];
+      const colors: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
 
       // Simulate every scenario for every color
       colors.forEach(color => {

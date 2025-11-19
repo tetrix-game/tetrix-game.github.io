@@ -10,7 +10,7 @@ import type { GamePersistenceData } from './persistence';
 import type { StatsPersistenceData } from './stats';
 
 // Game state types - simplified for level-based play
-export type GameState = 'playing' | 'map';
+export type GameState = 'playing' | 'map' | 'gameover';
 
 // Reducer types
 export type TetrixReducerState = {
@@ -59,6 +59,9 @@ export type TetrixReducerState = {
   // Initialization tracking
   hasLoadedPersistedState: boolean; // Whether we've loaded persisted data (prevents gem shower on load)
   // Tile clearing animation - no longer needed in state, animations live in tiles
+  
+  // UI State
+  isStatsOpen: boolean; // Whether the stats overlay is currently open
 };
 
 type SelectShapeAction = {
@@ -268,6 +271,14 @@ type CleanupAnimationsAction = {
   type: 'CLEANUP_ANIMATIONS';
 };
 
+type OpenStatsAction = {
+  type: 'OPEN_STATS';
+};
+
+type CloseStatsAction = {
+  type: 'CLOSE_STATS';
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -312,6 +323,8 @@ export type TetrixAction =
   | DebugClearAllAction
   | DebugReplaceFirstShapeAction
   | DebugIncrementStatsAction
-  | CleanupAnimationsAction;
+  | CleanupAnimationsAction
+  | OpenStatsAction
+  | CloseStatsAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

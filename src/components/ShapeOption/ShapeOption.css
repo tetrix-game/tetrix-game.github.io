@@ -9,6 +9,11 @@
   transform-origin: center;
   overflow: hidden;
   pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-content: center;
 }
 
 /* Apply centering offset to the grid contents */
@@ -24,4 +29,11 @@
   border-radius: 3px;
   position: relative;
   opacity: 1;
+}
+
+/* Scale BlockVisual borders and radius to fit the smaller cells in ShapeOption */
+.shape-cell .block-visual {
+  border-width: calc(var(--shape-cell-size) / 2) !important;
+  border-radius: calc(var(--shape-cell-size) * 0.15);
+  box-shadow: inset 0 0 calc(var(--shape-cell-size) * 0.4) rgba(0, 0, 0, 0.3);
 }

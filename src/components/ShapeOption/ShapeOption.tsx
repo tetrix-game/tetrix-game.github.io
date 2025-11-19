@@ -20,7 +20,8 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
     isDoubleTurnModeActive,
     removingShapeIndex,
     shapeRemovalAnimationState,
-    shapeOptionBounds
+    shapeOptionBounds,
+    score
   } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
@@ -29,9 +30,12 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
   const boundsAreNull = shapeOptionBounds[shapeIndex] === null || shapeOptionBounds[shapeIndex] === undefined;
 
   // ShapeOption has 4x4 grid with 1px gaps (3 gaps total)
+  // Add padding to prevent clipping of shape edges/borders
+  const containerPadding = 4;
   const cellGap = 1;
   const cellGapSpace = cellGap * 3;
-  const shapeOptionCellSize = (shapeOptionFullSize - cellGapSpace) / 4;
+  const availableSize = shapeOptionFullSize - (containerPadding * 2);
+  const shapeOptionCellSize = (availableSize - cellGapSpace) / 4;
 
   // Calculate centering offset for shapes with odd dimensions
   const shapeBounds = useMemo(() => getShapeBounds(shape), [shape]);
@@ -96,34 +100,68 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
 
     // Handle turning mode - rotate shape instead of dragging
     if (isTurningModeActive) {
-      const clockwise = turningDirection === 'cw';
+      if (score >= 2) {
+        // Deduct cost
+        dispatch({
+          type: 'ADD_SCORE',
+          value: {
+            scoreData: {
+              rowsCleared: 0,
+              columnsCleared: 0,
+              pointsEarned: -2
+            }
+          }
+        });
 
-      dispatch({
-        type: 'ROTATE_SHAPE',
-        value: { shapeIndex, clockwise }
-      });
+        const clockwise = turningDirection === 'cw';
 
-      // Deactivate turning mode after rotation
-      dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
+        dispatch({
+          type: 'ROTATE_SHAPE',
+          value: { shapeIndex, clockwise }
+        });
+
+        // Deactivate turning mode after rotation
+        dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
+      } else {
+        // Not enough score - deactivate mode
+        dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
+      }
 
       return;
     }
 
     // Handle double turn mode - rotate shape 180 degrees (2 rotations)
     if (isDoubleTurnModeActive) {
-      // Perform two clockwise rotations for 180-degree turn
-      dispatch({
-        type: 'ROTATE_SHAPE',
-        value: { shapeIndex, clockwise: true }
-      });
+      if (score >= 3) {
+        // Deduct cost
+        dispatch({
+          type: 'ADD_SCORE',
+          value: {
+            scoreData: {
+              rowsCleared: 0,
+              columnsCleared: 0,
+              pointsEarned: -3
+            }
+          }
+        });
 
-      dispatch({
-        type: 'ROTATE_SHAPE',
-        value: { shapeIndex, clockwise: true }
-      });
+        // Perform two clockwise rotations for 180-degree turn
+        dispatch({
+          type: 'ROTATE_SHAPE',
+          value: { shapeIndex, clockwise: true }
+        });
 
-      // Deactivate double turn mode after rotation
-      dispatch({ type: 'DEACTIVATE_DOUBLE_TURN_MODE' });
+        dispatch({
+          type: 'ROTATE_SHAPE',
+          value: { shapeIndex, clockwise: true }
+        });
+
+        // Deactivate double turn mode after rotation
+        dispatch({ type: 'DEACTIVATE_DOUBLE_TURN_MODE' });
+      } else {
+        // Not enough score - deactivate mode
+        dispatch({ type: 'DEACTIVATE_DOUBLE_TURN_MODE' });
+      }
 
       return;
     }
@@ -139,7 +177,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
       type: 'SELECT_SHAPE',
       value: { shapeIndex }
     });
-  }, [dispatch, shapeIndex, dragState.selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval]);
+  }, [dispatch, shapeIndex, dragState.selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval, score]);
 
   const isSelected = dragState.selectedShapeIndex === shapeIndex;
 

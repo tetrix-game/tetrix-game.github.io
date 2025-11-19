@@ -152,6 +152,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         ...state,
         isTurningModeActive: true,
         turningDirection: direction,
+        isDoubleTurnModeActive: false,
       };
     }
 
@@ -167,6 +168,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         isDoubleTurnModeActive: true,
+        isTurningModeActive: false,
+        turningDirection: null,
       };
     }
 
@@ -291,8 +294,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }, { index: 2, color }]);
 
         // 17. 4x4 Legendary
-        newStats = updateStats(newStats, 
-          [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }], 
+        newStats = updateStats(newStats,
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }],
           [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }]
         );
       });

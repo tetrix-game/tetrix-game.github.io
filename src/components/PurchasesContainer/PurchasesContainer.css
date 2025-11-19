@@ -40,13 +40,21 @@
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.purchases-container-button:hover:not(:disabled) {
-  background: rgba(74, 144, 226, 0.2);
-  border-color: #5ba3f5;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+.purchases-container-button:focus {
+  outline: none;
+}
+
+@media (hover: hover) {
+  .purchases-container-button:hover:not(:disabled) {
+    background: rgba(74, 144, 226, 0.2);
+    border-color: #5ba3f5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .purchases-container-button:active:not(:disabled) {

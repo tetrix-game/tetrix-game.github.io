@@ -86,17 +86,17 @@
 
 /* Row quad clearing animation - beating heart effect (4+ rows) */
 .tile-visual-clearing.row-quad {
-  animation: tile-clear-row-quad-beat var(--animation-duration, 1200ms) ease-in-out forwards;
-  animation-delay: var(--animation-delay, 0ms);
-  animation-iteration-count: var(--beat-count, 3);
+  animation:
+    tile-clear-row-quad-beat var(--animation-duration, 400ms) ease-in-out var(--animation-delay, 0ms) var(--beat-count, 3) forwards,
+    tile-clear-quad-finish var(--finish-duration, 400ms) ease-in-out calc(var(--animation-delay, 0ms) + (var(--animation-duration, 400ms) * var(--beat-count, 3))) 1 forwards;
   z-index: 13;
 }
 
 /* Column quad clearing animation - beating heart effect (4+ columns) */
 .tile-visual-clearing.column-quad {
-  animation: tile-clear-column-quad-beat var(--animation-duration, 1200ms) ease-in-out forwards;
-  animation-delay: var(--animation-delay, 0ms);
-  animation-iteration-count: var(--beat-count, 3);
+  animation:
+    tile-clear-column-quad-beat var(--animation-duration, 400ms) ease-in-out var(--animation-delay, 0ms) var(--beat-count, 3) forwards,
+    tile-clear-quad-finish var(--finish-duration, 400ms) ease-in-out calc(var(--animation-delay, 0ms) + (var(--animation-duration, 400ms) * var(--beat-count, 3))) 1 forwards;
   z-index: 13;
 }
 
@@ -453,5 +453,30 @@
     left: 37.5%;
     right: 37.5%;
     bottom: 37.5%;
+  }
+}
+
+/* Quad finish animation: shrinks to a point and fades out */
+@keyframes tile-clear-quad-finish {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    border-radius: 50%;
+    border-width: 3px;
+    top: 37.5%;
+    left: 37.5%;
+    right: 37.5%;
+    bottom: 37.5%;
+  }
+
+  100% {
+    transform: scale(0);
+    opacity: 0;
+    border-radius: 50%;
+    border-width: 0px;
+    top: 50%;
+    left: 50%;
+    right: 50%;
+    bottom: 50%;
   }
 }

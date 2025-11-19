@@ -8,7 +8,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Above grid and shapes */
+  z-index: 1000;
+  /* Above grid and shapes */
   backdrop-filter: blur(4px);
   animation: fadeIn 0.5s ease-out;
 }
@@ -71,6 +72,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

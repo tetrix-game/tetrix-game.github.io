@@ -23,6 +23,7 @@ export type AnimationTierConfig = {
   waveDelay: number;   // Delay between each tile in ms
   startDelay: number;  // Delay before the first animation starts in ms
   beatCount?: number;  // Number of heartbeats (for quad animations)
+  finishDuration?: number; // Duration of the shrink/fade out phase
 };
 
 export type AnimationConfig = {
@@ -46,13 +47,13 @@ const DEFAULT_CONFIG: AnimationConfig = {
     single: { duration: 500, waveDelay: 30, startDelay: 0 },
     double: { duration: 500, waveDelay: 30, startDelay: 0 },
     triple: { duration: 600, waveDelay: 40, startDelay: 0 },
-    quad: { duration: 1200, waveDelay: 20, startDelay: 0, beatCount: 3 },
+    quad: { duration: 1600, waveDelay: 20, startDelay: 0, beatCount: 3, finishDuration: 400 },
   },
   columns: {
     single: { duration: 500, waveDelay: 30, startDelay: 0 },
     double: { duration: 500, waveDelay: 30, startDelay: 0 },
     triple: { duration: 600, waveDelay: 40, startDelay: 0 },
-    quad: { duration: 1200, waveDelay: 20, startDelay: 0, beatCount: 3 },
+    quad: { duration: 1600, waveDelay: 20, startDelay: 0, beatCount: 3, finishDuration: 400 },
   },
 };
 
@@ -167,6 +168,7 @@ export function generateClearingAnimations(
           startTime: baseStartTime + finalConfig.rows.quad.startDelay + quadWaveOffset,
           duration: finalConfig.rows.quad.duration,
           beatCount: finalConfig.rows.quad.beatCount,
+          finishDuration: finalConfig.rows.quad.finishDuration,
           color,
         });
       }
@@ -230,6 +232,7 @@ export function generateClearingAnimations(
           startTime: baseStartTime + finalConfig.columns.quad.startDelay + quadWaveOffset,
           duration: finalConfig.columns.quad.duration,
           beatCount: finalConfig.columns.quad.beatCount,
+          finishDuration: finalConfig.columns.quad.finishDuration,
           color,
         });
       }

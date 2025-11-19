@@ -101,8 +101,12 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
 
         if (anim.type === 'row-quad' || anim.type === 'column-quad') {
           const beatCount = anim.beatCount ?? 3;
+          const finishDuration = anim.finishDuration ?? 0;
+          const beatDuration = (anim.duration - finishDuration) / beatCount;
+          
           style['--beat-count'] = beatCount;
-          style['--animation-duration'] = `${anim.duration / beatCount}ms`;
+          style['--animation-duration'] = `${beatDuration}ms`;
+          style['--finish-duration'] = `${finishDuration}ms`;
         }
 
         return (

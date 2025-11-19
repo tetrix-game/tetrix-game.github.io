@@ -184,14 +184,22 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       const { gameData } = action.value;
       // Convert tiles from persistence format to Map
       const tilesMap = new Map<string, TileData>();
+      let hasFilledTiles = false;
       if (Array.isArray(gameData.tiles)) {
         gameData.tiles.forEach((tile) => {
+          if (tile.block.isFilled) {
+            hasFilledTiles = true;
+          }
           tilesMap.set(
             makeTileKey(tile.location.row, tile.location.column),
             { isFilled: tile.block.isFilled, color: tile.block.color }
           );
         });
       }
+
+      // If we're loading a game with score or filled tiles, music should be playing
+      const shouldPlayMusic = gameData.score > 0 || hasFilledTiles;
+
       return {
         ...state,
         score: gameData.score,
@@ -199,6 +207,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         nextShapes: gameData.nextShapes || state.nextShapes,
         savedShape: gameData.savedShape || state.savedShape,
         hasLoadedPersistedState: true,
+        hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
       };
     }
 
@@ -230,6 +239,13 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         isStatsOpen: false,
+      };
+    }
+
+    case "INITIALIZATION_COMPLETE": {
+      return {
+        ...state,
+        hasLoadedPersistedState: true,
       };
     }
 

@@ -218,17 +218,6 @@ const MenuDropdown: React.FC = () => {
                 </div>
                 <div className="menu-item submenu-item">
                   <button
-                    className="debug-action-button"
-                    onClick={() => {
-                      dispatch({ type: 'DEBUG_INCREMENT_STATS' });
-                    }}
-                    title="Add 1 to all stats to test the overlay"
-                  >
-                    Increment Stats
-                  </button>
-                </div>
-                <div className="menu-item submenu-item">
-                  <button
                     className="debug-action-button danger"
                     onClick={handleClearAllData}
                     title="⚠️ Nuclear option: Clear ALL data including settings and reload fresh from server"

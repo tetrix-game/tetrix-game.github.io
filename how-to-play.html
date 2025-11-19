@@ -90,20 +90,21 @@
         font-weight: 600;
       }
       
-      .gif-placeholder {
+      .tutorial-media {
         width: 100%;
-        height: 350px;
-        background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-        border-radius: 12px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        font-size: 48px;
-        font-weight: 700;
-        color: #999;
-        letter-spacing: 4px;
-        border: 2px dashed #ccc;
         margin-bottom: 1.5rem;
+      }
+      
+      .tutorial-media img {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 2px solid #eee;
       }
       
       p {
@@ -160,11 +161,6 @@
           font-size: 0.95rem;
         }
         
-        .gif-placeholder {
-          height: 250px;
-          font-size: 36px;
-        }
-        
         .back-link {
           top: 1rem;
           left: 1rem;
@@ -186,39 +182,26 @@
         There's no time limit—take your time, think strategically, and enjoy the satisfying gameplay!
       </p>
       
-      <h2>Drag shapes from the Shape Queue</h2>
-      <div class="gif-placeholder">GIF</div>
+      <h2>Drag & Drop</h2>
+      <div class="tutorial-media">
+        <img src="/assets/DragAndDrop.gif" alt="Drag and drop demonstration">
+      </div>
       <div class="section-description">
         <p>At the bottom of the screen, you'll see your <strong>Shape Queue</strong> with three colorful shapes ready to use. 
-        To play, simply click and hold any shape to pick it up and start dragging. The shapes come in various Tetris-like configurations—
-        some are straight lines, L-shapes, squares, T-shapes, and more.</p>
+        To play, simply click and hold any shape to pick it up and start dragging. The shapes come in various Tetris-like configurations.</p>
         <p><strong>Key controls:</strong></p>
         <ul>
           <li><strong>Click and hold</strong> on any shape to grab it</li>
-          <li><strong>Drag</strong> the shape around with your mouse or finger</li>
-          <li>The shape will follow your cursor as you move it over the grid</li>
-          <li>Each shape has a unique color and pattern of blocks</li>
+          <li><strong>Drag</strong> the shape onto the 10x10 grid</li>
+          <li><strong>Release</strong> to place the shape permanently</li>
+          <li>Valid placements appear bright; invalid ones appear faded</li>
         </ul>
       </div>
       
-      <h2>Place them on the Grid</h2>
-      <div class="gif-placeholder">GIF</div>
-      <div class="section-description">
-        <p>The game board is a <strong>10×10 grid</strong> where you'll place your shapes. As you drag a shape over the grid, 
-        the game shows you exactly where it will land. Valid placements appear bright and colorful, while invalid spots 
-        (overlapping existing blocks or going off the grid) appear faded and semi-transparent.</p>
-        <p><strong>Placement rules:</strong></p>
-        <ul>
-          <li><strong>Valid placement:</strong> The shape appears bright when it can be placed</li>
-          <li><strong>Invalid placement:</strong> The shape appears faded when it overlaps or goes out of bounds</li>
-          <li><strong>Release to place:</strong> Let go of the mouse or lift your finger to drop the shape</li>
-          <li><strong>Undo drag:</strong> Drag the shape back to the queue area to cancel placement</li>
-        </ul>
-        <p>Once placed, shapes become permanent blocks on the grid. Plan ahead to maximize your line clearing opportunities!</p>
+      <h2>Clear Lines</h2>
+      <div class="tutorial-media">
+        <img src="/assets/Get10InARow.gif" alt="Clear lines demonstration">
       </div>
-      
-      <h2>Fill in Rows and Columns to clear lines</h2>
-      <div class="gif-placeholder">GIF</div>
       <div class="section-description">
         <p>The core mechanic of Tetrix is <strong>line clearing</strong>. When you completely fill any row (horizontal) or 
         column (vertical) with blocks, that entire line disappears! This is how you prevent the grid from filling up and 
@@ -227,15 +210,14 @@
         <ul>
           <li><strong>Complete rows:</strong> Fill all 10 blocks horizontally across any row to clear it</li>
           <li><strong>Complete columns:</strong> Fill all 10 blocks vertically down any column to clear it</li>
-          <li><strong>Multiple clears:</strong> Clear multiple rows and columns with a single shape placement</li>
-          <li><strong>Strategic combos:</strong> The more lines you clear at once, the more points you earn</li>
           <li><strong>Visual feedback:</strong> Watch lines highlight and disappear with satisfying animations</li>
         </ul>
-        <p>Think ahead and try to set up positions where one shape placement can clear multiple lines at once!</p>
       </div>
       
-      <h2>Clear lines to get points</h2>
-      <div class="gif-placeholder">GIF</div>
+      <h2>Combo Bonuses</h2>
+      <div class="tutorial-media">
+        <img src="/assets/ClearUpTo4LinesInARow.gif" alt="Combo bonus demonstration">
+      </div>
       <div class="section-description">
         <p>Every time you clear lines, you earn <strong>points</strong> shown as animated blue gems. 
         The more lines you clear simultaneously, the exponentially higher your score! Watch as an animated "gem shower" 
@@ -243,15 +225,15 @@
         <p><strong>Scoring system:</strong></p>
         <ul>
           <li><strong>Score formula:</strong> Points = (rows)² + (columns)² + (rows × columns × 2)</li>
-          <li><strong>Visual rewards:</strong> Animated blue gem particles show your score</li>
           <li><strong>Combo multipliers:</strong> Clearing 2+ lines at once gives exponentially more points</li>
           <li><strong>Score display:</strong> Your score and gem count appear in the header</li>
         </ul>
-        <p>Your score is automatically saved, so you can come back anytime and continue building your high score!</p>
       </div>
       
-      <h2>Use points to turn shapes</h2>
-      <div class="gif-placeholder">GIF</div>
+      <h2>Rotate Shapes</h2>
+      <div class="tutorial-media">
+        <img src="/assets/TurnShapes.gif" alt="Rotate shapes demonstration">
+      </div>
       <div class="section-description">
         <p>Sometimes a shape doesn't quite fit the way you want it. That's where <strong>shape rotation</strong> comes in! 
         You can spend gems to unlock the ability to rotate shapes, giving you more strategic options for fitting pieces 
@@ -259,34 +241,22 @@
         <p><strong>Rotation system:</strong></p>
         <ul>
           <li><strong>Unlock rotation:</strong> Click the 🔄 button on any shape to spend 1 gem and unlock rotation</li>
-          <li><strong>Rotate clockwise:</strong> After unlocking, click ↻ to rotate 90° clockwise</li>
-          <li><strong>Rotate counterclockwise:</strong> After unlocking, click ↺ to rotate 90° counterclockwise</li>
+          <li><strong>Rotate:</strong> After unlocking, click ↻ or ↺ to rotate 90°</li>
           <li><strong>One-time cost:</strong> Pay once per shape, then rotate it as many times as you want</li>
-          <li><strong>Strategic spending:</strong> Save your gems for shapes that really need rotation</li>
         </ul>
-        <p>Rotation is a powerful tool that can help you clear lines more efficiently and avoid getting stuck!</p>
       </div>
       
-      <h2>Get stuck? Start a new game from the menu</h2>
-      <div class="gif-placeholder">GIF</div>
+      <h2>Game Over & New Game</h2>
       <div class="section-description">
         <p>If the grid fills up and none of your shapes can fit anywhere, it's <strong>game over</strong>—but don't worry! 
         You can always start fresh. The hamburger menu in the top-right corner gives you access to game controls and settings.</p>
-        <p><strong>Menu options:</strong></p>
-        <ul>
-          <li><strong>New Game:</strong> Clear the board and start over with a fresh grid and new shapes</li>
-          <li><strong>Music controls:</strong> Toggle background music on/off</li>
-          <li><strong>Game settings:</strong> Customize your gameplay experience</li>
-        </ul>
         <p><strong>Tips for success:</strong></p>
         <ul>
           <li>Plan ahead and try to keep the grid balanced</li>
           <li>Don't focus too much on one area—spread shapes across the grid</li>
           <li>Save rotation gems for critical moments</li>
           <li>Try to set up multi-line clears for maximum points</li>
-          <li>Take your time—there's no rush in Tetrix!</li>
         </ul>
-        <p>Remember, Tetrix is about relaxation and puzzle-solving. Enjoy the journey, learn from each game, and watch your skills improve over time!</p>
       </div>
     </div>
   </body>

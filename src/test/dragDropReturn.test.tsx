@@ -8,13 +8,13 @@ describe('Drag and Drop Return to Selector', () => {
     // Setup: Create state with a selected shape in dragging phase
     const shape = generateRandomShape();
     const initialState = {
-      selectedShape: shape,
-      selectedShapeIndex: 0,
       shapeOptionBounds: [
         { top: 50, left: 50, width: 100, height: 100 }
       ],
       dragState: {
         phase: 'dragging',
+        selectedShape: shape,
+        selectedShapeIndex: 0,
         sourcePosition: { x: 50, y: 50, width: 100, height: 100 },
         targetPosition: null,
         placementLocation: null,
@@ -34,20 +34,20 @@ describe('Drag and Drop Return to Selector', () => {
       width: 100,
       height: 100,
     });
-    expect(result.selectedShape).toBe(shape); // Shape should still be selected during animation
+    expect(result.dragState.selectedShape).toBe(shape); // Shape should still be selected during animation
   });
 
   it('should trigger return animation when RETURN_SHAPE_TO_SELECTOR is dispatched during picking-up phase', () => {
     // Setup: Create state with a selected shape in picking-up phase
     const shape = generateRandomShape();
     const initialState = {
-      selectedShape: shape,
-      selectedShapeIndex: 0,
       shapeOptionBounds: [
         { top: 50, left: 50, width: 100, height: 100 }
       ],
       dragState: {
         phase: 'picking-up',
+        selectedShape: shape,
+        selectedShapeIndex: 0,
         sourcePosition: { x: 50, y: 50, width: 100, height: 100 },
         targetPosition: null,
         placementLocation: null,
@@ -67,19 +67,19 @@ describe('Drag and Drop Return to Selector', () => {
       width: 100,
       height: 100,
     });
-    expect(result.selectedShape).toBe(shape); // Shape should still be selected during animation
+    expect(result.dragState.selectedShape).toBe(shape); // Shape should still be selected during animation
   });
 
   it('should clear shape immediately when no bounds available', () => {
     // Setup: Create state with a selected shape but no bounds
     const shape = generateRandomShape();
     const initialState = {
-      selectedShape: shape,
-      selectedShapeIndex: 0,
       shapeOptionBounds: [null], // No bounds available
       mousePosition: { x: 100, y: 100 },
       dragState: {
         phase: 'dragging',
+        selectedShape: shape,
+        selectedShapeIndex: 0,
         sourcePosition: null,
         targetPosition: null,
         placementLocation: null,
@@ -92,9 +92,8 @@ describe('Drag and Drop Return to Selector', () => {
     const result = tetrixReducer(initialState, { type: 'RETURN_SHAPE_TO_SELECTOR' });
 
     // Assert: Shape should be cleared immediately
-    expect(result.selectedShape).toBeNull();
-    expect(result.selectedShapeIndex).toBeNull();
+    expect(result.dragState.selectedShape).toBeNull();
+    expect(result.dragState.selectedShapeIndex).toBeNull();
     expect(result.dragState.phase).toBe('none');
-    expect(result.isShapeDragging).toBe(false);
   });
 });

@@ -11,50 +11,38 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => {
 
   const slides = [
     {
-      title: "Drag shapes from the Shape Queue",
+      title: "Drag & Drop",
       content: (
-        <div className="gif-placeholder">
-          GIF
+        <div className="tutorial-media">
+          <img src="/assets/DragAndDrop.gif" alt="Drag and drop demonstration" />
+          <p className="tutorial-description">Drag shapes from the queue and place them on the 10x10 grid.</p>
         </div>
       )
     },
     {
-      title: "Place them on the Grid",
+      title: "Clear Lines",
       content: (
-        <div className="gif-placeholder">
-          GIF
+        <div className="tutorial-media">
+          <img src="/assets/Get10InARow.gif" alt="Clear lines demonstration" />
+          <p className="tutorial-description">Fill an entire row or column to clear it and earn points.</p>
         </div>
       )
     },
     {
-      title: "Fill in Rows and Columns to clear lines",
+      title: "Combo Bonuses",
       content: (
-        <div className="gif-placeholder">
-          GIF
+        <div className="tutorial-media">
+          <img src="/assets/ClearUpTo4LinesInARow.gif" alt="Combo bonus demonstration" />
+          <p className="tutorial-description">Clear multiple lines at once to earn massive point bonuses!</p>
         </div>
       )
     },
     {
-      title: "Clear lines to get points",
+      title: "Rotate Shapes",
       content: (
-        <div className="gif-placeholder">
-          GIF
-        </div>
-      )
-    },
-    {
-      title: "Use points to turn shapes",
-      content: (
-        <div className="gif-placeholder">
-          GIF
-        </div>
-      )
-    },
-    {
-      title: "Get stuck? Start a new game from the menu",
-      content: (
-        <div className="gif-placeholder">
-          GIF
+        <div className="tutorial-media">
+          <img src="/assets/TurnShapes.gif" alt="Rotate shapes demonstration" />
+          <p className="tutorial-description">Spend your hard-earned points to rotate shapes that don't fit.</p>
         </div>
       )
     }

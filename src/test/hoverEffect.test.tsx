@@ -307,8 +307,10 @@ describe('Shape Hover Effect - Unit Tests', () => {
       );
 
       // Simulate tile data - some filled, some empty
-      const filledTile = { row: 5, column: 5, isFilled: true };
-      const emptyTile = { row: 5, column: 5, isFilled: false };
+      // Note: L-shape at (5,5) has filled blocks at (5,6), (6,6), (7,6), (7,7)
+      // We'll test with (5,6) which is a filled position
+      const filledTile = { row: 5, column: 6, isFilled: true };
+      const emptyTile = { row: 5, column: 6, isFilled: false };
 
       // Test filled tile that's in preview position
       const filledTileKey = `${filledTile.row},${filledTile.column}`;

@@ -32,6 +32,9 @@ for size in "${sizes[@]}"; do
     $CONVERT_CMD public/icon.svg -resize ${size}x${size} public/icons/icon-${size}x${size}.png
 done
 
+echo "Generating social preview image..."
+$CONVERT_CMD public/social-preview.svg public/social-preview.png
+
 echo "Icon generation complete!"
 echo "Generated files:"
 ls -la public/icons/

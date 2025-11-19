@@ -48,9 +48,9 @@ describe('TetrixReducer - Bug Fixes', () => {
 
       const newState = tetrixReducer(stateWithShapes, action);
 
-      expect(newState.selectedShape).toBe(testShape);
-      expect(newState.selectedShapeIndex).toBe(0);
-      expect(newState.isShapeDragging).toBe(true);
+      expect(newState.dragState.selectedShape).toBe(testShape);
+      expect(newState.dragState.selectedShapeIndex).toBe(0);
+      expect(newState.dragState.phase).toBe('picking-up');
       expect(newState.dragState.phase).toBe('picking-up');
     });
 
@@ -72,16 +72,16 @@ describe('TetrixReducer - Bug Fixes', () => {
         value: { shapeIndex: 0 }
       });
 
-      expect(state.selectedShape).toBe(shape1);
-      expect(state.selectedShapeIndex).toBe(0);
+      expect(state.dragState.selectedShape).toBe(shape1);
+      expect(state.dragState.selectedShapeIndex).toBe(0);
 
       state = tetrixReducer(state, {
         type: 'SELECT_SHAPE',
         value: { shapeIndex: 1 }
       });
 
-      expect(state.selectedShape).toBe(shape2);
-      expect(state.selectedShapeIndex).toBe(1);
+      expect(state.dragState.selectedShape).toBe(shape2);
+      expect(state.dragState.selectedShapeIndex).toBe(1);
     });
   });
 
@@ -92,8 +92,12 @@ describe('TetrixReducer - Bug Fixes', () => {
       const shape3 = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: shape1,
-        selectedShapeIndex: 0,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: shape1,
+          selectedShapeIndex: 0,
+          phase: 'dragging' as const
+        },
         mouseGridLocation: { row: 5, column: 5 },
         mousePosition: { x: 100, y: 100 },
         gridTileSize: 20,
@@ -108,11 +112,10 @@ describe('TetrixReducer - Bug Fixes', () => {
 
       // Should start placement animation
       expect(newState.dragState.phase).toBe('placing');
-      expect(newState.isShapeDragging).toBe(false);
       expect(newState.dragState.targetPosition).toBeDefined();
       // Should maintain selected shape during animation
-      expect(newState.selectedShape).toBe(shape1);
-      expect(newState.selectedShapeIndex).toBe(0);
+      expect(newState.dragState.selectedShape).toBe(shape1);
+      expect(newState.dragState.selectedShapeIndex).toBe(0);
     });
 
     it('should not affect shapes during placement animation', () => {
@@ -121,8 +124,12 @@ describe('TetrixReducer - Bug Fixes', () => {
       const shape3 = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: shape2,
-        selectedShapeIndex: 1,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: shape2,
+          selectedShapeIndex: 1,
+          phase: 'dragging' as const
+        },
         mouseGridLocation: { row: 5, column: 5 },
         mousePosition: { x: 100, y: 100 },
         gridTileSize: 20,
@@ -146,8 +153,12 @@ describe('TetrixReducer - Bug Fixes', () => {
       const testShape = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: testShape,
-        selectedShapeIndex: 0,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: testShape,
+          selectedShapeIndex: 0,
+          phase: 'dragging' as const
+        },
         mouseGridLocation: { row: 5, column: 5 },
         mousePosition: { x: 100, y: 100 },
         gridTileSize: 20,
@@ -178,8 +189,12 @@ describe('TetrixReducer - Bug Fixes', () => {
       const testShape = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: testShape,
-        selectedShapeIndex: 0,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: testShape,
+          selectedShapeIndex: 0,
+          phase: 'dragging' as const
+        },
         // Missing mousePosition, gridTileSize, gridBounds
       };
 
@@ -195,8 +210,12 @@ describe('TetrixReducer - Bug Fixes', () => {
       const testShape = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: testShape,
-        selectedShapeIndex: null,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: testShape,
+          selectedShapeIndex: null,
+          phase: 'dragging' as const
+        },
         mouseGridLocation: { row: 5, column: 5 }
       };
 
@@ -216,8 +235,12 @@ describe('TetrixReducer - Bug Fixes', () => {
       const shape3 = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: shape1,
-        selectedShapeIndex: 0,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: shape1,
+          selectedShapeIndex: 0,
+          phase: 'dragging' as const
+        },
         mouseGridLocation: { row: 5, column: 5 },
         nextShapes: [shape1, shape2, shape3]
       };
@@ -225,9 +248,9 @@ describe('TetrixReducer - Bug Fixes', () => {
       const newState = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Should clear selection
-      expect(newState.selectedShape).toBeNull();
-      expect(newState.selectedShapeIndex).toBeNull();
-      expect(newState.isShapeDragging).toBe(false);
+      expect(newState.dragState.selectedShape).toBeNull();
+      expect(newState.dragState.selectedShapeIndex).toBeNull();
+      expect(newState.dragState.phase).toBe('none');
       expect(newState.mouseGridLocation).toBeNull();
 
       // Should start removal animation and add a new shape (4th shape temporarily)
@@ -274,8 +297,12 @@ describe('TetrixReducer - Bug Fixes', () => {
       const testShape = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: testShape,
-        selectedShapeIndex: 0,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: testShape,
+          selectedShapeIndex: 0,
+          phase: 'dragging' as const
+        },
         mouseGridLocation: { row: 5, column: 5 }
       };
 
@@ -299,7 +326,15 @@ describe('TetrixReducer - Bug Fixes', () => {
 
     it('should not place shape if no mouse location is set', () => {
       const testShape = createTestShape();
-      const state = { ...initialState, selectedShape: testShape, selectedShapeIndex: 0 };
+      const state = {
+        ...initialState,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: testShape,
+          selectedShapeIndex: 0,
+          phase: 'dragging' as const
+        }
+      };
 
       const newState = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -338,15 +373,18 @@ describe('TetrixReducer - Bug Fixes', () => {
       const testShape = createTestShape();
       const state = {
         ...initialState,
-        selectedShape: testShape,
-        isShapeDragging: true,
+        dragState: {
+          ...initialState.dragState,
+          selectedShape: testShape,
+          phase: 'dragging' as const
+        },
         mouseGridLocation: { row: 5, column: 5 }
       };
 
       const newState = tetrixReducer(state, { type: 'CLEAR_SELECTION' });
 
-      expect(newState.selectedShape).toBeNull();
-      expect(newState.isShapeDragging).toBe(false);
+      expect(newState.dragState.selectedShape).toBeNull();
+      expect(newState.dragState.phase).toBe('none');
       expect(newState.mouseGridLocation).toBeNull();
     });
   });

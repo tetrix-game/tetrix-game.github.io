@@ -88,8 +88,11 @@ describe('Shape Rotation', () => {
     const state = {
       ...initialState,
       nextShapes: testShapes,
-      selectedShape: testShapes[1],
-      selectedShapeIndex: 1,
+      dragState: {
+        ...initialState.dragState,
+        selectedShape: testShapes[1],
+        selectedShapeIndex: 1,
+      }
     };
 
     const originalShape = cloneShape(testShapes[1]);
@@ -103,7 +106,7 @@ describe('Shape Rotation', () => {
 
     // Both the shape in nextShapes and selectedShape should be updated
     expect(newState.nextShapes[1]).toEqual(expectedRotated);
-    expect(newState.selectedShape).toEqual(expectedRotated);
-    expect(newState.selectedShapeIndex).toBe(1);
+    expect(newState.dragState.selectedShape).toEqual(expectedRotated);
+    expect(newState.dragState.selectedShapeIndex).toBe(1);
   });
 });

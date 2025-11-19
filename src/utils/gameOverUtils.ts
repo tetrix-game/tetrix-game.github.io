@@ -7,20 +7,34 @@ import { rotateShape } from './shapes/shapeTransforms';
  * 
  * @param tiles - The current state of the grid
  * @param shapes - The list of available shapes in the queue
+ * @param score - The current player score (used to determine if rotation is possible)
+ * @param openRotationMenus - The state of rotation menus for each shape
  * @returns true if no shape can be placed anywhere on the grid
  */
-export function checkGameOver(tiles: TilesSet, shapes: Shape[]): boolean {
+export function checkGameOver(
+  tiles: TilesSet,
+  shapes: Shape[],
+  score: number,
+  openRotationMenus: boolean[]
+): boolean {
   // If no shapes left, it's not game over (new ones will spawn)
   if (shapes.length === 0) {
     return false;
   }
 
   // For each available shape
-  for (const shape of shapes) {
-    // Check all 4 rotations
+  for (let i = 0; i < shapes.length; i++) {
+    const shape = shapes[i];
+    const isRotationUnlocked = openRotationMenus[i] || score > 0;
+
+    // Determine how many rotations we can check
+    // If rotation is unlocked (either already open or can afford it), check all 4
+    // Otherwise, only check the current orientation (1 rotation)
+    const rotationsToCheck = isRotationUnlocked ? 4 : 1;
+
     let currentShape = shape;
-    for (let rotation = 0; rotation < 4; rotation++) {
-      
+    for (let rotation = 0; rotation < rotationsToCheck; rotation++) {
+
       // Check all possible grid positions
       // The grid is 10x10. The shape is 4x4.
       // We need to check placement where the top-left of the 4x4 grid
@@ -37,8 +51,10 @@ export function checkGameOver(tiles: TilesSet, shapes: Shape[]): boolean {
         }
       }
 
-      // Rotate for next iteration
-      currentShape = rotateShape(currentShape);
+      // Rotate for next iteration (only if we're going to check it)
+      if (rotation < rotationsToCheck - 1) {
+        currentShape = rotateShape(currentShape);
+      }
     }
   }
 

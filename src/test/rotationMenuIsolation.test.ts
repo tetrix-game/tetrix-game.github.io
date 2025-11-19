@@ -16,8 +16,11 @@ describe('Rotation Menu Isolation', () => {
       ...initialState,
       nextShapes: testShapes,
       openRotationMenus: [false, true, true, false], // Shapes 1 and 2 have menus open
-      selectedShape: testShapes[1], // Select shape at index 1
-      selectedShapeIndex: 1,
+      dragState: {
+        ...initialState.dragState,
+        selectedShape: testShapes[1], // Select shape at index 1
+        selectedShapeIndex: 1,
+      },
       mouseGridLocation: { row: 5, column: 5 }, // Valid placement location
     };
 
@@ -39,8 +42,8 @@ describe('Rotation Menu Isolation', () => {
     expect(newState.openRotationMenus).toEqual([false, true, true, false, false]); // New shape starts with menu closed
 
     // Selection should be cleared
-    expect(newState.selectedShape).toBe(null);
-    expect(newState.selectedShapeIndex).toBe(null);
+    expect(newState.dragState.selectedShape).toBe(null);
+    expect(newState.dragState.selectedShapeIndex).toBe(null);
   });
 
   test('COMPLETE_SHAPE_REMOVAL preserves rotation menu states for remaining shapes', () => {
@@ -94,8 +97,11 @@ describe('Rotation Menu Isolation', () => {
       ...initialState,
       nextShapes: testShapes,
       openRotationMenus: [false, true, true], // Last two shapes have menus open
-      selectedShape: testShapes[2], // Select the last shape
-      selectedShapeIndex: 2,
+      dragState: {
+        ...initialState.dragState,
+        selectedShape: testShapes[2], // Select the last shape
+        selectedShapeIndex: 2,
+      },
       mouseGridLocation: { row: 5, column: 5 },
     };
 

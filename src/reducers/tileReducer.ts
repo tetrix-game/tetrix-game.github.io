@@ -144,7 +144,8 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Check for game over
       // We check if ANY of the shapes (including the new one) can be placed
       // We pass the finalTiles which includes the newly placed shape
-      const isGameOver = checkGameOver(finalTiles, updatedNextShapes);
+      // We also pass the score and rotation menu state to determine if rotations are possible
+      const isGameOver = checkGameOver(finalTiles, updatedNextShapes, newScore, newOpenRotationMenus);
 
       const newState = {
         ...state,

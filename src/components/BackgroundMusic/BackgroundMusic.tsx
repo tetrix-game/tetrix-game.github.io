@@ -28,6 +28,10 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
       }, 1000); // 1 second delay
 
       return () => clearTimeout(timer);
+    } else if (!hasPlacedFirstShape && hasUserInteractedRef.current) {
+      // Reset music state if game is reset
+      hasUserInteractedRef.current = false;
+      setShouldPlay(false);
     }
   }, [hasPlacedFirstShape]);
 
@@ -80,9 +84,9 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isMuted) {
+    if (isMuted || !shouldPlay) {
       audio.pause();
-    } else if (shouldPlay) {
+    } else {
       audio.play().catch(error => {
         console.log('Play was prevented:', error);
       });

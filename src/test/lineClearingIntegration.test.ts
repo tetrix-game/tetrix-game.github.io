@@ -116,12 +116,16 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Place horizontal shapes to fill row 5 (need to place multiple shapes)
       const horizontalShape = createHorizontalLineShape();
 
-      // Place first shape at column 2 (covers columns 1-3)
+      // Place first shape at column 1 (covers columns 1-4)
+      // Shape has blocks at row 1, so we place at row 4 to target row 5
       state = {
         ...state,
-        selectedShape: horizontalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 2 }
+        mouseGridLocation: { row: 4, column: 1 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: horizontalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -129,12 +133,15 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       let row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(4);
 
-      // Place second shape at column 6 (covers columns 5-8)
+      // Place second shape at column 5 (covers columns 5-8)
       state = {
         ...state,
-        selectedShape: horizontalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 6 }
+        mouseGridLocation: { row: 4, column: 5 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: horizontalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -143,23 +150,30 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Place single blocks to complete the row (columns 9 and 10)
       const singleBlock = createSingleBlockShape();
+      // Single block is at R1, C1. To target R5, C9: row=4, col=8
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 9 }
+        mouseGridLocation: { row: 4, column: 8 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       row5Filled = countFilledInRow(state.tiles, 5);
       expect(row5Filled).toBe(9);
 
-      // Place final single block at column 10
+      // Place final single block at column 10. To target R5, C10: row=4, col=9
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 10 }
+        mouseGridLocation: { row: 4, column: 9 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -185,21 +199,28 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       const verticalShape = createVerticalLineShape();
 
       // Place shapes at different rows to fill column 3 
-      // First shape at row 2 (covers rows 1-4)
+      // Vertical shape has blocks at col 1. To target col 3: col=2
+      // First shape at row 1 (covers rows 1-4)
       state = {
         ...state,
-        selectedShape: verticalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 2, column: 3 }
+        mouseGridLocation: { row: 1, column: 2 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: verticalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Second shape at row 6 (covers rows 5-8)  
+      // Second shape at row 5 (covers rows 5-8)  
       state = {
         ...state,
-        selectedShape: verticalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 6, column: 3 }
+        mouseGridLocation: { row: 5, column: 2 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: verticalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -209,23 +230,30 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       // Place single block for row 9
       const singleBlock = createSingleBlockShape();
+      // Single block at R1, C1. To target R9, C3: row=8, col=2
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 9, column: 3 }
+        mouseGridLocation: { row: 8, column: 2 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       col3Filled = countFilledInColumn(state.tiles, 3);
       expect(col3Filled).toBe(9);
 
-      // Place final block to complete column 3
+      // Place final block to complete column 3. To target R10, C3: row=9, col=2
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 10, column: 3 }
+        mouseGridLocation: { row: 9, column: 2 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -251,21 +279,27 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Fill all of row 5 
       const horizontalShape = createHorizontalLineShape();
 
-      // First shape at column 2 (covers columns 1-4)
+      // First shape at column 1 (covers columns 1-4)
       state = {
         ...state,
-        selectedShape: horizontalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 2 }
+        mouseGridLocation: { row: 4, column: 1 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: horizontalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Second shape at column 6 (covers columns 5-8)
+      // Second shape at column 5 (covers columns 5-8)
       state = {
         ...state,
-        selectedShape: horizontalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 6 }
+        mouseGridLocation: { row: 4, column: 5 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: horizontalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -273,17 +307,23 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       const singleBlock = createSingleBlockShape();
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 9 }
+        mouseGridLocation: { row: 4, column: 8 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 10 }
+        mouseGridLocation: { row: 4, column: 9 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -294,38 +334,50 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Now fill column 5 (which is already empty from row clearing)
       const verticalShape = createVerticalLineShape();
 
-      // First shape at row 2 (covers rows 1-4)
+      // First shape at row 1 (covers rows 1-4)
       state = {
         ...state,
-        selectedShape: verticalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 2, column: 5 }
+        mouseGridLocation: { row: 1, column: 4 }, // Target C5 -> col=4
+        dragState: {
+          ...state.dragState,
+          selectedShape: verticalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Second shape at row 6 (covers rows 5-8)
+      // Second shape at row 5 (covers rows 5-8)
       state = {
         ...state,
-        selectedShape: verticalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 6, column: 5 }
+        mouseGridLocation: { row: 5, column: 4 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: verticalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Add single blocks for rows 9 and 10
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 9, column: 5 }
+        mouseGridLocation: { row: 8, column: 4 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 10, column: 5 }
+        mouseGridLocation: { row: 9, column: 4 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -343,30 +395,39 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       const horizontalShape = createHorizontalLineShape();
       const singleBlock = createSingleBlockShape();
 
-      // First shape at column 2 (covers columns 1-4)
+      // First shape at column 1 (covers columns 1-4)
       state = {
         ...state,
-        selectedShape: horizontalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 2 }
+        mouseGridLocation: { row: 4, column: 1 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: horizontalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Second shape at column 6 (covers columns 5-8)
+      // Second shape at column 5 (covers columns 5-8)
       state = {
         ...state,
-        selectedShape: horizontalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 6 }
+        mouseGridLocation: { row: 4, column: 5 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: horizontalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Single block at column 9 (leaves column 10 empty)
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 5, column: 9 }
+        mouseGridLocation: { row: 4, column: 8 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -389,30 +450,39 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       const verticalShape = createVerticalLineShape();
       const singleBlock = createSingleBlockShape();
 
-      // First shape at row 2 (covers rows 1-4)
+      // First shape at row 1 (covers rows 1-4)
       state = {
         ...state,
-        selectedShape: verticalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 2, column: 4 }
+        mouseGridLocation: { row: 1, column: 3 }, // Target C4 -> col=3
+        dragState: {
+          ...state.dragState,
+          selectedShape: verticalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Second shape at row 6 (covers rows 5-8)
+      // Second shape at row 5 (covers rows 5-8)
       state = {
         ...state,
-        selectedShape: verticalShape,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 6, column: 4 }
+        mouseGridLocation: { row: 5, column: 3 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: verticalShape,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
       // Single block at row 9 (leaves row 10 empty)
       state = {
         ...state,
-        selectedShape: singleBlock,
-        selectedShapeIndex: 0,
-        mouseGridLocation: { row: 9, column: 4 }
+        mouseGridLocation: { row: 8, column: 3 },
+        dragState: {
+          ...state.dragState,
+          selectedShape: singleBlock,
+          selectedShapeIndex: 0,
+        }
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 

@@ -1,15 +1,38 @@
-import { render } from '@testing-library/react';
-import { describe, test, expect } from 'vitest';
+import { render, waitFor } from '@testing-library/react';
+import { describe, test, expect, vi } from 'vitest';
 import TetrixProvider from '../components/Tetrix/TetrixProvider';
 import ShapeSelector from '../components/ShapeSelector';
 
+// Mock the persistence utilities to avoid IndexedDB issues in tests
+vi.mock('../utils/persistenceUtils', () => ({
+  loadCompleteGameState: vi.fn().mockResolvedValue({
+    score: 0,
+    tiles: [],
+    shapes: [],
+    gameState: {
+      currentLevel: 1,
+      queueSize: -1,
+      shapesUsed: 0,
+    }
+  }),
+  safeBatchSave: vi.fn().mockResolvedValue(undefined),
+  loadModifiers: vi.fn().mockResolvedValue([]),
+  loadStats: vi.fn().mockResolvedValue({}),
+}));
+
 describe('Unified Shape Queue Management', () => {
-  test('should render only actual shapes (no virtual shapes)', () => {
+  test('should render only actual shapes (no virtual shapes)', async () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
       </TetrixProvider>
     );
+
+    // Wait for shapes to be populated
+    await waitFor(() => {
+      const shapeContainers = container.querySelectorAll('.shape-container');
+      expect(shapeContainers.length).toBe(3);
+    });
 
     // Should render exactly the number of shapes in nextShapes array (3 by default)
     const shapeContainers = container.querySelectorAll('.shape-container');
@@ -24,29 +47,37 @@ describe('Unified Shape Queue Management', () => {
     expect(visibleShapes.length).toBe(3);
   });
 
-  test('should calculate height based on nextShapes.length', () => {
+  test('should calculate height based on nextShapes.length', async () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
       </TetrixProvider>
     );
 
+    // Wait for shapes to be populated
+    await waitFor(() => {
+      const shapeContainers = container.querySelectorAll('.shape-container');
+      expect(shapeContainers.length).toBe(3);
+    });
+
     // Parent container should exist
     const shapeSelector = container.querySelector('.shape-selector') as HTMLElement;
     expect(shapeSelector).toBeTruthy();
-
-    // Should render 3 actual shape containers
-    const shapeContainers = container.querySelectorAll('.shape-container');
-    expect(shapeContainers.length).toBe(3);
   });
 
-  test('should update height when shapes are added/removed', () => {
+  test('should update height when shapes are added/removed', async () => {
     // This test verifies that shape count calculation is unified with rendered containers
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
       </TetrixProvider>
     );
+
+    // Wait for shapes to be populated
+    await waitFor(() => {
+      const shapeContainers = container.querySelectorAll('.shape-container');
+      expect(shapeContainers.length).toBe(3);
+    });
 
     // Initially 3 shapes should be rendered  
     const shapeSelector = container.querySelector('.shape-selector') as HTMLElement;

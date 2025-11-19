@@ -59,7 +59,7 @@ export type TetrixReducerState = {
   // Initialization tracking
   hasLoadedPersistedState: boolean; // Whether we've loaded persisted data (prevents gem shower on load)
   // Tile clearing animation - no longer needed in state, animations live in tiles
-  
+
   // UI State
   isStatsOpen: boolean; // Whether the stats overlay is currently open
 };
@@ -279,6 +279,10 @@ type CloseStatsAction = {
   type: 'CLOSE_STATS';
 };
 
+type InitializationCompleteAction = {
+  type: 'INITIALIZATION_COMPLETE';
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -325,6 +329,7 @@ export type TetrixAction =
   | DebugIncrementStatsAction
   | CleanupAnimationsAction
   | OpenStatsAction
-  | CloseStatsAction;
+  | CloseStatsAction
+  | InitializationCompleteAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

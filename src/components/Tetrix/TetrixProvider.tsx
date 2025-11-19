@@ -50,6 +50,7 @@ export default function TetrixProvider({ children }: { readonly children: React.
       } catch (error) {
         console.error('Failed to load saved game state:', error);
       } finally {
+        dispatch({ type: 'INITIALIZATION_COMPLETE' });
         setIsInitialized(true);
       }
     };

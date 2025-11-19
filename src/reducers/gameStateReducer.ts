@@ -6,7 +6,10 @@
  */
 
 import type { TetrixReducerState, TetrixAction, TileData } from '../types';
-import { saveModifiers } from '../utils/persistenceUtils';
+import { saveModifiers, safeBatchSave } from '../utils/persistenceUtils';
+import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
+import { ColorName } from '../types/core';
+import { updateStats } from '../utils/statsUtils';
 
 // Helper function to create a tile key from location
 function makeTileKey(row: number, column: number): string {
@@ -70,6 +73,7 @@ export const initialGameState = {
   unlockedModifiers: new Set<number>(),
   hasLoadedPersistedState: false,
   clearingAnimations: [],
+  stats: INITIAL_STATS_PERSISTENCE,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -124,6 +128,14 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         unlockedModifiers,
+      };
+    }
+
+    case "LOAD_STATS": {
+      const { stats } = action.value;
+      return {
+        ...state,
+        stats,
       };
     }
 
@@ -189,6 +201,15 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     case "RESET_GAME": {
       return {
         ...initialGameState,
+        // Preserve all-time and high score stats
+        stats: {
+          ...state.stats,
+          current: JSON.parse(JSON.stringify(INITIAL_GAME_STATS)),
+        },
+        // Preserve modifiers
+        unlockedModifiers: state.unlockedModifiers,
+        // Preserve map unlock status
+        isMapUnlocked: state.isMapUnlocked,
       };
     }
 
@@ -196,6 +217,79 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // Import cleanup function at top of file if needed
       // For now, this is a placeholder - actual cleanup happens in tiles
       return state;
+    }
+
+    case "DEBUG_INCREMENT_STATS": {
+      let newStats = JSON.parse(JSON.stringify(state.stats));
+      const colors: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange', 'cyan', 'magenta'];
+
+      // Simulate every scenario for every color
+      colors.forEach(color => {
+        // 1. Single Row
+        newStats = updateStats(newStats, [{ index: 1, color }], []);
+
+        // 2. Double Row
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], []);
+
+        // 3. Triple Row
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }], []);
+
+        // 4. Quadruple Row
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }], []);
+
+        // 5. Single Column
+        newStats = updateStats(newStats, [], [{ index: 1, color }]);
+
+        // 6. Double Column
+        newStats = updateStats(newStats, [], [{ index: 1, color }, { index: 2, color }]);
+
+        // 7. Triple Column
+        newStats = updateStats(newStats, [], [{ index: 1, color }, { index: 2, color }, { index: 3, color }]);
+
+        // 8. Quadruple Column
+        newStats = updateStats(newStats, [], [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }]);
+
+        // 9. Double Row + Single Column
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }]);
+
+        // 10. Triple Row + Single Column
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }], [{ index: 1, color }]);
+
+        // 11. Triple Row + Double Column
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }], [{ index: 1, color }, { index: 2, color }]);
+
+        // 12. Double Column + Single Row
+        newStats = updateStats(newStats, [{ index: 1, color }], [{ index: 1, color }, { index: 2, color }]);
+
+        // 13. Triple Column + Double Row
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }, { index: 2, color }, { index: 3, color }]);
+
+        // 14. Triple Column + Single Row
+        newStats = updateStats(newStats, [{ index: 1, color }], [{ index: 1, color }, { index: 2, color }, { index: 3, color }]);
+
+        // 15. 1x1 Square
+        newStats = updateStats(newStats, [{ index: 1, color }], [{ index: 1, color }]);
+
+        // 16. 2x2 Square
+        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }, { index: 2, color }]);
+
+        // 17. 4x4 Legendary
+        newStats = updateStats(newStats, 
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }], 
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }]
+        );
+      });
+
+      // Save stats
+      safeBatchSave(undefined, undefined, undefined, undefined, newStats)
+        .catch((error: Error) => {
+          console.error('Failed to save stats after debug increment:', error);
+        });
+
+      return {
+        ...state,
+        stats: newStats,
+      };
     }
 
     default:

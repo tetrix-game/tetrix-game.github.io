@@ -1,13 +1,15 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { formatScore } from '../../utils/scoringUtils';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlueGemIcon from '../BlueGemIcon';
+import StatsOverlay from '../StatsOverlay/StatsOverlay';
 import './ScoreDisplay.css';
 
 const ScoreDisplay: React.FC = () => {
   const { score } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
+  const [showStats, setShowStats] = useState(false);
 
   // Update gem icon position whenever it changes
   useEffect(() => {
@@ -35,14 +37,17 @@ const ScoreDisplay: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div className="score-display">
-      <div ref={gemIconRef}>
-        <BlueGemIcon />
+    <>
+      <div className="score-display" onClick={() => setShowStats(true)} style={{ cursor: 'pointer' }} title="Click to view stats">
+        <div ref={gemIconRef}>
+          <BlueGemIcon />
+        </div>
+        <span className="score-display-value">
+          {formatScore(score)}
+        </span>
       </div>
-      <span className="score-display-value">
-        {formatScore(score)}
-      </span>
-    </div>
+      {showStats && <StatsOverlay onClose={() => setShowStats(false)} />}
+    </>
   );
 };
 

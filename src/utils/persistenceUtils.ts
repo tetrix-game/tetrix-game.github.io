@@ -6,17 +6,19 @@ import type {
   GameSettingsPersistenceData,
   MusicPersistenceData,
   SoundEffectsPersistenceData,
-  ModifiersPersistenceData
+  ModifiersPersistenceData,
+  StatsPersistenceData
 } from './types';
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 2; // Increment for new stores
+const DB_VERSION = 3; // Increment for new stores
 const GAME_STATE_STORE = 'gameState'; // Legacy store
 const SCORE_STORE = 'score';
 const TILES_STORE = 'tiles';
 const SHAPES_STORE = 'shapes';
 const SETTINGS_STORE = 'settings';
 const MODIFIERS_STORE = 'modifiers';
+const STATS_STORE = 'stats';
 
 /**
  * Check if IndexedDB is available (not in Node.js/testing environments)
@@ -62,7 +64,7 @@ function openDatabase(): Promise<IDBDatabase> {
       const db = request.result;
 
       // Verify all required stores exist
-      const requiredStores = [GAME_STATE_STORE, SCORE_STORE, TILES_STORE, SHAPES_STORE, SETTINGS_STORE, MODIFIERS_STORE];
+      const requiredStores = [GAME_STATE_STORE, SCORE_STORE, TILES_STORE, SHAPES_STORE, SETTINGS_STORE, MODIFIERS_STORE, STATS_STORE];
       const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
 
       if (missingStores.length > 0) {
@@ -116,6 +118,11 @@ function openDatabase(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains(MODIFIERS_STORE)) {
         console.log('Creating', MODIFIERS_STORE, 'store');
         db.createObjectStore(MODIFIERS_STORE);
+      }
+
+      if (!db.objectStoreNames.contains(STATS_STORE)) {
+        console.log('Creating', STATS_STORE, 'store');
+        db.createObjectStore(STATS_STORE);
       }
     };
   });
@@ -393,6 +400,37 @@ export async function saveSoundEffectsSettings(isMuted: boolean): Promise<void> 
 }
 
 /**
+ * Save stats to IndexedDB
+ */
+export async function saveStats(stats: StatsPersistenceData): Promise<void> {
+  try {
+    const db = await initializeDatabase();
+    // Update lastUpdated timestamp
+    const data = { ...stats, lastUpdated: Date.now() };
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([STATS_STORE], 'readwrite');
+      const store = transaction.objectStore(STATS_STORE);
+
+      const request = store.put(data, 'current');
+
+      request.onsuccess = () => {
+        // console.log('Stats saved successfully'); // Verbose
+        resolve();
+      };
+
+      request.onerror = () => {
+        console.error('Failed to save stats:', request.error);
+        reject(new Error(`Failed to save stats: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error saving stats:', error);
+    throw error;
+  }
+}
+
+/**
  * Load score from IndexedDB
  */
 export async function loadScore(): Promise<number> {
@@ -549,292 +587,35 @@ export async function loadSoundEffectsSettings(): Promise<boolean> {
 }
 
 /**
- * Load complete game settings from IndexedDB (helper for saving functions)
+ * Load stats from IndexedDB
  */
-async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
+export async function loadStats(): Promise<StatsPersistenceData | null> {
   try {
     const db = await initializeDatabase();
 
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([SETTINGS_STORE], 'readonly');
-      const store = transaction.objectStore(SETTINGS_STORE);
+      const transaction = db.transaction([STATS_STORE], 'readonly');
+      const store = transaction.objectStore(STATS_STORE);
 
       const request = store.get('current');
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(result || null);
+        if (result) {
+          resolve(result);
+        } else {
+          resolve(null); // No stats saved yet
+        }
       };
 
       request.onerror = () => {
-        console.error('Failed to load game settings:', request.error);
-        reject(new Error(`Failed to load game settings: ${request.error}`));
+        console.error('Failed to load stats:', request.error);
+        reject(new Error(`Failed to load stats: ${request.error}`));
       };
     });
   } catch (error) {
-    console.error('Error loading game settings:', error);
+    console.error('Error loading stats:', error);
     return null;
-  }
-}
-
-/**
- * Load complete game state from granular stores (preferred method)
- * Falls back to legacy monolithic store if granular data is not available
- */
-export async function loadCompleteGameState(): Promise<GamePersistenceData | null> {
-  try {
-    // Try to load from granular stores first
-    const [score, tilesData, shapes] = await Promise.all([
-      loadScore(),
-      loadTiles(),
-      loadShapes()
-    ]);
-
-    // Convert serialized tiles data to Tile array for backward compatibility
-    let tiles: GamePersistenceData['tiles'] = [];
-    if (tilesData && Array.isArray(tilesData)) {
-      // Check if it's the new serialized format (array of {key, data})
-      if (tilesData.length > 0 && 'key' in tilesData[0] && 'data' in tilesData[0]) {
-        // New format: convert from serialized format to Tile array
-        tiles = tilesData.map((item: { key: string; data: { isFilled: boolean; color: string } }) => {
-          const match = item.key.match(/R(\d+)C(\d+)/);
-          if (!match) throw new Error(`Invalid tile key: ${item.key}`);
-          const row = parseInt(match[1], 10);
-          const column = parseInt(match[2], 10);
-          return {
-            id: `(row: ${row}, column: ${column})`,
-            location: { row, column },
-            block: { isFilled: item.data.isFilled, color: item.data.color as any },
-          };
-        });
-      } else {
-        // Old format: it's already Tile[]
-        tiles = tilesData as any;
-      }
-    }
-
-    // Only return granular state if we have tiles (indicating a real game in progress)
-    if (tiles.length === 100) {
-      console.log('Loaded game state from granular stores');
-      return {
-        score,
-        tiles,
-        nextShapes: shapes?.nextShapes ?? [],
-        savedShape: shapes?.savedShape ?? null
-      };
-    }
-
-    // Fallback to legacy monolithic store
-    console.log('Granular stores empty, trying legacy store...');
-    const legacyData = await loadGameState();
-    if (legacyData?.tiles?.length === 100) {
-      console.log('Loaded game state from legacy store');
-
-      // Migrate legacy data to granular stores for future use
-      // Convert tiles to serialized format for storage
-      const tilesPersistenceData = legacyData.tiles.map(tile => ({
-        key: `R${tile.location.row}C${tile.location.column}`,
-        data: { isFilled: tile.block.isFilled, color: tile.block.color }
-      }));
-
-      safeBatchSave(
-        legacyData.score,
-        tilesPersistenceData,
-        legacyData.nextShapes,
-        legacyData.savedShape
-      ).catch((error: Error) => {
-        console.error('Failed to migrate legacy data to granular stores:', error);
-      });
-
-      return legacyData;
-    }
-
-    console.log('No saved game state found in either granular or legacy stores');
-    return null;
-  } catch (error) {
-    console.error('Error loading complete game state:', error);
-    return null;
-  }
-}
-
-/**
- * Safe batch save to prevent overwrites during initialization
- */
-export async function safeBatchSave(
-  score?: number,
-  tiles?: TilesPersistenceData['tiles'],
-  nextShapes?: ShapesPersistenceData['nextShapes'],
-  savedShape?: ShapesPersistenceData['savedShape']
-): Promise<void> {
-  const promises: Promise<void>[] = [];
-
-  // Add score save with error handling
-  if (score !== undefined) {
-    promises.push(
-      saveScore(score).catch((error) => {
-        console.warn('Failed to save score, continuing without persistence:', error.message);
-      })
-    );
-  }
-
-  // Add tiles save with error handling
-  if (tiles) {
-    promises.push(
-      saveTiles(tiles).catch((error) => {
-        console.warn('Failed to save tiles, continuing without persistence:', error.message);
-      })
-    );
-  }
-
-  // Add shapes save with error handling
-  if (nextShapes !== undefined || savedShape !== undefined) {
-    promises.push(
-      (async () => {
-        try {
-          // Load current shapes first to avoid overwriting
-          const currentShapes = await loadShapes();
-          await saveShapes(
-            nextShapes ?? currentShapes?.nextShapes ?? [],
-            savedShape ?? currentShapes?.savedShape ?? null
-          );
-        } catch (error) {
-          console.warn('Failed to save shapes, continuing without persistence:', error instanceof Error ? error.message : 'Unknown error');
-        }
-      })()
-    );
-  }
-
-  // Wait for all saves to complete (or fail gracefully)
-  await Promise.all(promises);
-}
-
-/**
- * Clear game data only (preserves user settings like music/sound preferences)
- */
-export async function clearAllSavedData(): Promise<void> {
-  try {
-    const db = await initializeDatabase();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction([
-        GAME_STATE_STORE,
-        SCORE_STORE,
-        TILES_STORE,
-        SHAPES_STORE,
-        MODIFIERS_STORE
-      ], 'readwrite');
-
-      // Clear game data stores only - NOT settings
-      const gameStore = transaction.objectStore(GAME_STATE_STORE);
-      const scoreStore = transaction.objectStore(SCORE_STORE);
-      const tilesStore = transaction.objectStore(TILES_STORE);
-      const shapesStore = transaction.objectStore(SHAPES_STORE);
-      const modifiersStore = transaction.objectStore(MODIFIERS_STORE);
-
-      gameStore.delete('current');
-      scoreStore.delete('current');
-      tilesStore.delete('current');
-      shapesStore.delete('current');
-      modifiersStore.delete('current');
-
-      transaction.oncomplete = () => {
-        console.log('Game data cleared successfully (settings preserved)');
-        resolve();
-      };
-
-      transaction.onerror = () => {
-        console.error('Failed to clear game data:', transaction.error);
-        reject(new Error(`Failed to clear game data: ${transaction.error}`));
-      };
-    });
-  } catch (error) {
-    console.error('Error clearing game data:', error);
-    throw error;
-  }
-}
-
-/**
- * Clear ALL data including settings, then reload the page fresh from server
- * This is the nuclear option for when the app gets into a bad state
- */
-export async function clearAllDataAndReload(): Promise<void> {
-  try {
-    // Clear IndexedDB completely
-    const db = await initializeDatabase();
-
-    await new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction([
-        GAME_STATE_STORE,
-        SCORE_STORE,
-        TILES_STORE,
-        SHAPES_STORE,
-        SETTINGS_STORE,
-        MODIFIERS_STORE
-      ], 'readwrite');
-
-      // Clear ALL stores including settings
-      const gameStore = transaction.objectStore(GAME_STATE_STORE);
-      const scoreStore = transaction.objectStore(SCORE_STORE);
-      const tilesStore = transaction.objectStore(TILES_STORE);
-      const shapesStore = transaction.objectStore(SHAPES_STORE);
-      const settingsStore = transaction.objectStore(SETTINGS_STORE);
-      const modifiersStore = transaction.objectStore(MODIFIERS_STORE);
-
-      gameStore.delete('current');
-      scoreStore.delete('current');
-      tilesStore.delete('current');
-      shapesStore.delete('current');
-      settingsStore.delete('current');
-      modifiersStore.delete('current');
-
-      transaction.oncomplete = () => {
-        console.log('All data (including settings) cleared successfully');
-        resolve();
-      };
-
-      transaction.onerror = () => {
-        console.error('Failed to clear all data:', transaction.error);
-        reject(new Error(`Failed to clear all data: ${transaction.error}`));
-      };
-    });
-
-    // Clear localStorage as fallback/legacy storage
-    try {
-      localStorage.clear();
-      console.log('localStorage cleared');
-    } catch (localStorageError) {
-      console.warn('Failed to clear localStorage:', localStorageError);
-    }
-
-    // Clear service worker caches if available
-    if ('caches' in globalThis) {
-      try {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-        console.log('Service worker caches cleared');
-      } catch (cacheError) {
-        console.warn('Failed to clear caches:', cacheError);
-      }
-    }
-
-    // Unregister service workers if any
-    if ('serviceWorker' in navigator) {
-      try {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map(registration => registration.unregister()));
-        console.log('Service workers unregistered');
-      } catch (swError) {
-        console.warn('Failed to unregister service workers:', swError);
-      }
-    }
-
-    // Force hard reload from server (bypass cache)
-    console.log('Reloading page from server...');
-    globalThis.location.reload();
-  } catch (error) {
-    console.error('Error during full data clear:', error);
-    // Even if clearing fails, try to reload anyway
-    globalThis.location.reload();
   }
 }
 
@@ -901,6 +682,312 @@ export async function loadModifiers(): Promise<Set<number>> {
   } catch (error) {
     console.error('Error loading modifiers:', error);
     return new Set(); // Return empty set on error
+  }
+}
+
+/**
+ * Load complete game settings from IndexedDB (helper for saving functions)
+ */
+async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readonly');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const request = store.get('current');
+
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(result || null);
+      };
+
+      request.onerror = () => {
+        console.error('Failed to load game settings:', request.error);
+        reject(new Error(`Failed to load game settings: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error loading game settings:', error);
+    return null;
+  }
+}
+
+/**
+ * Load complete game state from granular stores (preferred method)
+ * Falls back to legacy monolithic store if granular data is not available
+ */
+export async function loadCompleteGameState(): Promise<GamePersistenceData | null> {
+  try {
+    // Try to load from granular stores first
+    const [score, tilesData, shapes] = await Promise.all([
+      loadScore(),
+      loadTiles(),
+      loadShapes()
+    ]);
+
+    // Convert serialized tiles data to Tile array for backward compatibility
+    let tiles: GamePersistenceData['tiles'] = [];
+    if (tilesData && Array.isArray(tilesData)) {
+      // Check if it's the new serialized format (array of {key, data})
+      if (tilesData.length > 0 && 'key' in tilesData[0] && 'data' in tilesData[0]) {
+        // New format: convert from serialized format to Tile array
+        tiles = tilesData.map((item: { key: string; data: { isFilled: boolean; color: string } }) => {
+          const match = item.key.match(/R(\d+)C(\d+)/);
+          if (!match) throw new Error(`Invalid tile key: ${item.key}`);
+          const row = parseInt(match[1], 10);
+          const column = parseInt(match[2], 10);
+          return {
+            id: `(row: ${row}, column: ${column})`,
+            location: { row, column },
+            block: { isFilled: item.data.isFilled, color: item.data.color as import('../types/core').ColorName },
+          };
+        });
+      } else {
+        // Old format: it's already Tile[]
+        tiles = tilesData as unknown as GamePersistenceData['tiles'];
+      }
+    }
+
+    // Only return granular state if we have tiles (indicating a real game in progress)
+    if (tiles.length === 100) {
+      console.log('Loaded game state from granular stores');
+      return {
+        score,
+        tiles,
+        nextShapes: shapes?.nextShapes ?? [],
+        savedShape: shapes?.savedShape ?? null
+      };
+    }
+
+    // Fallback to legacy monolithic store
+    console.log('Granular stores empty, trying legacy store...');
+    const legacyData = await loadGameState();
+    if (legacyData?.tiles?.length === 100) {
+      console.log('Loaded game state from legacy store');
+
+      // Migrate legacy data to granular stores for future use
+      // Convert tiles to serialized format for storage
+      const tilesPersistenceData = legacyData.tiles.map(tile => ({
+        key: `R${tile.location.row}C${tile.location.column}`,
+        data: { isFilled: tile.block.isFilled, color: tile.block.color }
+      }));
+
+      safeBatchSave(
+        legacyData.score,
+        tilesPersistenceData,
+        legacyData.nextShapes,
+        legacyData.savedShape
+      ).catch((error: Error) => {
+        console.error('Failed to migrate legacy data to granular stores:', error);
+      });
+
+      return legacyData;
+    }
+
+    console.log('No saved game state found in either granular or legacy stores');
+    return null;
+  } catch (error) {
+    console.error('Error loading complete game state:', error);
+    return null;
+  }
+}
+
+/**
+ * Safe batch save to prevent overwrites during initialization
+ */
+export async function safeBatchSave(
+  score?: number,
+  tiles?: TilesPersistenceData['tiles'],
+  nextShapes?: ShapesPersistenceData['nextShapes'],
+  savedShape?: ShapesPersistenceData['savedShape'],
+  stats?: StatsPersistenceData
+): Promise<void> {
+  const promises: Promise<void>[] = [];
+
+  // Add score save with error handling
+  if (score !== undefined) {
+    promises.push(
+      saveScore(score).catch((error) => {
+        console.warn('Failed to save score, continuing without persistence:', error.message);
+      })
+    );
+  }
+
+  // Add tiles save with error handling
+  if (tiles) {
+    promises.push(
+      saveTiles(tiles).catch((error) => {
+        console.warn('Failed to save tiles, continuing without persistence:', error.message);
+      })
+    );
+  }
+
+  // Add shapes save with error handling
+  if (nextShapes !== undefined || savedShape !== undefined) {
+    promises.push(
+      (async () => {
+        try {
+          // Load current shapes first to avoid overwriting
+          const currentShapes = await loadShapes();
+          await saveShapes(
+            nextShapes ?? currentShapes?.nextShapes ?? [],
+            savedShape ?? currentShapes?.savedShape ?? null
+          );
+        } catch (error) {
+          console.warn('Failed to save shapes, continuing without persistence:', error instanceof Error ? error.message : 'Unknown error');
+        }
+      })()
+    );
+  }
+
+  // Add stats save with error handling
+  if (stats) {
+    promises.push(
+      saveStats(stats).catch((error) => {
+        console.warn('Failed to save stats, continuing without persistence:', error.message);
+      })
+    );
+  }
+
+  // Wait for all saves to complete (or fail gracefully)
+  await Promise.all(promises);
+}
+
+/**
+ * Clear game data only (preserves user settings like music/sound preferences)
+ */
+export async function clearAllSavedData(): Promise<void> {
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([
+        GAME_STATE_STORE,
+        SCORE_STORE,
+        TILES_STORE,
+        SHAPES_STORE,
+        MODIFIERS_STORE,
+        STATS_STORE
+      ], 'readwrite');
+
+      // Clear game data stores only - NOT settings
+      const gameStore = transaction.objectStore(GAME_STATE_STORE);
+      const scoreStore = transaction.objectStore(SCORE_STORE);
+      const tilesStore = transaction.objectStore(TILES_STORE);
+      const shapesStore = transaction.objectStore(SHAPES_STORE);
+      const modifiersStore = transaction.objectStore(MODIFIERS_STORE);
+      const statsStore = transaction.objectStore(STATS_STORE);
+
+      gameStore.delete('current');
+      scoreStore.delete('current');
+      tilesStore.delete('current');
+      shapesStore.delete('current');
+      modifiersStore.delete('current');
+      statsStore.delete('current');
+
+      transaction.oncomplete = () => {
+        console.log('Game data cleared successfully (settings preserved)');
+        resolve();
+      };
+
+      transaction.onerror = () => {
+        console.error('Failed to clear game data:', transaction.error);
+        reject(new Error(`Failed to clear game data: ${transaction.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error clearing game data:', error);
+    throw error;
+  }
+}
+
+/**
+ * Clear ALL data including settings, then reload the page fresh from server
+ * This is the nuclear option for when the app gets into a bad state
+ */
+export async function clearAllDataAndReload(): Promise<void> {
+  try {
+    // Clear IndexedDB completely
+    const db = await initializeDatabase();
+
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction([
+        GAME_STATE_STORE,
+        SCORE_STORE,
+        TILES_STORE,
+        SHAPES_STORE,
+        SETTINGS_STORE,
+        MODIFIERS_STORE,
+        STATS_STORE
+      ], 'readwrite');
+
+      // Clear ALL stores including settings
+      const gameStore = transaction.objectStore(GAME_STATE_STORE);
+      const scoreStore = transaction.objectStore(SCORE_STORE);
+      const tilesStore = transaction.objectStore(TILES_STORE);
+      const shapesStore = transaction.objectStore(SHAPES_STORE);
+      const settingsStore = transaction.objectStore(SETTINGS_STORE);
+      const modifiersStore = transaction.objectStore(MODIFIERS_STORE);
+      const statsStore = transaction.objectStore(STATS_STORE);
+
+      gameStore.delete('current');
+      scoreStore.delete('current');
+      tilesStore.delete('current');
+      shapesStore.delete('current');
+      settingsStore.delete('current');
+      modifiersStore.delete('current');
+      statsStore.delete('current');
+
+      transaction.oncomplete = () => {
+        console.log('All data (including settings) cleared successfully');
+        resolve();
+      };
+
+      transaction.onerror = () => {
+        console.error('Failed to clear all data:', transaction.error);
+        reject(new Error(`Failed to clear all data: ${transaction.error}`));
+      };
+    });
+
+    // Clear localStorage as fallback/legacy storage
+    try {
+      localStorage.clear();
+      console.log('localStorage cleared');
+    } catch (localStorageError) {
+      console.warn('Failed to clear localStorage:', localStorageError);
+    }
+
+    // Clear service worker caches if available
+    if ('caches' in globalThis) {
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        console.log('Service worker caches cleared');
+      } catch (cacheError) {
+        console.warn('Failed to clear caches:', cacheError);
+      }
+    }
+
+    // Unregister service workers if any
+    if ('serviceWorker' in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(registration => registration.unregister()));
+        console.log('Service workers unregistered');
+      } catch (swError) {
+        console.warn('Failed to unregister service workers:', swError);
+      }
+    }
+
+    // Force hard reload from server (bypass cache)
+    console.log('Reloading page from server...');
+    globalThis.location.reload();
+  } catch (error) {
+    console.error('Error during full data clear:', error);
+    // Even if clearing fails, try to reload anyway
+    globalThis.location.reload();
   }
 }
 

@@ -7,6 +7,7 @@ import type { DragState } from './drag';
 import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOptionBounds } from './animation';
 import type { ScoreData } from './scoring';
 import type { GamePersistenceData } from './persistence';
+import type { StatsPersistenceData } from './stats';
 
 // Game state types - simplified for level-based play
 export type GameState = 'playing' | 'map';
@@ -38,6 +39,7 @@ export type TetrixReducerState = {
   // Scoring system
   score: number;
   totalLinesCleared: number; // Track total lines cleared for objectives
+  stats: StatsPersistenceData; // Comprehensive statistics tracking
   // Coin display visibility control
   showCoinDisplay: boolean;
   // Shape queue configuration
@@ -194,6 +196,11 @@ type LoadModifiersAction = {
   value: { unlockedModifiers: Set<number> };
 };
 
+type LoadStatsAction = {
+  type: 'LOAD_STATS';
+  value: { stats: StatsPersistenceData };
+};
+
 type TriggerBackgroundMusicAction = {
   type: 'TRIGGER_BACKGROUND_MUSIC';
 };
@@ -253,6 +260,10 @@ type DebugReplaceFirstShapeAction = {
   value: { shape: Shape };
 };
 
+type DebugIncrementStatsAction = {
+  type: 'DEBUG_INCREMENT_STATS';
+};
+
 type CleanupAnimationsAction = {
   type: 'CLEANUP_ANIMATIONS';
 };
@@ -286,6 +297,7 @@ export type TetrixAction =
   | UnlockMapAction
   | UnlockModifierAction
   | LoadModifiersAction
+  | LoadStatsAction
   | TriggerBackgroundMusicAction
   | ActivateTurningModeAction
   | DeactivateTurningModeAction
@@ -299,6 +311,7 @@ export type TetrixAction =
   | DebugAddBlockAction
   | DebugClearAllAction
   | DebugReplaceFirstShapeAction
+  | DebugIncrementStatsAction
   | CleanupAnimationsAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

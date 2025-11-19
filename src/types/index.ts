@@ -52,6 +52,19 @@ export type {
   ModifiersPersistenceData,
 } from './persistence';
 
+// Stats types
+export type {
+  StatCategory,
+  ColorStat,
+  StatValue,
+  GameStats,
+  StatsPersistenceData,
+} from './stats';
+export {
+  INITIAL_GAME_STATS,
+  INITIAL_STATS_PERSISTENCE,
+} from './stats';
+
 // Modifier types
 export type {
   GameModifier,

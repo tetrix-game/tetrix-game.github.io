@@ -10,6 +10,7 @@ import { calculateScore } from '../utils/scoringUtils';
 import { safeBatchSave } from '../utils/persistenceUtils';
 import { playSound } from '../components/SoundEffectsContext';
 import { generateClearingAnimations, cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
+import { updateStats } from '../utils/statsUtils';
 
 // Helper function to create a tile key from location
 export function makeTileKey(row: number, column: number): string {
@@ -99,11 +100,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const newScore = state.score + scoreData.pointsEarned;
       const newTotalLinesCleared = state.totalLinesCleared + clearedRowIndices.length + clearedColumnIndices.length;
 
+      // Update stats
+      const newStats = updateStats(state.stats, clearedRows, clearedColumns);
+
       // Save game state to browser DB asynchronously (don't block UI)
       // Convert tiles to serializable format for persistence
       const tilesPersistenceData = Array.from(finalTiles.entries()).map(([key, data]) => ({ key, data }));
       if (scoreData.pointsEarned > 0 || Array.from(finalTiles.values()).some(tileData => tileData.isFilled)) {
-        safeBatchSave(newScore, tilesPersistenceData, state.nextShapes, state.savedShape)
+        safeBatchSave(newScore, tilesPersistenceData, state.nextShapes, state.savedShape, newStats)
           .catch((error: Error) => {
             console.error('Failed to save game state:', error);
           });
@@ -141,6 +145,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         tiles: finalTiles,
         score: newScore,
         totalLinesCleared: newTotalLinesCleared,
+        stats: newStats,
         nextShapes: updatedNextShapes,
         shapesUsed: state.shapesUsed, // Don't increment until shape is fully removed
         openRotationMenus: newOpenRotationMenus,

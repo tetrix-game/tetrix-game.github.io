@@ -49,3 +49,5 @@ export type ModifiersPersistenceData = {
   unlockedModifiers: number[]; // Array of prime IDs for JSON serialization
   lastUpdated: number;
 };
+
+export type StatsPersistenceData = import('./stats').StatsPersistenceData;

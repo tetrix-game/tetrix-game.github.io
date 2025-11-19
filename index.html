@@ -112,7 +112,24 @@
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Fallback content for SEO and non-JS users -->
+      <main style="padding: 20px; font-family: sans-serif; color: #eee; background-color: #1a1a2e; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <h1>Tetrix - Free Relaxing Puzzle Game</h1>
+        <p>Welcome to Tetrix, the ultimate ad-free block puzzle game. Drag and drop shapes onto the 10x10 grid, clear lines, and challenge your high score.</p>
+        <p>Features:</p>
+        <ul style="list-style: none; padding: 0;">
+          <li>✨ Infinite gameplay</li>
+          <li>🚫 No ads or interruptions</li>
+          <li>🎵 Relaxing music and sound effects</li>
+          <li>🧠 Brain training puzzle mechanics</li>
+        </ul>
+        <p style="margin-top: 20px; font-weight: bold; color: #4fd1c7;">Loading game...</p>
+        <noscript>
+          <p style="color: #ff6b6b;">JavaScript is required to play Tetrix. Please enable JavaScript in your browser settings.</p>
+        </noscript>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

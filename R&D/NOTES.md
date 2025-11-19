@@ -6,6 +6,9 @@
   - Add GIF's explaining the game instead of words
     - Next button progress bar
     - Skip button
+    - descriptive alt text for the gif images
+- QR code in the menu overlay.
+- Accessibility for all butotns
 - Invalid placement sound
 - Valid placement sound
 - Sounds and Music sliders

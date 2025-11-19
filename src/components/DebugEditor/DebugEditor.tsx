@@ -17,7 +17,7 @@ import './DebugEditor.css';
 const COLOR_OPTIONS: ColorName[] = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 
 const DebugEditor: React.FC = () => {
-  const { state, closeEditor, setTool, setColor, cycleTool, hideInstructions } = useDebugEditor();
+  const { state, closeEditor, setTool, setColor, cycleTool, hideInstructions, toggleGridDots } = useDebugEditor();
   const dispatch = useTetrixDispatchContext();
 
   // Handle shape picker button clicks
@@ -232,6 +232,19 @@ const DebugEditor: React.FC = () => {
               title="L-Piece"
             >
               L
+            </button>
+          </div>
+        </div>
+
+        <div className="debug-tool-section">
+          <div className="debug-tool-label">View Options</div>
+          <div className="debug-tools-grid">
+            <button
+              className={`debug-tool-button ${state.showGridDots ? 'active' : ''}`}
+              onClick={toggleGridDots}
+              title="Toggle Dragging Shape Grid Dots"
+            >
+              ⚏
             </button>
           </div>
         </div>

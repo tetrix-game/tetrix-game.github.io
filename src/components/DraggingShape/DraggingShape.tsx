@@ -324,7 +324,7 @@ export default function DraggingShape() {
                 {block.isFilled && (
                   <BlockVisual block={block} />
                 )}
-                {!block.isFilled && debugState.isEditorOpen && (
+                {!block.isFilled && debugState.isEditorOpen && debugState.showGridDots && (
                   <div
                     style={{
                       position: 'absolute',

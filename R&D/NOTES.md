@@ -10,6 +10,8 @@
 - Valid placement sound
 - Sounds and Music sliders
 - Clearing the 10X10 should give a significant amount of points
+- Refresh isn't honoring the shapes in the queue... And loading in general doesn't seem to be quite right...
+- ShapeOptions have a white background square when clcked, which is tacky
 
 
 ## Related Documentation

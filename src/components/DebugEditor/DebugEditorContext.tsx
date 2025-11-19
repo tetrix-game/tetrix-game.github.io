@@ -9,6 +9,7 @@ type DebugEditorState = {
   selectedColor: ColorName;
   showInstructions: boolean;
   hasShownInstructions: boolean;
+  showGridDots: boolean;
 };
 
 type DebugEditorContextValue = {
@@ -19,6 +20,7 @@ type DebugEditorContextValue = {
   setColor: (color: ColorName) => void;
   cycleTool: (direction: 'forward' | 'backward') => void;
   hideInstructions: () => void;
+  toggleGridDots: () => void;
 };
 
 const DebugEditorContext = createContext<DebugEditorContextValue | null>(null);
@@ -32,6 +34,7 @@ export function DebugEditorProvider({ children }: Readonly<{ children: ReactNode
     selectedColor: 'blue',
     showInstructions: true,
     hasShownInstructions: false,
+    showGridDots: true,
   });
 
   const openEditor = () => {
@@ -56,6 +59,13 @@ export function DebugEditorProvider({ children }: Readonly<{ children: ReactNode
     setState(prev => ({
       ...prev,
       showInstructions: false,
+    }));
+  };
+
+  const toggleGridDots = () => {
+    setState(prev => ({
+      ...prev,
+      showGridDots: !prev.showGridDots,
     }));
   };
 
@@ -90,6 +100,7 @@ export function DebugEditorProvider({ children }: Readonly<{ children: ReactNode
     setColor,
     cycleTool,
     hideInstructions,
+    toggleGridDots,
   }), [state]);
 
   return (

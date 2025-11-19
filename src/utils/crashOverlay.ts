@@ -22,7 +22,7 @@ const showCrashOverlay = (errorMessage: string) => {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 2147483647;
+      z-index: var(--z-critical);
       font-family: Arial, sans-serif;
       font-size: 16px;
       text-align: center;

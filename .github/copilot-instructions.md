@@ -183,7 +183,14 @@ npm start           # Development server
 - Mix of CSS files and inline `style` objects (especially in Grid, ShapeOption)
 - BlockVisual uses inline styles for dynamic color borders
 - Grid uses `gridTemplateColumns/Rows: "repeat(10, 1fr)"` for 10x10 layout
-- Z-index layers: tiles (z-index: 1), blocks (z-index: 2), particles (z-index: 10002)
+- **Z-index layers**: Use CSS variables defined in `App.css` (e.g., `var(--z-board)`, `var(--z-overlay)`) instead of hardcoded values.
+  - `--z-board` (10): Grid tiles
+  - `--z-block` (20): Placed blocks
+  - `--z-ui` (100): Header, standard UI
+  - `--z-drag` (500): Dragging shapes
+  - `--z-overlay` (1000): Game Over, Map
+  - `--z-particles` (3000): Gem shower effects
+  - `--z-critical` (10000): Error boundaries
 
 
 

@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   height: 100%;
-  z-index: 1000;
+  z-index: var(--z-floating);
 }
 
 .hamburger-button {
@@ -50,7 +50,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10000;
+  z-index: var(--z-modal);
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;

@@ -11,7 +11,7 @@
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  z-index: 100;
+  z-index: var(--z-ui);
   /* Below gem particles (10002) but above game content */
 }
 

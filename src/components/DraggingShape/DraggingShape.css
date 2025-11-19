@@ -2,7 +2,7 @@
 .dragging-shape-container {
   position: fixed;
   pointer-events: none;
-  z-index: 1000;
+  z-index: var(--z-drag);
   display: grid;
   transition: none;
   top: var(--container-top);

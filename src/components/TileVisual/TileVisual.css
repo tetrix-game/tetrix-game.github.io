@@ -1,7 +1,8 @@
 .tile-visual {
   border-radius: 5px;
-  z-index: 1;
   position: relative;
+  z-index: var(--z-board);
+  transition: background-color 0.2s ease;
 }
 
 .tile-visual-dark {

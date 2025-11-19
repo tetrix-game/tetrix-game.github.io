@@ -12,7 +12,7 @@
   border: 3px solid #00ff88;
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-  z-index: 10001;
+  z-index: var(--z-toast);
   pointer-events: none;
   /* Center the element around the transform origin */
   transform-origin: center;

@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10001;
+  z-index: var(--z-tutorial);
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;

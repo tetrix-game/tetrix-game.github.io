@@ -2,7 +2,6 @@
 
 ## What's Up Next
 
-- descriptive alt text for the gif images
 - Accessibility for all buttons
 - Invalid placement sound
 - Valid placement sound

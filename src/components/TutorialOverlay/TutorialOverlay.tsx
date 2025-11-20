@@ -72,6 +72,18 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onStartPlayi
     setCurrentSlide(index);
   }, []);
 
+  // Close on Escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleStartPlaying();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleStartPlaying]);
+
   return createPortal(
     <div
       className="tutorial-overlay"

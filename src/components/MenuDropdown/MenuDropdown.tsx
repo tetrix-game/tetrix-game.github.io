@@ -37,6 +37,16 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
     if (!isOpen) {
       setDebugClickCount(0);
     }
+
+    // Close on Escape key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isOpen && e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
   const handleHiddenDebugClick = (e: React.MouseEvent) => {

@@ -30,7 +30,11 @@ function FullScreenButton() {
 
   return (
     !isFullScreen ? (
-      <button className="full-screen-button" onClick={goFullScreen}>
+      <button 
+        className="full-screen-button" 
+        onClick={goFullScreen}
+        aria-label="Enter Full Screen"
+      >
         <span>+</span>
       </button>
     ) : null

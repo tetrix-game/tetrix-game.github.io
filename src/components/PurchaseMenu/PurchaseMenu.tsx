@@ -52,6 +52,7 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
           className="purchase-menu-turn-button"
           onClick={handleRotateCounterClockwise}
           title="Rotate Counter-Clockwise"
+          aria-label="Rotate Counter-Clockwise"
         >
           ↺
         </button>
@@ -60,6 +61,7 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
           className="purchase-menu-turn-button"
           onClick={handleRotateClockwise}
           title="Rotate Clockwise"
+          aria-label="Rotate Clockwise"
         >
           ↻
         </button>
@@ -75,6 +77,7 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
       } as React.CSSProperties}
       onClick={handleSpendCoin}
       title="Spend 1 gem to unlock rotation"
+      aria-label="Spend 1 gem to unlock rotation"
     >
       <BlueGemIcon size={16} />
     </button>

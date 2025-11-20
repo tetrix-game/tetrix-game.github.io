@@ -13,7 +13,11 @@ import {
 } from '../../utils/persistenceUtils';
 import './MenuDropdown.css';
 
-const MenuDropdown: React.FC = () => {
+interface MenuDropdownProps {
+  onShowTutorial?: () => void;
+}
+
+const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -89,6 +93,9 @@ const MenuDropdown: React.FC = () => {
     );
 
     if (confirmed) {
+      // Ensure tutorial is shown again
+      localStorage.removeItem('hasSeenTutorial');
+
       clearAllDataAndReload().catch((error: Error) => {
         console.error('Failed to clear all data:', error);
         alert('Failed to clear data completely. Reloading anyway...');
@@ -190,6 +197,21 @@ const MenuDropdown: React.FC = () => {
               <span className="menu-label">Sound Effects</span>
             </div>
 
+            {onShowTutorial && (
+              <div className="menu-item">
+                <button
+                  className="menu-action-button"
+                  onClick={() => {
+                    onShowTutorial();
+                    setIsOpen(false);
+                  }}
+                  title="Show the tutorial overlay"
+                >
+                  Tutorial
+                </button>
+              </div>
+            )}
+
             <div className="menu-item">
               <button
                 className="menu-action-button"
@@ -203,10 +225,10 @@ const MenuDropdown: React.FC = () => {
             <div className="menu-item">
               <a
                 className="menu-action-button menu-link-button"
-                href="/how-to-play.html"
-                title="Learn how to play Tetrix"
+                href="/strategy-guide.html"
+                title="Read the Tetrix strategy guide"
               >
-                How to Play
+                Strategy Guide
               </a>
             </div>
 

@@ -7,6 +7,7 @@ import DebugEditor from './components/DebugEditor';
 import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
+import { useMusicControl } from './components/Header/MusicControlContext';
 import { useState, useEffect, useRef } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import './App.css';
@@ -14,6 +15,7 @@ import './App.css';
 const App = () => {
   const { gameState, dragState, gridTileSize, gridBounds, tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
+  const { triggerAutoplay } = useMusicControl();
   const [showTutorial, setShowTutorial] = useState(false);
   const gridRef = useRef<HTMLElement | null>(null);
 
@@ -200,26 +202,29 @@ const App = () => {
     };
   }, [dispatch, dragState.selectedShape, dragState.dragOffsets, tiles]);
 
-  const handleCloseTutorial = () => {
-    setShowTutorial(false);
-  };
-
   return (
     <div className="App">
-      <Header />
-      {gameState === 'map' ? (
-        <GameMap />
-      ) : (
-        <Tetrix />
-      )}
-      <DraggingShape />
+      <Header onShowTutorial={() => setShowTutorial(true)} />
+      <div className="game-container">
+        {gameState === 'playing' ? (
+          <Tetrix />
+        ) : (
+          <GameMap />
+        )}
+      </div>
       <FullScreenFloatingActionButton />
-      {showTutorial && <TutorialOverlay onClose={handleCloseTutorial} />}
+      {showTutorial && (
+        <TutorialOverlay
+          onClose={() => setShowTutorial(false)}
+          onStartPlaying={triggerAutoplay}
+        />
+      )}
       <DebugEditor />
+      <DraggingShape />
       <ToastOverlay />
     </div>
-  )
-}
+  );
+};
 
 export default App;
 

@@ -1,14 +1,7 @@
 import React from 'react';
-import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import './GameOverOverlay.css';
 
 const GameOverOverlay: React.FC = () => {
-  const dispatch = useTetrixDispatchContext();
-
-  const handleNewGame = () => {
-    dispatch({ type: 'RESET_GAME' });
-  };
-
   return (
     <div className="game-over-overlay">
       <div className="game-over-content">

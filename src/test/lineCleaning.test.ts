@@ -11,7 +11,6 @@ import {
 import type { TilesSet, ColorName } from '../utils/types';
 import {
   createTilesWithFilled,
-  tilesToArray,
   getTileData,
   countFilledTiles,
   isRowFull as testIsRowFull,

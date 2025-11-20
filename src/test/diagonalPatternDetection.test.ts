@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { detectSuperComboPattern } from '../utils/shapes/shapePatterns';
 import type { TilesSet, ColorName } from '../utils/types';
-import { createTilesWithFilled, setTileData } from './testHelpers';
+import { createTilesWithFilled } from './testHelpers';
 
 /**
  * Helper to create a 10x10 grid with all tiles empty

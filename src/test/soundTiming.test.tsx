@@ -3,6 +3,7 @@ import { render, act } from '@testing-library/react';
 import DraggingShape from '../components/DraggingShape';
 import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
 import { TetrixReducerState, DragPhase } from '../utils/types';
+import { INITIAL_GAME_STATS } from '../types/stats';
 import { DebugEditorProvider } from '../components/DebugEditor';
 
 const mocks = vi.hoisted(() => ({
@@ -25,28 +26,25 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   gameState: 'playing',
   currentLevel: 1,
   isMapUnlocked: false,
-  tiles: [],
+  tiles: new Map(),
   nextShapes: [],
   savedShape: null,
-  selectedShape: [
-    [{ isFilled: false, color: 'grey' }, { isFilled: true, color: 'blue' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }],
-    [{ isFilled: false, color: 'grey' }, { isFilled: true, color: 'blue' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }],
-    [{ isFilled: false, color: 'grey' }, { isFilled: true, color: 'blue' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }],
-    [{ isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }, { isFilled: false, color: 'grey' }]
-  ],
-  selectedShapeIndex: 0,
   mouseGridLocation: { row: 5, column: 5 },
   mousePosition: { x: 100, y: 100 },
   gemIconPosition: { x: 100, y: 50 },
-  isShapeDragging: false,
-  isValidPlacement: true,
-  hoveredBlockPositions: [],
   dragState: {
     phase: dragPhase,
     sourcePosition: dragPhase === 'picking-up' ? { x: 50, y: 50, width: 100, height: 100 } : null,
     targetPosition: dragPhase === 'placing' ? { x: 250, y: 250 } : null,
     placementLocation: null,
     startTime: dragPhase !== 'none' ? performance.now() : null,
+    selectedShape: null,
+    selectedShapeIndex: null,
+    isValidPlacement: false,
+    hoveredBlockPositions: [],
+    invalidBlockPositions: [],
+    placementStartPosition: null,
+    dragOffsets: null
   },
   shapeOptionBounds: [],
   openRotationMenus: [],
@@ -64,7 +62,15 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   unlockedModifiers: new Set(),
   removingShapeIndex: null,
   shapeRemovalAnimationState: 'none',
-  newShapeAnimationStates: []
+  newShapeAnimationStates: [],
+  stats: {
+    current: INITIAL_GAME_STATS,
+    allTime: INITIAL_GAME_STATS,
+    highScore: INITIAL_GAME_STATS,
+    lastUpdated: 0
+  },
+  hasLoadedPersistedState: true,
+  isStatsOpen: false
 });
 
 describe('Sound Timing in DraggingShape', () => {

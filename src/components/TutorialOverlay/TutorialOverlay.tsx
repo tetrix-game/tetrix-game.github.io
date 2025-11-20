@@ -4,10 +4,18 @@ import './TutorialOverlay.css';
 
 interface TutorialOverlayProps {
   onClose: () => void;
+  onStartPlaying: () => void;
 }
 
-const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => {
+const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onStartPlaying }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Assuming that any user action indicates they want to start playing, and that they never want to see the tutorial again
+  const handleStartPlaying = useCallback(() => {
+    localStorage.setItem('hasSeenTutorial', 'true');
+    onStartPlaying();
+    onClose();
+  }, [onClose, onStartPlaying]);
 
   const slides = [
     {
@@ -64,22 +72,9 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => {
     setCurrentSlide(index);
   }, []);
 
-  const handleClose = useCallback(() => {
-    localStorage.setItem('hasSeenTutorial', 'true');
-    onClose();
-  }, [onClose]);
-
-  const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    // Only close if clicking directly on the overlay (not its children)
-    if (e.target === e.currentTarget) {
-      handleClose();
-    }
-  }, [handleClose]);
-
   return createPortal(
     <div
       className="tutorial-overlay"
-      onClick={handleOverlayClick}
       role="dialog"
       aria-modal="true"
       aria-labelledby="tutorial-title"
@@ -87,7 +82,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => {
       <div className="tutorial-content">
         <button
           className="tutorial-close-x"
-          onClick={handleClose}
+          onClick={handleStartPlaying}
           aria-label="Close tutorial"
           title="Close tutorial"
         >
@@ -131,7 +126,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => {
           ) : (
             <button
               className="tutorial-nav-button tutorial-close-button"
-              onClick={handleClose}
+              onClick={handleStartPlaying}
               aria-label="Close tutorial"
             >
               Start Playing

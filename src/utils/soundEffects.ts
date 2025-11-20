@@ -46,7 +46,7 @@ class SoundEffectsManager {
   }
 
   private preloadSounds() {
-    const soundFiles: Record<SoundEffect, string> = {
+    const soundFiles: Partial<Record<SoundEffect, string>> = {
       click_into_place: '/sound/soundEffects/click_into_place.mp3',
       game_over: '/sound/soundEffects/game_over.mp3',
       pickup_shape: '/sound/soundEffects/pickup_shape.mp3',

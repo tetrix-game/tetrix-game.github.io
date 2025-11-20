@@ -1,16 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
+import { useMusicControl } from '../Header/MusicControlContext';
 import './BackgroundMusic.css';
 
-interface BackgroundMusicProps {
-  isMuted: boolean;
-}
-
-const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
+const BackgroundMusic: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const hasUserInteractedRef = useRef(false);
-  const [shouldPlay, setShouldPlay] = useState(false);
   const { hasPlacedFirstShape } = useTetrixStateContext();
+  const { isMuted, shouldPlayMusic, triggerAutoplay } = useMusicControl();
+
+  // Track if we've already triggered autoplay from first shape
+  const hasTriggeredFromShapeRef = useRef(false);
 
   // List of available tracks (using useMemo to prevent recreation on each render)
   const tracks = React.useMemo(() => [
@@ -21,19 +20,18 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
 
   // Trigger background music 1 second after first shape placement
   useEffect(() => {
-    if (hasPlacedFirstShape && !hasUserInteractedRef.current) {
+    if (hasPlacedFirstShape && !hasTriggeredFromShapeRef.current) {
       const timer = setTimeout(() => {
-        hasUserInteractedRef.current = true;
-        setShouldPlay(true);
+        hasTriggeredFromShapeRef.current = true;
+        triggerAutoplay();
       }, 1000); // 1 second delay
 
       return () => clearTimeout(timer);
-    } else if (!hasPlacedFirstShape && hasUserInteractedRef.current) {
-      // Reset music state if game is reset
-      hasUserInteractedRef.current = false;
-      setShouldPlay(false);
+    } else if (!hasPlacedFirstShape && hasTriggeredFromShapeRef.current) {
+      // Reset trigger if game is reset
+      hasTriggeredFromShapeRef.current = false;
     }
-  }, [hasPlacedFirstShape]);
+  }, [hasPlacedFirstShape, triggerAutoplay]);
 
   // Set up audio and handle track changes
   useEffect(() => {
@@ -48,7 +46,7 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
 
     // Function to play a random track
     const playRandomTrack = async () => {
-      if (shouldPlay && !isMuted) {
+      if (shouldPlayMusic && !isMuted) {
         audio.src = getRandomTrack();
         audio.loop = false;
         audio.volume = 0.3;
@@ -63,35 +61,26 @@ const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ isMuted }) => {
 
     // Handle track ending to play another random track
     const handleTrackEnd = () => {
-      if (shouldPlay && !isMuted) {
+      if (shouldPlayMusic && !isMuted) {
         playRandomTrack();
       }
     };
 
-    // Start playing if conditions are met
-    if (shouldPlay && !isMuted) {
-      playRandomTrack();
-    }
-
     audio.addEventListener('ended', handleTrackEnd);
+
+    // Start playing if conditions are met and not currently playing
+    if (shouldPlayMusic && !isMuted) {
+      if (audio.paused) {
+        playRandomTrack();
+      }
+    } else {
+      audio.pause();
+    }
 
     return () => {
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [shouldPlay, isMuted, tracks]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isMuted || !shouldPlay) {
-      audio.pause();
-    } else {
-      audio.play().catch(error => {
-        console.log('Play was prevented:', error);
-      });
-    }
-  }, [isMuted, shouldPlay]);
+  }, [shouldPlayMusic, isMuted, tracks]);
 
   return (
     <div className="background-music">

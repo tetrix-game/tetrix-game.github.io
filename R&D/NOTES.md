@@ -2,20 +2,16 @@
 
 ## What's Up Next
 
-- Better learning curve
-  - Add GIF's explaining the game instead of words
-    - Next button progress bar
-    - Skip button
-    - descriptive alt text for the gif images
+- descriptive alt text for the gif images
 - Accessibility for all buttons
 - Invalid placement sound
 - Valid placement sound
 - Sounds and Music sliders
 - Clearing the 10X10 should give a significant amount of points
-- Refresh isn't honoring the shapes in the queue... And loading in general doesn't seem to be quite right...
-- ShapeOptions have a white background square when clcked, which is tacky
-- Clippy tooltips?
 - Stats for a no shape turn streak
+- Better visuals on sharing platforms
+- Better App Icon
+- Light and dark mode
 
 
 ## Related Documentation

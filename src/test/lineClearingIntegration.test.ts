@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
 import type { Shape } from '../utils/types';
-import { getTileData, tilesToArray } from './testHelpers';
+import { getTileData } from './testHelpers';
 
 // Helper to count filled tiles in a row
 const countFilledInRow = (tiles: Map<string, any>, row: number): number => {

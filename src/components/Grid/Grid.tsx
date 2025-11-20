@@ -11,7 +11,7 @@ export default function Grid() {
   const { tiles, dragState } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
-  const { gridSize, gridGap } = useGameSizing();
+  const { gridSize, gridGap, gridCellSize } = useGameSizing();
   const { isDebugMode, handleDebugClick } = useDebugGridInteractions();
 
   // Periodically clean up expired animations
@@ -74,6 +74,7 @@ export default function Grid() {
       style={{
         '--grid-gap': `${gridGap}px`,
         '--grid-size': `${gridSize}px`,
+        '--block-border-width': `${gridCellSize * 0.2}px`,
       } as React.CSSProperties}
     >
       {

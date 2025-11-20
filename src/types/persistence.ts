@@ -42,6 +42,7 @@ export type SoundEffectsPersistenceData = {
 export type GameSettingsPersistenceData = {
   music: MusicPersistenceData;
   soundEffects: SoundEffectsPersistenceData;
+  debugUnlocked?: boolean;
   lastUpdated: number;
 };
 

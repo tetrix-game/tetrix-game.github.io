@@ -11,8 +11,21 @@
   width: 2em;
   height: 2em;
   border-radius: 50%;
-  background-color: lightblue;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   border: none;
   padding: 0.5em 1em;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.full-screen-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.full-screen-button:active {
+  transform: scale(0.95);
+}
 }

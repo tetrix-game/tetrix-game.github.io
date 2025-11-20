@@ -319,9 +319,11 @@ export async function saveMusicSettings(isMuted: boolean): Promise<void> {
 
     // Load existing settings to preserve sound effects settings
     let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    let existingDebugUnlocked = false;
     try {
       const existingData = await loadGameSettings();
       existingSoundEffects = existingData?.soundEffects || existingSoundEffects;
+      existingDebugUnlocked = existingData?.debugUnlocked || false;
     } catch {
       // Use defaults if loading fails
     }
@@ -330,6 +332,7 @@ export async function saveMusicSettings(isMuted: boolean): Promise<void> {
     const data: GameSettingsPersistenceData = {
       music: musicData,
       soundEffects: existingSoundEffects,
+      debugUnlocked: existingDebugUnlocked,
       lastUpdated: Date.now()
     };
 
@@ -364,9 +367,11 @@ export async function saveSoundEffectsSettings(isMuted: boolean): Promise<void> 
 
     // Load existing settings to preserve music settings
     let existingMusic: MusicPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    let existingDebugUnlocked = false;
     try {
       const existingData = await loadGameSettings();
       existingMusic = existingData?.music || existingMusic;
+      existingDebugUnlocked = existingData?.debugUnlocked || false;
     } catch {
       // Use defaults if loading fails
     }
@@ -375,6 +380,7 @@ export async function saveSoundEffectsSettings(isMuted: boolean): Promise<void> 
     const data: GameSettingsPersistenceData = {
       music: existingMusic,
       soundEffects: soundEffectsData,
+      debugUnlocked: existingDebugUnlocked,
       lastUpdated: Date.now()
     };
 
@@ -428,6 +434,83 @@ export async function saveStats(stats: StatsPersistenceData): Promise<void> {
   } catch (error) {
     console.error('Error saving stats:', error);
     throw error;
+  }
+}
+
+/**
+ * Save debug settings to IndexedDB
+ */
+export async function saveDebugSettings(unlocked: boolean): Promise<void> {
+  try {
+    const db = await initializeDatabase();
+
+    // Load existing settings to preserve other settings
+    let existingMusic: MusicPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+
+    try {
+      const existingData = await loadGameSettings();
+      existingMusic = existingData?.music || existingMusic;
+      existingSoundEffects = existingData?.soundEffects || existingSoundEffects;
+    } catch {
+      // Use defaults if loading fails
+    }
+
+    const data: GameSettingsPersistenceData = {
+      music: existingMusic,
+      soundEffects: existingSoundEffects,
+      debugUnlocked: unlocked,
+      lastUpdated: Date.now()
+    };
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readwrite');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const request = store.put(data, 'current');
+
+      request.onsuccess = () => {
+        console.log('Debug settings saved successfully:', unlocked);
+        resolve();
+      };
+
+      request.onerror = () => {
+        console.error('Failed to save debug settings:', request.error);
+        reject(new Error(`Failed to save debug settings: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error saving debug settings:', error);
+    throw error;
+  }
+}
+
+/**
+ * Load debug settings from IndexedDB
+ */
+export async function loadDebugSettings(): Promise<boolean> {
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readonly');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const request = store.get('current');
+
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(result?.debugUnlocked ?? false);
+      };
+
+      request.onerror = () => {
+        console.error('Failed to load debug settings:', request.error);
+        reject(new Error(`Failed to load debug settings: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error loading debug settings:', error);
+    return false;
   }
 }
 
@@ -894,7 +977,7 @@ export async function clearAllSavedData(): Promise<void> {
       tilesStore.delete('current');
       shapesStore.delete('current');
       modifiersStore.delete('current');
-      
+
       // Handle stats: preserve allTime/highScore, reset current
       if (existingStats) {
         const resetStats: StatsPersistenceData = {

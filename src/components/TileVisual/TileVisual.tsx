@@ -104,7 +104,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size }: Ti
           const beatCount = anim.beatCount ?? 3;
           const finishDuration = anim.finishDuration ?? 0;
           const beatDuration = (anim.duration - finishDuration) / beatCount;
-          
+
           style['--beat-count'] = beatCount;
           style['--animation-duration'] = `${beatDuration}ms`;
           style['--finish-duration'] = `${finishDuration}ms`;

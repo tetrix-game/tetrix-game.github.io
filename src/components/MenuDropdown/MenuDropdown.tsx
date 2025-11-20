@@ -5,7 +5,12 @@ import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useDebugEditor } from '../DebugEditor';
-import { clearAllSavedData, clearAllDataAndReload } from '../../utils/persistenceUtils';
+import {
+  clearAllSavedData,
+  clearAllDataAndReload,
+  loadDebugSettings,
+  saveDebugSettings
+} from '../../utils/persistenceUtils';
 import './MenuDropdown.css';
 
 const MenuDropdown: React.FC = () => {
@@ -17,6 +22,41 @@ const MenuDropdown: React.FC = () => {
   const { isMuted: isSoundEffectsMuted, toggleMute: toggleSoundEffectsMute } = useSoundEffectsControl();
   const dispatch = useTetrixDispatchContext();
   const { openEditor } = useDebugEditor();
+  const [debugUnlocked, setDebugUnlocked] = useState(false);
+  const [debugClickCount, setDebugClickCount] = useState(0);
+
+  useEffect(() => {
+    loadDebugSettings().then(setDebugUnlocked);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setDebugClickCount(0);
+    }
+  }, [isOpen]);
+
+  const handleHiddenDebugClick = (e: React.MouseEvent) => {
+    const newCount = debugClickCount + 1;
+    setDebugClickCount(newCount);
+
+    if (newCount >= 20) {
+      setDebugUnlocked(true);
+      saveDebugSettings(true);
+
+      // Trigger 20 gem shower
+      dispatch({
+        type: 'ADD_SCORE',
+        value: {
+          scoreData: {
+            rowsCleared: 0,
+            columnsCleared: 0,
+            pointsEarned: 20
+          },
+          mousePosition: { x: e.clientX, y: e.clientY }
+        }
+      });
+    }
+  };
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -171,14 +211,25 @@ const MenuDropdown: React.FC = () => {
             </div>
 
             <div className="menu-item debug-submenu">
-              <button
-                className="debug-toggle"
-                onClick={toggleDebugMenu}
-                aria-expanded={isDebugOpen}
-              >
-                <span className="menu-label">Debug</span>
-                <span className={`debug-arrow ${isDebugOpen ? 'open' : ''}`}>▶</span>
-              </button>
+              {debugUnlocked ? (
+                <button
+                  className="debug-toggle"
+                  onClick={toggleDebugMenu}
+                  aria-expanded={isDebugOpen}
+                >
+                  <span className="menu-label">Debug</span>
+                  <span className={`debug-arrow ${isDebugOpen ? 'open' : ''}`}>▶</span>
+                </button>
+              ) : (
+                <button
+                  className="debug-toggle hidden-debug-trigger"
+                  onClick={handleHiddenDebugClick}
+                  style={{ opacity: 0, cursor: 'default' }}
+                  aria-hidden="true"
+                >
+                  <span className="menu-label">Debug</span>
+                </button>
+              )}
             </div>
 
             {isDebugOpen && (
@@ -230,7 +281,9 @@ const MenuDropdown: React.FC = () => {
 
             <div className="menu-qr-code">
               <p className="qr-label">Share this game</p>
-              <QRCodeSVG value="https://tetrix-game.github.io" size={128} />
+              <div className="qr-code-wrapper">
+                <QRCodeSVG value="https://tetrix-game.github.io" size={128} />
+              </div>
             </div>
           </div>
         </div>,

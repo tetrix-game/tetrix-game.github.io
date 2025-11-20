@@ -198,7 +198,6 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
         '--shape-cell-gap': `${cellGap}px`,
         '--centering-offset-x': `${centeringOffset.x}px`,
         '--centering-offset-y': `${centeringOffset.y}px`,
-        '--block-border-width': `${shapeOptionCellSize * 0.2}px`,
         opacity,
         transition: 'opacity 0.15s ease-out',
       } as React.CSSProperties}
@@ -210,7 +209,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
             key={`${rowIndex}-${colIndex}`}
             className="shape-tile-visual"
           >
-            <BlockVisual block={block} />
+            <BlockVisual block={block} size={shapeOptionCellSize} />
           </div>
         ))
       ))}

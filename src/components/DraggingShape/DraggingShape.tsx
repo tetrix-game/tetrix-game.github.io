@@ -295,7 +295,6 @@ export default function DraggingShape() {
         '--tile-size': `${cellSize}px`,
         '--grid-gap': `${cellGap}px`,
         '--scale': scale,
-        '--block-border-width': `${cellSize * 0.2}px`,
       } as React.CSSProperties}
     >
       {dragState.selectedShape.map((row, rowIndex) => (
@@ -314,8 +313,6 @@ export default function DraggingShape() {
                 height: `calc(var(--tile-size) * 0.5)`,
                 // Offset to center the smaller block in its cell
                 transform: `translate(calc(var(--tile-size) * 0.25), calc(var(--tile-size) * 0.25))`,
-                // Scale border width to match the smaller size (20% of half size = 10% of full size)
-                '--block-border-width': `${cellSize * 0.1}px`,
               } as React.CSSProperties : undefined}
             >
               <div
@@ -325,7 +322,7 @@ export default function DraggingShape() {
                 } as React.CSSProperties}
               >
                 {block.isFilled && (
-                  <BlockVisual block={block} />
+                  <BlockVisual block={block} size={isInvalid ? cellSize * 0.5 : cellSize} />
                 )}
                 {!block.isFilled && debugState.isEditorOpen && debugState.showGridDots && (
                   <div

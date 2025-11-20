@@ -74,7 +74,6 @@ export default function Grid() {
       style={{
         '--grid-gap': `${gridGap}px`,
         '--grid-size': `${gridSize}px`,
-        '--block-border-width': `${gridCellSize * 0.2}px`,
       } as React.CSSProperties}
     >
       {
@@ -90,6 +89,7 @@ export default function Grid() {
               isHovered={isHovered}
               hoveredBlock={hoveredBlock}
               onClick={isDebugMode ? () => handleDebugClick(tile.location) : undefined}
+              size={gridCellSize}
             />
           )
         })

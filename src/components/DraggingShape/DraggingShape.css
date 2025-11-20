@@ -19,10 +19,6 @@
   height: var(--tile-size);
 }
 
-.dragging-shape-cell .block-visual {
-  border-radius: 0;
-}
-
 .dragging-phase .dragging-shape-cell {
   transition: width 200ms, height 200ms, transform 200ms;
 }

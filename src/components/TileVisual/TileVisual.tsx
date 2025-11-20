@@ -9,9 +9,10 @@ type TileVisualProps = {
   isHovered?: boolean;
   hoveredBlock?: Block;
   onClick?: () => void;
+  size?: number;
 }
 
-const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisualProps) => {
+const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size }: TileVisualProps) => {
   const { dragState, tiles } = useTetrixStateContext();
   const [, setTick] = useState(0);
 
@@ -71,7 +72,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick }: TileVisu
       }}
       onClick={onClick}
     >
-      <BlockVisual block={displayBlock} />
+      <BlockVisual block={displayBlock} size={size} />
       {showShadow && (
         <div
           className="tile-visual-shadow"

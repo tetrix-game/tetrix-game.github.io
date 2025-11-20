@@ -11,6 +11,7 @@
 - Better visuals on sharing platforms
 - Better App Icon
 - Light and dark mode
+- No points should give an error
 
 
 ## Related Documentation

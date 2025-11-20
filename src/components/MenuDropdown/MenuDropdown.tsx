@@ -282,7 +282,12 @@ const MenuDropdown: React.FC = () => {
             <div className="menu-qr-code">
               <p className="qr-label">Share this game</p>
               <div className="qr-code-wrapper">
-                <QRCodeSVG value="https://tetrix-game.github.io" size={128} />
+                <QRCodeSVG
+                  value="https://tetrix-game.github.io"
+                  size={128}
+                  bgColor="#023f80"
+                  fgColor="#ffffff"
+                />
               </div>
             </div>
           </div>

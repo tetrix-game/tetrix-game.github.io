@@ -94,7 +94,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     loadMuteState();
   }, []);
 
-  const playSound = useCallback((soundEffect: SoundEffect, startTime?: number) => {
+  const playSound = useCallback((soundEffect: SoundEffect, scheduleTime?: number) => {
     // Don't play if user hasn't interacted yet
     if (!hasUserInteractedRef.current) {
       return;
@@ -105,16 +105,30 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return;
     }
 
-    const audio = audioElementsRef.current.get(soundEffect);
-    if (audio) {
-      // Set audio to start time (default 0)
-      audio.currentTime = startTime ?? 0;
+    const play = () => {
+      const audio = audioElementsRef.current.get(soundEffect);
+      if (audio) {
+        // Always start from beginning
+        audio.currentTime = 0;
 
-      audio.play().catch(error => {
-        console.log(`Sound effect '${soundEffect}' play was prevented:`, error);
-      });
+        audio.play().catch(error => {
+          console.log(`Sound effect '${soundEffect}' play was prevented:`, error);
+        });
+      } else {
+        console.warn(`Sound effect '${soundEffect}' not found`);
+      }
+    };
+
+    if (scheduleTime !== undefined) {
+      const now = performance.now();
+      const delay = scheduleTime - now;
+      if (delay > 0) {
+        setTimeout(play, delay);
+      } else {
+        play();
+      }
     } else {
-      console.warn(`Sound effect '${soundEffect}' not found`);
+      play();
     }
   }, [isMuted]);
 

@@ -9,7 +9,7 @@ import { clearFullLines } from '../utils/lineUtils';
 import { calculateScore } from '../utils/scoringUtils';
 import { safeBatchSave } from '../utils/persistenceUtils';
 import { playSound } from '../components/SoundEffectsContext';
-import { generateClearingAnimations, cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
+import { generateClearingAnimations, cleanupExpiredAnimations, AnimationConfig } from '../utils/clearingAnimationUtils';
 import { updateStats } from '../utils/statsUtils';
 import { checkGameOver } from '../utils/gameOverUtils';
 
@@ -25,14 +25,32 @@ export function parseTileKey(key: string): { row: number; column: number } {
   return { row: parseInt(match[1], 10), column: parseInt(match[2], 10) };
 }
 
+const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
+  rows: {
+    single: { duration: 500, waveDelay: 50, startDelay: 0 },
+    double: { duration: 500, waveDelay: 50, startDelay: 500 },
+    triple: { duration: 500, waveDelay: 50, startDelay: 1000 },
+    quad: { duration: 3000, waveDelay: 50, startDelay: 1500, beatCount: 3 },
+  },
+  columns: {
+    single: { duration: 500, waveDelay: 50, startDelay: 0 },
+    double: { duration: 500, waveDelay: 50, startDelay: 500 },
+    triple: { duration: 500, waveDelay: 50, startDelay: 1000 },
+    quad: { duration: 3000, waveDelay: 50, startDelay: 1500, beatCount: 3 },
+  },
+};
+
 // Helper function to play line clear sound effects
-function playLineClearSounds(clearedRows: number[], clearedColumns: number[]) {
-  if (clearedRows.length > 0 && clearedRows.length <= 4) {
-    playSound(`clear_combo_${clearedRows.length}` as 'clear_combo_1' | 'clear_combo_2' | 'clear_combo_3' | 'clear_combo_4');
-  }
-  if (clearedColumns.length > 0 && clearedColumns.length <= 4) {
-    playSound(`clear_combo_${clearedColumns.length}` as 'clear_combo_1' | 'clear_combo_2' | 'clear_combo_3' | 'clear_combo_4');
-  }
+function playLineClearSounds(clearedRows: number[], clearedColumns: number[], baseStartTime: number) {
+  const scheduleSound = (count: number, type: 'rows' | 'columns') => {
+    if (count >= 1) playSound('clear_combo_1', baseStartTime + CLEARING_ANIMATION_CONFIG[type].single.startDelay);
+    if (count >= 2) playSound('clear_combo_2', baseStartTime + CLEARING_ANIMATION_CONFIG[type].double.startDelay);
+    if (count >= 3) playSound('clear_combo_3', baseStartTime + CLEARING_ANIMATION_CONFIG[type].triple.startDelay);
+    if (count >= 4) playSound('clear_combo_4', baseStartTime + CLEARING_ANIMATION_CONFIG[type].quad.startDelay);
+  };
+
+  scheduleSound(clearedRows.length, 'rows');
+  scheduleSound(clearedColumns.length, 'columns');
 }
 
 export function tileReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -71,6 +89,8 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const clearedRowIndices = clearedRows.map(r => r.index);
       const clearedColumnIndices = clearedColumns.map(c => c.index);
 
+      const baseStartTime = performance.now();
+
       // Generate clearing animations and apply them to tiles
       // Configure wave effects and timing for single/double/triple/quad animations
       const finalTiles = generateClearingAnimations(
@@ -78,23 +98,13 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         clearedRows,
         clearedColumns,
         {
-          rows: {
-            single: { duration: 500, waveDelay: 50, startDelay: 0 },
-            double: { duration: 500, waveDelay: 50, startDelay: 500 },
-            triple: { duration: 500, waveDelay: 50, startDelay: 1000 },
-            quad: { duration: 3000, waveDelay: 50, startDelay: 1500, beatCount: 3 },
-          },
-          columns: {
-            single: { duration: 500, waveDelay: 50, startDelay: 0 },
-            double: { duration: 500, waveDelay: 50, startDelay: 500 },
-            triple: { duration: 500, waveDelay: 50, startDelay: 1000 },
-            quad: { duration: 3000, waveDelay: 50, startDelay: 1500, beatCount: 3 },
-          },
+          ...CLEARING_ANIMATION_CONFIG,
+          baseStartTime,
         }
       );
 
       // Play sound effects for line clearing
-      playLineClearSounds(clearedRowIndices, clearedColumnIndices);
+      playLineClearSounds(clearedRowIndices, clearedColumnIndices, baseStartTime);
 
       // Calculate score for lines cleared
       const scoreData = calculateScore(clearedRowIndices.length, clearedColumnIndices.length);

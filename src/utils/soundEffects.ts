@@ -13,7 +13,7 @@ export type SoundEffect =
   | 'clear_combo_2'
   | 'clear_combo_3'
   | 'clear_combo_4'
-  | 'clear_combo_5';
+  | 'heartbeat';
 
 // Module-level callback that can be set by SoundEffectsContext
 let contextPlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | null = null;
@@ -54,7 +54,6 @@ class SoundEffectsManager {
       clear_combo_2: '/sound/soundEffects/clear-combo-2.mp3',
       clear_combo_3: '/sound/soundEffects/clear-combo-3.mp3',
       clear_combo_4: '/sound/soundEffects/clear-combo-4.mp3',
-      clear_combo_5: '/sound/soundEffects/clear-combo-5.mp3',
     };
 
     for (const [soundName, filePath] of Object.entries(soundFiles)) {

@@ -46,7 +46,17 @@ function playLineClearSounds(clearedRows: number[], clearedColumns: number[], ba
     if (count >= 1) playSound('clear_combo_1', baseStartTime + CLEARING_ANIMATION_CONFIG[type].single.startDelay);
     if (count >= 2) playSound('clear_combo_2', baseStartTime + CLEARING_ANIMATION_CONFIG[type].double.startDelay);
     if (count >= 3) playSound('clear_combo_3', baseStartTime + CLEARING_ANIMATION_CONFIG[type].triple.startDelay);
-    if (count >= 4) playSound('clear_combo_4', baseStartTime + CLEARING_ANIMATION_CONFIG[type].quad.startDelay);
+    if (count >= 4) {
+      const quadStart = baseStartTime + CLEARING_ANIMATION_CONFIG[type].quad.startDelay;
+      playSound('clear_combo_4', quadStart);
+
+      // Schedule heartbeat sounds to match the 3 beats of the quad animation
+      // The animation duration is 3000ms, we'll space the beats out
+      const beatInterval = 800; // Space beats out
+      playSound('heartbeat', quadStart + 100);
+      playSound('heartbeat', quadStart + 100 + beatInterval);
+      playSound('heartbeat', quadStart + 100 + (beatInterval * 2));
+    }
   };
 
   scheduleSound(clearedRows.length, 'rows');

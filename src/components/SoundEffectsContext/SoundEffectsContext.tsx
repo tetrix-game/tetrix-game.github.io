@@ -9,7 +9,7 @@ export type SoundEffect =
   | 'clear_combo_2'
   | 'clear_combo_3'
   | 'clear_combo_4'
-  | 'clear_combo_5';
+  | 'heartbeat';
 
 // Module-level state for non-React code (like reducers) to use
 let modulePlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | null = null;
@@ -33,13 +33,55 @@ const SoundEffectsContext = createContext<SoundEffectsContextValue | undefined>(
 
 export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMuted, setIsMutedState] = useState(false);
-  const audioElementsRef = useRef<Map<SoundEffect, HTMLAudioElement>>(new Map());
+  const audioBuffersRef = useRef<Map<SoundEffect, AudioBuffer>>(new Map());
+  const audioContextRef = useRef<AudioContext | null>(null);
   const hasUserInteractedRef = useRef(false);
+
+  // Initialize AudioContext and load sounds
+  useEffect(() => {
+    const initAudio = async () => {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      const ctx = new AudioContextClass();
+      audioContextRef.current = ctx;
+
+      // Only include file-based sound effects here
+      const soundFiles: Partial<Record<SoundEffect, string>> = {
+        click_into_place: '/sound/soundEffects/click_into_place.mp3',
+        game_over: '/sound/soundEffects/game_over.mp3',
+        pickup_shape: '/sound/soundEffects/pickup_shape.mp3',
+        clear_combo_1: '/sound/soundEffects/clear-combo-1.mp3',
+        clear_combo_2: '/sound/soundEffects/clear-combo-2.mp3',
+        clear_combo_3: '/sound/soundEffects/clear-combo-3.mp3',
+        clear_combo_4: '/sound/soundEffects/clear-combo-4.mp3',
+      };
+
+      for (const [soundName, filePath] of Object.entries(soundFiles)) {
+        try {
+          const response = await fetch(filePath);
+          const arrayBuffer = await response.arrayBuffer();
+          const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+          audioBuffersRef.current.set(soundName as SoundEffect, audioBuffer);
+          console.log(`Loaded sound: ${soundName}`);
+        } catch (error) {
+          console.error(`Failed to load sound ${soundName}:`, error);
+        }
+      }
+    };
+
+    initAudio();
+  }, []);
 
   // Initialize user interaction detection
   useEffect(() => {
     const handleUserInteraction = () => {
       hasUserInteractedRef.current = true;
+
+      if (audioContextRef.current?.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('keydown', handleUserInteraction);
     };
@@ -51,27 +93,6 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('keydown', handleUserInteraction);
     };
-  }, []);
-
-  // Preload audio files
-  useEffect(() => {
-    const soundFiles: Record<SoundEffect, string> = {
-      click_into_place: '/sound/soundEffects/click_into_place.mp3',
-      game_over: '/sound/soundEffects/game_over.mp3',
-      pickup_shape: '/sound/soundEffects/pickup_shape.mp3',
-      clear_combo_1: '/sound/soundEffects/clear-combo-1.mp3',
-      clear_combo_2: '/sound/soundEffects/clear-combo-2.mp3',
-      clear_combo_3: '/sound/soundEffects/clear-combo-3.mp3',
-      clear_combo_4: '/sound/soundEffects/clear-combo-4.mp3',
-      clear_combo_5: '/sound/soundEffects/clear-combo-5.mp3',
-    };
-
-    for (const [soundName, filePath] of Object.entries(soundFiles)) {
-      const audio = new Audio(filePath);
-      audio.preload = 'auto';
-      audio.volume = 0.2; // Quieter volume for sound effects
-      audioElementsRef.current.set(soundName as SoundEffect, audio);
-    }
   }, []);
 
   // Load mute state from DB on mount
@@ -94,6 +115,46 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     loadMuteState();
   }, []);
 
+  const playHeartbeat = useCallback((startTime: number) => {
+    const ctx = audioContextRef.current;
+    if (!ctx) return;
+
+    // Create "Lub" (first beat)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(60, startTime);
+    osc1.frequency.exponentialRampToValueAtTime(40, startTime + 0.1);
+
+    gain1.gain.setValueAtTime(0, startTime);
+    gain1.gain.linearRampToValueAtTime(0.3, startTime + 0.02);
+    gain1.gain.exponentialRampToValueAtTime(0.001, startTime + 0.2);
+
+    osc1.start(startTime);
+    osc1.stop(startTime + 0.25);
+
+    // Create "Dub" (second beat)
+    const t2 = startTime + 0.25;
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(60, t2);
+    osc2.frequency.exponentialRampToValueAtTime(40, t2 + 0.1);
+
+    gain2.gain.setValueAtTime(0, t2);
+    gain2.gain.linearRampToValueAtTime(0.25, t2 + 0.02);
+    gain2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.2);
+
+    osc2.start(t2);
+    osc2.stop(t2 + 0.25);
+  }, []);
+
   const playSound = useCallback((soundEffect: SoundEffect, scheduleTime?: number) => {
     // Don't play if user hasn't interacted yet
     if (!hasUserInteractedRef.current) {
@@ -105,32 +166,41 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return;
     }
 
-    const play = () => {
-      const audio = audioElementsRef.current.get(soundEffect);
-      if (audio) {
-        // Always start from beginning
-        audio.currentTime = 0;
-
-        audio.play().catch(error => {
-          console.log(`Sound effect '${soundEffect}' play was prevented:`, error);
-        });
-      } else {
-        console.warn(`Sound effect '${soundEffect}' not found`);
+    // Handle synthesized sounds
+    if (soundEffect === 'heartbeat') {
+      const ctx = audioContextRef.current;
+      if (ctx) {
+        const now = performance.now();
+        const delay = (scheduleTime ?? now) - now;
+        const ctxStartTime = ctx.currentTime + Math.max(0, delay / 1000);
+        playHeartbeat(ctxStartTime);
       }
-    };
-
-    if (scheduleTime !== undefined) {
-      const now = performance.now();
-      const delay = scheduleTime - now;
-      if (delay > 0) {
-        setTimeout(play, delay);
-      } else {
-        play();
-      }
-    } else {
-      play();
+      return;
     }
-  }, [isMuted]);
+
+    const ctx = audioContextRef.current;
+    const buffer = audioBuffersRef.current.get(soundEffect);
+
+    if (ctx && buffer) {
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = 0.2; // Quieter volume for sound effects
+
+      source.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      const now = performance.now();
+      const delay = (scheduleTime ?? now) - now;
+      const startTime = ctx.currentTime + Math.max(0, delay / 1000);
+
+      source.start(startTime);
+      console.log(`Playing sound: ${soundEffect} at ${startTime}`);
+    } else {
+      console.warn(`Sound effect '${soundEffect}' not found or context not ready`);
+    }
+  }, [isMuted, playHeartbeat]);
 
   // Register this playSound function at module level
   // so reducer and other non-React code can benefit from fast playback

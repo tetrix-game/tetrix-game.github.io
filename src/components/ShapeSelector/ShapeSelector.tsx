@@ -46,12 +46,14 @@ const ShapeSelector = (): JSX.Element => {
 
   // Calculate size for each shape button
   // Need to fit 3 buttons with gaps between them, and allow for 1.05 hover scale
-  const shapeGap = 12;
   const wrapperGap = 32; // Extra spacing between shape wrappers for breathing room
   const containerPadding = 12; // padding on each side
-  const totalGaps = (shapeGap + wrapperGap) * 2; // 2 gaps between 3 shapes (includes wrapper gap)
-  const totalPadding = containerPadding * 2; // padding on both sides
+
+  // We want to fit exactly 3 items + 2 gaps in the available space
+  const totalGaps = wrapperGap * 2;
+  const totalPadding = containerPadding * 2;
   const availableSpace = gameControlsLength - totalGaps - totalPadding;
+
   const shapeOptionBaseSize = availableSpace / (3 * 1.05);
   const shapeOptionFullSize = shapeOptionBaseSize * 1.05; // Size with hover scale
 
@@ -59,18 +61,33 @@ const ShapeSelector = (): JSX.Element => {
   // This prevents the container from growing/shrinking and allows clipping
   const shapeSelectorSize = gameControlsLength;
 
+  // Calculate the actual content width of 3 shapes + gaps
+  // We use this to manually center the content with padding, instead of using justify-content: center
+  // This prevents the "jolt" when a 4th shape is added (which would otherwise shift the center)
+  const actualContentWidth = 3 * shapeOptionFullSize + 2 * wrapperGap;
+
+  // Calculate centering padding
+  // This should be very close to 0 if the math above is correct, but handles rounding differences
+  const centeringPadding = Math.max(0, (shapeSelectorSize - totalPadding - actualContentWidth) / 2);
+
   return (
     <div
       className="shape-selector"
       style={{
         '--shape-selector-width': isLandscape ? 'auto' : `${shapeSelectorSize}px`,
         '--shape-selector-height': isLandscape ? `${shapeSelectorSize}px` : 'auto',
+        // Apply extra padding to the start axis to center the 3 shapes
+        // When the 4th shape is added, it will overflow to the end without shifting the start
+        paddingLeft: isLandscape ? `${containerPadding}px` : `${containerPadding + centeringPadding}px`,
+        paddingTop: isLandscape ? `${containerPadding + centeringPadding}px` : `${containerPadding}px`,
+        // Pass wrapper gap for CSS margins
+        '--wrapper-gap': `${wrapperGap}px`,
       } as React.CSSProperties}
     >
       <div
         className={`shape-selector-shapes-container ${isLandscape ? 'shape-selector-shapes-container-landscape' : 'shape-selector-shapes-container-portrait'}`}
         style={{
-          '--wrapper-gap': `${wrapperGap}px`,
+          // Gap is handled by margins now to allow animation
         } as React.CSSProperties}
       >
         {displayedShapes.map((shape, index) => {

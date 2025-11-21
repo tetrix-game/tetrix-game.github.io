@@ -1,6 +1,6 @@
 .shape-selector {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 12px;
   /* Add border and drop shadow */
@@ -29,8 +29,8 @@
   /* Never wrap - always stay in one line/column */
   /* Clip overflow to prevent size growth during animations */
   overflow: hidden;
-  /* Add spacing between shape wrappers for breathing room */
-  gap: var(--wrapper-gap, 16px);
+  /* Gap is handled by margins on items to allow animation */
+  gap: 0;
 }
 
 .shape-selector-shapes-container-landscape {
@@ -47,9 +47,31 @@
   /* Transition for smooth shrinking when shape is removed */
   transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
     height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-    opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    margin-bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   flex-shrink: 0;
   /* Prevent wrapper from shrinking on its own */
+}
+
+/* Portrait: horizontal flow with right margins */
+.shape-selector-shape-wrapper[data-landscape="0"] {
+  margin-right: var(--wrapper-gap);
+  margin-bottom: 0;
+}
+
+.shape-selector-shape-wrapper[data-landscape="0"]:last-child {
+  margin-right: 0;
+}
+
+/* Landscape: vertical flow with bottom margins */
+.shape-selector-shape-wrapper[data-landscape="1"] {
+  margin-right: 0;
+  margin-bottom: var(--wrapper-gap);
+}
+
+.shape-selector-shape-wrapper[data-landscape="1"]:last-child {
+  margin-bottom: 0;
 }
 
 /* Animation state for removing shapes */
@@ -57,14 +79,16 @@
   opacity: 0;
 }
 
-/* Portrait: shrink width when removing (horizontal layout) */
+/* Portrait: shrink width and margin when removing */
 .shape-selector-shape-wrapper.removing[data-landscape="0"] {
   width: 0;
+  margin-right: 0;
 }
 
-/* Landscape: shrink height when removing (vertical layout) */
+/* Landscape: shrink height and margin when removing */
 .shape-selector-shape-wrapper.removing[data-landscape="1"] {
   height: 0;
+  margin-bottom: 0;
 }
 
 /* Portrait screens (taller than wide): horizontal button flow */

@@ -8,6 +8,7 @@ import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
 import { useMusicControl } from './components/Header/MusicControlContext';
+import { useSoundEffects } from './components/SoundEffectsContext';
 import { useState, useEffect, useRef } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import './App.css';
@@ -16,6 +17,7 @@ const App = () => {
   const { gameState, dragState, gridTileSize, gridBounds, tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { triggerAutoplay } = useMusicControl();
+  const { playSound } = useSoundEffects();
   const [showTutorial, setShowTutorial] = useState(false);
   const gridRef = useRef<HTMLElement | null>(null);
 
@@ -181,6 +183,7 @@ const App = () => {
 
       // If location is null or placement is invalid, return the shape
       if (location === null || !isValidPlacement(dragState.selectedShape, location, tiles)) {
+        playSound('invalid_placement');
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
       }
@@ -200,7 +203,7 @@ const App = () => {
     return () => {
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, tiles]);
+  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, tiles, playSound]);
 
   return (
     <div className="App">

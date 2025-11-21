@@ -2,9 +2,7 @@
 
 ## What's Up Next
 
-- Not enough points should show an error
-- Invalid placement sound
-- Valid placement sound
+- The placement animation still isn't quite working
 - Sounds and Music sliders
 - Clearing the 10X10 should give a significant amount of points
 - Stats for a no shape turn streak
@@ -12,7 +10,6 @@
 - Light and dark mode
 - Document what display layers there are, and give each a taxonomy
 - The heartbeat isn't loud enough on phones
-- The shapes queue isn't sliding smoothly
 
 
 ## Related Documentation

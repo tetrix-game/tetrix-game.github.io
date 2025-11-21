@@ -5,6 +5,7 @@ export type SoundEffect =
   | 'click_into_place'
   | 'game_over'
   | 'pickup_shape'
+  | 'invalid_placement'
   | 'clear_combo_1'
   | 'clear_combo_2'
   | 'clear_combo_3'
@@ -51,6 +52,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         click_into_place: '/sound/soundEffects/click_into_place.mp3',
         game_over: '/sound/soundEffects/game_over.mp3',
         pickup_shape: '/sound/soundEffects/pickup_shape.mp3',
+        invalid_placement: '/sound/soundEffects/Invalid_Placement.mp3',
         clear_combo_1: '/sound/soundEffects/clear-combo-1.mp3',
         clear_combo_2: '/sound/soundEffects/clear-combo-2.mp3',
         clear_combo_3: '/sound/soundEffects/clear-combo-3.mp3',

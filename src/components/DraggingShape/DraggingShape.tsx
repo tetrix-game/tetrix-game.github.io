@@ -45,14 +45,14 @@ export default function DraggingShape() {
   const { gridSize, gridGap } = useGameSizing();
 
   // Constants for animation timing (derived from shared source of truth)
-  const { 
-    PICKUP_DURATION, 
-    PLACING_DURATION, 
-    RETURN_DURATION, 
+  const {
+    PICKUP_DURATION,
+    PLACING_DURATION,
+    RETURN_DURATION,
     PLACEMENT_SOUND_DURATION,
-    INVALID_BLOCK_ANIMATION_DURATION 
+    INVALID_BLOCK_ANIMATION_DURATION
   } = ANIMATION_TIMING;
-  
+
   // ShapeOption constants (must match ShapeOption.tsx)
   const SHAPE_OPTION_PADDING = 4;
   const SHAPE_OPTION_GAP = 1;
@@ -114,7 +114,7 @@ export default function DraggingShape() {
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / PLACING_DURATION, 1);
-      
+
       if (!soundTriggered && elapsed >= SOUND_START_TIME) {
         soundTriggered = true;
         playSound('click_into_place');
@@ -174,7 +174,7 @@ export default function DraggingShape() {
     const availableSize = sourcePosition.width - (SHAPE_OPTION_PADDING * 2);
     const cellGapSpace = SHAPE_OPTION_GAP * 3;
     shapeOptionCellSize = (availableSize - cellGapSpace) / 4;
-    
+
     shapeOptionCenter = {
       x: sourcePosition.x + sourcePosition.width / 2,
       y: sourcePosition.y + sourcePosition.height / 2
@@ -261,7 +261,7 @@ export default function DraggingShape() {
 
   // 3. Calculate final container position and child offsets
   const centeringOffset = getCenteringOffset(currentCellSize, currentGap);
-  
+
   const shapeWidth = 4 * currentCellSize + 3 * currentGap;
   const shapeHeight = 4 * currentCellSize + 3 * currentGap;
 

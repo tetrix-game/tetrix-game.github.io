@@ -10,10 +10,10 @@ export const ANIMATION_TIMING = {
   PICKUP_DURATION: 300,
   PLACING_DURATION: 300,
   RETURN_DURATION: 300,
-  
+
   // Audio sync
   PLACEMENT_SOUND_DURATION: 97, // Length of click_into_place.mp3
-  
+
   // ShapeOption animations
   REMOVAL_DURATION: 300,
 

@@ -26,6 +26,8 @@
 .wiggle-wrapper {
   width: 100%;
   height: 100%;
+  margin: 0;
+  transition: width var(--invalid-anim-duration, 200ms) ease, height var(--invalid-anim-duration, 200ms) ease, margin var(--invalid-anim-duration, 200ms) ease;
 }
 
 @keyframes wiggle {
@@ -47,6 +49,9 @@
 }
 
 .invalid-cell .wiggle-wrapper {
-  animation: wiggle 0.2s linear infinite;
+  width: 50%;
+  height: 50%;
+  margin: 25%;
+  animation: wiggle var(--invalid-anim-duration, 0.2s) linear infinite;
   animation-delay: var(--wiggle-delay);
 }

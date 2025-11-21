@@ -5,6 +5,7 @@ import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/
 import { TetrixReducerState, DragPhase } from '../utils/types';
 import { INITIAL_GAME_STATS } from '../types/stats';
 import { DebugEditorProvider } from '../components/DebugEditor';
+import { ANIMATION_TIMING } from '../utils/animationConstants';
 
 const mocks = vi.hoisted(() => ({
   playSound: vi.fn(),
@@ -99,9 +100,12 @@ describe('Sound Timing in DraggingShape', () => {
       </DebugEditorProvider>
     );
 
-    // Fast-forward to the sound trigger point (203ms out of 300ms animation)
+    // Calculate sound trigger time
+    const soundTriggerTime = ANIMATION_TIMING.PLACING_DURATION - ANIMATION_TIMING.PLACEMENT_SOUND_DURATION;
+
+    // Fast-forward to the sound trigger point
     await act(async () => {
-      vi.advanceTimersByTime(210);
+      vi.advanceTimersByTime(soundTriggerTime + 10); // Add small buffer
       // Allow time for the next animation frame
       await vi.runOnlyPendingTimersAsync();
     });
@@ -132,7 +136,7 @@ describe('Sound Timing in DraggingShape', () => {
     expect(mocks.playSound).not.toHaveBeenCalled();
   });
 
-  it('should complete placement animation after 300ms', async () => {
+  it('should complete placement animation after duration', async () => {
     const mockState = createMockState('placing');
 
     render(
@@ -145,9 +149,9 @@ describe('Sound Timing in DraggingShape', () => {
       </DebugEditorProvider>
     );
 
-    // Fast-forward to completion (300ms)
+    // Fast-forward to completion
     await act(async () => {
-      vi.advanceTimersByTime(300);
+      vi.advanceTimersByTime(ANIMATION_TIMING.PLACING_DURATION);
       // Allow time for the final animation frame
       await vi.runOnlyPendingTimersAsync();
     });

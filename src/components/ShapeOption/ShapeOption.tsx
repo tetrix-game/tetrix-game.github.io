@@ -4,6 +4,7 @@ import BlockVisual from '../BlockVisual';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import { getShapeBounds } from '../../utils/shapeUtils';
+import { ANIMATION_TIMING } from '../../utils/animationConstants';
 
 type ShapeOptionProps = {
   shape: Shape;
@@ -83,10 +84,10 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
   // Handle removal animation - trigger completion after animation duration
   useEffect(() => {
     if (removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing') {
-      // Start the animation and trigger completion after 300ms
+      // Start the animation and trigger completion after duration
       const animationTimer = setTimeout(() => {
         dispatch({ type: 'COMPLETE_SHAPE_REMOVAL' });
-      }, 300); // 0.3s animation duration
+      }, ANIMATION_TIMING.REMOVAL_DURATION);
 
       return () => clearTimeout(animationTimer);
     }

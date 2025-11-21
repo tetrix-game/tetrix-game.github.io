@@ -6,6 +6,7 @@
 
 import type { TetrixReducerState, TetrixAction } from '../types';
 import { getShapeGridPositions, getShapeVisualOffset } from '../utils/shapes';
+import { ANIMATION_TIMING } from '../utils/animationConstants';
 
 export function dragReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
@@ -134,7 +135,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // Transition from picking-up to dragging after pickup animation completes
       const shouldTransitionToDragging = state.dragState.phase === 'picking-up' && state.dragState.startTime &&
-        (performance.now() - state.dragState.startTime > 300); // 300ms pickup duration
+        (performance.now() - state.dragState.startTime > ANIMATION_TIMING.PICKUP_DURATION);
 
       const newDragState = shouldTransitionToDragging
         ? { ...state.dragState, phase: 'dragging' as const, hoveredBlockPositions, invalidBlockPositions, isValidPlacement: isValid ?? false }

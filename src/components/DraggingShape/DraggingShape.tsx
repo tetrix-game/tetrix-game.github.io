@@ -1,11 +1,32 @@
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual';
 import { useSoundEffects } from '../SoundEffectsContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugEditor } from '../DebugEditor';
+import { getShapeBounds } from '../../utils/shapes';
+import { ANIMATION_TIMING } from '../../utils/animationConstants';
 import './DraggingShape.css';
 
+/**
+ * DraggingShape Component
+ * 
+ * PURPOSE:
+ * This component acts as the visual bridge between the static ShapeOption (in the menu)
+ * and the interactive Grid (on the board). It is a temporary overlay that exists only
+ * during the drag-and-drop lifecycle.
+ * 
+ * RESPONSIBILITIES:
+ * 1. Handle all movement animations (pickup, dragging, placing, returning).
+ * 2. Smoothly interpolate between the ShapeOption's coordinate system and the Grid's coordinate system.
+ * 3. Ensure the "Filled Center" of the shape aligns with the mouse cursor (during drag) 
+ *    or the target grid tiles (during drop).
+ * 
+ * COORDINATE SYSTEMS:
+ * - ShapeOption: Uses a padded container with a centered 4x4 grid.
+ * - Grid: Uses a fixed tile grid.
+ * - DraggingShape: Interpolates between these two states.
+ */
 export default function DraggingShape() {
   const {
     dragState,
@@ -23,51 +44,60 @@ export default function DraggingShape() {
   // Get dynamic sizing from hook
   const { gridSize, gridGap } = useGameSizing();
 
-  // Calculate dynamic grid dimensions
+  // Constants for animation timing (derived from shared source of truth)
+  const { 
+    PICKUP_DURATION, 
+    PLACING_DURATION, 
+    RETURN_DURATION, 
+    PLACEMENT_SOUND_DURATION,
+    INVALID_BLOCK_ANIMATION_DURATION 
+  } = ANIMATION_TIMING;
+  
+  // ShapeOption constants (must match ShapeOption.tsx)
+  const SHAPE_OPTION_PADDING = 4;
+  const SHAPE_OPTION_GAP = 1;
+
+  // Calculate Grid dimensions
   const GRID_GAP = gridGap;
   const GRID_GAPS_TOTAL = 9 * GRID_GAP;
-  const TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
+  const GRID_TILE_SIZE = (gridSize - GRID_GAPS_TOTAL) / 10;
 
-  // Get touch offset from precomputed offsets or calculate fallback
+  // Get touch offset
   const MOBILE_TOUCH_OFFSET = dragState.dragOffsets?.touchOffset ?? 0;
 
-  // Play pickup sound when animation starts
+  // --- Effects for Animation Lifecycle ---
+
+  // Play pickup sound
   useEffect(() => {
     if (dragState.phase === 'picking-up' && dragState.startTime) {
       playSound('pickup_shape');
     }
   }, [dragState.phase, dragState.startTime, playSound]);
 
-  // Animate pick-up from ShapeOption to cursor
+  // Animate pick-up
   useEffect(() => {
     if (dragState.phase !== 'picking-up' || !dragState.sourcePosition) {
       setPickupProgress(dragState.phase === 'dragging' ? 1 : 0);
       return;
     }
 
-    const PICKUP_DURATION = 300; // 300ms animation
     const startTime = performance.now();
-
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / PICKUP_DURATION, 1);
-
-      // Ease-out cubic for smooth pick-up
-      const eased = 1 - Math.pow(1 - progress, 3);
+      const eased = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
 
       setPickupProgress(eased);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        // Animation complete - transition to dragging phase
         setPickupProgress(1);
-        // Note: The reducer will handle the phase transition via UPDATE_MOUSE_LOCATION
+        // Phase transition handled by reducer via UPDATE_MOUSE_LOCATION
       }
     };
-
     requestAnimationFrame(animate);
-  }, [dragState.phase, dragState.sourcePosition]);
+  }, [dragState.phase, dragState.sourcePosition, PICKUP_DURATION]);
 
   // Animate placement
   useEffect(() => {
@@ -76,212 +106,173 @@ export default function DraggingShape() {
       return;
     }
 
-    const ANIMATION_DURATION = 300; // 300ms total animation
-    const SOUND_DURATION = 97; // Duration of click_into_place.mp3 in milliseconds
-    const SOUND_START_TIME = ANIMATION_DURATION - SOUND_DURATION; // Start sound so it ends with animation
-
+    const SOUND_DURATION = PLACEMENT_SOUND_DURATION;
+    const SOUND_START_TIME = PLACING_DURATION - SOUND_DURATION;
     const startTime = performance.now();
     let soundTriggered = false;
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
-
-      // Trigger sound at the right time so it ends with the animation
+      const progress = Math.min(elapsed / PLACING_DURATION, 1);
+      
       if (!soundTriggered && elapsed >= SOUND_START_TIME) {
         soundTriggered = true;
         playSound('click_into_place');
       }
 
-      // Ease-in cubic for magnetic acceleration (like being pulled in)
-      const eased = Math.pow(progress, 3);
+      const eased = Math.pow(progress, 3); // Ease-in cubic
       setPlacingProgress(eased);
 
       if (progress >= 1) {
-        // Animation complete - dispatch completion which will place the shape and hide DraggingShape
         dispatch({ type: 'COMPLETE_PLACEMENT' });
       } else {
         requestAnimationFrame(animate);
       }
     };
-
     requestAnimationFrame(animate);
-  }, [dragState.phase, dragState.targetPosition, dispatch, playSound]);
+  }, [dragState.phase, dragState.targetPosition, dispatch, playSound, PLACING_DURATION]);
 
-  // Animate return to selector
+  // Animate return
   useEffect(() => {
     if (dragState.phase !== 'returning' || !dragState.sourcePosition) {
       setReturningProgress(0);
       return;
     }
 
-    const RETURN_DURATION = 250; // 250ms return animation (slightly faster than pickup)
     const startTime = performance.now();
-
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / RETURN_DURATION, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
 
-      // Ease-out cubic for smooth deceleration
-      const eased = 1 - Math.pow(1 - progress, 3);
       setReturningProgress(eased);
 
       if (progress >= 1) {
-        // Animation complete - dispatch completion to clear the shape
         dispatch({ type: 'COMPLETE_RETURN' });
       } else {
         requestAnimationFrame(animate);
       }
     };
-
     requestAnimationFrame(animate);
-  }, [dragState.phase, dragState.sourcePosition, dispatch]);
+  }, [dragState.phase, dragState.sourcePosition, dispatch, RETURN_DURATION]);
 
-  if (!dragState.selectedShape || dragState.selectedShapeIndex === null) {
+  // --- Render Logic ---
+
+  if (!dragState.selectedShape || dragState.selectedShapeIndex === null || dragState.phase === 'none') {
     return null;
   }
 
-  // Don't render if not in an active drag phase
-  if (dragState.phase === 'none') {
-    return null;
-  }
-
-  // Calculate cell size and gap based on phase
-  let cellSize = TILE_SIZE;
-  let cellGap = GRID_GAP;
-  let containerTop: number;
-  let containerLeft: number;
-  let scale = 1;
-
+  const shape = dragState.selectedShape;
   const sourcePosition = dragState.sourcePosition;
 
-  if (dragState.phase === 'returning' && sourcePosition && returningProgress < 1) {
-    // During return: interpolate from current position back to ShapeOption
-    const shapeOptionSize = sourcePosition.width;
-    const shapeOptionCellGap = 1;
-    const shapeOptionCellSize = (shapeOptionSize - 3 * shapeOptionCellGap) / 4;
+  // 1. Calculate ShapeOption metrics (Start State)
+  // We need to know exactly how the shape looked in the ShapeOption
+  let shapeOptionCellSize = GRID_TILE_SIZE;
+  let shapeOptionCenter = { x: 0, y: 0 };
 
-    // Interpolate from grid size back to ShapeOption size
-    cellSize = TILE_SIZE + (shapeOptionCellSize - TILE_SIZE) * returningProgress;
-    cellGap = GRID_GAP + (shapeOptionCellGap - GRID_GAP) * returningProgress;
+  if (sourcePosition) {
+    const availableSize = sourcePosition.width - (SHAPE_OPTION_PADDING * 2);
+    const cellGapSpace = SHAPE_OPTION_GAP * 3;
+    shapeOptionCellSize = (availableSize - cellGapSpace) / 4;
+    
+    shapeOptionCenter = {
+      x: sourcePosition.x + sourcePosition.width / 2,
+      y: sourcePosition.y + sourcePosition.height / 2
+    };
+  }
 
-    // Start at cursor position
-    const startX = mousePosition.x;
-    const startY = mousePosition.y - MOBILE_TOUCH_OFFSET;
+  // 2. Determine current interpolation state based on phase
+  let currentCellSize = GRID_TILE_SIZE;
+  let currentGap = GRID_GAP;
+  let currentCenter = { x: 0, y: 0 };
+  let scale = 1;
 
-    // End at ShapeOption center
-    const targetX = sourcePosition.x + sourcePosition.width / 2;
-    const targetY = sourcePosition.y + sourcePosition.height / 2;
+  // Helper to calculate centering offset for a given cell size
+  // This matches ShapeOption's logic: shifts children so the visual center aligns with container center
+  const getCenteringOffset = (cellSize: number, gap: number) => {
+    const bounds = getShapeBounds(shape);
+    const cellWithGap = cellSize + gap;
+    const shapeVisualCenterCol = bounds.minCol + (bounds.width - 1) / 2;
+    const shapeVisualCenterRow = bounds.minRow + (bounds.height - 1) / 2;
+    const gridCenter = 1.5; // Center of 4x4 grid (0-3)
 
-    // Interpolate position
-    const currentX = startX + (targetX - startX) * returningProgress;
-    const currentY = startY + (targetY - startY) * returningProgress;
+    return {
+      x: (gridCenter - shapeVisualCenterCol) * cellWithGap,
+      y: (gridCenter - shapeVisualCenterRow) * cellWithGap
+    };
+  };
 
-    // Position the shape centered at the interpolated point
-    const shapeWidth = 4 * cellSize + 3 * cellGap;
-    const shapeHeight = 4 * cellSize + 3 * cellGap;
+  if (dragState.phase === 'picking-up' && sourcePosition) {
+    // Interpolate from ShapeOption to Mouse
+    currentCellSize = shapeOptionCellSize + (GRID_TILE_SIZE - shapeOptionCellSize) * pickupProgress;
+    currentGap = SHAPE_OPTION_GAP + (GRID_GAP - SHAPE_OPTION_GAP) * pickupProgress;
 
-    containerLeft = currentX - shapeWidth / 2;
-    containerTop = currentY - shapeHeight / 2;
-
-    // Fade out during return
-    scale = 1 - 0.2 * returningProgress;
-
-  } else if (dragState.phase === 'picking-up' && sourcePosition) {
-    // During pickup: interpolate from ShapeOption size to grid size
-    const shapeOptionSize = sourcePosition.width;
-    const shapeOptionCellGap = 1; // ShapeOption uses 1px gap
-    const shapeOptionCellSize = (shapeOptionSize - 3 * shapeOptionCellGap) / 4; // 4x4 grid with 3 gaps
-
-    cellSize = shapeOptionCellSize + (TILE_SIZE - shapeOptionCellSize) * pickupProgress;
-    cellGap = shapeOptionCellGap + (GRID_GAP - shapeOptionCellGap) * pickupProgress;
-
-    // Calculate shape bounds from ShapeOption bounds
-    const bounds = shapeOptionBounds[dragState.selectedShapeIndex];
-    if (!bounds) {
-      return null;
-    }
-
-    // Start at ShapeOption center
-    const startX = bounds.left + bounds.width / 2;
-    const startY = bounds.top + bounds.height / 2;
-
-    // End at cursor (with mobile offset)
     const targetX = mousePosition.x;
     const targetY = mousePosition.y - MOBILE_TOUCH_OFFSET;
 
-    // Interpolate position
-    const currentX = startX + (targetX - startX) * pickupProgress;
-    const currentY = startY + (targetY - startY) * pickupProgress;
-
-    // Position the shape centered at the interpolated point
-    const shapeWidth = 4 * cellSize + 3 * cellGap;
-    const shapeHeight = 4 * cellSize + 3 * cellGap;
-
-    containerLeft = currentX - shapeWidth / 2;
-    containerTop = currentY - shapeHeight / 2;
+    currentCenter = {
+      x: shapeOptionCenter.x + (targetX - shapeOptionCenter.x) * pickupProgress,
+      y: shapeOptionCenter.y + (targetY - shapeOptionCenter.y) * pickupProgress
+    };
 
   } else if (dragState.phase === 'dragging') {
-    // During dragging: follow cursor smoothly, centered on filled blocks
-    const shapeWidth = 4 * TILE_SIZE + 3 * GRID_GAP;
-    const shapeHeight = 4 * TILE_SIZE + 3 * GRID_GAP;
-
-    // Use precomputed visual offset from dragState (calculated once on SELECT_SHAPE)
-    const centerOffsetX = dragState.dragOffsets?.visualOffsetX ?? 0;
-    const centerOffsetY = dragState.dragOffsets?.visualOffsetY ?? 0;
-
-    // Position container so filled blocks center is at cursor
-    containerLeft = mousePosition.x - shapeWidth / 2 - centerOffsetX;
-    containerTop = mousePosition.y - MOBILE_TOUCH_OFFSET - shapeHeight / 2 - centerOffsetY;
+    // Follow mouse exactly
+    currentCellSize = GRID_TILE_SIZE;
+    currentGap = GRID_GAP;
+    currentCenter = {
+      x: mousePosition.x,
+      y: mousePosition.y - MOBILE_TOUCH_OFFSET
+    };
 
   } else if (dragState.phase === 'placing' && dragState.targetPosition) {
-    // During placement: animate to target position
-    // Start from where the shape was during dragging (centered on filled blocks)
+    // Interpolate from Mouse (Placement Start) to Grid Target
+    currentCellSize = GRID_TILE_SIZE;
+    currentGap = GRID_GAP;
 
-    const shapeWidth = 4 * TILE_SIZE + 3 * GRID_GAP;
-    const shapeHeight = 4 * TILE_SIZE + 3 * GRID_GAP;
-
-    // Use precomputed visual offset from dragState (calculated once on SELECT_SHAPE)
-    const centerOffsetX = dragState.dragOffsets?.visualOffsetX ?? 0;
-    const centerOffsetY = dragState.dragOffsets?.visualOffsetY ?? 0;
-
-    // Start position is where the FILLED BLOCKS CENTER was when placement started
-    // This is the mouse position, which during dragging is where filled blocks are centered
     const startPos = dragState.placementStartPosition ?? mousePosition;
     const startX = startPos.x;
     const startY = startPos.y - MOBILE_TOUCH_OFFSET;
 
-    // Target position from dragState (center of the placement location)
     const targetX = dragState.targetPosition.x;
     const targetY = dragState.targetPosition.y;
 
-    // Interpolate with easing
-    const currentX = startX + (targetX - startX) * placingProgress;
-    const currentY = startY + (targetY - startY) * placingProgress;
+    currentCenter = {
+      x: startX + (targetX - startX) * placingProgress,
+      y: startY + (targetY - startY) * placingProgress
+    };
 
-    // Add a subtle scale effect (1.0 -> 0.95 -> 1.0)
     scale = 1 - 0.05 * Math.sin(placingProgress * Math.PI);
 
-    // Position the 4x4 container so filled blocks center ends up at currentX/Y
-    // currentX/Y represent filled blocks center positions (both start and target are filled centers)
-    // To position the container: find where 4x4 top-left should be
-    // 4x4 center is at (container top-left + shapeWidth/2, container top-left + shapeHeight/2)
-    // Filled blocks center is offset from 4x4 center by (centerOffsetX, centerOffsetY)
-    // So: filled center = container top-left + shapeWidth/2 + centerOffsetX
-    // Therefore: container top-left = filled center - shapeWidth/2 - centerOffsetX
-    containerLeft = currentX - shapeWidth / 2 - centerOffsetX;
-    containerTop = currentY - shapeHeight / 2 - centerOffsetY;
+  } else if (dragState.phase === 'returning' && sourcePosition) {
+    // Interpolate from Mouse back to ShapeOption
+    currentCellSize = GRID_TILE_SIZE + (shapeOptionCellSize - GRID_TILE_SIZE) * returningProgress;
+    currentGap = GRID_GAP + (SHAPE_OPTION_GAP - GRID_GAP) * returningProgress;
 
-  } else {
-    return null;
+    const startX = mousePosition.x;
+    const startY = mousePosition.y - MOBILE_TOUCH_OFFSET;
+
+    currentCenter = {
+      x: startX + (shapeOptionCenter.x - startX) * returningProgress,
+      y: startY + (shapeOptionCenter.y - startY) * returningProgress
+    };
+
+    scale = 1 - 0.2 * returningProgress;
   }
+
+  // 3. Calculate final container position and child offsets
+  const centeringOffset = getCenteringOffset(currentCellSize, currentGap);
+  
+  const shapeWidth = 4 * currentCellSize + 3 * currentGap;
+  const shapeHeight = 4 * currentCellSize + 3 * currentGap;
+
+  const containerLeft = currentCenter.x - shapeWidth / 2;
+  const containerTop = currentCenter.y - shapeHeight / 2;
 
   // Safety check
   if (!Number.isFinite(containerTop) || !Number.isFinite(containerLeft)) {
     return null;
   }
 
-  // Create a Set of invalid block positions for quick lookup
   const invalidBlockSet = new Set(
     dragState.invalidBlockPositions.map(pos => `${pos.shapeRow},${pos.shapeCol}`)
   );
@@ -292,12 +283,16 @@ export default function DraggingShape() {
       style={{
         '--container-top': `${containerTop}px`,
         '--container-left': `${containerLeft}px`,
-        '--tile-size': `${cellSize}px`,
-        '--grid-gap': `${cellGap}px`,
+        '--tile-size': `${currentCellSize}px`,
+        '--grid-gap': `${currentGap}px`,
         '--scale': scale,
+        // Apply centering offset to children via CSS variable (matching ShapeOption)
+        '--centering-offset-x': `${centeringOffset.x}px`,
+        '--centering-offset-y': `${centeringOffset.y}px`,
+        '--invalid-anim-duration': `${INVALID_BLOCK_ANIMATION_DURATION}ms`,
       } as React.CSSProperties}
     >
-      {dragState.selectedShape.map((row, rowIndex) => (
+      {shape.map((row, rowIndex) => (
         row.map((block, colIndex) => {
           const blockKey = `${rowIndex},${colIndex}`;
           const isInvalid = invalidBlockSet.has(blockKey);
@@ -307,13 +302,10 @@ export default function DraggingShape() {
             <div
               key={`${rowIndex}-${colIndex}`}
               className={`dragging-shape-cell ${isInvalid ? 'invalid-cell' : ''}`}
-              style={isInvalid ? {
-                // Shrink to half size while maintaining center position
-                width: `calc(var(--tile-size) * 0.5)`,
-                height: `calc(var(--tile-size) * 0.5)`,
-                // Offset to center the smaller block in its cell
-                transform: `translate(calc(var(--tile-size) * 0.25), calc(var(--tile-size) * 0.25))`,
-              } as React.CSSProperties : undefined}
+              style={{
+                // Apply the centering transform here
+                transform: `translate(var(--centering-offset-x), var(--centering-offset-y))`,
+              } as React.CSSProperties}
             >
               <div
                 className="wiggle-wrapper"
@@ -322,7 +314,7 @@ export default function DraggingShape() {
                 } as React.CSSProperties}
               >
                 {block.isFilled && (
-                  <BlockVisual block={block} size={isInvalid ? cellSize * 0.5 : cellSize} />
+                  <BlockVisual block={block} size={isInvalid ? currentCellSize * 0.5 : currentCellSize} />
                 )}
                 {!block.isFilled && debugState.isEditorOpen && debugState.showGridDots && (
                   <div

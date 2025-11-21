@@ -75,6 +75,7 @@ export const initialGameState = {
   clearingAnimations: [],
   stats: INITIAL_STATS_PERSISTENCE,
   isStatsOpen: false,
+  insufficientFundsError: null,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -148,6 +149,15 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "ACTIVATE_TURNING_MODE": {
       const { direction } = action.value;
+
+      // Check if user has enough score (2 points required)
+      if (state.score < 2) {
+        return {
+          ...state,
+          insufficientFundsError: Date.now(),
+        };
+      }
+
       return {
         ...state,
         isTurningModeActive: true,
@@ -165,6 +175,14 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     }
 
     case "ACTIVATE_DOUBLE_TURN_MODE": {
+      // Check if user has enough score (3 points required)
+      if (state.score < 3) {
+        return {
+          ...state,
+          insufficientFundsError: Date.now(),
+        };
+      }
+
       return {
         ...state,
         isDoubleTurnModeActive: true,

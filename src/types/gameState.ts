@@ -62,6 +62,7 @@ export type TetrixReducerState = {
 
   // UI State
   isStatsOpen: boolean; // Whether the stats overlay is currently open
+  insufficientFundsError: number | null; // Timestamp of last insufficient funds error
 };
 
 type SelectShapeAction = {

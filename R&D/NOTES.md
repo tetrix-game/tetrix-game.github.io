@@ -2,16 +2,16 @@
 
 ## What's Up Next
 
-- Accessibility for all buttons
+- Not enough points should show an error
 - Invalid placement sound
 - Valid placement sound
 - Sounds and Music sliders
 - Clearing the 10X10 should give a significant amount of points
 - Stats for a no shape turn streak
-- Better visuals on sharing platforms
 - Better App Icon
 - Light and dark mode
-- No points should give an error
+- Document what display layers there are, and give each a taxonomy
+- The heartbeat isn't loud enough on phones
 
 
 ## Related Documentation

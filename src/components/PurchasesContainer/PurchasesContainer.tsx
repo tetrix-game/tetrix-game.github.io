@@ -8,6 +8,8 @@ const PurchasesContainer = (): JSX.Element => {
   const { gameControlsWidth } = useGameSizing();
 
   const handleBuyTurnClockwise = () => {
+    if (state.gameState !== 'playing') return;
+
     if (state.isTurningModeActive && state.turningDirection === 'cw') {
       dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
     } else {
@@ -16,6 +18,8 @@ const PurchasesContainer = (): JSX.Element => {
   };
 
   const handleBuyTurnCounterClockwise = () => {
+    if (state.gameState !== 'playing') return;
+
     if (state.isTurningModeActive && state.turningDirection === 'ccw') {
       dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
     } else {
@@ -24,6 +28,8 @@ const PurchasesContainer = (): JSX.Element => {
   };
 
   const handleBuyDoubleTurn = () => {
+    if (state.gameState !== 'playing') return;
+
     if (state.isDoubleTurnModeActive) {
       dispatch({ type: 'DEACTIVATE_DOUBLE_TURN_MODE' });
     } else {
@@ -56,9 +62,8 @@ const PurchasesContainer = (): JSX.Element => {
       } as React.CSSProperties}
     >
       <button
-        className={`purchases-container-button purchases-container-button-clockwise ${isClockwiseActive ? 'active' : ''}`}
+        className={`purchases-container-button purchases-container-button-clockwise ${isClockwiseActive ? 'active' : ''} ${isClockwiseDisabled ? 'disabled' : ''}`}
         onClick={handleBuyTurnClockwise}
-        disabled={isClockwiseDisabled}
         title={isClockwiseDisabled ? 'Need 2 points to buy clockwise turn' : 'Buy clockwise turn (2 points)'}
       >
         <div className="purchases-container-icon">
@@ -68,9 +73,8 @@ const PurchasesContainer = (): JSX.Element => {
       </button>
 
       <button
-        className={`purchases-container-button purchases-container-button-double-turn ${isDoubleTurnActive ? 'active' : ''}`}
+        className={`purchases-container-button purchases-container-button-double-turn ${isDoubleTurnActive ? 'active' : ''} ${isDoubleTurnDisabled ? 'disabled' : ''}`}
         onClick={handleBuyDoubleTurn}
-        disabled={isDoubleTurnDisabled}
         title={isDoubleTurnDisabled ? 'Need 3 points to buy double turn' : 'Buy double turn (3 points)'}
       >
         <div className="purchases-container-icon">
@@ -80,9 +84,8 @@ const PurchasesContainer = (): JSX.Element => {
       </button>
 
       <button
-        className={`purchases-container-button purchases-container-button-counter-clockwise ${isCounterClockwiseActive ? 'active' : ''}`}
+        className={`purchases-container-button purchases-container-button-counter-clockwise ${isCounterClockwiseActive ? 'active' : ''} ${isCounterClockwiseDisabled ? 'disabled' : ''}`}
         onClick={handleBuyTurnCounterClockwise}
-        disabled={isCounterClockwiseDisabled}
         title={isCounterClockwiseDisabled ? 'Need 2 points to buy counter-clockwise turn' : 'Buy counter-clockwise turn (2 points)'}
       >
         <div className="purchases-container-icon">

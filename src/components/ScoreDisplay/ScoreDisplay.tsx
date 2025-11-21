@@ -3,12 +3,21 @@ import { formatScore } from '../../utils/scoringUtils';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlueGemIcon from '../BlueGemIcon';
 import StatsOverlay from '../StatsOverlay/StatsOverlay';
+import AttentionArrow from '../AttentionArrow/AttentionArrow';
+import { useVisualError } from '../../hooks/useVisualError';
+import '../../styles/feedback.css';
 import './ScoreDisplay.css';
 
 const ScoreDisplay: React.FC = () => {
-  const { score, gameState, isStatsOpen } = useTetrixStateContext();
+  const { score, gameState, isStatsOpen, insufficientFundsError, gemIconPosition } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
+
+  // Use the reusable hook for error pulsing
+  const isErrorPulsing = useVisualError(insufficientFundsError);
+
+  // Use the reusable hook for arrow visibility (longer duration)
+  const isArrowVisible = useVisualError(insufficientFundsError, 2500);
 
   // Update gem icon position whenever it changes
   useEffect(() => {
@@ -20,7 +29,8 @@ const ScoreDisplay: React.FC = () => {
             x: rect.left + rect.width / 2,
             y: rect.top + rect.height / 2
           };
-          console.log('ScoreDisplay: updating gem icon position to', position);
+          // Only dispatch if position actually changed significantly to avoid loops
+          // (Though the reducer handles this, it's good practice)
           dispatch({
             type: 'UPDATE_GEM_ICON_POSITION',
             value: position
@@ -45,10 +55,10 @@ const ScoreDisplay: React.FC = () => {
 
   return (
     <>
-      <div 
-        className={`score-display ${gameState === 'gameover' ? 'score-display-pulsing' : ''}`} 
-        onClick={handleOpenStats} 
-        style={{ cursor: 'pointer' }} 
+      <div
+        className={`score-display ${gameState === 'gameover' ? 'score-display-pulsing' : ''} ${isErrorPulsing ? 'error-pulse' : ''}`}
+        onClick={handleOpenStats}
+        style={{ cursor: 'pointer' }}
         title="Click to view stats"
       >
         <div ref={gemIconRef}>
@@ -58,6 +68,14 @@ const ScoreDisplay: React.FC = () => {
           {formatScore(score)}
         </span>
       </div>
+
+      <AttentionArrow
+        targetPosition={gemIconPosition}
+        isVisible={isArrowVisible}
+        message="Need points to turn shapes!"
+        offsetFromTarget={50}
+      />
+
       {isStatsOpen && <StatsOverlay onClose={handleCloseStats} />}
     </>
   );

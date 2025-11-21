@@ -42,8 +42,15 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
     case "SPEND_COIN": {
       const { shapeIndex, mousePosition: clickPosition } = action.value;
 
-      if (state.score <= 0 || shapeIndex < 0 || shapeIndex >= state.nextShapes.length) {
-        return state; // Can't spend if no coins or invalid index
+      if (state.score <= 0) {
+        return {
+          ...state,
+          insufficientFundsError: Date.now(),
+        };
+      }
+
+      if (shapeIndex < 0 || shapeIndex >= state.nextShapes.length) {
+        return state; // Can't spend if invalid index
       }
 
       const newScore = Math.max(0, state.score - 1);

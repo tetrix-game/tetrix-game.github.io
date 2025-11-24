@@ -42,18 +42,7 @@
 .score-display-value {
   font-weight: bold;
   color: var(--theme-text, #ffffff);
-  text-shadow:
-    /* Black border effect */
-    -1px -1px 0 #000000,
-    1px -1px 0 #000000,
-    -1px 1px 0 #000000,
-    1px 1px 0 #000000,
-    0 -1px 0 #000000,
-    0 1px 0 #000000,
-    -1px 0 0 #000000,
-    1px 0 0 #000000,
-    /* Very slight glow */
-    0 0 3px rgba(255, 255, 255, 0.3);
+  text-shadow: var(--theme-text-shadow, none);
 
   /* Scale font size with header height and screen size */
   font-size: clamp(1.2rem, 5vh, 2.5rem);

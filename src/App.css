@@ -8,6 +8,9 @@
 :root {
     /* Z-Index Layer System */
     --z-background: 0;
+    
+    /* Default animation color for light mode */
+    --theme-animation-color: rgba(100, 100, 100, 0.15);
     --z-board: 10;
     --z-block: 20;
     --z-ui: 100;

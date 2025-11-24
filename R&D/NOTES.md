@@ -1,8 +1,6 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-
-- The placement animation still isn't quite working
 - Sounds and Music sliders
 - Clearing the 10X10 should give a significant amount of points
 - Stats for a no shape turn streak

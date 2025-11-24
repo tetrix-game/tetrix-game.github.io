@@ -274,6 +274,7 @@ const App = () => {
     '--theme-overlay-bg': theme.overlayBg,
     '--theme-button-bg': theme.buttonBg,
     '--theme-button-hover': theme.buttonHover,
+    '--theme-animation-color': currentTheme === 'light' ? 'rgba(100, 100, 100, 0.55)' : 'rgba(255, 255, 255, 0.55)',
   } as React.CSSProperties & Record<string, string>;
 
   return (

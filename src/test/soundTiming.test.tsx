@@ -69,7 +69,12 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
     current: INITIAL_GAME_STATS,
     allTime: INITIAL_GAME_STATS,
     highScore: INITIAL_GAME_STATS,
-    lastUpdated: 0
+    lastUpdated: 0,
+    noTurnStreak: {
+      current: 0,
+      bestInGame: 0,
+      allTimeBest: 0,
+    },
   },
   hasLoadedPersistedState: true,
   isStatsOpen: false,

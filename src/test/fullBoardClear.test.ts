@@ -318,6 +318,11 @@ describe('Full Board Clear - Reducer Integration', () => {
           quadrupleRowByQuadrupleColumn: { total: 0, colors: {} },
         },
         lastUpdated: Date.now(),
+        noTurnStreak: {
+          current: 0,
+          bestInGame: 0,
+          allTimeBest: 0,
+        },
       },
       dragState: {
         phase: 'dragging',

@@ -10,7 +10,7 @@ import { calculateScore } from '../utils/scoringUtils';
 import { safeBatchSave } from '../utils/persistenceUtils';
 import { playSound } from '../components/SoundEffectsContext';
 import { generateClearingAnimations, generateFullBoardClearAnimation, cleanupExpiredAnimations, AnimationConfig } from '../utils/clearingAnimationUtils';
-import { updateStats } from '../utils/statsUtils';
+import { updateStats, incrementNoTurnStreak } from '../utils/statsUtils';
 import { checkGameOver } from '../utils/gameOverUtils';
 
 // Helper function to create a tile key from location
@@ -208,7 +208,10 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const newTotalLinesCleared = state.totalLinesCleared + clearedRowIndices.length + clearedColumnIndices.length;
 
       // Update stats
-      const newStats = updateStats(state.stats, clearedRows, clearedColumns);
+      let newStats = updateStats(state.stats, clearedRows, clearedColumns);
+      
+      // Increment no-turn streak (since shape was placed without rotating)
+      newStats = incrementNoTurnStreak(newStats);
 
       // Save game state to browser DB asynchronously (don't block UI)
       // Convert tiles to serializable format for persistence

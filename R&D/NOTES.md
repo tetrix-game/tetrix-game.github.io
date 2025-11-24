@@ -2,8 +2,6 @@
 
 ## What's Up Next
 
-- Clearing the 10X10 should give a significant amount of points
-- Stats for a no shape turn streak
 - Better App Icon
 - Light and dark mode
 - Document what display layers there are, and give each a taxonomy

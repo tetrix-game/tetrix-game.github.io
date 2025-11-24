@@ -155,6 +155,41 @@
   vertical-align: middle;
 }
 
+/* No-turn streak special styling */
+.stat-row.no-turn-streak {
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.stat-row.no-turn-streak .stat-label {
+  color: #8bc34a;
+  font-weight: 600;
+  font-size: 1.05em;
+}
+
+.stat-row.no-turn-streak .stat-value {
+  color: #8bc34a;
+  font-weight: 500;
+}
+
+.stat-row.no-turn-streak .stat-value.highlight {
+  color: #8bc34a;
+  font-weight: 700;
+  animation: streak-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes streak-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
 /* Scrollbar styling */
 .stats-scroll-container::-webkit-scrollbar {
   width: 8px;

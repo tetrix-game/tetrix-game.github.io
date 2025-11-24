@@ -237,6 +237,12 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         stats: {
           ...state.stats,
           current: JSON.parse(JSON.stringify(INITIAL_GAME_STATS)),
+          // Reset current game streak tracking but preserve all-time best
+          noTurnStreak: {
+            current: 0,
+            bestInGame: 0,
+            allTimeBest: state.stats.noTurnStreak.allTimeBest,
+          },
         },
         // Preserve modifiers
         unlockedModifiers: state.unlockedModifiers,

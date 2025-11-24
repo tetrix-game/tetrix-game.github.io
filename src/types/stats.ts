@@ -42,6 +42,12 @@ export type StatsPersistenceData = {
   highScore: GameStats; // Stores the highest single-game record for each stat
   current: GameStats;
   lastUpdated: number;
+  // No-turn streak tracking
+  noTurnStreak: {
+    current: number; // Current streak for ongoing game
+    bestInGame: number; // Best streak in current game
+    allTimeBest: number; // Best streak across all games
+  };
 };
 
 export const INITIAL_STAT_VALUE: StatValue = {
@@ -78,4 +84,9 @@ export const INITIAL_STATS_PERSISTENCE: StatsPersistenceData = {
   highScore: JSON.parse(JSON.stringify(INITIAL_GAME_STATS)),
   current: JSON.parse(JSON.stringify(INITIAL_GAME_STATS)),
   lastUpdated: Date.now(),
+  noTurnStreak: {
+    current: 0,
+    bestInGame: 0,
+    allTimeBest: 0,
+  },
 };

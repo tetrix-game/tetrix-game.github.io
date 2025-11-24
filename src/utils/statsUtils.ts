@@ -14,6 +14,15 @@ export function updateStats(
   const now = Date.now();
   newStats.lastUpdated = now;
 
+  // Ensure noTurnStreak exists (backward compatibility)
+  if (!newStats.noTurnStreak) {
+    newStats.noTurnStreak = {
+      current: 0,
+      bestInGame: 0,
+      allTimeBest: 0,
+    };
+  }
+
   // Helper to increment a stat
   const incrementStat = (category: StatCategory, color?: string, amount: number = 1) => {
     // Update current game
@@ -120,5 +129,54 @@ export function updateStats(
   if (r === 2 && c === 2) incrementStat('doubleColumnByDoubleRow', comboColor);
   if (r === 4 && c === 4) incrementStat('quadrupleRowByQuadrupleColumn', comboColor);
 
+  return newStats;
+}
+
+/**
+ * Increments the no-turn streak when a shape is placed without rotation
+ */
+export function incrementNoTurnStreak(currentStats: StatsPersistenceData): StatsPersistenceData {
+  const newStats = JSON.parse(JSON.stringify(currentStats));
+  
+  // Ensure noTurnStreak exists (backward compatibility)
+  if (!newStats.noTurnStreak) {
+    newStats.noTurnStreak = {
+      current: 0,
+      bestInGame: 0,
+      allTimeBest: 0,
+    };
+  }
+  
+  newStats.noTurnStreak.current += 1;
+  
+  // Update best in current game
+  if (newStats.noTurnStreak.current > newStats.noTurnStreak.bestInGame) {
+    newStats.noTurnStreak.bestInGame = newStats.noTurnStreak.current;
+  }
+  
+  // Update all-time best
+  if (newStats.noTurnStreak.current > newStats.noTurnStreak.allTimeBest) {
+    newStats.noTurnStreak.allTimeBest = newStats.noTurnStreak.current;
+  }
+  
+  return newStats;
+}
+
+/**
+ * Resets the current no-turn streak (called when rotating a shape)
+ */
+export function resetNoTurnStreak(currentStats: StatsPersistenceData): StatsPersistenceData {
+  const newStats = JSON.parse(JSON.stringify(currentStats));
+  
+  // Ensure noTurnStreak exists (backward compatibility)
+  if (!newStats.noTurnStreak) {
+    newStats.noTurnStreak = {
+      current: 0,
+      bestInGame: 0,
+      allTimeBest: 0,
+    };
+  }
+  
+  newStats.noTurnStreak.current = 0;
   return newStats;
 }

@@ -7,6 +7,7 @@
 import type { TetrixReducerState, TetrixAction } from '../types';
 import { generateRandomShape, rotateShape, cloneShape } from '../utils/shapes';
 import { safeBatchSave } from '../utils/persistenceUtils';
+import { resetNoTurnStreak } from '../utils/statsUtils';
 
 export function shapeReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
@@ -56,14 +57,18 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
         ? { ...state.dragState, selectedShape: rotatedShape }
         : state.dragState;
 
+      // Reset no-turn streak since a shape was rotated
+      const newStats = resetNoTurnStreak(state.stats);
+
       const newState = {
         ...state,
         nextShapes: newShapes,
         dragState: newDragState,
+        stats: newStats,
       };
 
-      // Save updated shapes to database
-      safeBatchSave(undefined, undefined, newShapes, newState.savedShape)
+      // Save updated shapes and stats to database
+      safeBatchSave(undefined, undefined, newShapes, newState.savedShape, newStats)
         .catch((error: Error) => {
           console.error('Failed to save shapes state:', error);
         });

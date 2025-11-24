@@ -679,6 +679,21 @@ export async function loadSoundEffectsSettings(): Promise<{ isMuted: boolean; vo
 }
 
 /**
+ * Migrate stats to ensure all properties exist (backward compatibility)
+ */
+function migrateStats(stats: any): StatsPersistenceData {
+  // Ensure noTurnStreak exists
+  if (!stats.noTurnStreak) {
+    stats.noTurnStreak = {
+      current: 0,
+      bestInGame: 0,
+      allTimeBest: 0,
+    };
+  }
+  return stats as StatsPersistenceData;
+}
+
+/**
  * Load stats from IndexedDB
  */
 export async function loadStats(): Promise<StatsPersistenceData | null> {
@@ -694,7 +709,9 @@ export async function loadStats(): Promise<StatsPersistenceData | null> {
       request.onsuccess = () => {
         const result = request.result;
         if (result) {
-          resolve(result);
+          // Migrate old stats to ensure new properties exist
+          const migratedStats = migrateStats(result);
+          resolve(migratedStats);
         } else {
           resolve(null); // No stats saved yet
         }

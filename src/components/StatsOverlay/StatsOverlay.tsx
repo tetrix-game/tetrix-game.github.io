@@ -89,6 +89,29 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
     onClose();
   };
 
+  const renderNoTurnStreak = () => {
+    const { current, bestInGame, allTimeBest } = stats.noTurnStreak;
+    
+    // Highlight if current equals or exceeds best in game
+    const isNewGameRecord = current > 0 && current >= bestInGame;
+    // Highlight if current equals or exceeds all-time best
+    const isAllTimeRecord = current > 0 && current >= allTimeBest;
+
+    return (
+      <div className="stat-row-container">
+        <div className="stat-row main-stat no-turn-streak">
+          <div className="stat-label">No-Turn Streak</div>
+          <div className="stat-value">{allTimeBest}</div>
+          <div className="stat-value">{bestInGame}</div>
+          <div className={`stat-value ${isNewGameRecord || isAllTimeRecord ? 'highlight' : ''}`}>
+            {current}
+            {isAllTimeRecord && current > 0 && <span className="streak-indicator">★</span>}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderStatRow = (category: StatCategory) => {
     const allTime = stats.allTime[category];
     const highScore = stats.highScore[category];
@@ -162,6 +185,8 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
                 {index > 0 && <div className={`group-divider ${group.className === 'stats-group-legendary' ? 'legendary-divider' : ''}`} />}
                 {/* <div className="group-title">{group.title}</div> */}
                 {rows}
+                {/* Add No-Turn Streak after the General group (first group) */}
+                {index === 0 && renderNoTurnStreak()}
               </div>
             );
           })}

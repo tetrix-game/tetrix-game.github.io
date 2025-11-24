@@ -12,6 +12,7 @@ import { useMusicControl } from './components/Header/MusicControlContext';
 import { useSoundEffects } from './components/SoundEffectsContext';
 import { useState, useEffect, useRef } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
+import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from './utils/colorUtils';
 import './App.css';
 
 const App = () => {
@@ -259,6 +260,7 @@ const App = () => {
   };
   
   const theme = themeDefinitions[currentTheme];
+  const blockColors = blockPaletteToCssVars(BLOCK_COLOR_PALETTES[currentTheme]);
   const themeStyle = {
     background: theme.background,
     color: theme.text,
@@ -276,6 +278,7 @@ const App = () => {
     '--theme-button-bg': theme.buttonBg,
     '--theme-button-hover': theme.buttonHover,
     '--theme-animation-color': currentTheme === 'light' ? 'rgba(100, 100, 100, 0.55)' : 'rgba(255, 255, 255, 0.55)',
+    ...blockColors, // Apply theme-specific block colors
   } as React.CSSProperties & Record<string, string>;
 
   return (

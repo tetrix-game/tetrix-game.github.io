@@ -3,7 +3,6 @@
 ## What's Up Next
 
 - Stylistic changes:
-    - The grid is making the color of the blocks tinted different, and that's bad
     - The turn buttons and map icon needs to honor the dark/light/blast styles
 
     

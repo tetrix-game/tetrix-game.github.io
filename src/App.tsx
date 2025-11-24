@@ -6,6 +6,7 @@ import TutorialOverlay from './components/TutorialOverlay';
 import DebugEditor from './components/DebugEditor';
 import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
+import ColorOverrideApplier from './components/ColorPicker/ColorOverrideApplier';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
 import { useMusicControl } from './components/Header/MusicControlContext';
 import { useSoundEffects } from './components/SoundEffectsContext';
@@ -279,6 +280,7 @@ const App = () => {
 
   return (
     <div className="App" style={themeStyle}>
+      <ColorOverrideApplier />
       <Header onShowTutorial={() => setShowTutorial(true)} />
       <div className="game-container">
         {gameState === 'playing' ? (

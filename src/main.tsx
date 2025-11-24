@@ -6,6 +6,7 @@ import RantErrorBoundary from './components/RantErrorBoundary'
 import { DebugEditorProvider } from './components/DebugEditor'
 import { SoundEffectsProvider } from './components/SoundEffectsContext'
 import { MusicControlProvider } from './components/Header/MusicControlContext'
+import { ColorPickerProvider } from './components/ColorPicker'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -14,7 +15,9 @@ createRoot(document.getElementById('root')!).render(
         <MusicControlProvider>
           <TetrixProvider>
             <DebugEditorProvider>
-              <App />
+              <ColorPickerProvider>
+                <App />
+              </ColorPickerProvider>
             </DebugEditorProvider>
           </TetrixProvider>
         </MusicControlProvider>

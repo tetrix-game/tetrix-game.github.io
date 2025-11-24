@@ -5,6 +5,7 @@ import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useDebugEditor } from '../DebugEditor';
+import ColorPicker from '../ColorPicker';
 import { THEMES, ThemeName } from '../../types';
 import {
   clearAllSavedData,
@@ -49,6 +50,7 @@ const ThemeSelector: React.FC = () => {
 const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { isMuted, toggleMute } = useMusicControl();
@@ -334,6 +336,18 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
                   <button
                     className="debug-action-button"
                     onClick={() => {
+                      setIsColorPickerOpen(true);
+                      setIsOpen(false);
+                    }}
+                    title="Open color picker to customize block colors"
+                  >
+                    Color Picker
+                  </button>
+                </div>
+                <div className="menu-item submenu-item">
+                  <button
+                    className="debug-action-button"
+                    onClick={() => {
                       dispatch({ type: 'OPEN_MAP' });
                       setIsOpen(false);
                     }}
@@ -357,6 +371,11 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
         </div>,
         document.body
       )}
+
+      <ColorPicker
+        isOpen={isColorPickerOpen}
+        onClose={() => setIsColorPickerOpen(false)}
+      />
     </div>
   );
 };

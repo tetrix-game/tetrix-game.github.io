@@ -31,11 +31,15 @@ export type ShapesPersistenceData = {
 
 export type MusicPersistenceData = {
   isMuted: boolean;
+  volume: number; // 0-100
+  isEnabled: boolean; // separate from volume level
   lastUpdated: number;
 };
 
 export type SoundEffectsPersistenceData = {
   isMuted: boolean;
+  volume: number; // 0-100
+  isEnabled: boolean; // separate from volume level
   lastUpdated: number;
 };
 

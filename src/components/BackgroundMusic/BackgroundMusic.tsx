@@ -6,7 +6,7 @@ import './BackgroundMusic.css';
 const BackgroundMusic: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const { hasPlacedFirstShape } = useTetrixStateContext();
-  const { isMuted, shouldPlayMusic, triggerAutoplay } = useMusicControl();
+  const { isEnabled, volume, shouldPlayMusic, triggerAutoplay } = useMusicControl();
 
   // Track if we've already triggered autoplay from first shape
   const hasTriggeredFromShapeRef = useRef(false);
@@ -33,6 +33,14 @@ const BackgroundMusic: React.FC = () => {
     }
   }, [hasPlacedFirstShape, triggerAutoplay]);
 
+  // Update volume when it changes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = (volume / 100) * 0.3; // Scale to 0-0.3 range
+    }
+  }, [volume]);
+
   // Set up audio and handle track changes
   useEffect(() => {
     const audio = audioRef.current;
@@ -46,10 +54,10 @@ const BackgroundMusic: React.FC = () => {
 
     // Function to play a random track
     const playRandomTrack = async () => {
-      if (shouldPlayMusic && !isMuted) {
+      if (shouldPlayMusic && isEnabled && volume > 0) {
         audio.src = getRandomTrack();
         audio.loop = false;
-        audio.volume = 0.3;
+        audio.volume = (volume / 100) * 0.3;
 
         try {
           await audio.play();
@@ -61,7 +69,7 @@ const BackgroundMusic: React.FC = () => {
 
     // Handle track ending to play another random track
     const handleTrackEnd = () => {
-      if (shouldPlayMusic && !isMuted) {
+      if (shouldPlayMusic && isEnabled && volume > 0) {
         playRandomTrack();
       }
     };
@@ -69,7 +77,7 @@ const BackgroundMusic: React.FC = () => {
     audio.addEventListener('ended', handleTrackEnd);
 
     // Start playing if conditions are met and not currently playing
-    if (shouldPlayMusic && !isMuted) {
+    if (shouldPlayMusic && isEnabled && volume > 0) {
       if (audio.paused) {
         playRandomTrack();
       }
@@ -80,7 +88,7 @@ const BackgroundMusic: React.FC = () => {
     return () => {
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [shouldPlayMusic, isMuted, tracks]);
+  }, [shouldPlayMusic, isEnabled, volume, tracks]);
 
   return (
     <div className="background-music">

@@ -71,21 +71,22 @@ class SoundEffectsManager {
     }
 
     // Check sound effects mute state fresh each time (in case user changed it)
-    let isMuted = false;
+    let isEnabled = true;
     try {
-      isMuted = await loadSoundEffectsSettings();
+      const settings = await loadSoundEffectsSettings();
+      isEnabled = settings.isEnabled;
     } catch {
       // Fallback to localStorage
       try {
         const saved = localStorage.getItem('tetrix-soundeffects-muted');
-        isMuted = saved ? JSON.parse(saved) : false;
+        isEnabled = saved ? !JSON.parse(saved) : true;
       } catch {
-        isMuted = false;
+        isEnabled = true;
       }
     }
 
-    // Don't play if muted
-    if (isMuted) {
+    // Don't play if disabled
+    if (!isEnabled) {
       return;
     }
 

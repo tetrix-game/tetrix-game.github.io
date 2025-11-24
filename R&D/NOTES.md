@@ -1,7 +1,7 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-- Sounds and Music sliders
+
 - Clearing the 10X10 should give a significant amount of points
 - Stats for a no shape turn streak
 - Better App Icon

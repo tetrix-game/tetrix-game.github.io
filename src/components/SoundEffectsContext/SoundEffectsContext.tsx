@@ -26,14 +26,17 @@ export function playSound(soundEffect: SoundEffect, startTime?: number): void {
 
 interface SoundEffectsContextValue {
   playSound: (soundEffect: SoundEffect, startTime?: number) => void;
-  setMuted: (muted: boolean) => void;
-  isMuted: boolean;
+  setVolume: (volume: number) => void;
+  setEnabled: (enabled: boolean) => void;
+  volume: number;
+  isEnabled: boolean;
 }
 
 const SoundEffectsContext = createContext<SoundEffectsContextValue | undefined>(undefined);
 
 export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isMuted, setIsMutedState] = useState(false);
+  const [volume, setVolumeState] = useState(100);
+  const [isEnabled, setIsEnabledState] = useState(true);
   const audioBuffersRef = useRef<Map<SoundEffect, AudioBuffer>>(new Map());
   const audioContextRef = useRef<AudioContext | null>(null);
   const hasUserInteractedRef = useRef(false);
@@ -97,24 +100,28 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
   }, []);
 
-  // Load mute state from DB on mount
+  // Load volume and enabled state from DB on mount
   useEffect(() => {
-    const loadMuteState = async () => {
+    const loadSettings = async () => {
       try {
-        const muted = await loadSoundEffectsSettings();
-        setIsMutedState(muted);
+        const settings = await loadSoundEffectsSettings();
+        setVolumeState(settings.volume);
+        setIsEnabledState(settings.isEnabled);
       } catch {
         // Fallback to localStorage
         try {
           const saved = localStorage.getItem('tetrix-soundeffects-muted');
-          setIsMutedState(saved ? JSON.parse(saved) : false);
+          const wasMuted = saved ? JSON.parse(saved) : false;
+          setIsEnabledState(!wasMuted);
+          setVolumeState(100);
         } catch {
-          setIsMutedState(false);
+          setIsEnabledState(true);
+          setVolumeState(100);
         }
       }
     };
 
-    loadMuteState();
+    loadSettings();
   }, []);
 
   const playHeartbeat = useCallback((startTime: number) => {
@@ -163,8 +170,8 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return;
     }
 
-    // Don't play if muted (synchronous state check - no async!)
-    if (isMuted) {
+    // Don't play if disabled or volume is 0 (synchronous state check - no async!)
+    if (!isEnabled || volume === 0) {
       return;
     }
 
@@ -188,7 +195,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       source.buffer = buffer;
 
       const gainNode = ctx.createGain();
-      gainNode.gain.value = 0.2; // Quieter volume for sound effects
+      gainNode.gain.value = (volume / 100) * 0.2; // Scale to 0-0.2 range
 
       source.connect(gainNode);
       gainNode.connect(ctx.destination);
@@ -202,7 +209,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } else {
       console.warn(`Sound effect '${soundEffect}' not found or context not ready`);
     }
-  }, [isMuted, playHeartbeat]);
+  }, [isEnabled, volume, playHeartbeat]);
 
   // Register this playSound function at module level
   // so reducer and other non-React code can benefit from fast playback
@@ -213,26 +220,45 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
   }, [playSound]);
 
-  const setMuted = useCallback((muted: boolean) => {
+  const setVolume = useCallback((newVolume: number) => {
+    const clampedVolume = Math.max(0, Math.min(100, newVolume));
     // Update React state immediately (synchronous)
-    setIsMutedState(muted);
+    setVolumeState(clampedVolume);
 
     // Save to DB in background (async, non-blocking)
-    saveSoundEffectsSettings(muted).catch(error => {
-      console.error('Failed to save sound effects mute state:', error);
+    saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch(error => {
+      console.error('Failed to save sound effects volume:', error);
       // Fallback to localStorage
       try {
-        localStorage.setItem('tetrix-soundeffects-muted', JSON.stringify(muted));
+        localStorage.setItem('tetrix-soundeffects-volume', JSON.stringify(clampedVolume));
       } catch (e) {
         console.error('Failed to save to localStorage:', e);
       }
     });
-  }, []);
+  }, [isEnabled]);
+
+  const setEnabled = useCallback((enabled: boolean) => {
+    // Update React state immediately (synchronous)
+    setIsEnabledState(enabled);
+
+    // Save to DB in background (async, non-blocking)
+    saveSoundEffectsSettings(!enabled, volume, enabled).catch(error => {
+      console.error('Failed to save sound effects enabled state:', error);
+      // Fallback to localStorage
+      try {
+        localStorage.setItem('tetrix-soundeffects-muted', JSON.stringify(!enabled));
+      } catch (e) {
+        console.error('Failed to save to localStorage:', e);
+      }
+    });
+  }, [volume]);
 
   const value: SoundEffectsContextValue = {
     playSound,
-    setMuted,
-    isMuted,
+    setVolume,
+    setEnabled,
+    volume,
+    isEnabled,
   };
 
   return (

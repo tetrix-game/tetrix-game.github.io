@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { QRCodeSVG } from 'qrcode.react';
+import IconButton from '@mui/material/IconButton';
+import Slider from '@mui/material/Slider';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import MusicOffIcon from '@mui/icons-material/MusicOff';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
@@ -53,8 +59,8 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { isMuted, toggleMute } = useMusicControl();
-  const { isMuted: isSoundEffectsMuted, toggleMute: toggleSoundEffectsMute } = useSoundEffectsControl();
+  const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled } = useMusicControl();
+  const { volume: soundVolume, setVolume: setSoundVolume, isEnabled: isSoundEnabled, toggleEnabled: toggleSoundEnabled } = useSoundEffectsControl();
   const dispatch = useTetrixDispatchContext();
   const { openEditor } = useDebugEditor();
   const [debugUnlocked, setDebugUnlocked] = useState(false);
@@ -222,32 +228,104 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
               </div>
             </div>
 
-            <div className="menu-item">
-              <label className="toggle-switch" title={isMuted ? 'Turn on music' : 'Turn off music'}>
-                <input
-                  type="checkbox"
-                  checked={!isMuted}
-                  onChange={toggleMute}
-                  className="toggle-input"
-                  aria-label={isMuted ? 'Turn on background music' : 'Turn off background music'}
-                />
-                <span className="toggle-slider"></span>
-              </label>
-              <span className="menu-label">Music</span>
+            <div className="menu-item volume-control">
+              <div className="volume-control-header">
+                <IconButton
+                  onClick={toggleMusicEnabled}
+                  size="small"
+                  title={isMusicEnabled ? 'Disable music' : 'Enable music'}
+                  sx={{
+                    color: '#ffffff',
+                    padding: '4px',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                    }
+                  }}
+                >
+                  {!isMusicEnabled || musicVolume === 0 ? (
+                    <MusicOffIcon sx={{ fontSize: 24 }} />
+                  ) : (
+                    <MusicNoteIcon sx={{ fontSize: 24 }} />
+                  )}
+                </IconButton>
+                <span className="menu-label">Music</span>
+              </div>
+              <Slider
+                value={musicVolume}
+                onChange={(_, value) => setMusicVolume(value as number)}
+                min={0}
+                max={100}
+                disabled={!isMusicEnabled}
+                sx={{
+                  color: '#4fc3f7',
+                  width: 'calc(100% - 16px)',
+                  margin: '0 8px',
+                  '& .MuiSlider-thumb': {
+                    width: 16,
+                    height: 16,
+                    '&:hover, &.Mui-focusVisible': {
+                      boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)'
+                    }
+                  },
+                  '& .MuiSlider-track': {
+                    height: 4
+                  },
+                  '& .MuiSlider-rail': {
+                    height: 4,
+                    opacity: 0.3
+                  }
+                }}
+              />
             </div>
 
-            <div className="menu-item">
-              <label className="toggle-switch" title={isSoundEffectsMuted ? 'Turn on sound effects' : 'Turn off sound effects'}>
-                <input
-                  type="checkbox"
-                  checked={!isSoundEffectsMuted}
-                  onChange={toggleSoundEffectsMute}
-                  className="toggle-input"
-                  aria-label={isSoundEffectsMuted ? 'Turn on sound effects' : 'Turn off sound effects'}
-                />
-                <span className="toggle-slider"></span>
-              </label>
-              <span className="menu-label">Sound Effects</span>
+            <div className="menu-item volume-control">
+              <div className="volume-control-header">
+                <IconButton
+                  onClick={toggleSoundEnabled}
+                  size="small"
+                  title={isSoundEnabled ? 'Disable sound effects' : 'Enable sound effects'}
+                  sx={{
+                    color: '#ffffff',
+                    padding: '4px',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                    }
+                  }}
+                >
+                  {!isSoundEnabled || soundVolume === 0 ? (
+                    <VolumeOffIcon sx={{ fontSize: 24 }} />
+                  ) : (
+                    <VolumeUpIcon sx={{ fontSize: 24 }} />
+                  )}
+                </IconButton>
+                <span className="menu-label">Sound Effects</span>
+              </div>
+              <Slider
+                value={soundVolume}
+                onChange={(_, value) => setSoundVolume(value as number)}
+                min={0}
+                max={100}
+                disabled={!isSoundEnabled}
+                sx={{
+                  color: '#4fc3f7',
+                  width: 'calc(100% - 16px)',
+                  margin: '0 8px',
+                  '& .MuiSlider-thumb': {
+                    width: 16,
+                    height: 16,
+                    '&:hover, &.Mui-focusVisible': {
+                      boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)'
+                    }
+                  },
+                  '& .MuiSlider-track': {
+                    height: 4
+                  },
+                  '& .MuiSlider-rail': {
+                    height: 4,
+                    opacity: 0.3
+                  }
+                }}
+              />
             </div>
 
             <ThemeSelector />

@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react';
 
 export interface SoundEffectsControlContextType {
-  isMuted: boolean;
-  toggleMute: () => void;
+  volume: number;
+  setVolume: (volume: number) => void;
+  isEnabled: boolean;
+  toggleEnabled: () => void;
 }
 
 export const SoundEffectsControlContext = createContext<SoundEffectsControlContextType | null>(null);

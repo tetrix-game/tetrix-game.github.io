@@ -313,12 +313,12 @@ export async function saveShapes(nextShapes: ShapesPersistenceData['nextShapes']
 /**
  * Save music settings to IndexedDB
  */
-export async function saveMusicSettings(isMuted: boolean): Promise<void> {
+export async function saveMusicSettings(isMuted: boolean, volume: number = 100, isEnabled: boolean = true): Promise<void> {
   try {
     const db = await initializeDatabase();
 
     // Load existing settings to preserve sound effects settings
-    let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() };
     let existingDebugUnlocked = false;
     try {
       const existingData = await loadGameSettings();
@@ -328,7 +328,7 @@ export async function saveMusicSettings(isMuted: boolean): Promise<void> {
       // Use defaults if loading fails
     }
 
-    const musicData: MusicPersistenceData = { isMuted, lastUpdated: Date.now() };
+    const musicData: MusicPersistenceData = { isMuted, volume, isEnabled, lastUpdated: Date.now() };
     const data: GameSettingsPersistenceData = {
       music: musicData,
       soundEffects: existingSoundEffects,
@@ -361,12 +361,12 @@ export async function saveMusicSettings(isMuted: boolean): Promise<void> {
 /**
  * Save sound effects settings to IndexedDB
  */
-export async function saveSoundEffectsSettings(isMuted: boolean): Promise<void> {
+export async function saveSoundEffectsSettings(isMuted: boolean, volume: number = 100, isEnabled: boolean = true): Promise<void> {
   try {
     const db = await initializeDatabase();
 
     // Load existing settings to preserve music settings
-    let existingMusic: MusicPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    let existingMusic: MusicPersistenceData = { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() };
     let existingDebugUnlocked = false;
     try {
       const existingData = await loadGameSettings();
@@ -376,7 +376,7 @@ export async function saveSoundEffectsSettings(isMuted: boolean): Promise<void> 
       // Use defaults if loading fails
     }
 
-    const soundEffectsData: SoundEffectsPersistenceData = { isMuted, lastUpdated: Date.now() };
+    const soundEffectsData: SoundEffectsPersistenceData = { isMuted, volume, isEnabled, lastUpdated: Date.now() };
     const data: GameSettingsPersistenceData = {
       music: existingMusic,
       soundEffects: soundEffectsData,
@@ -445,8 +445,8 @@ export async function saveDebugSettings(unlocked: boolean): Promise<void> {
     const db = await initializeDatabase();
 
     // Load existing settings to preserve other settings
-    let existingMusic: MusicPersistenceData = { isMuted: false, lastUpdated: Date.now() };
-    let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, lastUpdated: Date.now() };
+    let existingMusic: MusicPersistenceData = { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() };
+    let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() };
 
     try {
       const existingData = await loadGameSettings();
@@ -615,7 +615,7 @@ export async function loadShapes(): Promise<{ nextShapes: ShapesPersistenceData[
 /**
  * Load music settings from IndexedDB
  */
-export async function loadMusicSettings(): Promise<boolean> {
+export async function loadMusicSettings(): Promise<{ isMuted: boolean; volume: number; isEnabled: boolean }> {
   try {
     const db = await initializeDatabase();
 
@@ -627,7 +627,11 @@ export async function loadMusicSettings(): Promise<boolean> {
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(result?.music?.isMuted ?? false);
+        // Provide backward compatibility with old data
+        const volume = result?.music?.volume ?? 100;
+        const isEnabled = result?.music?.isEnabled ?? !result?.music?.isMuted ?? true;
+        const isMuted = result?.music?.isMuted ?? false;
+        resolve({ isMuted, volume, isEnabled });
       };
 
       request.onerror = () => {
@@ -637,14 +641,14 @@ export async function loadMusicSettings(): Promise<boolean> {
     });
   } catch (error) {
     console.error('Error loading music settings:', error);
-    return false;
+    return { isMuted: false, volume: 100, isEnabled: true };
   }
 }
 
 /**
  * Load sound effects settings from IndexedDB
  */
-export async function loadSoundEffectsSettings(): Promise<boolean> {
+export async function loadSoundEffectsSettings(): Promise<{ isMuted: boolean; volume: number; isEnabled: boolean }> {
   try {
     const db = await initializeDatabase();
 
@@ -656,7 +660,11 @@ export async function loadSoundEffectsSettings(): Promise<boolean> {
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(result?.soundEffects?.isMuted ?? false);
+        // Provide backward compatibility with old data
+        const volume = result?.soundEffects?.volume ?? 100;
+        const isEnabled = result?.soundEffects?.isEnabled ?? !result?.soundEffects?.isMuted ?? true;
+        const isMuted = result?.soundEffects?.isMuted ?? false;
+        resolve({ isMuted, volume, isEnabled });
       };
 
       request.onerror = () => {
@@ -666,7 +674,7 @@ export async function loadSoundEffectsSettings(): Promise<boolean> {
     });
   } catch (error) {
     console.error('Error loading sound effects settings:', error);
-    return false;
+    return { isMuted: false, volume: 100, isEnabled: true };
   }
 }
 
@@ -808,8 +816,8 @@ export async function saveTheme(theme: string): Promise<void> {
     
     const updatedSettings: GameSettingsPersistenceData = {
       ...settings,
-      music: settings?.music || { isMuted: false, lastUpdated: Date.now() },
-      soundEffects: settings?.soundEffects || { isMuted: false, lastUpdated: Date.now() },
+      music: settings?.music || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
+      soundEffects: settings?.soundEffects || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
       theme,
       lastUpdated: Date.now(),
     };

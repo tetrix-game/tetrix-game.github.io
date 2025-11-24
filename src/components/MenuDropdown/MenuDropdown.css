@@ -327,3 +327,21 @@
   border-color: rgba(255, 255, 255, 0.5);
   font-weight: bold;
 }
+
+/* Volume control styles */
+.menu-item.volume-control {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 12px;
+}
+
+.volume-control-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.volume-control-header .menu-label {
+  flex: 1;
+}

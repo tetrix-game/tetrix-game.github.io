@@ -2,8 +2,10 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { loadMusicSettings, saveMusicSettings } from '../../utils/persistenceUtils';
 
 export interface MusicControlContextType {
-  isMuted: boolean;
-  toggleMute: () => void;
+  volume: number;
+  setVolume: (volume: number) => void;
+  isEnabled: boolean;
+  toggleEnabled: () => void;
   shouldPlayMusic: boolean;
   triggerAutoplay: () => void;
 }
@@ -19,7 +21,8 @@ export const useMusicControl = () => {
 };
 
 export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolumeState] = useState(100);
+  const [isEnabled, setIsEnabled] = useState(true);
   const [shouldPlayMusic, setShouldPlayMusic] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,16 +30,20 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const savedMuted = await loadMusicSettings();
-        setIsMuted(savedMuted);
+        const settings = await loadMusicSettings();
+        setVolumeState(settings.volume);
+        setIsEnabled(settings.isEnabled);
       } catch (error) {
         console.error('Failed to load music settings:', error);
         // Fallback to localStorage for backward compatibility
         try {
           const saved = localStorage.getItem('tetrix-music-muted');
-          setIsMuted(saved ? JSON.parse(saved) : false);
+          const wasMuted = saved ? JSON.parse(saved) : false;
+          setIsEnabled(!wasMuted);
+          setVolumeState(100);
         } catch {
-          setIsMuted(false);
+          setIsEnabled(true);
+          setVolumeState(100);
         }
       } finally {
         setIsLoading(false);
@@ -46,34 +53,46 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
     loadSettings();
   }, []);
 
-  const toggleMute = useCallback(() => {
-    const newMutedState = !isMuted;
-    setIsMuted(newMutedState);
+  const setVolume = useCallback((newVolume: number) => {
+    const clampedVolume = Math.max(0, Math.min(100, newVolume));
+    setVolumeState(clampedVolume);
 
-    // If unmuting, we should try to play music
-    if (!newMutedState) {
+    // Save to IndexedDB (primary storage)
+    saveMusicSettings(!isEnabled, clampedVolume, isEnabled).catch((error: Error) => {
+      console.error('Failed to save music volume to IndexedDB:', error);
+    });
+  }, [isEnabled]);
+
+  const toggleEnabled = useCallback(() => {
+    const newEnabledState = !isEnabled;
+    setIsEnabled(newEnabledState);
+
+    // If enabling, we should try to play music
+    if (newEnabledState) {
       setShouldPlayMusic(true);
     }
 
     // Save to IndexedDB (primary storage)
-    saveMusicSettings(newMutedState).catch((error: Error) => {
-      console.error('Failed to save music settings to IndexedDB:', error);
+    saveMusicSettings(!newEnabledState, volume, newEnabledState).catch((error: Error) => {
+      console.error('Failed to save music enabled state to IndexedDB:', error);
       // Fallback to localStorage
       try {
-        localStorage.setItem('tetrix-music-muted', JSON.stringify(newMutedState));
+        localStorage.setItem('tetrix-music-muted', JSON.stringify(!newEnabledState));
       } catch (localError) {
         console.error('Failed to save music mute preference to localStorage:', localError);
       }
     });
-  }, [isMuted]);
+  }, [isEnabled, volume]);
 
   const triggerAutoplay = useCallback(() => {
     setShouldPlayMusic(true);
   }, []);
 
   const value = {
-    isMuted: isMuted || isLoading, // Treat as muted while loading
-    toggleMute,
+    volume: isLoading ? 100 : volume,
+    setVolume,
+    isEnabled: !isLoading && isEnabled,
+    toggleEnabled,
     shouldPlayMusic,
     triggerAutoplay
   };

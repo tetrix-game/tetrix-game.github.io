@@ -14,20 +14,22 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onShowTutorial }) => {
   // Use the main sound effects context
-  const { isMuted: isSoundEffectsMuted, setMuted: setSoundEffectsMuted } = useSoundEffects();
-  // We don't need isMusicMuted here anymore as BackgroundMusic handles it internally via context
+  const { volume, setVolume, isEnabled, setEnabled } = useSoundEffects();
+  // We don't need music control here anymore as BackgroundMusic handles it internally via context
   // But we need to call useMusicControl to ensure we are inside the provider (though we are)
   useMusicControl();
 
-  const toggleSoundEffectsMute = useCallback(() => {
+  const toggleSoundEffectsEnabled = useCallback(() => {
     // Toggle and let context handle persistence
-    setSoundEffectsMuted(!isSoundEffectsMuted);
-  }, [isSoundEffectsMuted, setSoundEffectsMuted]);
+    setEnabled(!isEnabled);
+  }, [isEnabled, setEnabled]);
 
   const soundEffectsContextValue = useMemo(() => ({
-    isMuted: isSoundEffectsMuted,
-    toggleMute: toggleSoundEffectsMute
-  }), [isSoundEffectsMuted, toggleSoundEffectsMute]);
+    volume,
+    setVolume,
+    isEnabled,
+    toggleEnabled: toggleSoundEffectsEnabled
+  }), [volume, setVolume, isEnabled, toggleSoundEffectsEnabled]);
 
   return (
     <SoundEffectsControlContext.Provider value={soundEffectsContextValue}>

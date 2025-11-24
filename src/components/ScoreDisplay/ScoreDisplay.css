@@ -41,8 +41,7 @@
 
 .score-display-value {
   font-weight: bold;
-  color: #ffffff !important;
-  /* Force white color regardless of getGemColor() */
+  color: var(--theme-text, #ffffff);
   text-shadow:
     /* Black border effect */
     -1px -1px 0 #000000,
@@ -53,7 +52,7 @@
     0 1px 0 #000000,
     -1px 0 0 #000000,
     1px 0 0 #000000,
-    /* Very slight white glow */
+    /* Very slight glow */
     0 0 3px rgba(255, 255, 255, 0.3);
 
   /* Scale font size with header height and screen size */

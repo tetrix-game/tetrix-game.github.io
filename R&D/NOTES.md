@@ -2,11 +2,6 @@
 
 ## What's Up Next
 
-- Stylistic changes:
-    - The turn buttons and map icon needs to honor the dark/light/blast styles
-
-    
-
 - The placement animation still isn't quite working
 - Sounds and Music sliders
 - Clearing the 10X10 should give a significant amount of points

@@ -4,9 +4,9 @@
   gap: 12px;
   padding: 12px;
   /* Match ShapeSelector styling */
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid var(--theme-shape-selector-border, rgba(255, 255, 255, 0.3));
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 50%, rgba(240, 147, 251, 0.2) 100%);
+  background: var(--theme-shape-selector-bg, linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 50%, rgba(240, 147, 251, 0.2) 100%));
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
     0 2px 4px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
@@ -24,10 +24,10 @@
   min-height: var(--button-size);
   max-width: var(--button-size);
   max-height: var(--button-size);
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--theme-button-bg, rgba(0, 0, 0, 0.8));
   border: 2px solid #4a90e2;
   border-radius: 8px;
-  color: white;
+  color: var(--theme-text, white);
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
@@ -50,7 +50,7 @@
 
 @media (hover: hover) {
   .purchases-container-button:hover:not(.disabled) {
-    background: rgba(74, 144, 226, 0.2);
+    background: var(--theme-button-hover, rgba(74, 144, 226, 0.2));
     border-color: #5ba3f5;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -63,9 +63,10 @@
 }
 
 .purchases-container-button.disabled {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: #666;
-  color: #999;
+  background: var(--theme-button-bg, rgba(0, 0, 0, 0.4));
+  border-color: var(--theme-text-secondary, #666);
+  color: var(--theme-text-secondary, #999);
+  opacity: 0.5;
   cursor: pointer;
   /* Changed from not-allowed to allow clicking for error feedback */
   transform: none;

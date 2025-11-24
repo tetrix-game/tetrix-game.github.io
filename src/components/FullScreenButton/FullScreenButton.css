@@ -12,7 +12,7 @@
   height: 2em;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: var(--theme-text, white);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   border: none;
   padding: 0.5em 1em;

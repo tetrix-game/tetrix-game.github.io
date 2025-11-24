@@ -210,8 +210,8 @@ const App = () => {
     dark: {
       background: 'rgb(25, 25, 25)',
       gameBackground: 'rgb(25, 25, 25)',
-      text: 'rgb(255, 255, 255)',
-      textSecondary: 'rgb(180, 180, 180)',
+      text: 'rgb(200, 200, 200)',
+      textSecondary: 'rgb(150, 150, 150)',
       gridBg: 'rgb(10, 10, 10)',
       tileBg: 'rgb(30, 30, 30)',
       tileBorder: 'rgb(50, 50, 50)',

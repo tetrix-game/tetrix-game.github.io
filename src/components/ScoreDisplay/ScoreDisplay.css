@@ -4,11 +4,11 @@
   justify-content: center;
   gap: clamp(0.5rem, 1vw, 1rem);
   font-family: 'Courier New', monospace;
-  color: #ffffff;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  color: var(--theme-text, #ffffff);
+  background: var(--theme-button-bg, linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)));
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--theme-shape-selector-border, rgba(255, 255, 255, 0.2));
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
 
@@ -22,7 +22,7 @@
 }
 
 .score-display:hover {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+  background: var(--theme-button-hover, linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15)));
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }

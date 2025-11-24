@@ -6,11 +6,14 @@
 }
 
 .tile-visual-dark {
-  background-color: rgb(59, 59, 62);
+  background-color: var(--theme-tile-bg, rgb(59, 59, 62));
+  border: 1px solid var(--theme-tile-border, rgb(50, 50, 50));
 }
 
 .tile-visual-light {
-  background-color: rgb(40, 40, 50);
+  background-color: var(--theme-tile-bg, rgb(40, 40, 50));
+  border: 1px solid var(--theme-tile-border, rgb(50, 50, 50));
+  opacity: 0.8;
 }
 
 .grid-block-visual {

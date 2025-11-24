@@ -33,6 +33,9 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   mouseGridLocation: { row: 5, column: 5 },
   mousePosition: { x: 100, y: 100 },
   gemIconPosition: { x: 100, y: 50 },
+  gridTileSize: null,
+  gridBounds: null,
+  currentTheme: 'dark',
   dragState: {
     phase: dragPhase,
     sourcePosition: dragPhase === 'picking-up' ? { x: 50, y: 50, width: 100, height: 100 } : null,
@@ -54,8 +57,6 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   showCoinDisplay: false,
   queueSize: -1,
   shapesUsed: 0,
-  gridTileSize: 50,
-  gridBounds: { top: 0, left: 0, width: 500, height: 500 },
   hasPlacedFirstShape: false,
   isTurningModeActive: false,
   turningDirection: null,

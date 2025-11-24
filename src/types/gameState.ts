@@ -8,6 +8,7 @@ import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOpti
 import type { ScoreData } from './scoring';
 import type { GamePersistenceData } from './persistence';
 import type { StatsPersistenceData } from './stats';
+import type { ThemeName } from './theme';
 
 // Game state types - simplified for level-based play
 export type GameState = 'playing' | 'map' | 'gameover';
@@ -63,6 +64,9 @@ export type TetrixReducerState = {
   // UI State
   isStatsOpen: boolean; // Whether the stats overlay is currently open
   insufficientFundsError: number | null; // Timestamp of last insufficient funds error
+  
+  // Theme
+  currentTheme: ThemeName; // Current theme selection
 };
 
 type SelectShapeAction = {
@@ -284,6 +288,11 @@ type InitializationCompleteAction = {
   type: 'INITIALIZATION_COMPLETE';
 };
 
+type SetThemeAction = {
+  type: 'SET_THEME';
+  value: { theme: ThemeName };
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -331,6 +340,7 @@ export type TetrixAction =
   | CleanupAnimationsAction
   | OpenStatsAction
   | CloseStatsAction
-  | InitializationCompleteAction;
+  | InitializationCompleteAction
+  | SetThemeAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

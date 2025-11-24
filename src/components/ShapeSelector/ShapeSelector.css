@@ -4,9 +4,9 @@
   align-items: flex-start;
   gap: 12px;
   /* Add border and drop shadow */
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid var(--theme-shape-selector-border, rgba(255, 255, 255, 0.3));
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 50%, rgba(240, 147, 251, 0.2) 100%);
+  background: var(--theme-shape-selector-bg, linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 50%, rgba(240, 147, 251, 0.2) 100%));
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
     0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 12px;

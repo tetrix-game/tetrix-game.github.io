@@ -799,6 +799,57 @@ async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
 }
 
 /**
+ * Save theme preference to IndexedDB
+ */
+export async function saveTheme(theme: string): Promise<void> {
+  try {
+    const db = await initializeDatabase();
+    const settings = await loadGameSettings();
+    
+    const updatedSettings: GameSettingsPersistenceData = {
+      ...settings,
+      music: settings?.music || { isMuted: false, lastUpdated: Date.now() },
+      soundEffects: settings?.soundEffects || { isMuted: false, lastUpdated: Date.now() },
+      theme,
+      lastUpdated: Date.now(),
+    };
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readwrite');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const request = store.put(updatedSettings, 'current');
+
+      request.onsuccess = () => {
+        console.log('Theme saved successfully:', theme);
+        resolve();
+      };
+
+      request.onerror = () => {
+        console.error('Failed to save theme:', request.error);
+        reject(new Error(`Failed to save theme: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error saving theme:', error);
+    throw error;
+  }
+}
+
+/**
+ * Load theme preference from IndexedDB
+ */
+export async function loadTheme(): Promise<string | null> {
+  try {
+    const settings = await loadGameSettings();
+    return settings?.theme || null;
+  } catch (error) {
+    console.error('Error loading theme:', error);
+    return null;
+  }
+}
+
+/**
  * Load complete game state from granular stores (preferred method)
  * Falls back to legacy monolithic store if granular data is not available
  */

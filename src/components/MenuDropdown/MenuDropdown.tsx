@@ -3,8 +3,9 @@ import { createPortal } from 'react-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
-import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useDebugEditor } from '../DebugEditor';
+import { THEMES, ThemeName } from '../../types';
 import {
   clearAllSavedData,
   clearAllDataAndReload,
@@ -16,6 +17,34 @@ import './MenuDropdown.css';
 interface MenuDropdownProps {
   onShowTutorial?: () => void;
 }
+
+// Theme selector component
+const ThemeSelector: React.FC = () => {
+  const { currentTheme } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
+
+  const handleThemeChange = (theme: ThemeName) => {
+    dispatch({ type: 'SET_THEME', value: { theme } });
+  };
+
+  return (
+    <div className="menu-item theme-selector">
+      <span className="menu-label">Theme</span>
+      <div className="theme-buttons">
+        {Object.values(THEMES).map((theme) => (
+          <button
+            key={theme.name}
+            className={`theme-button ${currentTheme === theme.name ? 'active' : ''}`}
+            onClick={() => handleThemeChange(theme.name)}
+            title={theme.displayName}
+          >
+            {theme.displayName}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -206,6 +235,8 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
               </label>
               <span className="menu-label">Sound Effects</span>
             </div>
+
+            <ThemeSelector />
 
             {onShowTutorial && (
               <div className="menu-item">

@@ -43,6 +43,7 @@ export type GameSettingsPersistenceData = {
   music: MusicPersistenceData;
   soundEffects: SoundEffectsPersistenceData;
   debugUnlocked?: boolean;
+  theme?: string; // Theme name
   lastUpdated: number;
 };
 

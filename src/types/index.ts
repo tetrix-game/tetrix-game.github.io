@@ -71,6 +71,13 @@ export type {
   ModifierUnlockState,
 } from './modifiers';
 
+// Theme types
+export type {
+  ThemeName,
+  Theme,
+} from './theme';
+export { THEMES } from './theme';
+
 // Game state types
 export type {
   GameState,

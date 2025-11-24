@@ -76,6 +76,7 @@ export const initialGameState = {
   stats: INITIAL_STATS_PERSISTENCE,
   isStatsOpen: false,
   insufficientFundsError: null,
+  currentTheme: 'dark' as const,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -264,6 +265,20 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         hasLoadedPersistedState: true,
+      };
+    }
+
+    case "SET_THEME": {
+      const { theme } = action.value;
+      // Persist theme selection
+      import('../utils/persistenceUtils').then(({ saveTheme }) => {
+        saveTheme(theme).catch((error: Error) => {
+          console.error('Failed to save theme:', error);
+        });
+      });
+      return {
+        ...state,
+        currentTheme: theme,
       };
     }
 

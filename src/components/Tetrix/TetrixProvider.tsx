@@ -1,7 +1,8 @@
-import { useReducer, useEffect, useState } from "react";
-import { initialState, tetrixReducer } from "./TetrixReducer";
-import { TetrixStateContext, TetrixDispatchContext } from "./TetrixContext";
-import { loadCompleteGameState, loadModifiers, loadStats } from "../../utils/persistenceUtils";
+import { useReducer, useEffect, useState } from 'react';
+import { initialState, tetrixReducer } from './TetrixReducer';
+import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
+import { loadCompleteGameState, loadModifiers, loadStats, loadTheme } from '../../utils/persistenceUtils';
+import { ThemeName } from '../../types';
 
 export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
@@ -12,13 +13,22 @@ export default function TetrixProvider({ children }: { readonly children: React.
     const loadSavedData = async () => {
       try {
         console.log('TetrixProvider: Attempting to load saved game state...');
-        const [gameData, unlockedModifiers, stats] = await Promise.all([
+        const [gameData, unlockedModifiers, stats, savedTheme] = await Promise.all([
           loadCompleteGameState(),
           loadModifiers(),
-          loadStats()
+          loadStats(),
+          loadTheme()
         ]);
 
-        // Load modifiers first
+        // Load theme first
+        if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'block-blast')) {
+          dispatch({
+            type: 'SET_THEME',
+            value: { theme: savedTheme as ThemeName }
+          });
+        }
+
+        // Load modifiers
         dispatch({
           type: 'LOAD_MODIFIERS',
           value: { unlockedModifiers }

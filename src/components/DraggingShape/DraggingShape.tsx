@@ -1,7 +1,7 @@
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual';
 import { useSoundEffects } from '../SoundEffectsContext';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugEditor } from '../DebugEditor';
 import { getShapeBounds } from '../../utils/shapes';
@@ -31,7 +31,6 @@ export default function DraggingShape() {
   const {
     dragState,
     mousePosition,
-    shapeOptionBounds,
   } = useTetrixStateContext();
 
   const dispatch = useTetrixDispatchContext();

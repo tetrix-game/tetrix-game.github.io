@@ -8,6 +8,7 @@
 - Light and dark mode
 - Document what display layers there are, and give each a taxonomy
 - The heartbeat isn't loud enough on phones
+- Get rid of the click into place sound
 
 
 ## Related Documentation

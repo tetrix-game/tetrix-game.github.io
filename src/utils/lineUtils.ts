@@ -148,6 +148,24 @@ export type ClearedLine = {
 };
 
 /**
+ * Checks if the entire grid (all 100 tiles) is completely empty
+ * Used to detect when all tiles have been cleared (full board clear)
+ * @param tiles - All tiles in the grid (Map)
+ * @returns true if all tiles are empty (not filled)
+ */
+export function isGridCompletelyEmpty(tiles: TilesSet): boolean {
+  for (let row = 1; row <= GRID_SIZE; row++) {
+    for (let column = 1; column <= GRID_SIZE; column++) {
+      const tile = tiles.get(makeTileKey(row, column));
+      if (tile?.isFilled) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+/**
  * Finds and clears all full lines (both rows and columns) in the grid
  * This is the main function to call after placing a shape
  * @param tiles - All tiles in the grid (Map)

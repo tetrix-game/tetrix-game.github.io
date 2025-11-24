@@ -5,11 +5,11 @@
 
 import type { TetrixReducerState, TetrixAction, TileData } from '../types';
 import { getShapeGridPositions, generateRandomShape, detectSuperComboPattern, generateSuperShape } from '../utils/shapes';
-import { clearFullLines } from '../utils/lineUtils';
+import { clearFullLines, isGridCompletelyEmpty } from '../utils/lineUtils';
 import { calculateScore } from '../utils/scoringUtils';
 import { safeBatchSave } from '../utils/persistenceUtils';
 import { playSound } from '../components/SoundEffectsContext';
-import { generateClearingAnimations, cleanupExpiredAnimations, AnimationConfig } from '../utils/clearingAnimationUtils';
+import { generateClearingAnimations, generateFullBoardClearAnimation, cleanupExpiredAnimations, AnimationConfig } from '../utils/clearingAnimationUtils';
 import { updateStats } from '../utils/statsUtils';
 import { checkGameOver } from '../utils/gameOverUtils';
 
@@ -38,6 +38,15 @@ const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
     triple: { duration: 500, waveDelay: 50, startDelay: 1000 },
     quad: { duration: 3000, waveDelay: 50, startDelay: 1500, beatCount: 3 },
   },
+  /**
+   * Full board clear animation - triggers when clearing lines results in empty board
+   * Awards 300 points bonus
+   * Animation sequence: plays AFTER normal line animations, then all 10 columns, then all 10 rows
+   */
+  fullBoardClear: {
+    columns: { duration: 800, waveDelay: 40, startDelay: 0 },
+    rows: { duration: 800, waveDelay: 40, startDelay: 900 },
+  },
 };
 
 // Helper function to play line clear sound effects
@@ -61,6 +70,50 @@ function playLineClearSounds(clearedRows: number[], clearedColumns: number[], ba
 
   scheduleSound(clearedRows.length, 'rows');
   scheduleSound(clearedColumns.length, 'columns');
+}
+
+// Helper function to calculate when normal line clear animations finish
+// This determines when the full board clear animations should start
+function calculateNormalAnimationEndTime(rowCount: number, columnCount: number): number {
+  let maxEndTime = 0;
+
+  // Check row animations
+  if (rowCount >= 4) {
+    const quadEnd = CLEARING_ANIMATION_CONFIG.rows.quad.startDelay + CLEARING_ANIMATION_CONFIG.rows.quad.duration;
+    maxEndTime = Math.max(maxEndTime, quadEnd);
+  } else if (rowCount >= 3) {
+    const tripleEnd = CLEARING_ANIMATION_CONFIG.rows.triple.startDelay + CLEARING_ANIMATION_CONFIG.rows.triple.duration + 
+                      (9 * CLEARING_ANIMATION_CONFIG.rows.triple.waveDelay); // Add wave delay for last tile
+    maxEndTime = Math.max(maxEndTime, tripleEnd);
+  } else if (rowCount >= 2) {
+    const doubleEnd = CLEARING_ANIMATION_CONFIG.rows.double.startDelay + CLEARING_ANIMATION_CONFIG.rows.double.duration +
+                      (9 * CLEARING_ANIMATION_CONFIG.rows.double.waveDelay);
+    maxEndTime = Math.max(maxEndTime, doubleEnd);
+  } else if (rowCount >= 1) {
+    const singleEnd = CLEARING_ANIMATION_CONFIG.rows.single.startDelay + CLEARING_ANIMATION_CONFIG.rows.single.duration +
+                      (9 * CLEARING_ANIMATION_CONFIG.rows.single.waveDelay);
+    maxEndTime = Math.max(maxEndTime, singleEnd);
+  }
+
+  // Check column animations
+  if (columnCount >= 4) {
+    const quadEnd = CLEARING_ANIMATION_CONFIG.columns.quad.startDelay + CLEARING_ANIMATION_CONFIG.columns.quad.duration;
+    maxEndTime = Math.max(maxEndTime, quadEnd);
+  } else if (columnCount >= 3) {
+    const tripleEnd = CLEARING_ANIMATION_CONFIG.columns.triple.startDelay + CLEARING_ANIMATION_CONFIG.columns.triple.duration +
+                      (9 * CLEARING_ANIMATION_CONFIG.columns.triple.waveDelay);
+    maxEndTime = Math.max(maxEndTime, tripleEnd);
+  } else if (columnCount >= 2) {
+    const doubleEnd = CLEARING_ANIMATION_CONFIG.columns.double.startDelay + CLEARING_ANIMATION_CONFIG.columns.double.duration +
+                      (9 * CLEARING_ANIMATION_CONFIG.columns.double.waveDelay);
+    maxEndTime = Math.max(maxEndTime, doubleEnd);
+  } else if (columnCount >= 1) {
+    const singleEnd = CLEARING_ANIMATION_CONFIG.columns.single.startDelay + CLEARING_ANIMATION_CONFIG.columns.single.duration +
+                      (9 * CLEARING_ANIMATION_CONFIG.columns.single.waveDelay);
+    maxEndTime = Math.max(maxEndTime, singleEnd);
+  }
+
+  return maxEndTime;
 }
 
 export function tileReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -92,18 +145,18 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         }
       }
 
-      // Check for and clear full lines
-      const { tiles: clearedTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
+      const baseStartTime = performance.now();
 
-      // Extract indices for sound and score calculation
+      // Normal line clearing first
+      const { tiles: clearedTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
       const clearedRowIndices = clearedRows.map(r => r.index);
       const clearedColumnIndices = clearedColumns.map(c => c.index);
 
-      const baseStartTime = performance.now();
+      // Check if clearing resulted in an empty board (full board clear!)
+      const isFullBoardClear = isGridCompletelyEmpty(clearedTiles);
 
-      // Generate clearing animations and apply them to tiles
-      // Configure wave effects and timing for single/double/triple/quad animations
-      const finalTiles = generateClearingAnimations(
+      // Generate normal clearing animations
+      let finalTiles = generateClearingAnimations(
         clearedTiles,
         clearedRows,
         clearedColumns,
@@ -117,7 +170,40 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       playLineClearSounds(clearedRowIndices, clearedColumnIndices, baseStartTime);
 
       // Calculate score for lines cleared
-      const scoreData = calculateScore(clearedRowIndices.length, clearedColumnIndices.length);
+      let scoreData = calculateScore(clearedRowIndices.length, clearedColumnIndices.length);
+
+      // If full board clear, add bonus and additional animations
+      if (isFullBoardClear) {
+        // Calculate when normal animations finish
+        const normalAnimationEndTime = calculateNormalAnimationEndTime(
+          clearedRowIndices.length,
+          clearedColumnIndices.length
+        );
+
+        // Add full board clear animations that play AFTER normal animations
+        finalTiles = generateFullBoardClearAnimation(
+          finalTiles,
+          {
+            ...CLEARING_ANIMATION_CONFIG,
+            baseStartTime,
+          },
+          normalAnimationEndTime // Delay until normal animations finish
+        );
+
+        // Add 300 bonus points for full board clear
+        scoreData = {
+          ...scoreData,
+          pointsEarned: scoreData.pointsEarned + 300,
+        };
+
+        // Play special sound for full board clear (after normal animations)
+        const fullBoardSoundStart = baseStartTime + normalAnimationEndTime;
+        playSound('clear_combo_4', fullBoardSoundStart);
+        playSound('heartbeat', fullBoardSoundStart + 200);
+        playSound('heartbeat', fullBoardSoundStart + 700);
+        playSound('heartbeat', fullBoardSoundStart + 1200);
+      }
+
       const newScore = state.score + scoreData.pointsEarned;
       const newTotalLinesCleared = state.totalLinesCleared + clearedRowIndices.length + clearedColumnIndices.length;
 

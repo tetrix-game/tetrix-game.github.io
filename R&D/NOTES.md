@@ -3,11 +3,9 @@
 ## What's Up Next
 
 - Stylistic changes:
+    - The grid is making the color of the blocks tinted different, and that's bad
+    - The turn buttons and map icon needs to honor the dark/light/blast styles
 
-    - Blocks need a negative position for left and top of 1 pixel, and an extra width and height of +2 pixels so they fit tightly wihout gaps
-    - Dark mode needs a dark map icon
-    - Light mode:
-        - Needs light mode buttons, not black
     
 
 - The placement animation still isn't quite working

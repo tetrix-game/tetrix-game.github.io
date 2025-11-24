@@ -197,6 +197,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
       style={{
         '--shape-cell-size': `${shapeOptionCellSize}px`,
         '--shape-cell-gap': `${cellGap}px`,
+        '--block-overlap': `${cellGap}px`,
         '--centering-offset-x': `${centeringOffset.x}px`,
         '--centering-offset-y': `${centeringOffset.y}px`,
         opacity,

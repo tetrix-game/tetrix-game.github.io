@@ -69,7 +69,8 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size }: Ti
       style={{
         gridColumn: tile.location.column,
         gridRow: tile.location.row,
-      }}
+        '--block-overlap': '2px',
+      } as React.CSSProperties}
       onClick={onClick}
     >
       <BlockVisual block={displayBlock} size={size} />

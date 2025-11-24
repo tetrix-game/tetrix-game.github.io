@@ -9,6 +9,7 @@ interface GemData {
   velocity: { x: number; y: number };
   delay: number;
   size?: number;
+  attractTo?: { x: number; y: number };
 }
 
 const GemShower: React.FC = () => {
@@ -86,17 +87,15 @@ const GemShower: React.FC = () => {
       let velocityY: number;
 
       if (isGainingPoints) {
-        // Gaining points: shoot gems upward in a cone pattern from center screen
-        const angle = (60 + Math.random() * 60) * (Math.PI / 180); // Random angle between 60° and 120°
-        const baseSpeed = 100 + Math.random() * 200; // Random speed between 100-300 px/s
-        const direction = Math.random() > 0.5 ? 1 : -1; // Randomly left or right
-        const spreadBias = 0.3 + Math.random() * 0.7; // Random spread factor
+        // Gaining points: 360-degree explosion with random velocities
+        const angle = Math.random() * 2 * Math.PI; // Random angle in full 360 degrees
+        const baseSpeed = 150 + Math.random() * 250; // Random speed between 150-400 px/s
 
-        velocityX = baseSpeed * Math.cos(angle) * direction * spreadBias;
-        velocityY = -baseSpeed * Math.sin(angle); // Negative Y = upward
+        velocityX = baseSpeed * Math.cos(angle);
+        velocityY = baseSpeed * Math.sin(angle);
       } else {
         // Losing points: gems fall downward from gem icon with slight horizontal drift
-        velocityX = (Math.random() * 3 - 1.5) * 60; // Random drift between -30 and 30 px/s
+        velocityX = (Math.random() * 3 - 1.5) * 60; // Random drift between -90 and 90 px/s
         velocityY = 0; // Gravity will pull them down
       }
 
@@ -105,7 +104,8 @@ const GemShower: React.FC = () => {
         startPosition: { ...origin },
         velocity: { x: velocityX, y: velocityY },
         delay: currentDelay,
-        size: useLargeGems ? 80 : 40 // 80px for large gems, 40px for normal gems
+        size: useLargeGems ? 80 : 40, // 80px for large gems, 40px for normal gems
+        attractTo: isGainingPoints ? gemIconOrigin : undefined // Attract to gem icon when gaining
       });
 
       currentDelay += delayIncrement;
@@ -128,6 +128,7 @@ const GemShower: React.FC = () => {
           velocity={gem.velocity}
           delay={gem.delay}
           size={gem.size}
+          attractTo={gem.attractTo}
           onComplete={() => handleGemComplete(gem.id)}
         />
       ))}

@@ -208,6 +208,18 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
           onClick={handleOverlayClick}
         >
           <div className="dropdown-content">
+            <div className="menu-qr-code">
+              <p className="qr-label">Share this game</p>
+              <div className="qr-code-wrapper">
+                <QRCodeSVG
+                  value="https://tetrix-game.github.io"
+                  size={128}
+                  bgColor="#023f80"
+                  fgColor="#ffffff"
+                />
+              </div>
+            </div>
+
             <div className="menu-item">
               <label className="toggle-switch" title={isMuted ? 'Turn on music' : 'Turn off music'}>
                 <input
@@ -341,18 +353,6 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
                 </div>
               </div>
             )}
-
-            <div className="menu-qr-code">
-              <p className="qr-label">Share this game</p>
-              <div className="qr-code-wrapper">
-                <QRCodeSVG
-                  value="https://tetrix-game.github.io"
-                  size={128}
-                  bgColor="#023f80"
-                  fgColor="#ffffff"
-                />
-              </div>
-            </div>
           </div>
         </div>,
         document.body

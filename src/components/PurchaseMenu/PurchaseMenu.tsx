@@ -1,4 +1,4 @@
-import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useCallback } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import BlueGemIcon from '../BlueGemIcon';
@@ -11,7 +11,11 @@ type PurchaseMenuProps = {
 
 const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => {
   const dispatch = useTetrixDispatchContext();
+  const state = useTetrixStateContext();
   const { buttonSize } = useGameSizing();
+
+  // Disable rotation buttons when any turning mode is active
+  const isRotationDisabled = state.isTurningModeActive || state.isDoubleTurnModeActive;
 
   const handleRotateClockwise = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,18 +53,20 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
         } as React.CSSProperties}
       >
         <button
-          className="purchase-menu-turn-button"
+          className={`purchase-menu-turn-button${isRotationDisabled ? ' disabled' : ''}`}
           onClick={handleRotateCounterClockwise}
-          title="Rotate Counter-Clockwise"
+          disabled={isRotationDisabled}
+          title={isRotationDisabled ? "Rotation disabled during turning mode" : "Rotate Counter-Clockwise"}
           aria-label="Rotate Counter-Clockwise"
         >
           ↺
         </button>
 
         <button
-          className="purchase-menu-turn-button"
+          className={`purchase-menu-turn-button${isRotationDisabled ? ' disabled' : ''}`}
           onClick={handleRotateClockwise}
-          title="Rotate Clockwise"
+          disabled={isRotationDisabled}
+          title={isRotationDisabled ? "Rotation disabled during turning mode" : "Rotate Clockwise"}
           aria-label="Rotate Clockwise"
         >
           ↻

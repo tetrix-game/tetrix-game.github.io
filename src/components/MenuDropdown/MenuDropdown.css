@@ -85,8 +85,8 @@
   max-width: 600px;
   height: 66.666vh;
   max-height: 800px;
-  background: linear-gradient(135deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
-  border: 2px solid rgba(118, 75, 162, 0.5);
+  background: var(--theme-overlay-bg, linear-gradient(135deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%));
+  border: 2px solid var(--theme-shape-selector-border, rgba(118, 75, 162, 0.5));
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   padding: 24px;
@@ -95,7 +95,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  color: white;
+  color: var(--theme-text, white);
 }
 
 .menu-item {
@@ -109,24 +109,24 @@
 }
 
 .menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--theme-button-hover, rgba(255, 255, 255, 0.1));
 }
 
 .menu-label {
   font-size: 14px;
-  color: #eee;
+  color: var(--theme-text, #eee);
   font-weight: 500;
 }
 
 /* Menu action button - for buttons like "New Game" */
 .menu-action-button {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--theme-shape-selector-border, rgba(255, 255, 255, 0.2));
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  color: #eee;
+  color: var(--theme-text, #eee);
   transition: all 0.2s ease;
   width: 100%;
   max-width: 400px;
@@ -135,9 +135,9 @@
 }
 
 .menu-action-button:hover {
-  background-color: rgba(102, 126, 234, 0.2);
+  background-color: var(--theme-button-hover, rgba(102, 126, 234, 0.2));
   border-color: #667eea;
-  color: #fff;
+  color: var(--theme-text, #fff);
 }
 
 /* Link button styling for anchor tags */
@@ -161,13 +161,13 @@
   justify-content: space-between;
   padding: 0;
   cursor: pointer;
-  color: #eee;
+  color: var(--theme-text, #eee);
 }
 
 .debug-arrow {
   font-size: 12px;
   transition: transform 0.2s ease;
-  color: #aaa;
+  color: var(--theme-text-secondary, #aaa);
 }
 
 .debug-arrow.open {
@@ -176,7 +176,7 @@
 
 .debug-submenu-content {
   margin-left: 20px;
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  border-left: 2px solid var(--theme-shape-selector-border, rgba(255, 255, 255, 0.1));
   padding-left: 8px;
 }
 
@@ -186,12 +186,12 @@
 
 .debug-action-button {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--theme-shape-selector-border, rgba(255, 255, 255, 0.2));
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  color: #eee;
+  color: var(--theme-text, #eee);
   transition: all 0.2s ease;
   width: 100%;
   max-width: 400px;
@@ -200,8 +200,8 @@
 }
 
 .debug-action-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: #999;
+  background-color: var(--theme-button-hover, rgba(255, 255, 255, 0.1));
+  border-color: var(--theme-text-secondary, #999);
 }
 
 .debug-action-button.danger {

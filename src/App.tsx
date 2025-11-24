@@ -235,7 +235,7 @@ const App = () => {
       headerBorder: 'rgba(0, 0, 0, 0.1)',
       shapeSelectorBg: 'linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 50%, rgba(240, 147, 251, 0.15) 100%)',
       shapeSelectorBorder: 'rgba(0, 0, 0, 0.2)',
-      overlayBg: 'rgba(255, 255, 255, 0.95)',
+      overlayBg: 'linear-gradient(135deg, rgba(245, 245, 245, 0.98) 0%, rgba(235, 235, 235, 0.98) 100%)',
       buttonBg: 'rgba(0, 0, 0, 0.05)',
       buttonHover: 'rgba(0, 0, 0, 0.1)',
     },

@@ -12,7 +12,7 @@ import type {
 import { INITIAL_GAME_STATS } from '../types/stats';
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 3; // Increment for new stores
+const DB_VERSION = 4; // Keep in sync with indexedDBCrud.ts
 const GAME_STATE_STORE = 'gameState'; // Legacy store
 const SCORE_STORE = 'score';
 const TILES_STORE = 'tiles';
@@ -57,8 +57,17 @@ function openDatabase(): Promise<IDBDatabase> {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
     request.onerror = () => {
-      console.error('Failed to open IndexedDB:', request.error);
-      reject(new Error(`Failed to open IndexedDB: ${request.error}`));
+      const error = request.error;
+      console.error('Failed to open IndexedDB:', error);
+      
+      // Handle version errors by recreating the database
+      if (error && error.name === 'VersionError') {
+        console.warn('Database version mismatch detected. Recreating database...');
+        recreateDatabase().then(resolve).catch(reject);
+        return;
+      }
+      
+      reject(new Error(`Failed to open IndexedDB: ${error}`));
     };
 
     request.onsuccess = async () => {
@@ -87,42 +96,33 @@ function openDatabase(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      console.log('Upgrading database from version', event.oldVersion, 'to', event.newVersion);
-
       // Create legacy game state store for backward compatibility
       if (!db.objectStoreNames.contains(GAME_STATE_STORE)) {
-        console.log('Creating', GAME_STATE_STORE, 'store');
         db.createObjectStore(GAME_STATE_STORE);
       }
 
       // Create granular stores
       if (!db.objectStoreNames.contains(SCORE_STORE)) {
-        console.log('Creating', SCORE_STORE, 'store');
         db.createObjectStore(SCORE_STORE);
       }
 
       if (!db.objectStoreNames.contains(TILES_STORE)) {
-        console.log('Creating', TILES_STORE, 'store');
         db.createObjectStore(TILES_STORE);
       }
 
       if (!db.objectStoreNames.contains(SHAPES_STORE)) {
-        console.log('Creating', SHAPES_STORE, 'store');
         db.createObjectStore(SHAPES_STORE);
       }
 
       if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
-        console.log('Creating', SETTINGS_STORE, 'store');
         db.createObjectStore(SETTINGS_STORE);
       }
 
       if (!db.objectStoreNames.contains(MODIFIERS_STORE)) {
-        console.log('Creating', MODIFIERS_STORE, 'store');
         db.createObjectStore(MODIFIERS_STORE);
       }
 
       if (!db.objectStoreNames.contains(STATS_STORE)) {
-        console.log('Creating', STATS_STORE, 'store');
         db.createObjectStore(STATS_STORE);
       }
     };
@@ -154,7 +154,6 @@ export async function saveGameState(gameData: GamePersistenceData): Promise<void
       const request = store.put(gameData, 'current');
 
       request.onsuccess = () => {
-        console.log('Game state saved successfully');
         resolve();
       };
 
@@ -231,7 +230,6 @@ export async function saveScore(score: number): Promise<void> {
         const request = store.put(data, 'current');
 
         request.onsuccess = () => {
-          console.log('Score saved successfully:', score);
           resolve();
         };
 
@@ -265,7 +263,6 @@ export async function saveTiles(tiles: TilesPersistenceData['tiles']): Promise<v
       const request = store.put(data, 'current');
 
       request.onsuccess = () => {
-        console.log('Tiles saved successfully');
         resolve();
       };
 
@@ -295,7 +292,6 @@ export async function saveShapes(nextShapes: ShapesPersistenceData['nextShapes']
       const request = store.put(data, 'current');
 
       request.onsuccess = () => {
-        console.log('Shapes saved successfully');
         resolve();
       };
 
@@ -343,7 +339,6 @@ export async function saveMusicSettings(isMuted: boolean, volume: number = 100, 
       const request = store.put(data, 'current');
 
       request.onsuccess = () => {
-        console.log('Music settings saved successfully:', isMuted);
         resolve();
       };
 
@@ -391,7 +386,6 @@ export async function saveSoundEffectsSettings(isMuted: boolean, volume: number 
       const request = store.put(data, 'current');
 
       request.onsuccess = () => {
-        console.log('Sound effects settings saved successfully:', isMuted);
         resolve();
       };
 
@@ -470,7 +464,6 @@ export async function saveDebugSettings(unlocked: boolean): Promise<void> {
       const request = store.put(data, 'current');
 
       request.onsuccess = () => {
-        console.log('Debug settings saved successfully:', unlocked);
         resolve();
       };
 
@@ -746,7 +739,6 @@ export async function saveModifiers(unlockedModifiers: Set<number>): Promise<voi
       const request = store.put(data, 'current');
 
       request.onsuccess = () => {
-        console.log('Modifiers saved successfully:', data.unlockedModifiers);
         resolve();
       };
 
@@ -846,7 +838,6 @@ export async function saveTheme(theme: string): Promise<void> {
       const request = store.put(updatedSettings, 'current');
 
       request.onsuccess = () => {
-        console.log('Theme saved successfully:', theme);
         resolve();
       };
 

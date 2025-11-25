@@ -63,10 +63,8 @@ const GemShower: React.FC = () => {
     const gemsToShow = useLargeGems
       ? Math.min(Math.floor(pointsForEffect / 10), 10)  // 10-100 points = 1-10 large gems
       : pointsForEffect;                                  // 1-9 points = 1-9 normal gems
-    console.log(`GemShower: score change=${scoreChange}, pointsForEffect=${pointsForEffect}, gemsToShow=${gemsToShow}, useLargeGems=${useLargeGems}`);
 
     const coinsToSpawn = generateGems(gemsToShow, emissionOrigin, isGainingPoints, useLargeGems);
-    console.log(`GemShower: generated ${coinsToSpawn.length} gems`);
     setGems(prevGems => [...prevGems, ...coinsToSpawn]);
 
     lastScoreRef.current = score;

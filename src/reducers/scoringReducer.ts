@@ -76,7 +76,6 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
     }
 
     case "UPDATE_GEM_ICON_POSITION": {
-      console.log('UPDATE_GEM_ICON_POSITION: new position =', action.value);
       return {
         ...state,
         gemIconPosition: action.value,

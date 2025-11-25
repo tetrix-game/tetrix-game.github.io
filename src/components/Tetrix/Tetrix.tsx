@@ -6,7 +6,7 @@ import GameOverOverlay from '../GameOverOverlay';
 import { useTetrixStateContext } from './TetrixContext';
 
 const Tetrix: React.FC = () => {
-  const { gameState, isStatsOpen } = useTetrixStateContext();
+  const { gameState, gameMode, isStatsOpen } = useTetrixStateContext();
 
   // Only render when in playing or gameover state
   if (gameState !== 'playing' && gameState !== 'gameover') {
@@ -18,7 +18,7 @@ const Tetrix: React.FC = () => {
       <Grid />
       <GameControlsPanel />
       <GemShower />
-      {gameState === 'gameover' && !isStatsOpen && <GameOverOverlay />}
+      {gameState === 'gameover' && gameMode === 'infinite' && !isStatsOpen && <GameOverOverlay />}
     </div>
   )
 }

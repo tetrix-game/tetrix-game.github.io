@@ -74,12 +74,10 @@ async function openDatabase(): Promise<IDBDatabase> {
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
-      console.log('Upgrading database from version', event.oldVersion, 'to', event.newVersion);
 
       // Create game state stores (one per mode)
       for (const storeName of [STORES.INFINITE_STATE, STORES.DAILY_STATE, STORES.TUTORIAL_STATE]) {
         if (!db.objectStoreNames.contains(storeName)) {
-          console.log('Creating store:', storeName);
           db.createObjectStore(storeName);
         }
       }
@@ -87,7 +85,6 @@ async function openDatabase(): Promise<IDBDatabase> {
       // Create shared stores
       for (const storeName of [STORES.SETTINGS, STORES.STATS, STORES.MODIFIERS]) {
         if (!db.objectStoreNames.contains(storeName)) {
-          console.log('Creating store:', storeName);
           db.createObjectStore(storeName);
         }
       }
@@ -100,7 +97,6 @@ async function openDatabase(): Promise<IDBDatabase> {
         STORES.LEGACY_SHAPES
       ]) {
         if (!db.objectStoreNames.contains(storeName)) {
-          console.log('Creating legacy store:', storeName);
           db.createObjectStore(storeName);
         }
       }
@@ -443,11 +439,10 @@ export async function exists(
 }
 
 /**
- * Initialize the database (call this on app startup)
+ * Initialize the database (optional - first operation will auto-init)
  */
-export async function initializeDatabase(): Promise<void> {
+export async function initDB(): Promise<void> {
   await getDatabase();
-  console.log('IndexedDB initialized with CRUD access pattern');
 }
 
 /**
@@ -457,6 +452,5 @@ export function closeDatabase(): void {
   if (dbConnection) {
     dbConnection.close();
     dbConnection = null;
-    console.log('IndexedDB connection closed');
   }
 }

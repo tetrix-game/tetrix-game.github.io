@@ -205,7 +205,6 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const startTime = ctx.currentTime + Math.max(0, delay / 1000);
 
       source.start(startTime);
-      console.log(`Playing sound: ${soundEffect} at ${startTime}`);
     } else {
       console.warn(`Sound effect '${soundEffect}' not found or context not ready`);
     }

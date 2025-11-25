@@ -252,8 +252,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
         hasSeenTutorial,
         gameMode,
-        // Load stats if available and gameMode is infinite
-        stats: (gameMode === 'infinite' && gameData.stats) ? gameData.stats : state.stats,
+        // Load stats if provided in action value (for infinite mode)
+        stats: (gameMode === 'infinite' && action.value.stats) ? action.value.stats : state.stats,
       };
     }
 

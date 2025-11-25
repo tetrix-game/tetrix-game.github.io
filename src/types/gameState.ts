@@ -146,7 +146,10 @@ type AddScoreAction = {
 
 type LoadGameStateAction = {
   type: 'LOAD_GAME_STATE';
-  value: { gameData: GamePersistenceData };
+  value: { 
+    gameData: GamePersistenceData;
+    stats?: import('./stats').StatsPersistenceData; // Optional stats for infinite mode
+  };
 };
 
 type ResetGameAction = {

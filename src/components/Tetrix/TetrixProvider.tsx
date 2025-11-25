@@ -2,6 +2,7 @@ import { useReducer, useEffect, useState } from 'react';
 import { initialState, tetrixReducer } from './TetrixReducer';
 import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
 import { loadCompleteGameState, loadModifiers, loadTheme } from '../../utils/persistenceUtils';
+import { loadViewGameState } from '../../utils/persistenceAdapter';
 import { ThemeName } from '../../types';
 
 export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
@@ -12,11 +13,11 @@ export default function TetrixProvider({ children }: { readonly children: React.
   useEffect(() => {
     const loadSavedData = async () => {
       try {
-        console.log('TetrixProvider: Attempting to load saved game state...');
-        const [gameData, unlockedModifiers, savedTheme] = await Promise.all([
+        const [gameData, unlockedModifiers, savedTheme, infiniteViewState] = await Promise.all([
           loadCompleteGameState(),
           loadModifiers(),
-          loadTheme()
+          loadTheme(),
+          loadViewGameState('infinite') // Load infinite mode stats if available
         ]);
 
         // Load theme first
@@ -35,18 +36,13 @@ export default function TetrixProvider({ children }: { readonly children: React.
 
         // Only load if we have valid tile data (100 tiles for 10x10 grid)
         if (gameData?.tiles.length === 100) {
-          console.log('TetrixProvider: Found valid saved game state, restoring...', {
-            score: gameData.score,
-            tilesCount: gameData.tiles.length,
-            shapesCount: gameData.nextShapes.length,
-            hasSavedShape: !!gameData.savedShape
-          });
           dispatch({
             type: 'LOAD_GAME_STATE',
-            value: { gameData },
+            value: { 
+              gameData,
+              stats: infiniteViewState?.stats // Include stats from infinite mode if available
+            },
           });
-        } else {
-          console.log('TetrixProvider: No valid saved game state found (tiles count:', gameData?.tiles?.length ?? 'undefined', ')');
         }
       } catch (error) {
         console.error('Failed to load saved game state:', error);

@@ -3,7 +3,7 @@
 ## What's Up Next
 
 - Better App Icon
-- Light and dark mode
+- Better share tags
 - Document what display layers there are, and give each a taxonomy
 - The heartbeat isn't loud enough on phones
 - Get rid of the click into place sound

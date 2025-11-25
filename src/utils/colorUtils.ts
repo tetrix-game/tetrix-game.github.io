@@ -158,16 +158,16 @@ const LIGHT_MODE_BASE_COLORS: Record<ColorName, string> = {
 };
 
 /**
- * Block blast mode block colors - neon/bright colors for the vibrant gradient background
+ * Block blast mode block colors - saturated, vibrant colors for the gradient background
  */
 const BLOCK_BLAST_BASE_COLORS: Record<ColorName, string> = {
-  grey: 'rgb(203, 213, 225)',
-  red: 'rgb(252, 165, 165)',
-  orange: 'rgb(253, 186, 116)',
-  yellow: 'rgb(254, 240, 138)',
-  green: 'rgb(134, 239, 172)',
-  blue: 'rgb(147, 197, 253)',
-  purple: 'rgb(216, 180, 254)',
+  grey: 'rgb(120, 140, 160)',
+  red: 'rgb(220, 50, 50)',
+  orange: 'rgb(230, 100, 30)',
+  yellow: 'rgb(230, 180, 20)',
+  green: 'rgb(40, 200, 80)',
+  blue: 'rgb(50, 120, 230)',
+  purple: 'rgb(180, 80, 230)',
 };
 
 /**

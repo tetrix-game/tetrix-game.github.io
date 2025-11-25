@@ -2,7 +2,8 @@
 
 ## What's Up Next
 
-
+- Containerize infinite play mode with it's statistics, points, map state, etc.
+- Game over screen on infinite play should show game over and should be directly tied to infinite play
 - Full screen button should have a call to action
 - Better App Icon
 - Better share tags

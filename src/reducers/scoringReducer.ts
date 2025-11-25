@@ -4,7 +4,7 @@
  */
 
 import type { TetrixReducerState, TetrixAction } from '../types';
-import { safeBatchSave } from '../utils/persistenceUtils';
+import { safeBatchSave } from '../utils/persistence';
 
 export function scoringReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
@@ -13,10 +13,12 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
       const newScore = state.score + scoreData.pointsEarned;
 
       // Save updated score
-      safeBatchSave(newScore)
-        .catch((error: Error) => {
-          console.error('Failed to save score:', error);
-        });
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, { score: newScore })
+          .catch((error: Error) => {
+            console.error('Failed to save score:', error);
+          });
+      }
 
       return {
         ...state,
@@ -58,10 +60,12 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
       newOpenRotationMenus[shapeIndex] = true;
 
       // Save updated score
-      safeBatchSave(newScore)
-        .catch((error: Error) => {
-          console.error('Failed to save score:', error);
-        });
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, { score: newScore })
+          .catch((error: Error) => {
+            console.error('Failed to save score:', error);
+          });
+      }
 
       return {
         ...state,

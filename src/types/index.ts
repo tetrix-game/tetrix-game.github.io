@@ -42,6 +42,8 @@ export type {
 
 // Persistence types
 export type {
+  GameModeContext,
+  ViewGameState,
   GamePersistenceData,
   ScorePersistenceData,
   TilesPersistenceData,

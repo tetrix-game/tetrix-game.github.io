@@ -3,6 +3,10 @@
  */
 
 import type { Shape, Tile, TileData } from './core';
+import type { GameMode } from './gameState';
+
+// Game mode context for data separation
+export type GameModeContext = Exclude<GameMode, 'hub'>; // 'infinite' | 'daily' | 'tutorial'
 
 // Game persistence data (legacy - for backward compatibility)
 export type GamePersistenceData = {
@@ -12,7 +16,20 @@ export type GamePersistenceData = {
   savedShape: Shape | null;
 };
 
-// Granular persistence types
+// View-specific game state (separate data per game mode)
+export type ViewGameState = {
+  score: number;
+  tiles: Array<{ key: string; data: TileData }>; // Serialized from Map
+  nextShapes: Shape[];
+  savedShape: Shape | null;
+  totalLinesCleared: number;
+  shapesUsed: number;
+  hasPlacedFirstShape: boolean;
+  stats: import('./stats').StatsPersistenceData; // Mode-specific stats
+  lastUpdated: number;
+};
+
+// Granular persistence types (legacy - for migration)
 export type ScorePersistenceData = {
   score: number;
   lastUpdated: number;
@@ -48,6 +65,7 @@ export type GameSettingsPersistenceData = {
   soundEffects: SoundEffectsPersistenceData;
   debugUnlocked?: boolean;
   theme?: string; // Theme name
+  hasSeenTutorial?: boolean; // Track tutorial completion
   lastUpdated: number;
 };
 

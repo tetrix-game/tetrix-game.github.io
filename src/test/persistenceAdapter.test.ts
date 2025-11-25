@@ -1,0 +1,388 @@
+/**
+ * Tests for Persistence Adapter (view-aware layer)
+ */
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import {
+  saveViewGameState,
+  loadViewGameState,
+  clearViewGameState,
+  hasViewGameState,
+  saveSettings,
+  loadSettings,
+  saveModifiers,
+  loadModifiers,
+  getSavedGameModes,
+} from '../utils/persistenceAdapter';
+import { closeDatabase } from '../utils/indexedDBCrud';
+import type { ViewGameState } from '../types';
+import { INITIAL_STATS_PERSISTENCE } from '../types/stats';
+
+describe('Persistence Adapter - View-Aware Operations', () => {
+  beforeEach(async () => {
+    // Clear will happen in afterEach
+  });
+
+  afterEach(async () => {
+    // Clean up all data after each test
+    const modes = ['infinite', 'daily', 'tutorial'] as const;
+    for (const mode of modes) {
+      try {
+        await clearViewGameState(mode);
+      } catch {
+        // Ignore errors
+      }
+    }
+    closeDatabase();
+  });
+
+  describe('View-Specific Game State', () => {
+    it('should save and load game state for infinite mode', async () => {
+      const state: ViewGameState = {
+        score: 1000,
+        tiles: [
+          { key: 'R1C1', data: { isFilled: true, color: 'red' } },
+          { key: 'R1C2', data: { isFilled: false, color: 'red' } },
+        ],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 5,
+        shapesUsed: 10,
+        hasPlacedFirstShape: true,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveViewGameState('infinite', state);
+      const loaded = await loadViewGameState('infinite');
+
+      expect(loaded).toBeTruthy();
+      expect(loaded?.score).toBe(1000);
+      expect(loaded?.tiles).toHaveLength(2);
+      expect(loaded?.totalLinesCleared).toBe(5);
+      expect(loaded?.shapesUsed).toBe(10);
+      expect(loaded?.hasPlacedFirstShape).toBe(true);
+    });
+
+    it('should save and load game state for daily mode', async () => {
+      const state: ViewGameState = {
+        score: 500,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 2,
+        shapesUsed: 3,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveViewGameState('daily', state);
+      const loaded = await loadViewGameState('daily');
+
+      expect(loaded).toBeTruthy();
+      expect(loaded?.score).toBe(500);
+    });
+
+    it('should keep different modes isolated', async () => {
+      const infiniteState: ViewGameState = {
+        score: 1000,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 10,
+        shapesUsed: 20,
+        hasPlacedFirstShape: true,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      const dailyState: ViewGameState = {
+        score: 500,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 5,
+        shapesUsed: 10,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveViewGameState('infinite', infiniteState);
+      await saveViewGameState('daily', dailyState);
+
+      const loadedInfinite = await loadViewGameState('infinite');
+      const loadedDaily = await loadViewGameState('daily');
+
+      expect(loadedInfinite?.score).toBe(1000);
+      expect(loadedInfinite?.totalLinesCleared).toBe(10);
+      expect(loadedDaily?.score).toBe(500);
+      expect(loadedDaily?.totalLinesCleared).toBe(5);
+    });
+
+    it('should clear specific mode without affecting others', async () => {
+      const state: ViewGameState = {
+        score: 1000,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 0,
+        shapesUsed: 0,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveViewGameState('infinite', state);
+      await saveViewGameState('daily', state);
+
+      await clearViewGameState('infinite');
+
+      const infiniteExists = await hasViewGameState('infinite');
+      const dailyExists = await hasViewGameState('daily');
+
+      expect(infiniteExists).toBe(false);
+      expect(dailyExists).toBe(true);
+    });
+
+    it('should detect existing game states', async () => {
+      const state: ViewGameState = {
+        score: 100,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 0,
+        shapesUsed: 0,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      expect(await hasViewGameState('infinite')).toBe(false);
+
+      await saveViewGameState('infinite', state);
+
+      expect(await hasViewGameState('infinite')).toBe(true);
+    });
+
+    it('should list all modes with saved data', async () => {
+      const state: ViewGameState = {
+        score: 100,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 0,
+        shapesUsed: 0,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveViewGameState('infinite', state);
+      await saveViewGameState('tutorial', state);
+
+      const saved = await getSavedGameModes();
+
+      expect(saved).toHaveLength(2);
+      expect(saved).toContain('infinite');
+      expect(saved).toContain('tutorial');
+      expect(saved).not.toContain('daily');
+    });
+  });
+
+  describe('Shared Settings', () => {
+    it('should save and load settings', async () => {
+      const settings = {
+        music: {
+          isMuted: true,
+          volume: 50,
+          isEnabled: false,
+          lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+        },
+        soundEffects: {
+          isMuted: false,
+          volume: 80,
+          isEnabled: true,
+          lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+        },
+        debugUnlocked: true,
+        theme: 'dark',
+        hasSeenTutorial: true,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveSettings(settings);
+      const loaded = await loadSettings();
+
+      expect(loaded).toBeTruthy();
+      expect(loaded?.music.isMuted).toBe(true);
+      expect(loaded?.music.volume).toBe(50);
+      expect(loaded?.soundEffects.volume).toBe(80);
+      expect(loaded?.debugUnlocked).toBe(true);
+      expect(loaded?.theme).toBe('dark');
+      expect(loaded?.hasSeenTutorial).toBe(true);
+    });
+
+    it('should preserve settings across game mode clears', async () => {
+      const settings = {
+        music: {
+          isMuted: true,
+          volume: 50,
+          isEnabled: true,
+          lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+        },
+        soundEffects: {
+          isMuted: false,
+          volume: 80,
+          isEnabled: true,
+          lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+        },
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      const gameState: ViewGameState = {
+        score: 1000,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 0,
+        shapesUsed: 0,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveSettings(settings);
+      await saveViewGameState('infinite', gameState);
+      await clearViewGameState('infinite');
+
+      const loadedSettings = await loadSettings();
+      expect(loadedSettings?.music.volume).toBe(50);
+    });
+  });
+
+  describe('Shared Modifiers', () => {
+    it('should save and load modifiers', async () => {
+      const modifiers = new Set([2, 3, 5, 7, 11]);
+
+      await saveModifiers(modifiers);
+      const loaded = await loadModifiers();
+
+      expect(loaded.size).toBe(5);
+      expect(loaded.has(2)).toBe(true);
+      expect(loaded.has(3)).toBe(true);
+      expect(loaded.has(5)).toBe(true);
+      expect(loaded.has(7)).toBe(true);
+      expect(loaded.has(11)).toBe(true);
+      expect(loaded.has(13)).toBe(false);
+    });
+
+    it('should return empty set when no modifiers saved', async () => {
+      const loaded = await loadModifiers();
+      expect(loaded.size).toBe(0);
+    });
+  });
+
+  describe('Data Separation Guarantees', () => {
+    it('should not leak data between infinite and daily modes', async () => {
+      const infiniteState: ViewGameState = {
+        score: 1000,
+        tiles: [{ key: 'R1C1', data: { isFilled: true, color: 'red' } }],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 10,
+        shapesUsed: 20,
+        hasPlacedFirstShape: true,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      const dailyState: ViewGameState = {
+        score: 500,
+        tiles: [{ key: 'R2C2', data: { isFilled: true, color: 'blue' } }],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 5,
+        shapesUsed: 10,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      await saveViewGameState('infinite', infiniteState);
+      await saveViewGameState('daily', dailyState);
+
+      const loadedInfinite = await loadViewGameState('infinite');
+      const loadedDaily = await loadViewGameState('daily');
+
+      // Verify complete isolation
+      expect(loadedInfinite?.tiles[0].key).toBe('R1C1');
+      expect(loadedDaily?.tiles[0].key).toBe('R2C2');
+      expect(loadedInfinite?.score).not.toBe(loadedDaily?.score);
+      expect(loadedInfinite?.hasPlacedFirstShape).not.toBe(loadedDaily?.hasPlacedFirstShape);
+    });
+
+    it('should allow concurrent updates to different modes', async () => {
+      const state1: ViewGameState = {
+        score: 100,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 1,
+        shapesUsed: 1,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      const state2: ViewGameState = {
+        score: 200,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 2,
+        shapesUsed: 2,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      const state3: ViewGameState = {
+        score: 300,
+        tiles: [],
+        nextShapes: [],
+        savedShape: null,
+        totalLinesCleared: 3,
+        shapesUsed: 3,
+        hasPlacedFirstShape: false,
+        lastUpdated: Date.now(),
+        stats: INITIAL_STATS_PERSISTENCE,
+      };
+
+      // Save all modes simultaneously
+      await Promise.all([
+        saveViewGameState('infinite', state1),
+        saveViewGameState('daily', state2),
+        saveViewGameState('tutorial', state3),
+      ]);
+
+      // Verify all saved correctly
+      const [loaded1, loaded2, loaded3] = await Promise.all([
+        loadViewGameState('infinite'),
+        loadViewGameState('daily'),
+        loadViewGameState('tutorial'),
+      ]);
+
+      expect(loaded1?.score).toBe(100);
+      expect(loaded2?.score).toBe(200);
+      expect(loaded3?.score).toBe(300);
+    });
+  });
+});

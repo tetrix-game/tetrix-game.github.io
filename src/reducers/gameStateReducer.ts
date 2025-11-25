@@ -6,7 +6,7 @@
  */
 
 import type { TetrixReducerState, TetrixAction, TileData } from '../types';
-import { saveModifiers, safeBatchSave } from '../utils/persistenceUtils';
+import { saveModifiers, safeBatchSave } from '../utils/persistence';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
 import { ColorName } from '../types/core';
 import { updateStats } from '../utils/statsUtils';
@@ -252,6 +252,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
         hasSeenTutorial,
         gameMode,
+        // Load stats if available and gameMode is infinite
+        stats: (gameMode === 'infinite' && gameData.stats) ? gameData.stats : state.stats,
       };
     }
 
@@ -383,11 +385,13 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         );
       });
 
-      // Save stats
-      safeBatchSave(undefined, undefined, undefined, undefined, newStats)
-        .catch((error: Error) => {
-          console.error('Failed to save stats after debug increment:', error);
-        });
+      // Save stats (only for infinite mode)
+      if (state.gameMode === 'infinite') {
+        safeBatchSave(state.gameMode, { stats: newStats })
+          .catch((error: Error) => {
+            console.error('Failed to save stats after debug increment:', error);
+          });
+      }
 
       return {
         ...state,

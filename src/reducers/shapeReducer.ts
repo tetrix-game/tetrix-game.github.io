@@ -6,7 +6,7 @@
 
 import type { TetrixReducerState, TetrixAction } from '../types';
 import { generateRandomShape, rotateShape, cloneShape } from '../utils/shapes';
-import { safeBatchSave } from '../utils/persistenceUtils';
+import { safeBatchSave } from '../utils/persistence';
 import { resetNoTurnStreak } from '../utils/statsUtils';
 
 export function shapeReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -25,10 +25,12 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
 
       // Save shapes to database when they are updated
-      safeBatchSave(undefined, undefined, enhancedShapes, newState.savedShape)
-        .catch((error: Error) => {
-          console.error('Failed to save shapes state:', error);
-        });
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, { nextShapes: enhancedShapes, savedShape: newState.savedShape })
+          .catch((error: Error) => {
+            console.error('Failed to save shapes state:', error);
+          });
+      }
 
       return newState;
     }
@@ -68,10 +70,15 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
 
       // Save updated shapes and stats to database
-      safeBatchSave(undefined, undefined, newShapes, newState.savedShape, newStats)
-        .catch((error: Error) => {
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, {
+          nextShapes: newShapes,
+          savedShape: newState.savedShape,
+          stats: state.gameMode === 'infinite' ? newStats : undefined,
+        }).catch((error: Error) => {
           console.error('Failed to save shapes state:', error);
         });
+      }
 
       return newState;
     }
@@ -89,10 +96,12 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
 
       // Save updated shapes to database
-      safeBatchSave(undefined, undefined, updatedShapes, newState.savedShape)
-        .catch((error: Error) => {
-          console.error('Failed to save shapes state:', error);
-        });
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, { nextShapes: updatedShapes, savedShape: newState.savedShape })
+          .catch((error: Error) => {
+            console.error('Failed to save shapes state:', error);
+          });
+      }
 
       return newState;
     }
@@ -139,10 +148,12 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
 
       // Save updated shapes to database
-      safeBatchSave(undefined, undefined, updatedShapes, newState.savedShape)
-        .catch((error: Error) => {
-          console.error('Failed to save shapes state:', error);
-        });
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, { nextShapes: updatedShapes, savedShape: newState.savedShape })
+          .catch((error: Error) => {
+            console.error('Failed to save shapes state:', error);
+          });
+      }
 
       return newState;
     }

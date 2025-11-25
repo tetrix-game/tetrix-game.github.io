@@ -309,7 +309,7 @@ const App = () => {
           <div className="game-container">
             {gameMode === 'daily' ? (
               <DailyChallenge />
-            ) : gameState === 'playing' ? (
+            ) : gameState === 'playing' || gameState === 'gameover' ? (
               <Tetrix />
             ) : (
               <GameMap />

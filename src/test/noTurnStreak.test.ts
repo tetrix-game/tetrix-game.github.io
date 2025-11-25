@@ -18,6 +18,7 @@ import type { TetrixReducerState } from '../types';
 function setupStateWithShape(shape: ReturnType<typeof generateRandomShape>, location: { row: number; column: number }) {
   return {
     ...initialState,
+    gameMode: 'infinite' as const, // Must be infinite for stats to work
     nextShapes: [shape],
     openRotationMenus: [false],
     dragState: {
@@ -66,6 +67,7 @@ describe('No-Turn Streak Tracking', () => {
     const shape = generateRandomShape();
     let state: TetrixReducerState = {
       ...initialState,
+      gameMode: 'infinite' as const, // Must be infinite for stats to work
       nextShapes: [shape],
       openRotationMenus: [false],
     };
@@ -116,7 +118,10 @@ describe('No-Turn Streak Tracking', () => {
   });
 
   it('should continue incrementing streak for multiple placements', () => {
-    let state: TetrixReducerState = initialState;
+    let state: TetrixReducerState = {
+      ...initialState,
+      gameMode: 'infinite' as const, // Must be infinite for stats to work
+    };
 
     // Place 3 shapes without rotating
     for (let i = 0; i < 3; i++) {
@@ -161,7 +166,10 @@ describe('No-Turn Streak Tracking', () => {
 
   it('should reset current streak when rotating a shape', () => {
     // Setup: Place 2 shapes to build a streak
-    let state: TetrixReducerState = initialState;
+    let state: TetrixReducerState = {
+      ...initialState,
+      gameMode: 'infinite' as const, // Must be infinite for stats to work
+    };
 
     for (let i = 0; i < 2; i++) {
       const shape = generateRandomShape();
@@ -220,7 +228,10 @@ describe('No-Turn Streak Tracking', () => {
   });
 
   it('should track best-in-game correctly across streak breaks', () => {
-    let state: TetrixReducerState = initialState;
+    let state: TetrixReducerState = {
+      ...initialState,
+      gameMode: 'infinite' as const, // Must be infinite for stats to work
+    };
 
     // First streak: 3 placements
     for (let i = 0; i < 3; i++) {
@@ -314,6 +325,7 @@ describe('No-Turn Streak Tracking', () => {
   it('should update all-time best when current exceeds it', () => {
     let state: TetrixReducerState = {
       ...initialState,
+      gameMode: 'infinite' as const, // Must be infinite for stats to work
       stats: {
         ...initialState.stats,
         noTurnStreak: {
@@ -367,6 +379,7 @@ describe('No-Turn Streak Tracking', () => {
   it('should reset current and bestInGame on RESET_GAME but preserve allTimeBest', () => {
     let state: TetrixReducerState = {
       ...initialState,
+      gameMode: 'infinite' as const, // Must be infinite for stats to work
       stats: {
         ...initialState.stats,
         noTurnStreak: {
@@ -388,7 +401,10 @@ describe('No-Turn Streak Tracking', () => {
 
   it('should handle streak across game sessions correctly', () => {
     // Simulate first game with streak of 4
-    let state: TetrixReducerState = initialState;
+    let state: TetrixReducerState = {
+      ...initialState,
+      gameMode: 'infinite' as const, // Must be infinite for stats to work
+    };
 
     for (let i = 0; i < 4; i++) {
       const shape = generateRandomShape();

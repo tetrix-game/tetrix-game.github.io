@@ -1,46 +1,78 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    <!-- Gradient for blue gem effect -->
+    <linearGradient id="blueGem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5AACFF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2E7FD9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A5FB3;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="blockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#4fd1c7;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
-    </linearGradient>
+    
+    <!-- Shadow for depth -->
+    <filter id="shadow">
+      <feDropShadow dx="3" dy="3" stdDeviation="4" flood-opacity="0.25"/>
+    </filter>
   </defs>
   
-  <!-- Background -->
-  <rect width="512" height="512" fill="url(#bg)" rx="64"/>
+  <!-- Background transparent -->
   
-  <!-- Grid lines (subtle) -->
-  <g stroke="#ffffff" stroke-width="1" stroke-opacity="0.1" fill="none">
-    <!-- Vertical lines -->
-    <line x1="128" y1="128" x2="128" y2="384"/>
-    <line x1="192" y1="128" x2="192" y2="384"/>
-    <line x1="256" y1="128" x2="256" y2="384"/>
-    <line x1="320" y1="128" x2="320" y2="384"/>
-    <line x1="384" y1="128" x2="384" y2="384"/>
-    
-    <!-- Horizontal lines -->
-    <line x1="128" y1="128" x2="384" y2="128"/>
-    <line x1="128" y1="192" x2="384" y2="192"/>
-    <line x1="128" y1="256" x2="384" y2="256"/>
-    <line x1="128" y1="320" x2="384" y2="320"/>
-    <line x1="128" y1="384" x2="384" y2="384"/>
+  <!-- White tile base - T-shape pattern with 5 tiles -->
+  <!-- Top row: 3 tiles -->
+  <rect x="56" y="56" width="120" height="120" rx="18" fill="white" filter="url(#shadow)"/>
+  <rect x="196" y="56" width="120" height="120" rx="18" fill="white" filter="url(#shadow)"/>
+  <rect x="336" y="56" width="120" height="120" rx="18" fill="white" filter="url(#shadow)"/>
+  
+  <!-- Middle row: 1 tile (center) -->
+  <rect x="196" y="196" width="120" height="120" rx="18" fill="white" filter="url(#shadow)"/>
+  
+  <!-- Bottom row: 1 tile (center) -->
+  <rect x="196" y="336" width="120" height="120" rx="18" fill="white" filter="url(#shadow)"/>
+  
+  <!-- Blue gem T-shape blocks with cut edges and facets -->
+  <!-- Top row: 3 blue gems -->
+  <g transform="translate(66, 66)">
+    <!-- Main gem body with cut corners -->
+    <polygon points="10,0 90,0 100,10 100,90 90,100 10,100 0,90 0,10" fill="url(#blueGem)" filter="url(#shadow)"/>
+    <!-- Top facet (light reflection) -->
+    <polygon points="10,0 90,0 100,10 80,15 20,15 0,10" fill="#7BC4FF" opacity="0.9"/>
+    <!-- Bottom facet (shadow) -->
+    <polygon points="90,100 10,100 0,90 20,85 80,85 100,90" fill="#0D4580" opacity="0.7"/>
+    <!-- Left facet -->
+    <polygon points="0,10 0,90 10,100 10,0" fill="#3D8FCC" opacity="0.5"/>
+    <!-- Right facet -->
+    <polygon points="100,10 100,90 90,100 90,0" fill="#1A5FB3" opacity="0.6"/>
   </g>
   
-  <!-- Tetris blocks forming a "T" shape -->
-  <!-- Top horizontal bar of T -->
-  <rect x="128" y="192" width="64" height="64" fill="url(#blockGradient)" stroke="#ffffff" stroke-width="2"/>
-  <rect x="192" y="192" width="64" height="64" fill="url(#blockGradient)" stroke="#ffffff" stroke-width="2"/>
-  <rect x="256" y="192" width="64" height="64" fill="url(#blockGradient)" stroke="#ffffff" stroke-width="2"/>
-  <rect x="320" y="192" width="64" height="64" fill="url(#blockGradient)" stroke="#ffffff" stroke-width="2"/>
+  <g transform="translate(206, 66)">
+    <polygon points="10,0 90,0 100,10 100,90 90,100 10,100 0,90 0,10" fill="url(#blueGem)" filter="url(#shadow)"/>
+    <polygon points="10,0 90,0 100,10 80,15 20,15 0,10" fill="#7BC4FF" opacity="0.9"/>
+    <polygon points="90,100 10,100 0,90 20,85 80,85 100,90" fill="#0D4580" opacity="0.7"/>
+    <polygon points="0,10 0,90 10,100 10,0" fill="#3D8FCC" opacity="0.5"/>
+    <polygon points="100,10 100,90 90,100 90,0" fill="#1A5FB3" opacity="0.6"/>
+  </g>
   
-  <!-- Vertical part of T -->
-  <rect x="224" y="256" width="64" height="64" fill="url(#blockGradient)" stroke="#ffffff" stroke-width="2"/>
-  <rect x="224" y="320" width="64" height="64" fill="url(#blockGradient)" stroke="#ffffff" stroke-width="2"/>
+  <g transform="translate(346, 66)">
+    <polygon points="10,0 90,0 100,10 100,90 90,100 10,100 0,90 0,10" fill="url(#blueGem)" filter="url(#shadow)"/>
+    <polygon points="10,0 90,0 100,10 80,15 20,15 0,10" fill="#7BC4FF" opacity="0.9"/>
+    <polygon points="90,100 10,100 0,90 20,85 80,85 100,90" fill="#0D4580" opacity="0.7"/>
+    <polygon points="0,10 0,90 10,100 10,0" fill="#3D8FCC" opacity="0.5"/>
+    <polygon points="100,10 100,90 90,100 90,0" fill="#1A5FB3" opacity="0.6"/>
+  </g>
   
-  <!-- Title -->
-  <text x="256" y="120" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#4fd1c7">TETRIX</text>
+  <!-- Middle: 1 blue gem -->
+  <g transform="translate(206, 206)">
+    <polygon points="10,0 90,0 100,10 100,90 90,100 10,100 0,90 0,10" fill="url(#blueGem)" filter="url(#shadow)"/>
+    <polygon points="10,0 90,0 100,10 80,15 20,15 0,10" fill="#7BC4FF" opacity="0.9"/>
+    <polygon points="90,100 10,100 0,90 20,85 80,85 100,90" fill="#0D4580" opacity="0.7"/>
+    <polygon points="0,10 0,90 10,100 10,0" fill="#3D8FCC" opacity="0.5"/>
+    <polygon points="100,10 100,90 90,100 90,0" fill="#1A5FB3" opacity="0.6"/>
+  </g>
+  
+  <!-- Bottom: 1 blue gem -->
+  <g transform="translate(206, 346)">
+    <polygon points="10,0 90,0 100,10 100,90 90,100 10,100 0,90 0,10" fill="url(#blueGem)" filter="url(#shadow)"/>
+    <polygon points="10,0 90,0 100,10 80,15 20,15 0,10" fill="#7BC4FF" opacity="0.9"/>
+    <polygon points="90,100 10,100 0,90 20,85 80,85 100,90" fill="#0D4580" opacity="0.7"/>
+    <polygon points="0,10 0,90 10,100 10,0" fill="#3D8FCC" opacity="0.5"/>
+    <polygon points="100,10 100,90 90,100 90,0" fill="#1A5FB3" opacity="0.6"/>
+  </g>
 </svg>

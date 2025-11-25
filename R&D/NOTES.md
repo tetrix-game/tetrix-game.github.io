@@ -2,19 +2,14 @@
 
 ## What's Up Next
 
-- Make a menu where the user selects a game type:
-    - Daily challenges
-        - Progress indicator on the main menu
-        - First challenge is a tutorial
-    - Infinite: What we already have
-        - Unlocks after first daily challenge
-    - Level map
-        - Prime factorization challenges
+
+- Full screen button should have a call to action
 - Better App Icon
 - Better share tags
 - Document what display layers there are, and give each a taxonomy
 - The heartbeat isn't loud enough on phones
 - Get rid of the click into place sound when getting points
+- LevelMap spoke on main menu
 
 
 ## Related Documentation

@@ -1,6 +1,8 @@
 import Header from './components/Header';
 import Tetrix from './components/Tetrix';
 import GameMap from './components/GameMap';
+import MainMenu from './components/MainMenu';
+import DailyChallenge from './components/DailyChallenge';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
 import TutorialOverlay from './components/TutorialOverlay';
 import DebugEditor from './components/DebugEditor';
@@ -8,28 +10,35 @@ import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
 import ColorOverrideApplier from './components/ColorPicker/ColorOverrideApplier';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
-import { useMusicControl } from './components/Header/MusicControlContext';
 import { useSoundEffects } from './components/SoundEffectsContext';
+import { useGameNavigation } from './hooks/useGameNavigation';
 import { useState, useEffect, useRef } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from './utils/colorUtils';
 import './App.css';
 
 const App = () => {
-  const { gameState, dragState, gridTileSize, gridBounds, tiles, currentTheme } = useTetrixStateContext();
+  const { gameState, gameMode, dragState, gridTileSize, gridBounds, tiles, currentTheme, hasSeenTutorial } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
-  const { triggerAutoplay } = useMusicControl();
+  const { navigateToMode } = useGameNavigation();
   const { playSound } = useSoundEffects();
   const [showTutorial, setShowTutorial] = useState(false);
   const gridRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    // Check if user has seen the tutorial before
-    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
-    if (!hasSeenTutorial) {
-      setShowTutorial(true);
-    }
-  }, []);
+  // Tutorial handlers
+  const handleSelectTutorial = () => {
+    setShowTutorial(true);
+    navigateToMode('tutorial');
+  };
+
+  const handleCloseTutorial = () => {
+    setShowTutorial(false);
+    // Mark tutorial as completed and save to localStorage
+    localStorage.setItem('hasSeenTutorial', 'true');
+    dispatch({ type: 'COMPLETE_FIRST_TUTORIAL' });
+    // Go to infinite mode after tutorial
+    navigateToMode('infinite');
+  };
 
   // Global mouse/pointer tracking for DraggingShape
   useEffect(() => {
@@ -284,21 +293,39 @@ const App = () => {
   return (
     <div className="App" style={themeStyle}>
       <ColorOverrideApplier />
-      <Header onShowTutorial={() => setShowTutorial(true)} />
-      <div className="game-container">
-        {gameState === 'playing' ? (
-          <Tetrix />
-        ) : (
-          <GameMap />
-        )}
-      </div>
-      <FullScreenFloatingActionButton />
-      {showTutorial && (
-        <TutorialOverlay
-          onClose={() => setShowTutorial(false)}
-          onStartPlaying={triggerAutoplay}
+      
+      {/* Show main menu if in hub mode */}
+      {gameMode === 'hub' && (
+        <MainMenu
+          showTutorial={!hasSeenTutorial}
+          onSelectTutorial={handleSelectTutorial}
         />
       )}
+      
+      {/* Show game UI when not in hub mode */}
+      {gameMode !== 'hub' && (
+        <>
+          <Header onShowTutorial={() => setShowTutorial(true)} />
+          <div className="game-container">
+            {gameMode === 'daily' ? (
+              <DailyChallenge />
+            ) : gameState === 'playing' ? (
+              <Tetrix />
+            ) : (
+              <GameMap />
+            )}
+          </div>
+          <FullScreenFloatingActionButton />
+        </>
+      )}
+      
+      {/* Tutorial overlay - shown from menu button or first-time tutorial spoke */}
+      {showTutorial && (
+        <TutorialOverlay
+          onClose={handleCloseTutorial}
+        />
+      )}
+      
       <DebugEditor />
       <DraggingShape />
       <ToastOverlay />

@@ -4,18 +4,16 @@ import './TutorialOverlay.css';
 
 interface TutorialOverlayProps {
   onClose: () => void;
-  onStartPlaying: () => void;
 }
 
-const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onStartPlaying }) => {
+const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Assuming that any user action indicates they want to start playing, and that they never want to see the tutorial again
   const handleStartPlaying = useCallback(() => {
     localStorage.setItem('hasSeenTutorial', 'true');
-    onStartPlaying();
     onClose();
-  }, [onClose, onStartPlaying]);
+  }, [onClose]);
 
   const slides = [
     {

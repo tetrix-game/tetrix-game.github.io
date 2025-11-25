@@ -32,6 +32,8 @@ const makeTiles = () => {
 
 export const initialGameState = {
   gameState: 'playing' as const,
+  gameMode: 'hub' as const,
+  hasSeenTutorial: false,
   currentLevel: 0,
   isMapUnlocked: false,
   mousePosition: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
@@ -86,6 +88,21 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         currentLevel: levelIndex,
+      };
+    }
+
+    case "SET_GAME_MODE": {
+      const { mode } = action.value;
+      return {
+        ...state,
+        gameMode: mode,
+      };
+    }
+
+    case "COMPLETE_FIRST_TUTORIAL": {
+      return {
+        ...state,
+        hasSeenTutorial: true,
       };
     }
 
@@ -219,6 +236,12 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // If we're loading a game with score or filled tiles, music should be playing
       const shouldPlayMusic = gameData.score > 0 || hasFilledTiles;
 
+      // Check if user has seen tutorial (from localStorage)
+      const hasSeenTutorial = localStorage.getItem('hasSeenTutorial') === 'true';
+      
+      // Determine game mode - if user hasn't seen tutorial, start at hub to show tutorial
+      const gameMode = hasSeenTutorial ? 'infinite' : 'hub';
+
       return {
         ...state,
         score: gameData.score,
@@ -227,12 +250,17 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         savedShape: gameData.savedShape || state.savedShape,
         hasLoadedPersistedState: true,
         hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
+        hasSeenTutorial,
+        gameMode,
       };
     }
 
     case "RESET_GAME": {
       return {
         ...initialGameState,
+        // Preserve tutorial status
+        hasSeenTutorial: state.hasSeenTutorial,
+        gameMode: state.hasSeenTutorial ? 'hub' : state.gameMode,
         // Preserve all-time and high score stats
         stats: {
           ...state.stats,

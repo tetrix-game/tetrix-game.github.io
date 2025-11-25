@@ -81,6 +81,7 @@ export { THEMES } from './theme';
 // Game state types
 export type {
   GameState,
+  GameMode,
   TetrixReducerState,
   TetrixAction,
   TetrixDispatch,

@@ -66,9 +66,10 @@ Prefer changes that REMOVE complexity and state where possible.
 ```
 Main.tsx (wraps with TetrixProvider)
 └── App.tsx
-    ├── Header (music controls, menu, score, location)
+    ├── MainMenu (hub menu for mode selection)
+    ├── Header (music controls, back button/settings, score, location)
     │   ├── BackgroundMusic (with MusicControlContext)
-    │   ├── MenuDropdown (settings, debug tools)
+    │   ├── SettingsOverlay (settings, debug tools) OR Back button (in infinite mode)
     │   ├── ScoreDisplay (numeric score with gem count)
     │   ├── LocationButton (rant progression system)
     ├── Tetrix (game container)
@@ -87,7 +88,9 @@ Main.tsx (wraps with TetrixProvider)
 ### Critical Components
 
 - **GemShower + GemParticle**: Physics-based gem animation system
-- **MenuDropdown**: Hamburger menu with music controls, debug tools, new game
+- **MainMenu**: Hub-and-spokes menu for game mode selection (formerly HubMenu)
+- **SettingsOverlay**: Settings overlay with music controls, debug tools, new game (formerly MenuDropdown)
+- **Header**: Shows back button in infinite mode, settings overlay in other modes
 - **PurchaseMenu**: Gem spending UI for shape rotation unlock
 - **GameMap**: Level selection interface (placeholder for future expansion)
 - **ScoreDisplay**: Shows numeric score with gem count
@@ -154,7 +157,7 @@ npm start           # Development server
 - **Main branch**: Development code (safe to push directly)
 - **gh-pages branch**: Live production site (created by `npm run publish`)
 - **Persistent data**: IndexedDB storage means users don't lose progress on updates
-- **Debug tools**: MenuDropdown has "New Game" to reset all data, "Test Score" for gem testing
+- **Debug tools**: SettingsOverlay has "New Game" to reset all data, "Test Score" for gem testing
 
 
 

@@ -19,9 +19,9 @@ import {
   loadDebugSettings,
   saveDebugSettings
 } from '../../utils/persistenceUtils';
-import './MenuDropdown.css';
+import './SettingsOverlay.css';
 
-interface MenuDropdownProps {
+interface SettingsOverlayProps {
   onShowTutorial?: () => void;
 }
 
@@ -53,7 +53,7 @@ const ThemeSelector: React.FC = () => {
   );
 };
 
-const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
+const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ onShowTutorial }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
@@ -458,4 +458,4 @@ const MenuDropdown: React.FC<MenuDropdownProps> = ({ onShowTutorial }) => {
   );
 };
 
-export default MenuDropdown;
+export default SettingsOverlay;

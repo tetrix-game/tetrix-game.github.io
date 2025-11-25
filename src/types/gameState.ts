@@ -13,10 +13,15 @@ import type { ThemeName } from './theme';
 // Game state types - simplified for level-based play
 export type GameState = 'playing' | 'map' | 'gameover';
 
+// Game mode types - different play modes
+export type GameMode = 'hub' | 'infinite' | 'daily' | 'tutorial';
+
 // Reducer types
 export type TetrixReducerState = {
   // Game state management - simplified
   gameState: GameState;
+  gameMode: GameMode; // Current game mode (hub menu, infinite play, daily challenge, tutorial)
+  hasSeenTutorial: boolean; // Track if user has completed tutorial
   currentLevel: number; // Current level being played
   isMapUnlocked: boolean; // Whether map has been unlocked
 
@@ -182,6 +187,15 @@ type SetLevelAction = {
   value: { levelIndex: number };
 };
 
+type SetGameModeAction = {
+  type: 'SET_GAME_MODE';
+  value: { mode: GameMode };
+};
+
+type CompleteFirstTutorialAction = {
+  type: 'COMPLETE_FIRST_TUTORIAL';
+};
+
 type OpenMapAction = {
   type: 'OPEN_MAP';
 };
@@ -317,6 +331,8 @@ export type TetrixAction =
   | AddShapeOptionAction
   | RemoveShapeOptionAction
   | SetLevelAction
+  | SetGameModeAction
+  | CompleteFirstTutorialAction
   | OpenMapAction
   | CloseMapAction
   | UnlockMapAction

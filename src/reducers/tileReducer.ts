@@ -12,18 +12,10 @@ import { playSound } from '../components/SoundEffectsContext';
 import { generateClearingAnimations, generateFullBoardClearAnimation, cleanupExpiredAnimations, AnimationConfig } from '../utils/clearingAnimationUtils';
 import { updateStats, incrementNoTurnStreak } from '../utils/statsUtils';
 import { checkGameOver } from '../utils/gameOverUtils';
+import { makeTileKey } from '../utils/gridConstants';
 
-// Helper function to create a tile key from location
-export function makeTileKey(row: number, column: number): string {
-  return `R${row}C${column}`;
-}
-
-// Helper function to parse a tile key back to location
-export function parseTileKey(key: string): { row: number; column: number } {
-  const match = key.match(/R(\d+)C(\d+)/);
-  if (!match) throw new Error(`Invalid tile key: ${key}`);
-  return { row: parseInt(match[1], 10), column: parseInt(match[2], 10) };
-}
+// Re-export for backward compatibility
+export { makeTileKey, parseTileKey } from '../utils/gridConstants';
 
 const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
   rows: {

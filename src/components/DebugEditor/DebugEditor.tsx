@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useDebugEditor } from './DebugEditorContext';
-import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import {
   generateIPiece,
   generateOPiece,
@@ -11,6 +11,7 @@ import {
   generateJPiece,
   generateLPiece
 } from '../../utils/shapeUtils';
+import { tilesMapToChallengeData } from '../../utils/gridConstants';
 import type { ColorName } from '../../utils/types';
 import './DebugEditor.css';
 
@@ -18,6 +19,7 @@ const COLOR_OPTIONS: ColorName[] = ['grey', 'red', 'orange', 'yellow', 'green', 
 
 const DebugEditor: React.FC = () => {
   const { state, closeEditor, setTool, setColor, cycleTool, hideInstructions, toggleGridDots } = useDebugEditor();
+  const { tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
 
   // Handle shape picker button clicks
@@ -56,6 +58,51 @@ const DebugEditor: React.FC = () => {
       value: { shape },
     });
   }, [state.selectedColor, dispatch]);
+
+  // Handle export board to clipboard
+  const handleExportBoard = useCallback(() => {
+    const challengeData = tilesMapToChallengeData(tiles);
+    const jsonString = JSON.stringify(challengeData, null, 2);
+    
+    // Always log to console
+    console.log('✅ Board data exported!');
+    console.log('Board data:', challengeData);
+    console.log('JSON:', jsonString);
+    
+    // Try to copy to clipboard with fallback
+    const copyToClipboard = async () => {
+      // Modern API (requires secure context)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(jsonString);
+          alert('Board data copied to clipboard and logged to console!');
+          return;
+        } catch (err) {
+          console.warn('Clipboard API failed, trying fallback:', err);
+        }
+      }
+      
+      // Fallback: Create a temporary textarea
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = jsonString;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '0';
+        textarea.style.left = '0';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Board data copied to clipboard and logged to console!');
+      } catch (err) {
+        console.error('Failed to copy to clipboard:', err);
+        alert('Could not copy to clipboard, but data is logged to console!');
+      }
+    };
+    
+    copyToClipboard();
+  }, [tiles]);
 
   // Handle mouse wheel for tool cycling
   useEffect(() => {
@@ -247,6 +294,13 @@ const DebugEditor: React.FC = () => {
               ⚏
             </button>
           </div>
+        </div>
+
+        <div className="debug-tool-section">
+          <div className="debug-tool-label">Challenge Builder</div>
+          <button className="debug-export-button" onClick={handleExportBoard}>
+            📋 Export Board
+          </button>
         </div>
 
         <div className="debug-tool-section">

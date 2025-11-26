@@ -2,10 +2,10 @@ import './Grid.css'
 import TileVisual from '../TileVisual';
 import type { Tile } from '../../utils/types';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
-import { parseTileKey } from '../Tetrix/TetrixReducer';
+import { GRID_ADDRESSES, parseTileKey } from '../../utils/gridConstants';
 
 export default function Grid() {
   const { tiles, dragState } = useTetrixStateContext();
@@ -38,27 +38,6 @@ export default function Grid() {
     };
   }, [dragState.selectedShape, dispatch, isDebugMode]);
 
-  // Convert tiles Map to array for rendering (memoized)
-  const tilesArray = useMemo(() => {
-    const result: Tile[] = [];
-    tiles.forEach((data, key) => {
-      const { row, column } = parseTileKey(key);
-      result.push({
-        id: `(row: ${row}, column: ${column})`,
-        location: { row, column },
-        block: { isFilled: data.isFilled, color: data.color },
-      });
-    });
-    // Sort by row, then column for consistent ordering
-    result.sort((a, b) => {
-      if (a.location.row !== b.location.row) {
-        return a.location.row - b.location.row;
-      }
-      return a.location.column - b.location.column;
-    });
-    return result;
-  }, [tiles]);
-
   // Create a map of hovered block positions for quick lookup
   const hoveredBlockMap = new Map(
     dragState.hoveredBlockPositions.map(pos => [
@@ -77,14 +56,27 @@ export default function Grid() {
       } as React.CSSProperties}
     >
       {
-        tilesArray.map((tile: Tile) => {
-          const key = `${tile.location.row},${tile.location.column}`;
-          const hoveredBlock = hoveredBlockMap.get(key);
+        GRID_ADDRESSES.map((key) => {
+          const tileData = tiles.get(key);
+          if (!tileData) {
+            console.error(`Missing tile data for key: ${key}`);
+            return null;
+          }
+
+          const { row, column } = parseTileKey(key);
+          const tile: Tile = {
+            id: `(row: ${row}, column: ${column})`,
+            location: { row, column },
+            block: { isFilled: tileData.isFilled, color: tileData.color },
+          };
+
+          const posKey = `${row},${column}`;
+          const hoveredBlock = hoveredBlockMap.get(posKey);
           const isHovered = hoveredBlock?.isFilled ?? false;
 
           return (
             <TileVisual
-              key={tile.id}
+              key={key}
               tile={tile}
               isHovered={isHovered}
               hoveredBlock={hoveredBlock}

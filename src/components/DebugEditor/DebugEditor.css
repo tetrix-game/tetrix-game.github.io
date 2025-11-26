@@ -278,3 +278,28 @@
 .debug-close-editor-button:hover {
   background: #cc0000;
 }
+
+.debug-export-button {
+  width: 100%;
+  background: #4a9eff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.debug-export-button:hover {
+  background: #3a7ecc;
+}
+
+.debug-export-button:active {
+  transform: scale(0.98);
+}

@@ -10,22 +10,16 @@ import { saveModifiers, safeBatchSave } from '../utils/persistence';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
 import { ColorName } from '../types/core';
 import { updateStats } from '../utils/statsUtils';
+import { GRID_ADDRESSES, makeTileKey } from '../utils/gridConstants';
 
-// Helper function to create a tile key from location
-function makeTileKey(row: number, column: number): string {
-  return `R${row}C${column}`;
-}
-
-// Helper function to create tiles Set
+// Helper function to create tiles Map using static grid addresses
 const makeTiles = () => {
   const tiles = new Map<string, TileData>();
-  for (let row = 1; row <= 10; row++) {
-    for (let column = 1; column <= 10; column++) {
-      tiles.set(makeTileKey(row, column), {
-        isFilled: false,
-        color: 'grey',
-      });
-    }
+  for (const key of GRID_ADDRESSES) {
+    tiles.set(key, {
+      isFilled: false,
+      color: 'grey',
+    });
   }
   return tiles;
 };

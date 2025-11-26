@@ -1,15 +1,19 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-
-- Better understanding of database tracking
-- Full screen button should have a call to action
-- Better App Icon
-- Better share tags
-- Document what display layers there are, and give each a taxonomy
-- The heartbeat isn't loud enough on phones
-- Get rid of the click into place sound when getting points
-- LevelMap spoke on main menu
+- Architecture
+    - 1d: LevelMap spoke on main menu
+    - 5d: Document what display layers there are, and give each a taxonomy
+- Juice
+    - 5m: The heartbeat isn't loud enough on phones
+- Bug
+    - 5m: Get rid of the click into place sound when getting points
+    - 10m: The background of the Grid should have 0 opacity, allowing the color of the app background to show through, giving a sense of a seamless tile placement over the entire screen instead of a harsher container feeling.
+- Expectation Mismatch
+    - 5m: Full screen button should have a call to action
+- Curb appeal
+    - 3h: Better share images
+    - 10m: Better App Icon
 
 
 ## Related Documentation

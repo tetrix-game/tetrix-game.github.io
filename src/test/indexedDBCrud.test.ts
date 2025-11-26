@@ -8,7 +8,7 @@ import * as crud from '../utils/indexedDBCrud';
 describe('IndexedDB CRUD Operations', () => {
   beforeEach(async () => {
     // Initialize database before each test
-    await crud.initializeDatabase();
+    await crud.initDB();
   });
 
   afterEach(async () => {

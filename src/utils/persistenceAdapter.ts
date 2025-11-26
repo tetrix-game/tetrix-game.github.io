@@ -362,7 +362,7 @@ export async function clearAllDataAndReload(): Promise<void> {
  * Initialize persistence system on app startup
  */
 export async function initializePersistence(): Promise<void> {
-  await crud.initializeDatabase();
+  await crud.initDB();
   await migrateLegacyData();
 }
 

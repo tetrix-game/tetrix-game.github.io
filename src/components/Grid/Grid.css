@@ -3,7 +3,6 @@
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  background-color: var(--theme-grid-bg, rgb(10, 10, 10));
   position: relative;
   touch-action: none;
   gap: var(--grid-gap);

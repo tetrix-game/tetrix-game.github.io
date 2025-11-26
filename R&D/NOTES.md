@@ -8,7 +8,6 @@
     - 5m: The heartbeat isn't loud enough on phones
 - Bug
     - 5m: Get rid of the click into place sound when getting points
-    - 10m: The background of the Grid should have 0 opacity, allowing the color of the app background to show through, giving a sense of a seamless tile placement over the entire screen instead of a harsher container feeling.
 - Expectation Mismatch
     - 5m: Full screen button should have a call to action
 - Curb appeal

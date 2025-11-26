@@ -15,6 +15,7 @@ import { useGameNavigation } from './hooks/useGameNavigation';
 import { useState, useEffect, useRef } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from './utils/colorUtils';
+import { GRID_SIZE } from './utils/gridConstants';
 import './App.css';
 
 const App = () => {
@@ -105,7 +106,7 @@ const App = () => {
             e.clientX,
             e.clientY,
             gridElement,
-            { rows: 10, columns: 10 },
+            { rows: GRID_SIZE, columns: GRID_SIZE },
             offsets.touchOffset,
             dragState.selectedShape,
             {
@@ -181,7 +182,7 @@ const App = () => {
         e.clientX,
         e.clientY,
         gridElement,
-        { rows: 10, columns: 10 },
+        { rows: GRID_SIZE, columns: GRID_SIZE },
         offsets.touchOffset,
         dragState.selectedShape,
         {

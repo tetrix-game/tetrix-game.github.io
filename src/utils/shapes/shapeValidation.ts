@@ -1,4 +1,5 @@
 import type { Shape, Location, TilesSet } from '../types';
+import { GRID_SIZE } from '../gridConstants';
 
 /**
  * Shape validation functions - Placement validation and collision detection
@@ -98,8 +99,8 @@ export function isValidPlacement(
         const gridRow = gridTopLeftLocation.row + shapeRow;
         const gridCol = gridTopLeftLocation.column + shapeCol;
 
-        // Check bounds (10x10 grid, 1-indexed) - short circuit if out of bounds
-        if (gridRow < 1 || gridRow > 10 || gridCol < 1 || gridCol > 10) {
+        // Check bounds (1-indexed) - short circuit if out of bounds
+        if (gridRow < 1 || gridRow > GRID_SIZE || gridCol < 1 || gridCol > GRID_SIZE) {
           return false; // Block doesn't fit
         }
 
@@ -152,8 +153,8 @@ export function getInvalidBlocks(
         const gridRow = gridTopLeftLocation.row + shapeRow;
         const gridCol = gridTopLeftLocation.column + shapeCol;
 
-        // Check bounds (10x10 grid, 1-indexed)
-        const outOfBounds = gridRow < 1 || gridRow > 10 || gridCol < 1 || gridCol > 10;
+        // Check bounds (1-indexed)
+        const outOfBounds = gridRow < 1 || gridRow > GRID_SIZE || gridCol < 1 || gridCol > GRID_SIZE;
 
         // Check if position is already occupied using O(1) Map lookup
         let overlapping = false;

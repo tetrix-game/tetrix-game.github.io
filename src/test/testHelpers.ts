@@ -1,4 +1,5 @@
 import type { TilesSet, ColorName, TileData } from '../types';
+import { GRID_SIZE } from '../utils/gridConstants';
 
 /**
  * Helper functions for testing with TilesSet (Map-based tiles)
@@ -21,8 +22,8 @@ export function countFilledTiles(tiles: TilesSet): number {
 // Helper to convert TilesSet to array for filtering
 export function tilesToArray(tiles: TilesSet) {
   const result = [];
-  for (let row = 1; row <= 10; row++) {
-    for (let column = 1; column <= 10; column++) {
+  for (let row = 1; row <= GRID_SIZE; row++) {
+    for (let column = 1; column <= GRID_SIZE; column++) {
       const tileData = tiles.get(`R${row}C${column}`);
       if (tileData) {
         result.push({ location: { row, column }, ...tileData });
@@ -34,7 +35,7 @@ export function tilesToArray(tiles: TilesSet) {
 
 // Helper to check if row is full
 export function isRowFull(tiles: TilesSet, row: number): boolean {
-  for (let column = 1; column <= 10; column++) {
+  for (let column = 1; column <= GRID_SIZE; column++) {
     const tile = getTileData(tiles, row, column);
     if (!tile || !tile.isFilled) {
       return false;
@@ -45,7 +46,7 @@ export function isRowFull(tiles: TilesSet, row: number): boolean {
 
 // Helper to check if column is full
 export function isColumnFull(tiles: TilesSet, column: number): boolean {
-  for (let row = 1; row <= 10; row++) {
+  for (let row = 1; row <= GRID_SIZE; row++) {
     const tile = getTileData(tiles, row, column);
     if (!tile || !tile.isFilled) {
       return false;
@@ -74,8 +75,8 @@ export function createTilesWithFilled(
   const tiles = new Map<string, TileData>();
 
   // Initialize all tiles as empty
-  for (let row = 1; row <= 10; row++) {
-    for (let column = 1; column <= 10; column++) {
+  for (let row = 1; row <= GRID_SIZE; row++) {
+    for (let column = 1; column <= GRID_SIZE; column++) {
       tiles.set(`R${row}C${column}`, {
         isFilled: false,
         color: 'grey' as ColorName,

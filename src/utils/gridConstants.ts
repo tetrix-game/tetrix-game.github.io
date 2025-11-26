@@ -9,17 +9,17 @@
 
 import type { TileData, ColorName } from '../types';
 
-// Grid configuration
-export const GRID_SIZE = 10 as const;
+// Grid configuration - mutable to allow runtime size changes
+export let GRID_SIZE = 10;
 
 /**
- * Generate static grid addresses in row-major order
- * Returns a frozen array of all 100 grid keys (R1C1, R1C2, ..., R10C10)
+ * Generate grid addresses in row-major order
+ * Returns a frozen array of all grid keys (R1C1, R1C2, ..., RnCn)
  */
-function generateGridAddresses(): readonly string[] {
+function generateGridAddresses(size: number): readonly string[] {
   const addresses: string[] = [];
-  for (let row = 1; row <= GRID_SIZE; row++) {
-    for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let row = 1; row <= size; row++) {
+    for (let column = 1; column <= size; column++) {
       addresses.push(`R${row}C${column}`);
     }
   }
@@ -29,10 +29,24 @@ function generateGridAddresses(): readonly string[] {
 }
 
 /**
- * Static array of all grid addresses in row-major order
+ * Array of all grid addresses in row-major order
  * Use this for iteration instead of generating arrays
+ * Regenerated when grid size changes
  */
-export const GRID_ADDRESSES = generateGridAddresses();
+export let GRID_ADDRESSES = generateGridAddresses(GRID_SIZE);
+
+/**
+ * Set the grid size and regenerate all grid addresses
+ * This should be called before initializing the game state
+ * @param size - The new grid size (e.g., 8, 10, 12, 15)
+ */
+export function setGridSize(size: number): void {
+  if (size < 4 || size > 20) {
+    throw new Error(`Grid size must be between 4 and 20, got ${size}`);
+  }
+  GRID_SIZE = size;
+  GRID_ADDRESSES = generateGridAddresses(size);
+}
 
 // Validation at module load time
 if (GRID_ADDRESSES.length !== GRID_SIZE * GRID_SIZE) {

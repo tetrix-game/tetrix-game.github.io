@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { GRID_SIZE } from '../utils/gridConstants';
 
 export interface GameSizing {
   gridSize: number;
@@ -99,10 +100,10 @@ export const useGameSizing = (): GameSizing => {
       gameControlsLength = gridSize; // Match grid width
     }
 
-    // Grid has 10 cells with 2px gaps (9 gaps total)
+    // Grid has GRID_SIZE cells with 2px gaps
     const gridGap = 2;
-    const gridGapSpace = gridGap * 9;
-    const gridCellSize = (gridSize - gridGapSpace) / 10;
+    const gridGapSpace = gridGap * (GRID_SIZE - 1);
+    const gridCellSize = (gridSize - gridGapSpace) / GRID_SIZE;
 
     // Button sizing based on controls width
     const buttonSize = gameControlsWidth * 0.9; // Slightly smaller to ensure padding

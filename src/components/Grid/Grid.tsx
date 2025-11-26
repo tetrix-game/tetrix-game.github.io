@@ -5,7 +5,7 @@ import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/Tetri
 import { useRef, useEffect } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
-import { GRID_ADDRESSES, parseTileKey } from '../../utils/gridConstants';
+import { GRID_ADDRESSES, GRID_SIZE, parseTileKey } from '../../utils/gridConstants';
 
 export default function Grid() {
   const { tiles, dragState } = useTetrixStateContext();
@@ -53,6 +53,8 @@ export default function Grid() {
       style={{
         '--grid-gap': `${gridGap}px`,
         '--grid-size': `${gridSize}px`,
+        gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
+        gridTemplateRows: `repeat(${GRID_SIZE}, 1fr)`,
       } as React.CSSProperties}
     >
       {

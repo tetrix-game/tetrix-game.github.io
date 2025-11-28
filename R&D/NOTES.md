@@ -1,13 +1,25 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
+- "Look at this!" moments
+    - Daily challenge
 - Architecture
+    - Solver that generates lowball shapes
+    - Additional shape types
     - 1d: LevelMap spoke on main menu
     - 5d: Document what display layers there are, and give each a taxonomy
 - Juice
+    - Semi-translucent tile colors for background things later
     - 5m: The heartbeat isn't loud enough on phones
+    - Better clearance animations
+    - Better clearance sounds
+    - Turn button depress sound
+    - Turn button decompress sound
+    - Turn sound
+    - cw turn sound
+    - ccw turn sound
 - Bug
-    - 5m: Get rid of the click into place sound when getting points
+    - Shape options don't 
 - Expectation Mismatch
     - 5m: Full screen button should have a call to action
 - Curb appeal

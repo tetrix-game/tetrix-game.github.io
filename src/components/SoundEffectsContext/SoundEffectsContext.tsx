@@ -100,6 +100,32 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
   }, []);
 
+  // Handle page visibility changes (app backgrounded/foregrounded)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const ctx = audioContextRef.current;
+      if (!ctx) return;
+
+      if (document.hidden) {
+        // App is going to background - suspend audio context
+        if (ctx.state === 'running') {
+          ctx.suspend();
+        }
+      } else {
+        // App is coming to foreground - resume if user has interacted
+        if (hasUserInteractedRef.current && ctx.state === 'suspended') {
+          ctx.resume();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   // Load volume and enabled state from DB on mount
   useEffect(() => {
     const loadSettings = async () => {

@@ -10,6 +10,8 @@ const BackgroundMusic: React.FC = () => {
 
   // Track if we've already triggered autoplay from first shape
   const hasTriggeredFromShapeRef = useRef(false);
+  // Track if music was playing before visibility change
+  const wasPlayingBeforeHiddenRef = useRef(false);
 
   // List of available tracks (using useMemo to prevent recreation on each render)
   const tracks = React.useMemo(() => [
@@ -40,6 +42,35 @@ const BackgroundMusic: React.FC = () => {
       audio.volume = (volume / 100) * 0.3; // Scale to 0-0.3 range
     }
   }, [volume]);
+
+  // Handle page visibility changes (app backgrounded/foregrounded)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      if (document.hidden) {
+        // App is going to background - pause music
+        wasPlayingBeforeHiddenRef.current = !audio.paused;
+        if (!audio.paused) {
+          audio.pause();
+        }
+      } else {
+        // App is coming to foreground - resume if it was playing before
+        if (wasPlayingBeforeHiddenRef.current && shouldPlayMusic && isEnabled && volume > 0) {
+          audio.play().catch(error => {
+            console.log('Failed to resume music after visibility change:', error);
+          });
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [shouldPlayMusic, isEnabled, volume]);
 
   // Set up audio and handle track changes
   useEffect(() => {

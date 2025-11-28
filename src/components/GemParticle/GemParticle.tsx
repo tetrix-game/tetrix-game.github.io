@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import BlueGemIcon from '../BlueGemIcon';
-import { useSoundEffects } from '../SoundEffectsContext';
 import './GemParticle.css';
 
 interface GemParticleProps {
@@ -24,8 +23,6 @@ const GemParticle: React.FC<GemParticleProps> = ({
   const [opacity, setOpacity] = useState(0); // Start transparent for smooth fade-in
   const animationRef = useRef<number>();
   const startTimeRef = useRef<number>();
-  const hasPlayedSoundRef = useRef(false);
-  const { playSound } = useSoundEffects();
 
   // Store initial props in refs to prevent re-renders from affecting animation
   const initialPropsRef = useRef({
@@ -80,11 +77,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
 
           // Check if we've reached the target
           if (distance <= SNAP_DISTANCE) {
-            // Snap to target and play sound once
-            if (!hasPlayedSoundRef.current) {
-              playSound('click_into_place');
-              hasPlayedSoundRef.current = true;
-            }
+            // Snap to target
             setCurrentPosition(target);
             setOpacity(1);
             // Complete after a brief moment at the target

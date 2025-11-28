@@ -1,8 +1,10 @@
 import "./FullScreenButton.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { CallToActionPointer } from "../Pointer";
 
 function FullScreenButton() {
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const goFullScreen = () => {
     // make the browser full screen
@@ -29,15 +31,26 @@ function FullScreenButton() {
   })
 
   return (
-    !isFullScreen ? (
-      <button
-        className="full-screen-button"
-        onClick={goFullScreen}
-        aria-label="Enter Full Screen"
-      >
-        <span>+</span>
-      </button>
-    ) : null
+    <>
+      {!isFullScreen ? (
+        <button
+          ref={buttonRef}
+          className="full-screen-button"
+          onClick={goFullScreen}
+          aria-label="Enter Full Screen"
+        >
+          <span>+</span>
+        </button>
+      ) : null}
+      
+      <CallToActionPointer
+        targetRef={buttonRef}
+        callKey="fullscreen-button"
+        label="Try fullscreen mode!"
+        timeout={5 * 60 * 60 * 1000}
+        offsetFromTarget={80}
+      />
+    </>
   )
 }
 

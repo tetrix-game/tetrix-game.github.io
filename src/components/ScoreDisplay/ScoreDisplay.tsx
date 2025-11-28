@@ -3,13 +3,13 @@ import { formatScore } from '../../utils/scoringUtils';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import BlueGemIcon from '../BlueGemIcon';
 import StatsOverlay from '../StatsOverlay/StatsOverlay';
-import AttentionArrow from '../AttentionArrow/AttentionArrow';
+import { ErrorPointer } from '../Pointer';
 import { useVisualError } from '../../hooks/useVisualError';
 import '../../styles/feedback.css';
 import './ScoreDisplay.css';
 
 const ScoreDisplay: React.FC = () => {
-  const { score, gameState, isStatsOpen, insufficientFundsError, gemIconPosition } = useTetrixStateContext();
+  const { score, gameState, isStatsOpen, insufficientFundsError } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
 
@@ -19,7 +19,7 @@ const ScoreDisplay: React.FC = () => {
   // Use the reusable hook for arrow visibility (longer duration)
   const isArrowVisible = useVisualError(insufficientFundsError, 2500);
 
-  // Update gem icon position whenever it changes
+  // Update gem icon position whenever it changes (for GemShower particle physics)
   useEffect(() => {
     if (gemIconRef.current) {
       const updatePosition = () => {
@@ -29,8 +29,6 @@ const ScoreDisplay: React.FC = () => {
             x: rect.left + rect.width / 2,
             y: rect.top + rect.height / 2
           };
-          // Only dispatch if position actually changed significantly to avoid loops
-          // (Though the reducer handles this, it's good practice)
           dispatch({
             type: 'UPDATE_GEM_ICON_POSITION',
             value: position
@@ -69,8 +67,8 @@ const ScoreDisplay: React.FC = () => {
         </span>
       </div>
 
-      <AttentionArrow
-        targetPosition={gemIconPosition}
+      <ErrorPointer
+        targetRef={gemIconRef}
         isVisible={isArrowVisible}
         message="Need points to turn shapes!"
         offsetFromTarget={50}

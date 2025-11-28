@@ -20,6 +20,7 @@ const SHAPES_STORE = 'shapes';
 const SETTINGS_STORE = 'settings';
 const MODIFIERS_STORE = 'modifiers';
 const STATS_STORE = 'stats';
+const CALL_TO_ACTION_KEY_PREFIX = 'cta-';
 
 /**
  * Check if IndexedDB is available (not in Node.js/testing environments)
@@ -1178,5 +1179,86 @@ export async function hasSavedGameData(): Promise<boolean> {
     return gameData !== null && gameData.tiles.length > 0;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Save call-to-action timestamp to IndexedDB
+ * Stores the timestamp when a call-to-action was last dismissed
+ */
+export async function saveCallToActionTimestamp(callKey: string, timestamp: number): Promise<void> {
+  if (!isIndexedDBAvailable()) {
+    // Fallback to sessionStorage for testing/non-browser environments
+    try {
+      sessionStorage.setItem(`${CALL_TO_ACTION_KEY_PREFIX}${callKey}`, timestamp.toString());
+    } catch {
+      console.warn('Failed to save call-to-action timestamp to sessionStorage');
+    }
+    return;
+  }
+
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readwrite');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const storageKey = `${CALL_TO_ACTION_KEY_PREFIX}${callKey}`;
+      const request = store.put(timestamp, storageKey);
+
+      request.onsuccess = () => {
+        resolve();
+      };
+
+      request.onerror = () => {
+        console.error('Failed to save call-to-action timestamp:', request.error);
+        reject(new Error(`Failed to save call-to-action timestamp: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error saving call-to-action timestamp:', error);
+    throw error;
+  }
+}
+
+/**
+ * Load call-to-action timestamp from IndexedDB
+ * Returns the timestamp when the call-to-action was last dismissed, or null if never dismissed
+ */
+export async function loadCallToActionTimestamp(callKey: string): Promise<number | null> {
+  if (!isIndexedDBAvailable()) {
+    // Fallback to sessionStorage for testing/non-browser environments
+    try {
+      const value = sessionStorage.getItem(`${CALL_TO_ACTION_KEY_PREFIX}${callKey}`);
+      return value ? parseInt(value, 10) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  try {
+    const db = await initializeDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([SETTINGS_STORE], 'readonly');
+      const store = transaction.objectStore(SETTINGS_STORE);
+
+      const storageKey = `${CALL_TO_ACTION_KEY_PREFIX}${callKey}`;
+      const request = store.get(storageKey);
+
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(typeof result === 'number' ? result : null);
+      };
+
+      request.onerror = () => {
+        console.error('Failed to load call-to-action timestamp:', request.error);
+        reject(new Error(`Failed to load call-to-action timestamp: ${request.error}`));
+      };
+    });
+  } catch (error) {
+    console.error('Error loading call-to-action timestamp:', error);
+    return null;
   }
 }

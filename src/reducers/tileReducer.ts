@@ -3,8 +3,7 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types';
-import { TileEntity } from '../types';
+import type { TetrixReducerState, TetrixAction, Tile } from '../types';
 import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithProbabilities } from '../utils/shapes';
 import { safeBatchSave } from '../utils/persistence';
 import { tilesToArray } from '../types';
@@ -34,23 +33,26 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Get the positions where the shape would be placed
       const shapePositions = getShapeGridPositions(state.dragState.selectedShape, placementLocation);
 
-      // Update tiles with the placed shape (working with TileEntity)
+      // Update tiles with the placed shape (working with plain Tile objects)
       const newTiles = new Map(state.tiles);
       for (const pos of shapePositions) {
         if (pos.block.isFilled) {
           const position = makeTileKey(pos.location.row, pos.location.column);
           const existingTile = newTiles.get(position);
           if (existingTile) {
-            // Update existing tile's block
-            existingTile.block = { isFilled: true, color: pos.block.color };
+            // Update existing tile's block immutably
+            newTiles.set(position, {
+              ...existingTile,
+              block: { isFilled: true, color: pos.block.color }
+            });
           } else {
             // Create new tile if it doesn't exist
-            const newTile = new TileEntity(
+            const newTile: Tile = {
               position,
-              'grey', // default background
-              { isFilled: true, color: pos.block.color },
-              []
-            );
+              backgroundColor: 'grey', // default background
+              block: { isFilled: true, color: pos.block.color },
+              activeAnimations: []
+            };
             newTiles.set(position, newTile);
           }
         }
@@ -85,7 +87,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Save game state to browser DB asynchronously (don't block UI)
       // Convert tiles to serializable format for persistence
       const tilesPersistenceData = tilesToArray(lineClearResult.tiles);
-      if (lineClearResult.pointsEarned > 0 || Array.from(lineClearResult.tiles.values()).some(tile => tile.isFilled)) {
+      if (lineClearResult.pointsEarned > 0 || Array.from(lineClearResult.tiles.values()).some(tile => tile.block.isFilled)) {
         // Only persist for non-hub modes
         if (state.gameMode !== 'hub') {
           safeBatchSave(state.gameMode, {
@@ -214,9 +216,17 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           const position = makeTileKey(row, column);
           const existingTile = newTiles.get(position);
           if (existingTile) {
-            existingTile.block = { isFilled: true, color };
+            newTiles.set(position, {
+              ...existingTile,
+              block: { isFilled: true, color }
+            });
           } else {
-            const tile = new TileEntity(position, 'grey', { isFilled: true, color }, []);
+            const tile: Tile = {
+              position,
+              backgroundColor: 'grey',
+              block: { isFilled: true, color },
+              activeAnimations: []
+            };
             newTiles.set(position, tile);
           }
         }
@@ -245,9 +255,17 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           const position = makeTileKey(row, column);
           const existingTile = newTiles.get(position);
           if (existingTile) {
-            existingTile.block = { isFilled: true, color };
+            newTiles.set(position, {
+              ...existingTile,
+              block: { isFilled: true, color }
+            });
           } else {
-            const tile = new TileEntity(position, 'grey', { isFilled: true, color }, []);
+            const tile: Tile = {
+              position,
+              backgroundColor: 'grey',
+              block: { isFilled: true, color },
+              activeAnimations: []
+            };
             newTiles.set(position, tile);
           }
         }
@@ -274,7 +292,10 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const currentTile = newTiles.get(position);
 
       if (currentTile) {
-        currentTile.block = { isFilled: false, color: 'grey' };
+        newTiles.set(position, {
+          ...currentTile,
+          block: { isFilled: false, color: 'grey' }
+        });
       }
 
       const tilesPersistenceData = tilesToArray(newTiles);
@@ -298,9 +319,17 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const existingTile = newTiles.get(position);
 
       if (existingTile) {
-        existingTile.block = { isFilled: true, color };
+        newTiles.set(position, {
+          ...existingTile,
+          block: { isFilled: true, color }
+        });
       } else {
-        const tile = new TileEntity(position, 'grey', { isFilled: true, color }, []);
+        const tile: Tile = {
+          position,
+          backgroundColor: 'grey',
+          block: { isFilled: true, color },
+          activeAnimations: []
+        };
         newTiles.set(position, tile);
       }
 
@@ -319,12 +348,17 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
     }
 
     case "DEBUG_CLEAR_ALL": {
-      const newTiles = new Map<string, TileEntity>();
+      const newTiles = new Map<string, Tile>();
 
       for (let row = 1; row <= 10; row++) {
         for (let column = 1; column <= 10; column++) {
           const position = makeTileKey(row, column);
-          const tile = new TileEntity(position, 'grey', { isFilled: false, color: 'grey' }, []);
+          const tile: Tile = {
+            position,
+            backgroundColor: 'grey',
+            block: { isFilled: false, color: 'grey' },
+            activeAnimations: []
+          };
           newTiles.set(position, tile);
         }
       }
@@ -373,14 +407,25 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           const existingTile = newTiles.get(position);
           if ((isInPatternRows || isInPatternCols) && !isOnDiagonal) {
             if (existingTile) {
-              existingTile.block = { isFilled: true, color: 'blue' };
+              newTiles.set(position, {
+                ...existingTile,
+                block: { isFilled: true, color: 'blue' }
+              });
             } else {
-              const tile = new TileEntity(position, 'grey', { isFilled: true, color: 'blue' }, []);
+              const tile: Tile = {
+                position,
+                backgroundColor: 'grey',
+                block: { isFilled: true, color: 'blue' },
+                activeAnimations: []
+              };
               newTiles.set(position, tile);
             }
           } else if (isOnDiagonal && existingTile) {
             // Empty if on diagonal
-            existingTile.block = { isFilled: false, color: 'grey' };
+            newTiles.set(position, {
+              ...existingTile,
+              block: { isFilled: false, color: 'grey' }
+            });
           }
           // Keep all other tiles as-is
         }

@@ -71,6 +71,8 @@ describe('No-Turn Streak Tracking', () => {
       nextShapes: [shape],
       openRotationMenus: [false],
       shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }], // Add bounds for SELECT_SHAPE to work
+      gridTileSize: 20,
+      gridBounds: { top: 50, left: 50, width: 200, height: 200 },
     };
 
     // Select shape
@@ -123,6 +125,8 @@ describe('No-Turn Streak Tracking', () => {
       ...initialState,
       gameMode: 'infinite' as const, // Must be infinite for stats to work
       shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
+      gridTileSize: 20,
+      gridBounds: { top: 50, left: 50, width: 200, height: 200 },
     };
 
     // Place 2 shapes without rotating
@@ -161,10 +165,10 @@ describe('No-Turn Streak Tracking', () => {
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
     }
 
-    // Verify streak incremented to 3
-    expect(state.stats.noTurnStreak.current).toBe(3);
-    expect(state.stats.noTurnStreak.bestInGame).toBe(3);
-    expect(state.stats.noTurnStreak.allTimeBest).toBe(3);
+    // Verify streak incremented to 2
+    expect(state.stats.noTurnStreak.current).toBe(2);
+    expect(state.stats.noTurnStreak.bestInGame).toBe(2);
+    expect(state.stats.noTurnStreak.allTimeBest).toBe(2);
   });
 
   it('should reset current streak when rotating a shape', () => {
@@ -172,6 +176,9 @@ describe('No-Turn Streak Tracking', () => {
     let state: TetrixReducerState = {
       ...initialState,
       gameMode: 'infinite' as const, // Must be infinite for stats to work
+      shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
+      gridTileSize: 20,
+      gridBounds: { top: 50, left: 50, width: 200, height: 200 },
     };
 
     for (let i = 0; i < 2; i++) {
@@ -180,6 +187,7 @@ describe('No-Turn Streak Tracking', () => {
         ...state,
         nextShapes: [shape],
         openRotationMenus: [false],
+        shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
 
       state = tetrixReducer(state, {
@@ -235,6 +243,8 @@ describe('No-Turn Streak Tracking', () => {
       ...initialState,
       gameMode: 'infinite' as const, // Must be infinite for stats to work
       shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
+      gridTileSize: 20,
+      gridBounds: { top: 50, left: 50, width: 200, height: 200 },
     };
 
     // Build streak to 3
@@ -295,6 +305,7 @@ describe('No-Turn Streak Tracking', () => {
         ...state,
         nextShapes: [shape],
         openRotationMenus: [false],
+        shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
 
       state = tetrixReducer(state, {
@@ -332,6 +343,8 @@ describe('No-Turn Streak Tracking', () => {
       ...initialState,
       gameMode: 'infinite' as const, // Must be infinite for stats to work
       shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
+      gridTileSize: 20,
+      gridBounds: { top: 50, left: 50, width: 200, height: 200 },
       stats: {
         ...initialState.stats,
         noTurnStreak: {
@@ -412,6 +425,8 @@ describe('No-Turn Streak Tracking', () => {
       ...initialState,
       gameMode: 'infinite' as const, // Must be infinite for stats to work
       shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
+      gridTileSize: 20,
+      gridBounds: { top: 50, left: 50, width: 200, height: 200 },
     };
 
     for (let i = 0; i < 4; i++) {
@@ -458,8 +473,10 @@ describe('No-Turn Streak Tracking', () => {
       const shape = generateRandomShape();
       state = {
         ...state,
+        gameMode: 'infinite', // Ensure infinite mode for stats
         nextShapes: [shape],
         openRotationMenus: [false],
+        shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
 
       state = tetrixReducer(state, {

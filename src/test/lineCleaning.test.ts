@@ -148,10 +148,10 @@ describe('Line Clearing Utilities', () => {
       for (let column = 1; column <= 10; column++) {
         const tile2 = getTileData(clearedTiles, 2, column);
         const tile5 = getTileData(clearedTiles, 5, column);
-        expect(tile2?.isFilled).toBe(false);
-        expect(tile5?.isFilled).toBe(false);
-        expect(tile2?.blockColor).toBe('grey');
-        expect(tile5?.blockColor).toBe('grey');
+        expect(tile2?.block.isFilled).toBe(false);
+        expect(tile5?.block.isFilled).toBe(false);
+        expect(tile2?.block.color).toBe('grey');
+        expect(tile5?.block.color).toBe('grey');
       }
     });
 
@@ -199,10 +199,10 @@ describe('Line Clearing Utilities', () => {
       for (let row = 1; row <= 10; row++) {
         const tile3 = getTileData(clearedTiles, row, 3);
         const tile8 = getTileData(clearedTiles, row, 8);
-        expect(tile3?.isFilled).toBe(false);
-        expect(tile8?.isFilled).toBe(false);
-        expect(tile3?.blockColor).toBe('grey');
-        expect(tile8?.blockColor).toBe('grey');
+        expect(tile3?.block.isFilled).toBe(false);
+        expect(tile8?.block.isFilled).toBe(false);
+        expect(tile3?.block.color).toBe('grey');
+        expect(tile8?.block.color).toBe('grey');
       }
     });
 

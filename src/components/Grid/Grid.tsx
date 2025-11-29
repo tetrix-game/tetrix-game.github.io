@@ -84,12 +84,12 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
     >
       {
         allPositions.map((position) => {
-          const tileEntity = tiles.get(position);
+          const tileData = tiles.get(position);
           
           // In editor mode or for empty spaces, create default tile
           const defaultBlock = { isFilled: false, color: 'grey' as const };
-          const backgroundColor = tileEntity?.backgroundColor || 'grey';
-          const block = tileEntity ? tileEntity.block : defaultBlock;
+          const backgroundColor = tileData?.backgroundColor || 'grey';
+          const block = tileData ? tileData.block : defaultBlock;
           
           // Parse position to location
           const match = position.match(/R(\d+)C(\d+)/);
@@ -104,10 +104,10 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
           const editorTileBackground = isEditorOpen ? gridLayout.tileBackgrounds.get(position) : undefined;
           
           const tile: Tile = {
-            id: `(row: ${row}, column: ${column})`,
-            location: { row, column },
+            position,
+            backgroundColor,
             block,
-            tileBackgroundColor: editorTileBackground || backgroundColor,
+            activeAnimations: tileData?.activeAnimations || []
           };
 
           const posKey = `${row},${column}`;
@@ -122,14 +122,15 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
             <TileVisual
               key={position}
               tile={tile}
+              location={{ row, column }}
               isHovered={isHovered}
               hoveredBlock={hoveredBlock}
-              onClick={isDebugMode ? () => handleDebugClick(tile.location) : undefined}
+              onClick={isDebugMode ? () => handleDebugClick({ row, column }) : undefined}
               size={gridCellSize}
               editorColor={editorColor}
               isEditorMode={isEditorOpen}
               tileExists={tileExistsInLayout}
-              tileBackgroundColor={tile.tileBackgroundColor}
+              tileBackgroundColor={editorTileBackground}
             />
           )
         })

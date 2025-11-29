@@ -35,7 +35,7 @@ export function detectSuperComboPattern(tiles: TilesSet): boolean {
   for (let row = 1; row <= 10; row++) {
     for (let column = 1; column <= 10; column++) {
       const tile = tiles.get(makeTileKey(row, column));
-      if (tile?.isFilled) {
+      if (tile?.block.isFilled) {
         grid[row][column] = true;
       }
     }

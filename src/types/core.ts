@@ -31,159 +31,54 @@ export type TileAnimation = {
   color?: string; // Optional color override for the animation border
 };
 
-// Self-contained tile entity with position, background, block state, and methods
-export class TileEntity {
-  // Position string in format "R1C1", "R2C5", etc.
-  private _position: string;
-  // Background color of the tile itself (independent of block)
-  private _backgroundColor: ColorName;
-  // Block data (what's placed on this tile)
-  private _block: Block;
-  // Active animations running on this tile
-  private _activeAnimations: TileAnimation[];
+// Self-contained tile data structure
+export type Tile = {
+  position: string; // Position string in format "R1C1"
+  backgroundColor: ColorName; // Background color of the tile itself
+  block: Block; // Block data (what's placed on this tile)
+  activeAnimations: TileAnimation[]; // Active animations running on this tile
+};
 
-  constructor(
-    position: string,
-    backgroundColor: ColorName = 'grey',
-    block: Block = { isFilled: false, color: 'grey' },
-    activeAnimations: TileAnimation[] = []
-  ) {
-    this._position = position;
-    this._backgroundColor = backgroundColor;
-    this._block = block;
-    this._activeAnimations = activeAnimations;
-  }
-
-  // Position getters
-  get position(): string {
-    return this._position;
-  }
-
-  get location(): Location {
-    // Parse position string "R1C1" to {row: 1, column: 1}
-    const match = this._position.match(/R(\d+)C(\d+)/);
-    if (!match) throw new Error(`Invalid position format: ${this._position}`);
-    return { row: parseInt(match[1]), column: parseInt(match[2]) };
-  }
-
-  // Background color getters/setters
-  get backgroundColor(): ColorName {
-    return this._backgroundColor;
-  }
-
-  set backgroundColor(color: ColorName) {
-    this._backgroundColor = color;
-  }
-
-  // Block getters/setters
-  get block(): Block {
-    return this._block;
-  }
-
-  set block(block: Block) {
-    this._block = block;
-  }
-
-  get isFilled(): boolean {
-    return this._block.isFilled;
-  }
-
-  set isFilled(value: boolean) {
-    this._block.isFilled = value;
-  }
-
-  get blockColor(): ColorName {
-    return this._block.color;
-  }
-
-  set blockColor(color: ColorName) {
-    this._block.color = color;
-  }
-
-  // Animation getters/setters
-  get activeAnimations(): TileAnimation[] {
-    return this._activeAnimations;
-  }
-
-  set activeAnimations(animations: TileAnimation[]) {
-    this._activeAnimations = animations;
-  }
-
-  addAnimation(animation: TileAnimation): void {
-    this._activeAnimations.push(animation);
-  }
-
-  removeAnimation(animationId: string): void {
-    this._activeAnimations = this._activeAnimations.filter(a => a.id !== animationId);
-  }
-
-  clearAnimations(): void {
-    this._activeAnimations = [];
-  }
-
-  // Serialization for persistence
-  toJSON(): TileData {
-    return {
-      position: this._position,
-      backgroundColor: this._backgroundColor,
-      isFilled: this._block.isFilled,
-      color: this._block.color,
-      activeAnimations: this._activeAnimations,
-    };
-  }
-
-  // Create from serialized data
-  static fromJSON(data: TileData): TileEntity {
-    return new TileEntity(
-      data.position,
-      data.backgroundColor || 'grey',
-      { isFilled: data.isFilled, color: data.color },
-      data.activeAnimations || []
-    );
-  }
-
-  // Clone method
-  clone(): TileEntity {
-    return new TileEntity(
-      this._position,
-      this._backgroundColor,
-      { ...this._block },
-      [...this._activeAnimations]
-    );
-  }
+// Helper to parse position string "R1C1" to {row: 1, column: 1}
+export function getTileLocation(position: string): Location {
+  const match = position.match(/R(\d+)C(\d+)/);
+  if (!match) throw new Error(`Invalid position format: ${position}`);
+  return { row: parseInt(match[1]), column: parseInt(match[2]) };
 }
 
-// Legacy Tile type for backward compatibility with components
-export type Tile = {
-  id: string;
-  location: Location;
-  block: Block;
-  tileBackgroundColor?: ColorName; // Optional background color independent of block
-};
-
-// Serialized tile data for persistence and state storage
+// Serialized tile data for persistence (same as Tile for now, but keeping separate for clarity if needed)
 export type TileData = {
-  position: string; // Position string like "R1C1"
-  backgroundColor?: ColorName; // Background color of the tile itself
-  isFilled: boolean; // Whether a block is placed on this tile
-  color: ColorName; // Color of the block
-  activeAnimations?: TileAnimation[]; // Animations currently running on this tile
+  position: string;
+  backgroundColor?: ColorName;
+  isFilled: boolean;
+  color: ColorName;
+  activeAnimations?: TileAnimation[];
 };
 
-// Set of tile keys with their data (sparse representation)
-export type TilesSet = Map<string, TileEntity>;
+// Set of tile keys with their data
+export type TilesSet = Map<string, Tile>;
 
 // Helper to convert TilesSet to array for serialization
 export function tilesToArray(tiles: TilesSet): TileData[] {
-  return Array.from(tiles.values()).map(tile => tile.toJSON());
+  return Array.from(tiles.values()).map(tile => ({
+    position: tile.position,
+    backgroundColor: tile.backgroundColor,
+    isFilled: tile.block.isFilled,
+    color: tile.block.color,
+    activeAnimations: tile.activeAnimations,
+  }));
 }
 
 // Helper to convert array to TilesSet for deserialization
 export function tilesFromArray(tilesArray: TileData[]): TilesSet {
-  const map = new Map<string, TileEntity>();
+  const map = new Map<string, Tile>();
   for (const data of tilesArray) {
-    const tile = TileEntity.fromJSON(data);
-    map.set(tile.position, tile);
+    map.set(data.position, {
+      position: data.position,
+      backgroundColor: data.backgroundColor || 'grey',
+      block: { isFilled: data.isFilled, color: data.color },
+      activeAnimations: data.activeAnimations || [],
+    });
   }
   return map;
 }

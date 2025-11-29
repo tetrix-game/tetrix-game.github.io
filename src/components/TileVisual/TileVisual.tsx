@@ -1,11 +1,12 @@
 import './TileVisual.css';
-import type { Tile, Block, ColorName } from '../../utils/types';
+import type { Tile, Block, ColorName, Location } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React, { useState, useEffect } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 type TileVisualProps = {
   tile: Tile;
+  location: Location;
   isHovered?: boolean;
   hoveredBlock?: Block;
   onClick?: () => void;
@@ -13,16 +14,16 @@ type TileVisualProps = {
   editorColor?: ColorName;
   isEditorMode?: boolean;
   tileExists?: boolean;
-  tileBackgroundColor?: ColorName; // Optional tile background color
+  tileBackgroundColor?: ColorName; // Optional tile background color override
 }
 
-const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, editorColor, isEditorMode = false, tileExists = true, tileBackgroundColor }: TileVisualProps) => {
+const TileVisual = ({ tile, location, isHovered = false, hoveredBlock, onClick, size, editorColor, isEditorMode = false, tileExists = true, tileBackgroundColor }: TileVisualProps) => {
   const { dragState, tiles } = useTetrixStateContext();
   const [, setTick] = useState(0);
 
   // Force re-render on animation frame to track animation timing
   useEffect(() => {
-    const tileKey = `R${tile.location.row}C${tile.location.column}`;
+    const tileKey = tile.position;
     const tileData = tiles.get(tileKey);
 
     if (!tileData?.activeAnimations || tileData.activeAnimations.length === 0) {
@@ -37,10 +38,10 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, edit
     rafId = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(rafId);
-  }, [tiles, tile.location.row, tile.location.column]);
+  }, [tiles, tile.position]);
 
   // Get active animations for this tile
-  const tileKey = `R${tile.location.row}C${tile.location.column}`;
+  const tileKey = tile.position;
   const tileData = tiles.get(tileKey);
   const activeAnimations = tileData?.activeAnimations || [];
 
@@ -58,9 +59,10 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, edit
   const showShadow = isHovered && hoveredBlock;
 
   // Determine tile variant (dark vs light) - only if no custom background color
-  const dark = (tile.location.row + tile.location.column) % 2 === 0;
-  const hasCustomBackground = tileBackgroundColor !== undefined;
-  const tileClass = `tile-visual ${hasCustomBackground ? `tile-visual-custom color-bg-${tileBackgroundColor}` : (dark ? 'tile-visual-dark' : 'tile-visual-light')}`;
+  const dark = (location.row + location.column) % 2 === 0;
+  const effectiveBackgroundColor = tileBackgroundColor || tile.backgroundColor;
+  const hasCustomBackground = effectiveBackgroundColor !== 'grey';
+  const tileClass = `tile-visual ${hasCustomBackground ? `tile-visual-custom color-bg-${effectiveBackgroundColor}` : (dark ? 'tile-visual-dark' : 'tile-visual-light')}`;
 
   // Calculate shadow opacity: 70% for valid placement, 40% for invalid
   let shadowOpacity = 0;
@@ -75,8 +77,8 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, edit
     <div
       className={tileClass}
       style={{
-        gridColumn: tile.location.column,
-        gridRow: tile.location.row,
+        gridColumn: location.column,
+        gridRow: location.row,
         '--block-overlap': '2px',
         opacity: tileOpacity,
       } as React.CSSProperties}

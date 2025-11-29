@@ -8,7 +8,7 @@ const countFilledInRow = (tiles: Map<string, any>, row: number): number => {
   let count = 0;
   for (let col = 1; col <= 10; col++) {
     const tile = getTileData(tiles, row, col);
-    if (tile?.isFilled) count++;
+    if (tile?.block.isFilled) count++;
   }
   return count;
 };
@@ -18,7 +18,7 @@ const countFilledInColumn = (tiles: Map<string, any>, column: number): number =>
   let count = 0;
   for (let row = 1; row <= 10; row++) {
     const tile = getTileData(tiles, row, column);
-    if (tile?.isFilled) count++;
+    if (tile?.block.isFilled) count++;
   }
   return count;
 };
@@ -184,8 +184,8 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Verify all tiles in row 5 are empty
       for (let col = 1; col <= 10; col++) {
         const tile = getTileData(state.tiles, 5, col);
-        expect(tile?.isFilled).toBe(false);
-        expect(tile?.blockColor).toBe('grey');
+        expect(tile?.block.isFilled).toBe(false);
+        expect(tile?.block.color).toBe('grey');
       }
     });
   });
@@ -264,8 +264,8 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Verify all tiles in column 3 are empty
       for (let row = 1; row <= 10; row++) {
         const tile = getTileData(state.tiles, row, 3);
-        expect(tile?.isFilled).toBe(false);
-        expect(tile?.blockColor).toBe('grey');
+        expect(tile?.block.isFilled).toBe(false);
+        expect(tile?.block.color).toBe('grey');
       }
     });
   });
@@ -438,8 +438,8 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Blocks should still be filled (not grey)
       for (let col = 1; col <= 9; col++) {
         const tile = getTileData(state.tiles, 5, col);
-        expect(tile?.isFilled).toBe(true);
-        expect(tile?.blockColor).not.toBe('grey');
+        expect(tile?.block.isFilled).toBe(true);
+        expect(tile?.block.color).not.toBe('grey');
       }
     });
 
@@ -493,8 +493,8 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Blocks should still be filled (not grey)
       for (let row = 1; row <= 9; row++) {
         const tile = getTileData(state.tiles, row, 4);
-        expect(tile?.isFilled).toBe(true);
-        expect(tile?.blockColor).not.toBe('grey');
+        expect(tile?.block.isFilled).toBe(true);
+        expect(tile?.block.color).not.toBe('grey');
       }
     });
   });

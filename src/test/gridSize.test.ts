@@ -116,9 +116,9 @@ describe('Dynamic Grid Size', () => {
       ]);
 
       expect(tiles.size).toBe(36);
-      expect(tiles.get('R1C1')?.isFilled).toBe(true);
-      expect(tiles.get('R6C6')?.isFilled).toBe(true);
-      expect(tiles.get('R3C3')?.isFilled).toBe(false);
+      expect(tiles.get('R1C1')?.block.isFilled).toBe(true);
+      expect(tiles.get('R6C6')?.block.isFilled).toBe(true);
+      expect(tiles.get('R3C3')?.block.isFilled).toBe(false);
     });
 
     it('should create correct tile set for 12x12 grid', () => {
@@ -129,8 +129,8 @@ describe('Dynamic Grid Size', () => {
       ]);
 
       expect(tiles.size).toBe(144);
-      expect(tiles.get('R1C1')?.isFilled).toBe(true);
-      expect(tiles.get('R12C12')?.isFilled).toBe(true);
+      expect(tiles.get('R1C1')?.block.isFilled).toBe(true);
+      expect(tiles.get('R12C12')?.block.isFilled).toBe(true);
     });
   });
 

@@ -11,7 +11,7 @@ function getTileData(tiles: TilesSet, row: number, column: number) {
 function countFilledTiles(tiles: TilesSet): number {
   let count = 0;
   for (const tileData of tiles.values()) {
-    if (tileData.isFilled) count++;
+    if (tileData.block.isFilled) count++;
   }
   return count;
 }
@@ -23,7 +23,7 @@ describe('Debug Tools', () => {
 
       // Verify initial state has no block
       const initialTile = getTileData(initialState.tiles, location.row, location.column);
-      expect(initialTile?.isFilled).toBe(false);
+      expect(initialTile?.block.isFilled).toBe(false);
 
       // Add block
       const newState = tetrixReducer(initialState, {
@@ -33,8 +33,8 @@ describe('Debug Tools', () => {
 
       // Verify block was added
       const updatedTile = getTileData(newState.tiles, location.row, location.column);
-      expect(updatedTile?.isFilled).toBe(true);
-      expect(updatedTile?.blockColor).toBe('blue');
+      expect(updatedTile?.block.isFilled).toBe(true);
+      expect(updatedTile?.block.color).toBe('blue');
     });
 
     it('should overwrite existing blocks', () => {
@@ -53,8 +53,8 @@ describe('Debug Tools', () => {
       });
 
       const finalTile = getTileData(stateWithGreenBlock.tiles, location.row, location.column);
-      expect(finalTile?.isFilled).toBe(true);
-      expect(finalTile?.blockColor).toBe('green');
+      expect(finalTile?.block.isFilled).toBe(true);
+      expect(finalTile?.block.color).toBe('green');
     });
   });
 

@@ -24,9 +24,9 @@ export type {
 } from './core';
 
 export {
-  TileEntity,
   tilesToArray,
   tilesFromArray,
+  getTileLocation,
 } from './core';
 
 // Drag types

@@ -1,9 +1,8 @@
-import type { TilesSet, ColorName } from '../types';
-import { TileEntity } from '../types';
+import type { TilesSet, ColorName, Tile } from '../types';
 import { GRID_SIZE } from '../utils/gridConstants';
 
 /**
- * Helper functions for testing with TilesSet (Map-based tiles using TileEntity)
+ * Helper functions for testing with TilesSet (Map-based tiles using plain Tile objects)
  */
 
 // Helper to get tile data from TilesSet
@@ -15,7 +14,7 @@ export function getTileData(tiles: TilesSet, row: number, column: number) {
 export function countFilledTiles(tiles: TilesSet): number {
   let count = 0;
   for (const tile of tiles.values()) {
-    if (tile.isFilled) count++;
+    if (tile.block.isFilled) count++;
   }
   return count;
 }
@@ -27,7 +26,7 @@ export function tilesToArray(tiles: TilesSet) {
     for (let column = 1; column <= GRID_SIZE; column++) {
       const tile = tiles.get(`R${row}C${column}`);
       if (tile) {
-        result.push({ location: { row, column }, isFilled: tile.isFilled, color: tile.blockColor });
+        result.push({ location: { row, column }, isFilled: tile.block.isFilled, color: tile.block.color });
       }
     }
   }
@@ -38,7 +37,7 @@ export function tilesToArray(tiles: TilesSet) {
 export function isRowFull(tiles: TilesSet, row: number): boolean {
   for (let column = 1; column <= GRID_SIZE; column++) {
     const tile = getTileData(tiles, row, column);
-    if (!tile || !tile.isFilled) {
+    if (!tile || !tile.block.isFilled) {
       return false;
     }
   }
@@ -49,7 +48,7 @@ export function isRowFull(tiles: TilesSet, row: number): boolean {
 export function isColumnFull(tiles: TilesSet, column: number): boolean {
   for (let row = 1; row <= GRID_SIZE; row++) {
     const tile = getTileData(tiles, row, column);
-    if (!tile || !tile.isFilled) {
+    if (!tile || !tile.block.isFilled) {
       return false;
     }
   }
@@ -69,10 +68,17 @@ export function setTileData(
   const existingTile = newTiles.get(position);
   
   if (existingTile) {
-    existingTile.isFilled = isFilled;
-    existingTile.blockColor = color;
+    newTiles.set(position, {
+      ...existingTile,
+      block: { isFilled, color }
+    });
   } else {
-    const tile = new TileEntity(position, 'grey', { isFilled, color }, []);
+    const tile: Tile = {
+      position,
+      backgroundColor: 'grey',
+      block: { isFilled, color },
+      activeAnimations: []
+    };
     newTiles.set(position, tile);
   }
   
@@ -83,13 +89,18 @@ export function setTileData(
 export function createTilesWithFilled(
   positions: Array<{ row: number; column: number; color?: ColorName }>
 ): TilesSet {
-  const tiles = new Map<string, TileEntity>();
+  const tiles = new Map<string, Tile>();
 
   // Initialize all tiles as empty
   for (let row = 1; row <= GRID_SIZE; row++) {
     for (let column = 1; column <= GRID_SIZE; column++) {
       const position = `R${row}C${column}`;
-      const tile = new TileEntity(position, 'grey', { isFilled: false, color: 'grey' }, []);
+      const tile: Tile = {
+        position,
+        backgroundColor: 'grey',
+        block: { isFilled: false, color: 'grey' },
+        activeAnimations: []
+      };
       tiles.set(position, tile);
     }
   }
@@ -99,8 +110,10 @@ export function createTilesWithFilled(
     const position = `R${pos.row}C${pos.column}`;
     const tile = tiles.get(position);
     if (tile) {
-      tile.isFilled = true;
-      tile.blockColor = (pos.color || 'blue') as ColorName;
+      tiles.set(position, {
+        ...tile,
+        block: { isFilled: true, color: (pos.color || 'blue') as ColorName }
+      });
     }
   }
 

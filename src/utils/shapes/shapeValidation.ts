@@ -55,7 +55,7 @@ export function canPlaceShape(
         const tileKey = makeTileKey(gridRow, gridCol);
         const tileData = tiles.get(tileKey);
 
-        if (tileData?.isFilled) {
+        if (tileData?.block.isFilled) {
           return false; // Block overlaps
         }
       }
@@ -108,7 +108,7 @@ export function isValidPlacement(
         const tileKey = makeTileKey(gridRow, gridCol);
         const tileData = tiles.get(tileKey);
 
-        if (tileData?.isFilled) {
+        if (tileData?.block.isFilled) {
           return false; // Block overlaps
         }
       }
@@ -161,7 +161,7 @@ export function getInvalidBlocks(
         if (!outOfBounds) {
           const tileKey = makeTileKey(gridRow, gridCol);
           const tileData = tiles.get(tileKey);
-          overlapping = tileData?.isFilled ?? false;
+          overlapping = tileData?.block.isFilled ?? false;
         }
 
         // If invalid, add to the list

@@ -191,10 +191,7 @@ export function generateClearingAnimations(
         });
       }
 
-      newTiles.set(key, {
-        ...tileData,
-        activeAnimations: [...(tileData.activeAnimations || []), ...animations],
-      });
+      tileData.activeAnimations = [...tileData.activeAnimations, ...animations];
     }
   }
 
@@ -252,13 +249,10 @@ export function generateClearingAnimations(
           beatCount: finalConfig.columns.quad.beatCount,
           finishDuration: finalConfig.columns.quad.finishDuration,
           color,
-        });
+          });
       }
 
-      newTiles.set(key, {
-        ...tileData,
-        activeAnimations: [...(tileData.activeAnimations || []), ...animations],
-      });
+      tileData.activeAnimations = [...tileData.activeAnimations, ...animations];
     }
   }
 
@@ -326,10 +320,7 @@ export function generateFullBoardClearAnimation(
         duration: finalConfig.fullBoardClear.columns.duration,
       };
 
-      newTiles.set(key, {
-        ...tileData,
-        activeAnimations: [...(tileData.activeAnimations || []), animation],
-      });
+      tileData.activeAnimations = [...tileData.activeAnimations, animation];
     }
   }
 
@@ -348,10 +339,7 @@ export function generateFullBoardClearAnimation(
         duration: finalConfig.fullBoardClear.rows.duration,
       };
 
-      newTiles.set(key, {
-        ...tileData,
-        activeAnimations: [...(tileData.activeAnimations || []), animation],
-      });
+      tileData.activeAnimations = [...tileData.activeAnimations, animation];
     }
   }
 
@@ -373,7 +361,7 @@ export function cleanupExpiredAnimations(
   const newTiles = new Map(tiles);
   let hasChanges = false;
 
-  for (const [key, tileData] of newTiles.entries()) {
+  for (const [, tileData] of newTiles.entries()) {
     if (!tileData.activeAnimations || tileData.activeAnimations.length === 0) continue;
 
     const activeAnimations = tileData.activeAnimations.filter(
@@ -382,10 +370,7 @@ export function cleanupExpiredAnimations(
 
     if (activeAnimations.length !== tileData.activeAnimations.length) {
       hasChanges = true;
-      newTiles.set(key, {
-        ...tileData,
-        activeAnimations: activeAnimations.length > 0 ? activeAnimations : undefined,
-      });
+      tileData.activeAnimations = activeAnimations;
     }
   }
 

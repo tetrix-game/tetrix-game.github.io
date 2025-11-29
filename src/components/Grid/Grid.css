@@ -15,10 +15,9 @@
   outline: 2px dashed rgba(33, 150, 243, 0.5);
   outline-offset: 4px;
   background-color: rgba(33, 150, 243, 0.05);
-  /* Maintain base grid size but adjust based on aspect ratio */
-  width: var(--grid-size);
-  height: var(--grid-size);
-  aspect-ratio: var(--grid-aspect-ratio, 1);
+  /* Override dimensions - let grid-template define the size with square cells */
+  width: auto;
+  height: auto;
 }
 
 .grid.grid-editor-mode:hover {

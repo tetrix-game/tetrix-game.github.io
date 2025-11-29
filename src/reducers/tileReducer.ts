@@ -3,110 +3,19 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import type { TetrixReducerState, TetrixAction, TileData } from '../types';
+import type { TetrixReducerState, TetrixAction } from '../types';
+import { TileEntity } from '../types';
 import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithProbabilities } from '../utils/shapes';
-import { clearFullLines, isGridCompletelyEmpty } from '../utils/lineUtils';
-import { calculateScore } from '../utils/scoringUtils';
 import { safeBatchSave } from '../utils/persistence';
-import { playSound } from '../components/SoundEffectsContext';
-import { generateClearingAnimations, generateFullBoardClearAnimation, cleanupExpiredAnimations, AnimationConfig } from '../utils/clearingAnimationUtils';
+import { tilesToArray } from '../types';
+import { cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
 import { updateStats, incrementNoTurnStreak } from '../utils/statsUtils';
 import { checkGameOver } from '../utils/gameOverUtils';
 import { makeTileKey } from '../utils/gridConstants';
+import { performLineClearing } from '../utils/lineClearingOrchestrator';
 
 // Re-export for backward compatibility
 export { makeTileKey, parseTileKey } from '../utils/gridConstants';
-
-const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
-  rows: {
-    single: { duration: 500, waveDelay: 50, startDelay: 0 },
-    double: { duration: 500, waveDelay: 50, startDelay: 500 },
-    triple: { duration: 500, waveDelay: 50, startDelay: 1000 },
-    quad: { duration: 3000, waveDelay: 50, startDelay: 1500, beatCount: 3 },
-  },
-  columns: {
-    single: { duration: 500, waveDelay: 50, startDelay: 0 },
-    double: { duration: 500, waveDelay: 50, startDelay: 500 },
-    triple: { duration: 500, waveDelay: 50, startDelay: 1000 },
-    quad: { duration: 3000, waveDelay: 50, startDelay: 1500, beatCount: 3 },
-  },
-  /**
-   * Full board clear animation - triggers when clearing lines results in empty board
-   * Awards 300 points bonus
-   * Animation sequence: plays AFTER normal line animations, then all 10 columns, then all 10 rows
-   */
-  fullBoardClear: {
-    columns: { duration: 800, waveDelay: 40, startDelay: 0 },
-    rows: { duration: 800, waveDelay: 40, startDelay: 900 },
-  },
-};
-
-// Helper function to play line clear sound effects
-function playLineClearSounds(clearedRows: number[], clearedColumns: number[], baseStartTime: number) {
-  const scheduleSound = (count: number, type: 'rows' | 'columns') => {
-    if (count >= 1) playSound('clear_combo_1', baseStartTime + CLEARING_ANIMATION_CONFIG[type].single.startDelay);
-    if (count >= 2) playSound('clear_combo_2', baseStartTime + CLEARING_ANIMATION_CONFIG[type].double.startDelay);
-    if (count >= 3) playSound('clear_combo_3', baseStartTime + CLEARING_ANIMATION_CONFIG[type].triple.startDelay);
-    if (count >= 4) {
-      const quadStart = baseStartTime + CLEARING_ANIMATION_CONFIG[type].quad.startDelay;
-      playSound('clear_combo_4', quadStart);
-
-      // Schedule heartbeat sounds to match the 3 beats of the quad animation
-      // The animation duration is 3000ms, we'll space the beats out
-      const beatInterval = 800; // Space beats out
-      playSound('heartbeat', quadStart + 100);
-      playSound('heartbeat', quadStart + 100 + beatInterval);
-      playSound('heartbeat', quadStart + 100 + (beatInterval * 2));
-    }
-  };
-
-  scheduleSound(clearedRows.length, 'rows');
-  scheduleSound(clearedColumns.length, 'columns');
-}
-
-// Helper function to calculate when normal line clear animations finish
-// This determines when the full board clear animations should start
-function calculateNormalAnimationEndTime(rowCount: number, columnCount: number): number {
-  let maxEndTime = 0;
-
-  // Check row animations
-  if (rowCount >= 4) {
-    const quadEnd = CLEARING_ANIMATION_CONFIG.rows.quad.startDelay + CLEARING_ANIMATION_CONFIG.rows.quad.duration;
-    maxEndTime = Math.max(maxEndTime, quadEnd);
-  } else if (rowCount >= 3) {
-    const tripleEnd = CLEARING_ANIMATION_CONFIG.rows.triple.startDelay + CLEARING_ANIMATION_CONFIG.rows.triple.duration + 
-                      (9 * CLEARING_ANIMATION_CONFIG.rows.triple.waveDelay); // Add wave delay for last tile
-    maxEndTime = Math.max(maxEndTime, tripleEnd);
-  } else if (rowCount >= 2) {
-    const doubleEnd = CLEARING_ANIMATION_CONFIG.rows.double.startDelay + CLEARING_ANIMATION_CONFIG.rows.double.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.rows.double.waveDelay);
-    maxEndTime = Math.max(maxEndTime, doubleEnd);
-  } else if (rowCount >= 1) {
-    const singleEnd = CLEARING_ANIMATION_CONFIG.rows.single.startDelay + CLEARING_ANIMATION_CONFIG.rows.single.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.rows.single.waveDelay);
-    maxEndTime = Math.max(maxEndTime, singleEnd);
-  }
-
-  // Check column animations
-  if (columnCount >= 4) {
-    const quadEnd = CLEARING_ANIMATION_CONFIG.columns.quad.startDelay + CLEARING_ANIMATION_CONFIG.columns.quad.duration;
-    maxEndTime = Math.max(maxEndTime, quadEnd);
-  } else if (columnCount >= 3) {
-    const tripleEnd = CLEARING_ANIMATION_CONFIG.columns.triple.startDelay + CLEARING_ANIMATION_CONFIG.columns.triple.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.columns.triple.waveDelay);
-    maxEndTime = Math.max(maxEndTime, tripleEnd);
-  } else if (columnCount >= 2) {
-    const doubleEnd = CLEARING_ANIMATION_CONFIG.columns.double.startDelay + CLEARING_ANIMATION_CONFIG.columns.double.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.columns.double.waveDelay);
-    maxEndTime = Math.max(maxEndTime, doubleEnd);
-  } else if (columnCount >= 1) {
-    const singleEnd = CLEARING_ANIMATION_CONFIG.columns.single.startDelay + CLEARING_ANIMATION_CONFIG.columns.single.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.columns.single.waveDelay);
-    maxEndTime = Math.max(maxEndTime, singleEnd);
-  }
-
-  return maxEndTime;
-}
 
 export function tileReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
@@ -125,83 +34,49 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Get the positions where the shape would be placed
       const shapePositions = getShapeGridPositions(state.dragState.selectedShape, placementLocation);
 
-      // Update tiles with the placed shape (working with Map)
+      // Update tiles with the placed shape (working with TileEntity)
       const newTiles = new Map(state.tiles);
       for (const pos of shapePositions) {
         if (pos.block.isFilled) {
-          const key = makeTileKey(pos.location.row, pos.location.column);
-          newTiles.set(key, {
-            isFilled: true,
-            color: pos.block.color,
-          });
+          const position = makeTileKey(pos.location.row, pos.location.column);
+          const existingTile = newTiles.get(position);
+          if (existingTile) {
+            // Update existing tile's block
+            existingTile.block = { isFilled: true, color: pos.block.color };
+          } else {
+            // Create new tile if it doesn't exist
+            const newTile = new TileEntity(
+              position,
+              'grey', // default background
+              { isFilled: true, color: pos.block.color },
+              []
+            );
+            newTiles.set(position, newTile);
+          }
         }
       }
 
-      const baseStartTime = performance.now();
-
-      // Normal line clearing first
-      const { tiles: clearedTiles, clearedRows, clearedColumns } = clearFullLines(newTiles);
-      const clearedRowIndices = clearedRows.map(r => r.index);
-      const clearedColumnIndices = clearedColumns.map(c => c.index);
-
-      // Check if clearing resulted in an empty board (full board clear!)
-      const isFullBoardClear = isGridCompletelyEmpty(clearedTiles);
-
-      // Generate normal clearing animations
-      let finalTiles = generateClearingAnimations(
-        clearedTiles,
-        clearedRows,
-        clearedColumns,
-        {
-          ...CLEARING_ANIMATION_CONFIG,
-          baseStartTime,
-        }
-      );
-
-      // Play sound effects for line clearing
-      playLineClearSounds(clearedRowIndices, clearedColumnIndices, baseStartTime);
-
-      // Calculate score for lines cleared
-      let scoreData = calculateScore(clearedRowIndices.length, clearedColumnIndices.length);
-
-      // If full board clear, add bonus and additional animations
-      if (isFullBoardClear) {
-        // Calculate when normal animations finish
-        const normalAnimationEndTime = calculateNormalAnimationEndTime(
-          clearedRowIndices.length,
-          clearedColumnIndices.length
-        );
-
-        // Add full board clear animations that play AFTER normal animations
-        finalTiles = generateFullBoardClearAnimation(
-          finalTiles,
-          {
-            ...CLEARING_ANIMATION_CONFIG,
-            baseStartTime,
-          },
-          normalAnimationEndTime // Delay until normal animations finish
-        );
-
-        // Add 300 bonus points for full board clear
-        scoreData = {
-          ...scoreData,
-          pointsEarned: scoreData.pointsEarned + 300,
-        };
-
-        // Play special sound for full board clear (after normal animations)
-        const fullBoardSoundStart = baseStartTime + normalAnimationEndTime;
-        playSound('clear_combo_4', fullBoardSoundStart);
-        playSound('heartbeat', fullBoardSoundStart + 200);
-        playSound('heartbeat', fullBoardSoundStart + 700);
-        playSound('heartbeat', fullBoardSoundStart + 1200);
-      }
-
-      const newScore = state.score + scoreData.pointsEarned;
-      const newTotalLinesCleared = state.totalLinesCleared + clearedRowIndices.length + clearedColumnIndices.length;
+      // Perform line clearing with orchestrator (handles animations, sounds, scoring)
+      const lineClearResult = performLineClearing(newTiles);
+      
+      const newScore = state.score + lineClearResult.pointsEarned;
+      const newTotalLinesCleared = state.totalLinesCleared + 
+        lineClearResult.clearedRowIndices.length + 
+        lineClearResult.clearedColumnIndices.length;
 
       // Update stats (only for infinite mode)
       let newStats = state.stats;
       if (state.gameMode === 'infinite') {
+        // Convert indices back to full row/column objects for stats
+        const clearedRows = lineClearResult.clearedRowIndices.map(index => ({ 
+          index, 
+          color: 'grey' as const // Color doesn't matter for stats
+        }));
+        const clearedColumns = lineClearResult.clearedColumnIndices.map(index => ({ 
+          index, 
+          color: 'grey' as const 
+        }));
+        
         newStats = updateStats(state.stats, clearedRows, clearedColumns);
         // Increment no-turn streak (since shape was placed without rotating)
         newStats = incrementNoTurnStreak(newStats);
@@ -209,8 +84,8 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // Save game state to browser DB asynchronously (don't block UI)
       // Convert tiles to serializable format for persistence
-      const tilesPersistenceData = Array.from(finalTiles.entries()).map(([key, data]) => ({ key, data }));
-      if (scoreData.pointsEarned > 0 || Array.from(finalTiles.values()).some(tileData => tileData.isFilled)) {
+      const tilesPersistenceData = tilesToArray(lineClearResult.tiles);
+      if (lineClearResult.pointsEarned > 0 || Array.from(lineClearResult.tiles.values()).some(tile => tile.isFilled)) {
         // Only persist for non-hub modes
         if (state.gameMode !== 'hub') {
           safeBatchSave(state.gameMode, {
@@ -230,7 +105,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const removedIndex = state.dragState.selectedShapeIndex;
 
       // Check if super combo pattern exists after this placement
-      const hasSuperComboPattern = detectSuperComboPattern(finalTiles);
+      const hasSuperComboPattern = detectSuperComboPattern(lineClearResult.tiles);
 
       // Add a new shape immediately to create the 4th shape during removal animation
       const updatedNextShapes = [...state.nextShapes];
@@ -273,7 +148,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Finite mode: Game over when queue is completely empty (no visible shapes and no hidden shapes)
       let isGameOver = false;
       if (state.gameMode === 'infinite') {
-        isGameOver = checkGameOver(finalTiles, updatedNextShapes, newScore, newOpenRotationMenus);
+        isGameOver = checkGameOver(lineClearResult.tiles, updatedNextShapes, newScore, newOpenRotationMenus);
       } else if (state.queueMode === 'finite') {
         // In finite mode, game over when both visible and hidden shapes are depleted
         isGameOver = updatedNextShapes.length === 0 && updatedHiddenShapes.length === 0;
@@ -282,7 +157,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const newState = {
         ...state,
         gameState: isGameOver ? 'gameover' : state.gameState,
-        tiles: finalTiles,
+        tiles: lineClearResult.tiles,
         score: newScore,
         totalLinesCleared: newTotalLinesCleared,
         stats: newStats,
@@ -336,12 +211,18 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       for (let column = 1; column <= 10; column++) {
         if (column !== excludeColumn) {
-          const key = makeTileKey(row, column);
-          newTiles.set(key, { color, isFilled: true });
+          const position = makeTileKey(row, column);
+          const existingTile = newTiles.get(position);
+          if (existingTile) {
+            existingTile.block = { isFilled: true, color };
+          } else {
+            const tile = new TileEntity(position, 'grey', { isFilled: true, color }, []);
+            newTiles.set(position, tile);
+          }
         }
       }
 
-      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      const tilesPersistenceData = tilesToArray(newTiles);
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
           .catch((error: Error) => {
@@ -361,12 +242,18 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       for (let row = 1; row <= 10; row++) {
         if (row !== excludeRow) {
-          const key = makeTileKey(row, column);
-          newTiles.set(key, { color, isFilled: true });
+          const position = makeTileKey(row, column);
+          const existingTile = newTiles.get(position);
+          if (existingTile) {
+            existingTile.block = { isFilled: true, color };
+          } else {
+            const tile = new TileEntity(position, 'grey', { isFilled: true, color }, []);
+            newTiles.set(position, tile);
+          }
         }
       }
 
-      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      const tilesPersistenceData = tilesToArray(newTiles);
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
           .catch((error: Error) => {
@@ -383,14 +270,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
     case "DEBUG_REMOVE_BLOCK": {
       const { location } = action.value;
       const newTiles = new Map(state.tiles);
-      const key = makeTileKey(location.row, location.column);
-      const currentTile = newTiles.get(key);
+      const position = makeTileKey(location.row, location.column);
+      const currentTile = newTiles.get(position);
 
       if (currentTile) {
-        newTiles.set(key, { ...currentTile, isFilled: false });
+        currentTile.block = { isFilled: false, color: 'grey' };
       }
 
-      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      const tilesPersistenceData = tilesToArray(newTiles);
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
           .catch((error: Error) => {
@@ -407,11 +294,17 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
     case "DEBUG_ADD_BLOCK": {
       const { location, color } = action.value;
       const newTiles = new Map(state.tiles);
-      const key = makeTileKey(location.row, location.column);
+      const position = makeTileKey(location.row, location.column);
+      const existingTile = newTiles.get(position);
 
-      newTiles.set(key, { color, isFilled: true });
+      if (existingTile) {
+        existingTile.block = { isFilled: true, color };
+      } else {
+        const tile = new TileEntity(position, 'grey', { isFilled: true, color }, []);
+        newTiles.set(position, tile);
+      }
 
-      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      const tilesPersistenceData = tilesToArray(newTiles);
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
           .catch((error: Error) => {
@@ -426,16 +319,17 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
     }
 
     case "DEBUG_CLEAR_ALL": {
-      const newTiles = new Map<string, TileData>();
+      const newTiles = new Map<string, TileEntity>();
 
       for (let row = 1; row <= 10; row++) {
         for (let column = 1; column <= 10; column++) {
-          const key = makeTileKey(row, column);
-          newTiles.set(key, { isFilled: false, color: 'grey' });
+          const position = makeTileKey(row, column);
+          const tile = new TileEntity(position, 'grey', { isFilled: false, color: 'grey' }, []);
+          newTiles.set(position, tile);
         }
       }
 
-      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      const tilesPersistenceData = tilesToArray(newTiles);
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
           .catch((error: Error) => {
@@ -461,7 +355,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       for (let row = 1; row <= 10; row++) {
         for (let column = 1; column <= 10; column++) {
-          const key = makeTileKey(row, column);
+          const position = makeTileKey(row, column);
 
           // Check if this tile is in pattern rows (4-7) OR pattern columns (4-7)
           const isInPatternRows = row >= 4 && row <= 7;
@@ -476,18 +370,24 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           const isOnDiagonal = useAscending ? isOnAscendingDiagonal : isOnDescendingDiagonal;
 
           // Fill if in pattern rows OR pattern columns, but NOT on diagonal
+          const existingTile = newTiles.get(position);
           if ((isInPatternRows || isInPatternCols) && !isOnDiagonal) {
-            newTiles.set(key, { color: 'blue', isFilled: true });
-          } else if (isOnDiagonal) {
+            if (existingTile) {
+              existingTile.block = { isFilled: true, color: 'blue' };
+            } else {
+              const tile = new TileEntity(position, 'grey', { isFilled: true, color: 'blue' }, []);
+              newTiles.set(position, tile);
+            }
+          } else if (isOnDiagonal && existingTile) {
             // Empty if on diagonal
-            newTiles.set(key, { color: 'grey', isFilled: false });
+            existingTile.block = { isFilled: false, color: 'grey' };
           }
           // Keep all other tiles as-is
         }
       }
 
       // Save the new tile state (convert to serializable format)
-      const tilesPersistenceData = Array.from(newTiles.entries()).map(([key, data]) => ({ key, data }));
+      const tilesPersistenceData = tilesToArray(newTiles);
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
           .catch((error: Error) => {

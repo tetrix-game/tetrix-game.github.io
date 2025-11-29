@@ -13,9 +13,10 @@ type TileVisualProps = {
   editorColor?: ColorName;
   isEditorMode?: boolean;
   tileExists?: boolean;
+  tileBackgroundColor?: ColorName; // Optional tile background color
 }
 
-const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, editorColor, isEditorMode = false, tileExists = true }: TileVisualProps) => {
+const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, editorColor, isEditorMode = false, tileExists = true, tileBackgroundColor }: TileVisualProps) => {
   const { dragState, tiles } = useTetrixStateContext();
   const [, setTick] = useState(0);
 
@@ -56,9 +57,10 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, edit
   // Show a shadow overlay when hovering
   const showShadow = isHovered && hoveredBlock;
 
-  // Determine tile variant (dark vs light)
+  // Determine tile variant (dark vs light) - only if no custom background color
   const dark = (tile.location.row + tile.location.column) % 2 === 0;
-  const tileClass = `tile-visual ${dark ? 'tile-visual-dark' : 'tile-visual-light'}`;
+  const hasCustomBackground = tileBackgroundColor !== undefined;
+  const tileClass = `tile-visual ${hasCustomBackground ? `tile-visual-custom color-bg-${tileBackgroundColor}` : (dark ? 'tile-visual-dark' : 'tile-visual-light')}`;
 
   // Calculate shadow opacity: 70% for valid placement, 40% for invalid
   let shadowOpacity = 0;

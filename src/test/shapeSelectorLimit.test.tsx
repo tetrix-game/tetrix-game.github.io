@@ -18,6 +18,8 @@ vi.mock('../utils/persistenceUtils', () => ({
   safeBatchSave: vi.fn().mockResolvedValue(undefined),
   loadModifiers: vi.fn().mockResolvedValue([]),
   loadStats: vi.fn().mockResolvedValue({}),
+  loadTheme: vi.fn().mockResolvedValue('dark'),
+  saveTheme: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe('ShapeSelector 4-Element Limit', () => {

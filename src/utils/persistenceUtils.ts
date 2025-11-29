@@ -9,6 +9,7 @@ import type {
   ModifiersPersistenceData,
   StatsPersistenceData
 } from './types';
+import type { TileData, ColorName } from '../types';
 import { INITIAL_GAME_STATS } from '../types/stats';
 
 const DB_NAME = 'TetrixGameDB';
@@ -879,28 +880,8 @@ export async function loadCompleteGameState(): Promise<GamePersistenceData | nul
       loadShapes()
     ]);
 
-    // Convert serialized tiles data to Tile array for backward compatibility
-    let tiles: GamePersistenceData['tiles'] = [];
-    if (tilesData && Array.isArray(tilesData)) {
-      // Check if it's the new serialized format (array of {key, data})
-      if (tilesData.length > 0 && 'key' in tilesData[0] && 'data' in tilesData[0]) {
-        // New format: convert from serialized format to Tile array
-        tiles = tilesData.map((item: { key: string; data: { isFilled: boolean; color: string } }) => {
-          const match = item.key.match(/R(\d+)C(\d+)/);
-          if (!match) throw new Error(`Invalid tile key: ${item.key}`);
-          const row = parseInt(match[1], 10);
-          const column = parseInt(match[2], 10);
-          return {
-            id: `(row: ${row}, column: ${column})`,
-            location: { row, column },
-            block: { isFilled: item.data.isFilled, color: item.data.color as import('../types/core').ColorName },
-          };
-        });
-      } else {
-        // Old format: it's already Tile[]
-        tiles = tilesData as unknown as GamePersistenceData['tiles'];
-      }
-    }
+    // Tiles are already in TileData format with position property
+    const tiles: GamePersistenceData['tiles'] = tilesData || [];
 
     // Only return granular state if we have tiles (indicating a real game in progress)
     if (tiles.length === 100) {
@@ -920,22 +901,35 @@ export async function loadCompleteGameState(): Promise<GamePersistenceData | nul
       console.log('Loaded game state from legacy store');
 
       // Migrate legacy data to granular stores for future use
-      // Convert tiles to serialized format for storage
-      const tilesPersistenceData = legacyData.tiles.map(tile => ({
-        key: `R${tile.location.row}C${tile.location.column}`,
-        data: { isFilled: tile.block.isFilled, color: tile.block.color }
-      }));
+      // Convert old Tile[] format to TileData if needed
+      const tilesData: TileData[] = legacyData.tiles.map(tile => {
+        if ('location' in tile) {
+          // Old format - convert
+          return {
+            position: `R${tile.location.row}C${tile.location.column}`,
+            isFilled: tile.block.isFilled,
+            color: tile.block.color,
+            backgroundColor: 'grey' as ColorName,
+          };
+        } else {
+          // Already TileData
+          return tile as TileData;
+        }
+      });
 
       safeBatchSave(
         legacyData.score,
-        tilesPersistenceData,
+        tilesData,
         legacyData.nextShapes,
         legacyData.savedShape
       ).catch((error: Error) => {
         console.error('Failed to migrate legacy data to granular stores:', error);
       });
 
-      return legacyData;
+      return {
+        ...legacyData,
+        tiles: tilesData,
+      };
     }
 
     console.log('No saved game state found in either granular or legacy stores');

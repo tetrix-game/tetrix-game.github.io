@@ -50,8 +50,10 @@ describe('Spend Coin Feature', () => {
       value: { shapeIndex: 0 }
     });
 
-    // State should be unchanged
-    expect(newState).toEqual(state);
+    // Score should remain 0 and error should be set
+    expect(newState.score).toBe(0);
+    expect(newState.insufficientFundsError).toBeDefined();
+    expect(newState.insufficientFundsError).toBeGreaterThan(0);
   });
 
   test('SPEND_COIN action fails with invalid shape index', () => {

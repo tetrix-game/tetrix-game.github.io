@@ -150,8 +150,8 @@ describe('Line Clearing Utilities', () => {
         const tile5 = getTileData(clearedTiles, 5, column);
         expect(tile2?.isFilled).toBe(false);
         expect(tile5?.isFilled).toBe(false);
-        expect(tile2?.color).toBe('grey');
-        expect(tile5?.color).toBe('grey');
+        expect(tile2?.blockColor).toBe('grey');
+        expect(tile5?.blockColor).toBe('grey');
       }
     });
 
@@ -201,8 +201,8 @@ describe('Line Clearing Utilities', () => {
         const tile8 = getTileData(clearedTiles, row, 8);
         expect(tile3?.isFilled).toBe(false);
         expect(tile8?.isFilled).toBe(false);
-        expect(tile3?.color).toBe('grey');
-        expect(tile8?.color).toBe('grey');
+        expect(tile3?.blockColor).toBe('grey');
+        expect(tile8?.blockColor).toBe('grey');
       }
     });
 

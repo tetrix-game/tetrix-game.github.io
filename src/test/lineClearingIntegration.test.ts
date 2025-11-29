@@ -185,7 +185,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       for (let col = 1; col <= 10; col++) {
         const tile = getTileData(state.tiles, 5, col);
         expect(tile?.isFilled).toBe(false);
-        expect(tile?.color).toBe('grey');
+        expect(tile?.blockColor).toBe('grey');
       }
     });
   });
@@ -265,7 +265,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       for (let row = 1; row <= 10; row++) {
         const tile = getTileData(state.tiles, row, 3);
         expect(tile?.isFilled).toBe(false);
-        expect(tile?.color).toBe('grey');
+        expect(tile?.blockColor).toBe('grey');
       }
     });
   });
@@ -439,7 +439,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       for (let col = 1; col <= 9; col++) {
         const tile = getTileData(state.tiles, 5, col);
         expect(tile?.isFilled).toBe(true);
-        expect(tile?.color).not.toBe('grey');
+        expect(tile?.blockColor).not.toBe('grey');
       }
     });
 
@@ -494,7 +494,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       for (let row = 1; row <= 9; row++) {
         const tile = getTileData(state.tiles, row, 4);
         expect(tile?.isFilled).toBe(true);
-        expect(tile?.color).not.toBe('grey');
+        expect(tile?.blockColor).not.toBe('grey');
       }
     });
   });

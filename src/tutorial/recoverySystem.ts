@@ -316,9 +316,9 @@ export class TutorialRecoverySystem {
 export function clearAllTiles(state: GameState): GameState {
   const newTiles = new Map(state.tiles);
   
-  for (const [key, tile] of newTiles.entries()) {
+  for (const [, tile] of newTiles.entries()) {
     if (tile.isFilled) {
-      newTiles.set(key, { ...tile, isFilled: false });
+      tile.block = { isFilled: false, color: 'grey' };
     }
   }
   
@@ -336,10 +336,10 @@ export function clearRows(state: GameState, rows: number[]): GameState {
   
   for (const row of rows) {
     for (let col = 1; col <= 10; col++) {
-      const key = `${row},${col}`;
+      const key = `R${row}C${col}`;
       const tile = newTiles.get(key);
       if (tile) {
-        newTiles.set(key, { ...tile, isFilled: false });
+        tile.block = { isFilled: false, color: 'grey' };
       }
     }
   }
@@ -385,7 +385,7 @@ function clearRandomTiles(state: GameState, count: number): GameState {
   for (const key of toClear) {
     const tile = newTiles.get(key);
     if (tile) {
-      newTiles.set(key, { ...tile, isFilled: false });
+      tile.block = { isFilled: false, color: 'grey' };
     }
   }
   

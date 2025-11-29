@@ -269,10 +269,13 @@ export async function migrateLegacyData(): Promise<void> {
     
     console.log('Found legacy data, migrating to infinite mode...');
     
-    // Convert tiles from array to serialized format
+    // Convert tiles from old array format to new TileData format
     const tilesData = legacyGameState.tiles.map(tile => ({
-      key: `R${tile.location.row}C${tile.location.column}`,
-      data: { isFilled: tile.block.isFilled, color: tile.block.color },
+      position: `R${tile.location.row}C${tile.location.column}`,
+      backgroundColor: tile.tileBackgroundColor,
+      isFilled: tile.block.isFilled,
+      color: tile.block.color,
+      activeAnimations: [],
     }));
     
     // Create new view state

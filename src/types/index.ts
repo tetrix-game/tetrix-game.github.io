@@ -20,6 +20,13 @@ export type {
   Tile,
   TileData,
   TilesSet,
+  TileAnimation,
+} from './core';
+
+export {
+  TileEntity,
+  tilesToArray,
+  tilesFromArray,
 } from './core';
 
 // Drag types

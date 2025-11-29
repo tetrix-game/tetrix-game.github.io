@@ -5,10 +5,15 @@ import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/Tetri
 import { useRef, useEffect, useMemo } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
-import { GRID_ADDRESSES, GRID_SIZE, parseTileKey } from '../../utils/gridConstants';
+import { GRID_SIZE } from '../../utils/gridConstants';
 import { useGridEditor } from '../GridEditor/GridEditorContext';
 
-export default function Grid() {
+interface GridProps {
+  width?: number; // Grid width in tiles (default: GRID_SIZE)
+  height?: number; // Grid height in tiles (default: GRID_SIZE)
+}
+
+export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProps) {
   const { tiles, dragState } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -48,53 +53,61 @@ export default function Grid() {
     ])
   );
 
-  // Determine which tiles to render based on grid editor state
+  // Determine which tiles to render and grid dimensions based on grid editor state
   const { gridLayout, isEditorOpen, selectedColor } = gridEditorState;
-  const tilesToRender = useMemo(() => {
-    // If grid editor is open, render all potential tiles up to the current dimensions
-    if (isEditorOpen && gridLayout) {
-      const allTiles: string[] = [];
-      for (let row = 1; row <= gridLayout.height; row++) {
-        for (let col = 1; col <= gridLayout.width; col++) {
-          allTiles.push(`R${row}C${col}`);
-        }
-      }
-      return allTiles;
-    }
-    // Otherwise render all standard grid tiles
-    return GRID_ADDRESSES;
-  }, [isEditorOpen, gridLayout]);
+  const gridWidth = isEditorOpen && gridLayout ? gridLayout.width : width;
+  const gridHeight = isEditorOpen && gridLayout ? gridLayout.height : height;
 
-  // Determine grid dimensions
-  const gridWidth = isEditorOpen && gridLayout ? gridLayout.width : GRID_SIZE;
-  const gridHeight = isEditorOpen && gridLayout ? gridLayout.height : GRID_SIZE;
-  const aspectRatio = gridWidth / gridHeight;
+  // Generate all potential tile positions in the grid
+  const allPositions = useMemo(() => {
+    const positions: string[] = [];
+    for (let row = 1; row <= gridHeight; row++) {
+      for (let col = 1; col <= gridWidth; col++) {
+        positions.push(`R${row}C${col}`);
+      }
+    }
+    return positions;
+  }, [gridWidth, gridHeight]);
 
   return (
     <div
       ref={gridRef}
       className={`grid ${dragState.selectedShape ? 'grid-dragging' : ''} ${isEditorOpen ? 'grid-editor-mode' : ''}`}
-      style={{
-        '--grid-gap': `${gridGap}px`,
-        '--grid-size': `${gridSize}px`,
-        '--grid-aspect-ratio': aspectRatio,
-        gridTemplateColumns: `repeat(${gridWidth}, 1fr)`,
-        gridTemplateRows: `repeat(${gridHeight}, 1fr)`,
-      } as React.CSSProperties}
+      style={
+        {
+          '--grid-gap': `${gridGap}px`,
+          '--grid-size': `${gridSize}px`,
+          gridTemplateColumns: `repeat(${gridWidth}, 1fr)`,
+          gridTemplateRows: `repeat(${gridHeight}, 1fr)`,
+        } as React.CSSProperties
+      }
     >
       {
-        tilesToRender.map((key) => {
-          const tileData = tiles.get(key);
-          if (!tileData) {
-            console.error(`Missing tile data for key: ${key}`);
+        allPositions.map((position) => {
+          const tileEntity = tiles.get(position);
+          
+          // In editor mode or for empty spaces, create default tile
+          const defaultBlock = { isFilled: false, color: 'grey' as const };
+          const backgroundColor = tileEntity?.backgroundColor || 'grey';
+          const block = tileEntity ? tileEntity.block : defaultBlock;
+          
+          // Parse position to location
+          const match = position.match(/R(\d+)C(\d+)/);
+          if (!match) {
+            console.error(`Invalid position format: ${position}`);
             return null;
           }
-
-          const { row, column } = parseTileKey(key);
+          const row = parseInt(match[1]);
+          const column = parseInt(match[2]);
+          
+          // Get tile background color from editor if in editor mode
+          const editorTileBackground = isEditorOpen ? gridLayout.tileBackgrounds.get(position) : undefined;
+          
           const tile: Tile = {
             id: `(row: ${row}, column: ${column})`,
             location: { row, column },
-            block: { isFilled: tileData.isFilled, color: tileData.color },
+            block,
+            tileBackgroundColor: editorTileBackground || backgroundColor,
           };
 
           const posKey = `${row},${column}`;
@@ -102,12 +115,12 @@ export default function Grid() {
           const isHovered = hoveredBlock?.isFilled ?? false;
           
           // In grid editor mode, check if this tile exists in the layout and pass color
-          const tileExistsInLayout = isEditorOpen ? gridLayout.tiles.has(key) : true;
+          const tileExistsInLayout = isEditorOpen ? gridLayout.tiles.has(position) : true;
           const editorColor = isEditorOpen && tileExistsInLayout && selectedColor !== 'eraser' ? selectedColor : undefined;
 
           return (
             <TileVisual
-              key={key}
+              key={position}
               tile={tile}
               isHovered={isHovered}
               hoveredBlock={hoveredBlock}
@@ -116,6 +129,7 @@ export default function Grid() {
               editorColor={editorColor}
               isEditorMode={isEditorOpen}
               tileExists={tileExistsInLayout}
+              tileBackgroundColor={tile.tileBackgroundColor}
             />
           )
         })

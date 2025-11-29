@@ -1,4 +1,5 @@
 import type { TilesSet } from './types';
+import { TileEntity } from './types';
 
 const GRID_SIZE = 10;
 
@@ -84,7 +85,14 @@ export function clearRows(tiles: TilesSet, rows: number[]): TilesSet {
   for (let row = 1; row <= GRID_SIZE; row++) {
     if (rowSet.has(row)) {
       for (let column = 1; column <= GRID_SIZE; column++) {
-        newTiles.set(makeTileKey(row, column), { isFilled: false, color: 'grey' });
+        const position = makeTileKey(row, column);
+        const tile = newTiles.get(position);
+        if (tile) {
+          tile.block = { isFilled: false, color: 'grey' };
+        } else {
+          const newTile = new TileEntity(position, 'grey', { isFilled: false, color: 'grey' }, []);
+          newTiles.set(position, newTile);
+        }
       }
     }
   }
@@ -107,7 +115,14 @@ export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
   for (let column = 1; column <= GRID_SIZE; column++) {
     if (columnSet.has(column)) {
       for (let row = 1; row <= GRID_SIZE; row++) {
-        newTiles.set(makeTileKey(row, column), { isFilled: false, color: 'grey' });
+        const position = makeTileKey(row, column);
+        const tile = newTiles.get(position);
+        if (tile) {
+          tile.block = { isFilled: false, color: 'grey' };
+        } else {
+          const newTile = new TileEntity(position, 'grey', { isFilled: false, color: 'grey' }, []);
+          newTiles.set(position, newTile);
+        }
       }
     }
   }
@@ -133,8 +148,8 @@ function getLineColor(tiles: TilesSet, index: number, isRow: boolean): string | 
     if (!tile || !tile.isFilled) return undefined;
 
     if (!firstColor) {
-      firstColor = tile.color;
-    } else if (tile.color !== firstColor) {
+      firstColor = tile.blockColor;
+    } else if (tile.blockColor !== firstColor) {
       return undefined;
     }
   }

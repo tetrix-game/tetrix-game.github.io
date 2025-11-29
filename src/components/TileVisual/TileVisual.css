@@ -13,6 +13,15 @@
   background-color: var(--theme-tile-bg, rgb(40, 40, 50));
 }
 
+/* Custom tile backgrounds - highly saturated colors */
+.tile-visual-custom.color-bg-grey { background-color: #616161; }
+.tile-visual-custom.color-bg-red { background-color: #c62828; }
+.tile-visual-custom.color-bg-orange { background-color: #e65100; }
+.tile-visual-custom.color-bg-yellow { background-color: #f9a825; }
+.tile-visual-custom.color-bg-green { background-color: #2e7d32; }
+.tile-visual-custom.color-bg-blue { background-color: #1565c0; }
+.tile-visual-custom.color-bg-purple { background-color: #6a1b9a; }
+
 .grid-block-visual {
   border-radius: 5%;
 }

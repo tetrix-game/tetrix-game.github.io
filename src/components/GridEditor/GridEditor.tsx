@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { ScrollableMenu, type MenuSectionConfig } from '../ScrollableMenu';
 import { useGridEditor } from './GridEditorContext';
 import { NumberInputSubmenu } from './NumberInputSubmenu';
@@ -58,29 +58,91 @@ const GridEditor: React.FC = () => {
     // In submenu mode, the context's cycleActiveSection handles the navigation
   }, [navMode, focusedSection, setLastActiveSection]);
 
-  // Handle grid tile click for painting/erasing
-  const handleGridClick = useCallback((e: MouseEvent) => {
+  // Track painting state
+  const [isPainting, setIsPainting] = useState(false);
+  const lastPaintedTileRef = useRef<string | null>(null);
+
+  // Helper function to get tile key from mouse event
+  const getTileKeyFromMouseEvent = useCallback((e: MouseEvent): string | null => {
     const gridElement = document.querySelector('.grid');
-    if (!gridElement) return;
+    if (!gridElement) return null;
 
     const rect = gridElement.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+
+    // Check if mouse is within grid bounds
+    if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+      return null;
+    }
 
     // Calculate which tile was clicked based on current grid dimensions
     const column = Math.floor((x / rect.width) * state.gridLayout.width) + 1;
     const row = Math.floor((y / rect.height) * state.gridLayout.height) + 1;
 
     if (row >= 1 && row <= state.gridLayout.height && column >= 1 && column <= state.gridLayout.width) {
-      const tileKey = `R${row}C${column}`;
-      
-      if (state.currentTool === 'paint') {
-        addTile(tileKey);
-      } else if (state.currentTool === 'erase') {
-        removeTile(tileKey);
-      }
+      return `R${row}C${column}`;
     }
-  }, [state.gridLayout, state.currentTool, addTile, removeTile]);
+    
+    return null;
+  }, [state.gridLayout]);
+
+  // Paint a tile
+  const paintTile = useCallback((tileKey: string) => {
+    if (state.currentTool === 'paint') {
+      addTile(tileKey);
+    } else if (state.currentTool === 'erase') {
+      removeTile(tileKey);
+    }
+  }, [state.currentTool, addTile, removeTile]);
+
+  // Handle mouse down - start painting
+  const handleMouseDown = useCallback((e: MouseEvent) => {
+    // Ignore clicks on UI elements (buttons, menus, etc.)
+    const target = e.target as HTMLElement;
+    if (target.closest('.scrollable-menu-palette, .color-brush-submenu, button, .scrollable-menu-overlay')) {
+      return;
+    }
+
+    const tileKey = getTileKeyFromMouseEvent(e);
+    if (tileKey) {
+      setIsPainting(true);
+      lastPaintedTileRef.current = tileKey;
+      paintTile(tileKey);
+    }
+  }, [getTileKeyFromMouseEvent, paintTile]);
+
+  // Handle mouse move - continue painting while button is held
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isPainting) return;
+    
+    const tileKey = getTileKeyFromMouseEvent(e);
+    if (tileKey && tileKey !== lastPaintedTileRef.current) {
+      lastPaintedTileRef.current = tileKey;
+      paintTile(tileKey);
+    }
+  }, [isPainting, getTileKeyFromMouseEvent, paintTile]);
+
+  // Handle mouse up - stop painting
+  const handleMouseUp = useCallback(() => {
+    setIsPainting(false);
+    lastPaintedTileRef.current = null;
+  }, []);
+
+  // Set up mouse event listeners when brush submenu is expanded
+  useEffect(() => {
+    if (expandedSection !== 'brush') return;
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [expandedSection, handleMouseDown, handleMouseMove, handleMouseUp]);
 
   // Handle export layout to clipboard
   const handleExportLayout = useCallback(() => {
@@ -89,6 +151,7 @@ const GridEditor: React.FC = () => {
       width: layout.width,
       height: layout.height,
       tiles: Array.from(layout.tiles),
+      tileBackgrounds: Array.from(layout.tileBackgrounds.entries()),
     };
     const jsonString = JSON.stringify(layoutData, null, 2);
     
@@ -261,7 +324,6 @@ const GridEditor: React.FC = () => {
       onClose={closeEditor}
       onHideInstructions={hideInstructions}
       onNavigate={handleNavigation}
-      onGlobalClick={expandedSection === 'brush' ? handleGridClick : undefined}
       initialPosition={{ x: 20, y: 120 }}
     />
   );

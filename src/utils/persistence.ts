@@ -49,8 +49,7 @@ import type {
   GameModeContext,
   ViewGameState,
   Shape,
-  Tile,
-  ColorName,
+  TileData,
 } from '../types';
 import type { StatsPersistenceData } from '../types/stats';
 
@@ -101,7 +100,7 @@ export async function saveGameForMode(
   gameMode: GameModeContext,
   data: {
     score: number;
-    tiles: Tile[] | Array<{ key: string; data: { isFilled: boolean; color: string } }>;
+    tiles: TileData[];
     nextShapes: Shape[];
     savedShape: Shape | null;
     totalLinesCleared?: number;
@@ -114,26 +113,12 @@ export async function saveGameForMode(
     queueSize?: number;
   }
 ): Promise<void> {
-  // Convert tiles to serialized format if needed
-  let tilesData: Array<{ key: string; data: { isFilled: boolean; color: string } }>;
-  
-  if (data.tiles.length > 0 && 'location' in data.tiles[0]) {
-    // It's Tile[] format - convert to serialized
-    tilesData = (data.tiles as Tile[]).map(tile => ({
-      key: `R${tile.location.row}C${tile.location.column}`,
-      data: { isFilled: tile.block.isFilled, color: tile.block.color },
-    }));
-  } else {
-    // Already serialized
-    tilesData = data.tiles as Array<{ key: string; data: { isFilled: boolean; color: string } }>;
-  }
+  // Tiles are already in TileData format
+  const tilesData = data.tiles;
   
   const viewState: ViewGameState = {
     score: data.score,
-    tiles: tilesData.map(tile => ({
-      key: tile.key,
-      data: { isFilled: tile.data.isFilled, color: tile.data.color as ColorName },
-    })),
+    tiles: tilesData,
     nextShapes: data.nextShapes,
     savedShape: data.savedShape,
     totalLinesCleared: data.totalLinesCleared ?? 0,
@@ -157,7 +142,7 @@ export async function loadGameForMode(
   gameMode: GameModeContext
 ): Promise<{
   score: number;
-  tiles: Tile[];
+  tiles: TileData[];
   nextShapes: Shape[];
   savedShape: Shape | null;
   totalLinesCleared: number;
@@ -175,28 +160,10 @@ export async function loadGameForMode(
     return null;
   }
   
-  // Convert serialized tiles back to Tile[] format
-  const tiles: Tile[] = state.tiles.map(item => {
-    const match = item.key.match(/R(\d+)C(\d+)/);
-    if (!match) {
-      throw new Error(`Invalid tile key: ${item.key}`);
-    }
-    const row = parseInt(match[1], 10);
-    const column = parseInt(match[2], 10);
-    
-    return {
-      id: `(row: ${row}, column: ${column})`,
-      location: { row, column },
-      block: {
-        isFilled: item.data.isFilled,
-        color: item.data.color as import('../types/core').ColorName,
-      },
-    };
-  });
-  
+  // Return TileData directly
   return {
     score: state.score,
-    tiles,
+    tiles: state.tiles,  // TileData[] with position property
     nextShapes: state.nextShapes,
     savedShape: state.savedShape,
     totalLinesCleared: state.totalLinesCleared,
@@ -217,7 +184,7 @@ export async function safeBatchSave(
   gameMode: GameModeContext,
   data: {
     score?: number;
-    tiles?: Tile[] | Array<{ key: string; data: { isFilled: boolean; color: string } }>;
+    tiles?: import('../types').TileData[]; // New format: TileData array with position property
     nextShapes?: Shape[];
     savedShape?: Shape | null;
     stats?: StatsPersistenceData;
@@ -267,19 +234,8 @@ export async function safeBatchSave(
       if (data.queueSize !== undefined) updates.queueSize = data.queueSize;
       
       if (data.tiles !== undefined) {
-        // Convert tiles if needed
-        if (data.tiles.length > 0 && 'location' in data.tiles[0]) {
-          updates.tiles = (data.tiles as Tile[]).map(tile => ({
-            key: `R${tile.location.row}C${tile.location.column}`,
-            data: { isFilled: tile.block.isFilled, color: tile.block.color },
-          }));
-        } else {
-          const serializedTiles = data.tiles as Array<{ key: string; data: { isFilled: boolean; color: string } }>;
-          updates.tiles = serializedTiles.map(tile => ({
-            key: tile.key,
-            data: { isFilled: tile.data.isFilled, color: tile.data.color as ColorName },
-          }));
-        }
+        // Tiles are already in the new TileData format with position property
+        updates.tiles = data.tiles;
       }
       
       promises.push(

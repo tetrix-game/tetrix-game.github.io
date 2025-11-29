@@ -7,7 +7,7 @@
  * - Challenge board data conversion utilities
  */
 
-import type { TileData, ColorName } from '../types';
+import type { TileData, ColorName, TilesSet } from '../types';
 
 // Grid configuration - mutable to allow runtime size changes
 export let GRID_SIZE = 10;
@@ -102,17 +102,17 @@ export type ChallengeBoardData = {
  * Convert tiles Map to challenge board data (only includes filled tiles)
  * Use this for exporting board state from debug editor
  */
-export function tilesMapToChallengeData(tilesMap: Map<string, TileData>): ChallengeBoardData {
+export function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData {
   const tiles: Array<{ key: string; data: { isFilled: boolean; color: ColorName } }> = [];
   
-  tilesMap.forEach((data, key) => {
+  tilesMap.forEach((tile, key) => {
     // Only save filled tiles to keep data compact
-    if (data.isFilled) {
+    if (tile.isFilled) {
       tiles.push({
         key,
         data: {
-          isFilled: data.isFilled,
-          color: data.color,
+          isFilled: tile.isFilled,
+          color: tile.blockColor,
         }
       });
     }
@@ -131,6 +131,7 @@ export function challengeDataToTilesMap(challengeData: ChallengeBoardData): Map<
   // Initialize empty board using static addresses
   for (const key of GRID_ADDRESSES) {
     tiles.set(key, {
+      position: key,
       isFilled: false,
       color: 'grey',
     });
@@ -141,7 +142,11 @@ export function challengeDataToTilesMap(challengeData: ChallengeBoardData): Map<
     if (!GRID_ADDRESSES.includes(key)) {
       throw new Error(`Invalid challenge tile key: ${key}. Must be in format R<1-10>C<1-10>`);
     }
-    tiles.set(key, data);
+    tiles.set(key, {
+      position: key,
+      isFilled: data.isFilled,
+      color: data.color,
+    });
   });
   
   return tiles;

@@ -107,7 +107,11 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
 
   it('should apply wave delays correctly for columns', () => {
     const tiles = createTilesWithFilled([]);
-    // tiles are already initialized by createTilesWithFilled
+    for (let row = 1; row <= 10; row++) {
+      for (let column = 1; column <= 10; column++) {
+        tiles.set(makeTileKey(row, column), { isFilled: false, color: 'grey' });
+      }
+    }
 
     const baseStartTime = 1000;
     const waveDelay = 40;
@@ -132,7 +136,11 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
 
   it('should apply wave delays correctly for rows', () => {
     const tiles = createTilesWithFilled([]);
-    // tiles are already initialized by createTilesWithFilled
+    for (let row = 1; row <= 10; row++) {
+      for (let column = 1; column <= 10; column++) {
+        tiles.set(makeTileKey(row, column), { isFilled: false, color: 'grey' });
+      }
+    }
 
     const baseStartTime = 1000;
     const rowWaveDelay = 40;
@@ -158,12 +166,9 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
 
   it('should preserve existing tile data when adding animations', () => {
     const tiles = createTilesWithFilled([]);
-    // Set row 5 as filled
-    for (let column = 1; column <= 10; column++) {
-      const tile = tiles.get(makeTileKey(5, column));
-      if (tile) {
-        tile.isFilled = true;
-        tile.blockColor = 'blue';
+    for (let row = 1; row <= 10; row++) {
+      for (let column = 1; column <= 10; column++) {
+        tiles.set(makeTileKey(row, column), { isFilled: false, color: 'grey' });
       }
     }
 
@@ -173,8 +178,10 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
 
     // Check that tile data is preserved
     for (const tile of animatedTiles.values()) {
-      expect(tile.activeAnimations).toBeDefined();
-      expect(tile.activeAnimations.length).toBe(2);
+      expect(tileData.isFilled).toBe(false);
+      expect(tileData.color).toBe('grey');
+      expect(tileData.activeAnimations).toBeDefined();
+      expect(tileData.activeAnimations.length).toBe(2);
     }
   });
 });
@@ -343,25 +350,13 @@ describe('Full Board Clear - Reducer Integration', () => {
     for (let row = 1; row <= 10; row++) {
       for (let column = 1; column <= 9; column++) {
         // Fill columns 1-9 completely
-        const tile = mockInitialState.tiles.get(makeTileKey(row, column));
-        if (tile) {
-          tile.isFilled = true;
-          tile.blockColor = 'blue';
-        }
+        mockInitialState.tiles.set(makeTileKey(row, column), { isFilled: true, color: 'blue' });
       }
       if (row !== 1) {
         // Fill column 10 except row 1 (where we'll place the shape)
-        const tile = mockInitialState.tiles.get(makeTileKey(row, 10));
-        if (tile) {
-          tile.isFilled = true;
-          tile.blockColor = 'blue';
-        }
+        mockInitialState.tiles.set(makeTileKey(row, 10), { isFilled: true, color: 'blue' });
       } else {
-        const tile = mockInitialState.tiles.get(makeTileKey(row, 10));
-        if (tile) {
-          tile.isFilled = false;
-          tile.blockColor = 'grey';
-        }
+        mockInitialState.tiles.set(makeTileKey(row, 10), { isFilled: false, color: 'grey' });
       }
     }
   });
@@ -380,7 +375,7 @@ describe('Full Board Clear - Reducer Integration', () => {
 
     // All tiles should be cleared (not filled)
     for (const tile of result.tiles.values()) {
-      expect(tile.isFilled).toBe(false);
+      expect(tileData.isFilled).toBe(false);
     }
   });
 
@@ -390,11 +385,11 @@ describe('Full Board Clear - Reducer Integration', () => {
     // Every tile should have both animations
     let tilesWithAnimations = 0;
     for (const tile of result.tiles.values()) {
-      if (tile.activeAnimations && tile.activeAnimations.length > 0) {
+      if (tileData.activeAnimations && tileData.activeAnimations.length > 0) {
         tilesWithAnimations++;
-        expect(tile.activeAnimations.length).toBe(2);
+        expect(tileData.activeAnimations.length).toBe(2);
         
-        const types = tile.activeAnimations.map(a => a.type);
+        const types = tileData.activeAnimations.map(a => a.type);
         expect(types).toContain('full-board-columns');
         expect(types).toContain('full-board-rows');
       }
@@ -416,7 +411,11 @@ describe('Full Board Clear - Reducer Integration', () => {
 describe('Full Board Clear - Animation Config', () => {
   it('should use default config values when not specified', () => {
     const tiles = createTilesWithFilled([]);
-    // tiles are already initialized by createTilesWithFilled
+    for (let row = 1; row <= 10; row++) {
+      for (let column = 1; column <= 10; column++) {
+        tiles.set(makeTileKey(row, column), { isFilled: true, color: 'blue' });
+      }
+    }
 
     const animatedTiles = generateFullBoardClearAnimation(tiles);
 
@@ -431,7 +430,11 @@ describe('Full Board Clear - Animation Config', () => {
 
   it('should allow custom animation timings', () => {
     const tiles = createTilesWithFilled([]);
-    // tiles are already initialized by createTilesWithFilled
+    for (let row = 1; row <= 10; row++) {
+      for (let column = 1; column <= 10; column++) {
+        tiles.set(makeTileKey(row, column), { isFilled: true, color: 'blue' });
+      }
+    }
 
     const customDuration = 1200;
     const customWaveDelay = 60;

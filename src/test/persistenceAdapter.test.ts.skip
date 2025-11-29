@@ -283,9 +283,6 @@ describe('Persistence Adapter - View-Aware Operations', () => {
     });
 
     it('should return empty set when no modifiers saved', async () => {
-      // Clear any existing modifiers first
-      await saveModifiers(new Set<number>());
-      
       const loaded = await loadModifiers();
       expect(loaded.size).toBe(0);
     });

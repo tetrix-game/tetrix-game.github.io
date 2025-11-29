@@ -11,9 +11,11 @@ export type GameModeContext = Exclude<GameMode, 'hub'>; // 'infinite' | 'daily' 
 // Game persistence data (legacy - for backward compatibility)
 export type GamePersistenceData = {
   score: number;
-  tiles: Tile[]; // Keep as array for backward compatibility
+  tiles: (Tile | TileData)[]; // Support both old (Tile with location/block) and new (TileData with position) formats
   nextShapes: Shape[];
   savedShape: Shape | null;
+  // Tile background color (optional for backward compatibility)
+  tileBackgroundColor?: string;
   // Queue configuration (optional for backward compatibility)
   queueMode?: import('./shapeQueue').QueueMode;
   queueColorProbabilities?: import('./shapeQueue').ColorProbability[];
@@ -24,7 +26,7 @@ export type GamePersistenceData = {
 // View-specific game state (separate data per game mode)
 export type ViewGameState = {
   score: number;
-  tiles: Array<{ key: string; data: TileData }>; // Serialized from Map
+  tiles: TileData[]; // Array of TileData objects with position property
   nextShapes: Shape[];
   savedShape: Shape | null;
   totalLinesCleared: number;
@@ -46,7 +48,7 @@ export type ScorePersistenceData = {
 };
 
 export type TilesPersistenceData = {
-  tiles: Array<{ key: string; data: TileData }>; // Serialized from Map
+  tiles: TileData[]; // Array of TileData objects with position property
   lastUpdated: number;
 };
 

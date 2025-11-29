@@ -9,6 +9,7 @@ export type GridLayout = {
   width: number; // Number of columns (2-20)
   height: number; // Number of rows (2-20)
   tiles: Set<string>; // Set of tile keys that exist (e.g., 'R1C1', 'R2C5')
+  tileBackgrounds: Map<string, ColorName>; // Map of tile keys to their background colors
 };
 
 type GridEditorState = {
@@ -52,15 +53,23 @@ const COLOR_ORDER: Array<ColorName | 'eraser'> = ['grey', 'red', 'orange', 'yell
 // Create default grid layout (10x10 with all tiles present)
 function createDefaultGridLayout(): GridLayout {
   const tiles = new Set<string>();
+  const tileBackgrounds = new Map<string, ColorName>();
   for (let row = 1; row <= 10; row++) {
     for (let col = 1; col <= 10; col++) {
-      tiles.add(`R${row}C${col}`);
+      const key = `R${row}C${col}`;
+      tiles.add(key);
+      // Create checkerboard pattern
+      const isDark = (row + col) % 2 === 0;
+      if (isDark) {
+        tileBackgrounds.set(key, 'grey');
+      }
     }
   }
   return {
     width: 10,
     height: 10,
     tiles,
+    tileBackgrounds,
   };
 }
 
@@ -148,6 +157,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     const clampedWidth = Math.max(2, Math.min(20, width));
     setState(prev => {
       const newTiles = new Set<string>();
+      const newTileBackgrounds = new Map<string, ColorName>();
       // Keep existing tiles that fit within new dimensions
       prev.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
@@ -155,6 +165,10 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           const col = parseInt(match[2], 10);
           if (col <= clampedWidth) {
             newTiles.add(key);
+            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            if (bg) {
+              newTileBackgrounds.set(key, bg);
+            }
           }
         }
       });
@@ -165,6 +179,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           ...prev.gridLayout,
           width: clampedWidth,
           tiles: newTiles,
+          tileBackgrounds: newTileBackgrounds,
         }
       };
     });
@@ -174,6 +189,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     const clampedHeight = Math.max(2, Math.min(20, height));
     setState(prev => {
       const newTiles = new Set<string>();
+      const newTileBackgrounds = new Map<string, ColorName>();
       // Keep existing tiles that fit within new dimensions
       prev.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
@@ -181,6 +197,10 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           const row = parseInt(match[1], 10);
           if (row <= clampedHeight) {
             newTiles.add(key);
+            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            if (bg) {
+              newTileBackgrounds.set(key, bg);
+            }
           }
         }
       });
@@ -191,6 +211,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           ...prev.gridLayout,
           height: clampedHeight,
           tiles: newTiles,
+          tileBackgrounds: newTileBackgrounds,
         }
       };
     });
@@ -202,12 +223,17 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
       if (newWidth === prev.gridLayout.width) return prev;
       
       const newTiles = new Set<string>();
+      const newTileBackgrounds = new Map<string, ColorName>();
       prev.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const col = parseInt(match[2], 10);
           if (col <= newWidth) {
             newTiles.add(key);
+            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            if (bg) {
+              newTileBackgrounds.set(key, bg);
+            }
           }
         }
       });
@@ -218,6 +244,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           ...prev.gridLayout,
           width: newWidth,
           tiles: newTiles,
+          tileBackgrounds: newTileBackgrounds,
         }
       };
     });
@@ -229,12 +256,17 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
       if (newHeight === prev.gridLayout.height) return prev;
       
       const newTiles = new Set<string>();
+      const newTileBackgrounds = new Map<string, ColorName>();
       prev.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const row = parseInt(match[1], 10);
           if (row <= newHeight) {
             newTiles.add(key);
+            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            if (bg) {
+              newTileBackgrounds.set(key, bg);
+            }
           }
         }
       });
@@ -245,6 +277,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           ...prev.gridLayout,
           height: newHeight,
           tiles: newTiles,
+          tileBackgrounds: newTileBackgrounds,
         }
       };
     });
@@ -254,11 +287,17 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     setState(prev => {
       const newTiles = new Set(prev.gridLayout.tiles);
       newTiles.add(key);
+      const newTileBackgrounds = new Map(prev.gridLayout.tileBackgrounds);
+      // Set tile background color if a color is selected (not eraser)
+      if (prev.selectedColor !== 'eraser') {
+        newTileBackgrounds.set(key, prev.selectedColor);
+      }
       return {
         ...prev,
         gridLayout: {
           ...prev.gridLayout,
           tiles: newTiles,
+          tileBackgrounds: newTileBackgrounds,
         }
       };
     });
@@ -268,11 +307,14 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     setState(prev => {
       const newTiles = new Set(prev.gridLayout.tiles);
       newTiles.delete(key);
+      const newTileBackgrounds = new Map(prev.gridLayout.tileBackgrounds);
+      newTileBackgrounds.delete(key);
       return {
         ...prev,
         gridLayout: {
           ...prev.gridLayout,
           tiles: newTiles,
+          tileBackgrounds: newTileBackgrounds,
         }
       };
     });
@@ -284,6 +326,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
       gridLayout: {
         ...prev.gridLayout,
         tiles: new Set(),
+        tileBackgrounds: new Map(),
       }
     }));
   };
@@ -295,6 +338,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
         width: Math.max(2, Math.min(20, layout.width)),
         height: Math.max(2, Math.min(20, layout.height)),
         tiles: new Set(layout.tiles),
+        tileBackgrounds: new Map(layout.tileBackgrounds),
       }
     }));
   };
@@ -308,12 +352,17 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           if (newHeight === prev.gridLayout.height) return prev;
           
           const newTiles = new Set<string>();
+          const newTileBackgrounds = new Map<string, ColorName>();
           prev.gridLayout.tiles.forEach(key => {
             const match = key.match(/R(\d+)C(\d+)/);
             if (match) {
               const row = parseInt(match[1], 10);
               if (row <= newHeight) {
                 newTiles.add(key);
+                const bg = prev.gridLayout.tileBackgrounds.get(key);
+                if (bg) {
+                  newTileBackgrounds.set(key, bg);
+                }
               }
             }
           });
@@ -324,6 +373,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
               ...prev.gridLayout,
               height: newHeight,
               tiles: newTiles,
+              tileBackgrounds: newTileBackgrounds,
             }
           };
         }
@@ -332,12 +382,17 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           if (newWidth === prev.gridLayout.width) return prev;
           
           const newTiles = new Set<string>();
+          const newTileBackgrounds = new Map<string, ColorName>();
           prev.gridLayout.tiles.forEach(key => {
             const match = key.match(/R(\d+)C(\d+)/);
             if (match) {
               const col = parseInt(match[2], 10);
               if (col <= newWidth) {
                 newTiles.add(key);
+                const bg = prev.gridLayout.tileBackgrounds.get(key);
+                if (bg) {
+                  newTileBackgrounds.set(key, bg);
+                }
               }
             }
           });
@@ -348,6 +403,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
               ...prev.gridLayout,
               width: newWidth,
               tiles: newTiles,
+              tileBackgrounds: newTileBackgrounds,
             }
           };
         }
@@ -371,6 +427,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
       width: state.gridLayout.width,
       height: state.gridLayout.height,
       tiles: new Set(state.gridLayout.tiles),
+      tileBackgrounds: new Map(state.gridLayout.tileBackgrounds),
     };
   }, [state.gridLayout]);
 

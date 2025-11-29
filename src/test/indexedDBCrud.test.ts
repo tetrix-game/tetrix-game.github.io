@@ -270,8 +270,8 @@ describe('IndexedDB CRUD Operations', () => {
       
       expect(result).toHaveProperty('nullValue', null);
       expect(result).toHaveProperty('hasValue', 'value');
-      // undefined becomes omitted in JSON serialization
-      expect(result).not.toHaveProperty('undefinedValue');
+      // IndexedDB uses structured clone, which preserves undefined
+      expect(result).toHaveProperty('undefinedValue', undefined);
     });
   });
 });

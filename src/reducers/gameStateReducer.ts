@@ -5,7 +5,8 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import type { TetrixReducerState, TetrixAction, TileData } from '../types';
+import type { TetrixReducerState, TetrixAction } from '../types';
+import { TileEntity } from '../types';
 import { saveModifiers, safeBatchSave } from '../utils/persistence';
 import { updateSettings } from '../utils/persistenceAdapter';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
@@ -14,14 +15,25 @@ import { ColorName } from '../types/core';
 import { updateStats } from '../utils/statsUtils';
 import { GRID_ADDRESSES, makeTileKey } from '../utils/gridConstants';
 
-// Helper function to create tiles Map using static grid addresses
+// Helper function to create tiles Map using TileEntity
 const makeTiles = () => {
-  const tiles = new Map<string, TileData>();
+  const tiles = new Map<string, TileEntity>();
   for (const key of GRID_ADDRESSES) {
-    tiles.set(key, {
-      isFilled: false,
-      color: 'grey',
-    });
+    // Parse the key to determine row and column
+    const match = key.match(/R(\d+)C(\d+)/);
+    if (match) {
+      const row = parseInt(match[1], 10);
+      const col = parseInt(match[2], 10);
+      // Create checkerboard pattern for tile backgrounds
+      const isDark = (row + col) % 2 === 0;
+      const tile = new TileEntity(
+        key,
+        isDark ? 'grey' : 'grey', // Background color
+        { isFilled: false, color: 'grey' }, // Block
+        [] // No animations initially
+      );
+      tiles.set(key, tile);
+    }
   }
   return tiles;
 };
@@ -221,18 +233,34 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "LOAD_GAME_STATE": {
       const { gameData } = action.value;
-      // Convert tiles from persistence format to Map
-      const tilesMap = new Map<string, TileData>();
+      // Convert tiles from persistence format to Map of TileEntity
+      const tilesMap = new Map<string, TileEntity>();
       let hasFilledTiles = false;
+      
       if (Array.isArray(gameData.tiles)) {
-        gameData.tiles.forEach((tile) => {
-          if (tile.block.isFilled) {
-            hasFilledTiles = true;
+        gameData.tiles.forEach((tileData) => {
+          // Old format: has location and block properties
+          if ('location' in tileData && 'block' in tileData) {
+            const position = makeTileKey(tileData.location.row, tileData.location.column);
+            const tile = new TileEntity(
+              position,
+              tileData.tileBackgroundColor || 'grey',
+              { isFilled: tileData.block.isFilled, color: tileData.block.color },
+              []
+            );
+            if (tileData.block.isFilled) {
+              hasFilledTiles = true;
+            }
+            tilesMap.set(position, tile);
           }
-          tilesMap.set(
-            makeTileKey(tile.location.row, tile.location.column),
-            { isFilled: tile.block.isFilled, color: tile.block.color }
-          );
+          // New format: TileData with position property
+          else if ('position' in tileData) {
+            const tile = TileEntity.fromJSON(tileData);
+            if (tileData.isFilled) {
+              hasFilledTiles = true;
+            }
+            tilesMap.set(tile.position, tile);
+          }
         });
       }
 

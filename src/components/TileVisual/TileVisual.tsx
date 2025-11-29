@@ -1,5 +1,5 @@
 import './TileVisual.css';
-import type { Tile, Block } from '../../utils/types';
+import type { Tile, Block, ColorName } from '../../utils/types';
 import BlockVisual from '../BlockVisual';
 import React, { useState, useEffect } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
@@ -10,9 +10,12 @@ type TileVisualProps = {
   hoveredBlock?: Block;
   onClick?: () => void;
   size?: number;
+  editorColor?: ColorName;
+  isEditorMode?: boolean;
+  tileExists?: boolean;
 }
 
-const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size }: TileVisualProps) => {
+const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size, editorColor, isEditorMode = false, tileExists = true }: TileVisualProps) => {
   const { dragState, tiles } = useTetrixStateContext();
   const [, setTick] = useState(0);
 
@@ -63,6 +66,9 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size }: Ti
     shadowOpacity = dragState.isValidPlacement ? 0.7 : 0.4;
   }
 
+  // Determine tile opacity in editor mode - dim tiles that don't exist
+  const tileOpacity = isEditorMode && !tileExists ? 0.2 : 1;
+
   return (
     <div
       className={tileClass}
@@ -70,6 +76,7 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size }: Ti
         gridColumn: tile.location.column,
         gridRow: tile.location.row,
         '--block-overlap': '2px',
+        opacity: tileOpacity,
       } as React.CSSProperties}
       onClick={onClick}
     >
@@ -81,6 +88,9 @@ const TileVisual = ({ tile, isHovered = false, hoveredBlock, onClick, size }: Ti
             '--shadow-opacity': shadowOpacity,
           } as React.CSSProperties}
         />
+      )}
+      {isEditorMode && editorColor && (
+        <div className={`tile-visual-editor-overlay color-${editorColor}`} />
       )}
       {playingAnimations.map((anim) => {
         const elapsed = currentTime - anim.startTime;

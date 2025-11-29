@@ -11,6 +11,7 @@ import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useDebugEditor } from '../DebugEditor';
+import { useGridEditor } from '../GridEditor';
 import { generateShapesWithProbabilities } from '../../utils/shapes';
 import ColorPicker from '../ColorPicker';
 import { THEMES, ThemeName } from '../../types';
@@ -60,6 +61,7 @@ const SettingsOverlay: React.FC = () => {
   const state = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { openEditor } = useDebugEditor();
+  const { openEditor: openGridEditor } = useGridEditor();
   const [debugUnlocked, setDebugUnlocked] = useState(false);
   const [debugClickCount, setDebugClickCount] = useState(0);
 
@@ -406,6 +408,18 @@ const SettingsOverlay: React.FC = () => {
                     title="Open the debug editor to manually edit the game grid"
                   >
                     Debug Editor
+                  </button>
+                </div>
+                <div className="menu-item submenu-item">
+                  <button
+                    className="debug-action-button"
+                    onClick={() => {
+                      openGridEditor();
+                      setIsOpen(false);
+                    }}
+                    title="Open the grid editor to design custom tile layouts"
+                  >
+                    Grid Editor
                   </button>
                 </div>
                 <div className="menu-item submenu-item">

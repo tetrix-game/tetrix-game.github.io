@@ -5,6 +5,7 @@ import MainMenu from './components/MainMenu';
 import DailyChallenge from './components/DailyChallenge';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
 import DebugEditor from './components/DebugEditor';
+import GridEditor from './components/GridEditor';
 import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
 import ColorOverrideApplier from './components/ColorPicker/ColorOverrideApplier';
@@ -299,6 +300,7 @@ const App = () => {
       )}
       
       <DebugEditor />
+      <GridEditor />
       <DraggingShape />
       <ToastOverlay />
     </div>

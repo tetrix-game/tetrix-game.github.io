@@ -29,6 +29,32 @@
   opacity: var(--shadow-opacity, 0);
 }
 
+/* Grid editor mode - translucent color overlay for painted tiles */
+.tile-visual-editor-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  border-radius: 5px;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+.tile-visual:hover .tile-visual-editor-overlay {
+  opacity: 0.5;
+}
+
+/* Color-specific overlays - highly saturated but translucent */
+.tile-visual-editor-overlay.color-grey { background-color: #9e9e9e; }
+.tile-visual-editor-overlay.color-red { background-color: #f44336; }
+.tile-visual-editor-overlay.color-orange { background-color: #ff9800; }
+.tile-visual-editor-overlay.color-yellow { background-color: #ffeb3b; }
+.tile-visual-editor-overlay.color-green { background-color: #4caf50; }
+.tile-visual-editor-overlay.color-blue { background-color: #2196f3; }
+.tile-visual-editor-overlay.color-purple { background-color: #9c27b0; }
+
 /* Clearing animation overlay */
 .tile-visual-clearing {
   position: absolute;

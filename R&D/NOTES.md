@@ -1,6 +1,7 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
+- Tutorial auto-starts and accessible only from the menu
 - "Look at this!" moments
     - Daily challenge
 - Architecture
@@ -19,9 +20,7 @@
     - cw turn sound
     - ccw turn sound
 - Bug
-    - Shape options don't 
 - Expectation Mismatch
-    - 5m: Full screen button should have a call to action
 - Curb appeal
     - 3h: Better share images
     - 10m: Better App Icon

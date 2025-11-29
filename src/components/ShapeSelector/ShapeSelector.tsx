@@ -32,12 +32,14 @@ const ShapeSelector = (): JSX.Element => {
     return shapes;
   }, []);
 
-  // Set initial shapes in context when component mounts
+  // Initialize shapes when needed
+  // - On mount if no shapes exist and in infinite mode
+  // - When switching to infinite mode with no shapes
   useEffect(() => {
-    if (nextShapes.length === 0) {
+    if (nextShapes.length === 0 && queueMode === 'infinite') {
       dispatch({ type: 'SET_AVAILABLE_SHAPES', value: { shapes: initialShapes } });
     }
-  }, [dispatch, initialShapes, nextShapes.length]);
+  }, [dispatch, initialShapes, nextShapes.length, queueMode]);
 
   // Display all shapes (including 4th during slide-in animation)
   // The container will clip overflow, and the 4th shape slides in when another is removed
@@ -104,8 +106,8 @@ const ShapeSelector = (): JSX.Element => {
               </div>
             );
           })
-        ) : (
-          // Show placeholder when queue is empty in finite mode
+        ) : queueMode === 'finite' && queueHiddenShapes.length === 0 ? (
+          // Show placeholder only in finite mode when both visible and hidden queues are empty
           <div
             className="shape-selector-shape-wrapper shape-selector-empty-placeholder"
             data-landscape={isLandscape ? '1' : '0'}
@@ -118,7 +120,7 @@ const ShapeSelector = (): JSX.Element => {
               Queue Empty
             </div>
           </div>
-        )}
+        ) : null}
       </div>
       
       <QueueIndicator

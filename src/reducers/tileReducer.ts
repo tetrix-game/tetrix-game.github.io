@@ -268,11 +268,16 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         newAnimationStates.push('none'); // New shape appears normally
       }
 
-      // Check for game over (only in infinite mode)
-      // We check if ANY of the shapes (including the new one) can be placed
-      // We pass the finalTiles which includes the newly placed shape
-      // We also pass the score and rotation menu state to determine if rotations are possible
-      const isGameOver = state.gameMode === 'infinite' && checkGameOver(finalTiles, updatedNextShapes, newScore, newOpenRotationMenus);
+      // Check for game over
+      // Infinite mode: Check if any shapes can be placed
+      // Finite mode: Game over when queue is completely empty (no visible shapes and no hidden shapes)
+      let isGameOver = false;
+      if (state.gameMode === 'infinite') {
+        isGameOver = checkGameOver(finalTiles, updatedNextShapes, newScore, newOpenRotationMenus);
+      } else if (state.queueMode === 'finite') {
+        // In finite mode, game over when both visible and hidden shapes are depleted
+        isGameOver = updatedNextShapes.length === 0 && updatedHiddenShapes.length === 0;
+      }
 
       const newState = {
         ...state,

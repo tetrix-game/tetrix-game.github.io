@@ -169,16 +169,33 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
         return state;
       }
 
-      // Use the tile size that was captured when the shape was selected for consistency
-      // This ensures the target calculation matches the visual offsets and dragging behavior
-      // CRITICAL: Must use dragOffsets values, not state.gridTileSize, because:
-      // 1. The visual offsets were calculated with these exact values
-      // 2. The DraggingShape component uses the current grid size, which should match
-      // 3. If we use different values, the drop animation will be misaligned
-      const TILE_SIZE = state.dragState.dragOffsets?.tileSize ?? state.gridTileSize;
-      const GRID_GAP = state.dragState.dragOffsets?.gridGap ?? 2;
+      // CRITICAL: Recalculate grid dimensions from current DOM to respect window resize
+      // DraggingShape uses useGameSizing() which reacts to resize, so we must use current values
+      const gridElement = document.querySelector('.grid');
+      let TILE_SIZE: number;
+      let GRID_GAP: number;
+      let currentGridBounds = state.gridBounds;
 
-      if (!TILE_SIZE || !state.gridBounds) {
+      if (gridElement) {
+        const rect = gridElement.getBoundingClientRect();
+        GRID_GAP = 2; // Matches Grid component
+        const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+        TILE_SIZE = (rect.width - GRID_GAPS_TOTAL) / 10;
+        
+        // Update grid bounds to current values
+        currentGridBounds = {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        };
+      } else {
+        // Fallback to stored values if grid element not found
+        TILE_SIZE = state.dragState.dragOffsets?.tileSize ?? state.gridTileSize;
+        GRID_GAP = state.dragState.dragOffsets?.gridGap ?? 2;
+      }
+
+      if (!TILE_SIZE || !currentGridBounds) {
         return state;
       }
 
@@ -204,8 +221,8 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Convert grid coordinates to pixel coordinates
       // For 1-indexed column C, the tile's left edge is at: gridBounds.left + (C - 1) * tileWithGap
       // The tile's center is at: left edge + TILE_SIZE / 2
-      const targetCellCenterX = state.gridBounds.left + (centerCol - 1) * tileWithGap + TILE_SIZE / 2;
-      const targetCellCenterY = state.gridBounds.top + (centerRow - 1) * tileWithGap + TILE_SIZE / 2;
+      const targetCellCenterX = currentGridBounds.left + (centerCol - 1) * tileWithGap + TILE_SIZE / 2;
+      const targetCellCenterY = currentGridBounds.top + (centerRow - 1) * tileWithGap + TILE_SIZE / 2;
 
       // Store where the shape currently IS (before updating mousePosition)
       // This is critical - the shape is visually at state.mousePosition during dragging,
@@ -256,27 +273,54 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Return shape to selector (invalid placement or drag outside grid)
       // If we have a selected shape and bounds, animate the return
       if (state.dragState.selectedShape && state.dragState.selectedShapeIndex !== null) {
-        const bounds = state.shapeOptionBounds[state.dragState.selectedShapeIndex];
-        const canAnimate = bounds && (state.dragState.phase === 'dragging' || state.dragState.phase === 'picking-up');
+        const canAnimate = state.dragState.phase === 'dragging' || state.dragState.phase === 'picking-up';
+        
         if (canAnimate) {
-          // Start return animation
-          return {
-            ...state,
-            dragState: {
-              ...state.dragState,
-              phase: 'returning',
-              sourcePosition: {
-                x: bounds.left,
-                y: bounds.top,
-                width: bounds.width,
-                height: bounds.height,
+          // CRITICAL: Query current DOM bounds to respect window resize
+          // Find the shape option element by data attribute
+          const shapeOptionElement = document.querySelector(`[data-shape-index="${state.dragState.selectedShapeIndex}"]`);
+          
+          let sourcePosition = null;
+          
+          // If DOM element is found, use its current bounds (respects resize)
+          if (shapeOptionElement) {
+            const rect = shapeOptionElement.getBoundingClientRect();
+            sourcePosition = {
+              x: rect.left,
+              y: rect.top,
+              width: rect.width,
+              height: rect.height,
+            };
+          } else {
+            // Fall back to stored bounds (for tests or edge cases)
+            const storedBounds = state.shapeOptionBounds[state.dragState.selectedShapeIndex];
+            if (storedBounds) {
+              // Normalize bounds format - stored bounds use {top, left} but we need {x, y}
+              sourcePosition = {
+                x: storedBounds.left,
+                y: storedBounds.top,
+                width: storedBounds.width,
+                height: storedBounds.height,
+              };
+            }
+          }
+          
+          // Only animate if we have valid bounds
+          if (sourcePosition) {
+            // Start return animation
+            return {
+              ...state,
+              dragState: {
+                ...state.dragState,
+                phase: 'returning',
+                sourcePosition,
+                targetPosition: null,
+                placementLocation: null,
+                placementStartPosition: null,
+                startTime: performance.now(),
               },
-              targetPosition: null,
-              placementLocation: null,
-              placementStartPosition: null,
-              startTime: performance.now(),
-            },
-          };
+            };
+          }
         }
       }
 

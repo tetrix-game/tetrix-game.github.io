@@ -163,6 +163,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
   return (
     <div
       ref={containerRef}
+      data-shape-index={shapeIndex}
       className={`shape-option-container${isSelected ? ' selected' : ''}`}
       style={{
         width: `${shapeOptionFullSize}px`,

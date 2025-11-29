@@ -65,6 +65,25 @@
   height: 0;
 }
 
+/* Empty queue placeholder styling */
+.shape-selector-empty-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.empty-queue-message {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  user-select: none;
+}
+
 /* Portrait screens (taller than wide): horizontal button flow */
 @media (max-aspect-ratio: 1/1) {
   .shape-selector {

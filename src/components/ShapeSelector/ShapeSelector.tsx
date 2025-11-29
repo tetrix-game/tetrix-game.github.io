@@ -67,7 +67,10 @@ const ShapeSelector = (): JSX.Element => {
   };
 
   // Calculate hidden shape count for indicator
-  const hiddenCount = queueHiddenShapes.length;
+  // In finite mode, show the total remaining shapes (hidden + visible)
+  const hiddenCount = queueMode === 'finite' 
+    ? queueHiddenShapes.length + displayedShapes.length
+    : queueHiddenShapes.length;
 
   return (
     <div
@@ -80,26 +83,42 @@ const ShapeSelector = (): JSX.Element => {
       <div
         className={`shape-selector-shapes-container ${isLandscape ? 'shape-selector-shapes-container-landscape' : 'shape-selector-shapes-container-portrait'}`}
       >
-        {displayedShapes.map((shape, index) => {
-          const isRemoving = removingShapeIndex === index && shapeRemovalAnimationState === 'removing';
-          return (
-            <div
-              key={getShapeId(shape)}
-              className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
-              data-landscape={isLandscape ? '1' : '0'}
-              style={{
-                '--shape-wrapper-size': `${shapeOptionSize}px`,
-                '--is-landscape': isLandscape ? '1' : '0',
-              } as React.CSSProperties}
-            >
-              <ShapeOption
-                shape={shape}
-                shapeIndex={index}
-                shapeOptionFullSize={shapeOptionSize}
-              />
+        {displayedShapes.length > 0 ? (
+          displayedShapes.map((shape, index) => {
+            const isRemoving = removingShapeIndex === index && shapeRemovalAnimationState === 'removing';
+            return (
+              <div
+                key={getShapeId(shape)}
+                className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
+                data-landscape={isLandscape ? '1' : '0'}
+                style={{
+                  '--shape-wrapper-size': `${shapeOptionSize}px`,
+                  '--is-landscape': isLandscape ? '1' : '0',
+                } as React.CSSProperties}
+              >
+                <ShapeOption
+                  shape={shape}
+                  shapeIndex={index}
+                  shapeOptionFullSize={shapeOptionSize}
+                />
+              </div>
+            );
+          })
+        ) : (
+          // Show placeholder when queue is empty in finite mode
+          <div
+            className="shape-selector-shape-wrapper shape-selector-empty-placeholder"
+            data-landscape={isLandscape ? '1' : '0'}
+            style={{
+              '--shape-wrapper-size': `${shapeOptionSize}px`,
+              '--is-landscape': isLandscape ? '1' : '0',
+            } as React.CSSProperties}
+          >
+            <div className="empty-queue-message">
+              Queue Empty
             </div>
-          );
-        })}
+          </div>
+        )}
       </div>
       
       <QueueIndicator

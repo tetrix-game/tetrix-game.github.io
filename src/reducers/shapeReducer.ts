@@ -107,8 +107,14 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
     }
 
     case "REMOVE_SHAPE_OPTION": {
-      // Never remove below 1 shape
-      if (state.nextShapes.length <= 1) {
+      // In infinite mode, never remove below 1 shape
+      // In finite mode, allow going to 0 to show empty queue placeholder
+      if (state.queueMode === 'infinite' && state.nextShapes.length <= 1) {
+        return state;
+      }
+      
+      // Don't allow removal if already at 0
+      if (state.nextShapes.length === 0) {
         return state;
       }
 

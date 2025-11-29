@@ -236,7 +236,10 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const updatedNextShapes = [...state.nextShapes];
       let updatedHiddenShapes = [...state.queueHiddenShapes];
       
-      if (state.queueSize === -1 || state.shapesUsed < state.queueSize) {
+      // Only add shapes if: infinite mode OR (finite mode AND shapes remain in hidden queue)
+      const shouldAddShape = state.queueMode === 'infinite' || updatedHiddenShapes.length > 0;
+      
+      if (shouldAddShape) {
         let newShape;
         
         // In finite mode, pull from hidden shapes if available
@@ -246,7 +249,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           // Generate super shape if pattern detected
           newShape = generateSuperShape();
         } else {
-          // Generate shape using color probabilities (infinite mode or finite mode fallback)
+          // Generate shape using color probabilities (infinite mode only)
           newShape = generateRandomShapeWithProbabilities(state.queueColorProbabilities);
         }
         

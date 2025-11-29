@@ -26,7 +26,6 @@ const mockDispatch = vi.fn();
 const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   gameState: 'playing',
   gameMode: 'infinite',
-  hasSeenTutorial: true,
   currentLevel: 1,
   isMapUnlocked: false,
   tiles: new Map(),

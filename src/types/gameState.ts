@@ -21,7 +21,6 @@ export type TetrixReducerState = {
   // Game state management - simplified
   gameState: GameState;
   gameMode: GameMode; // Current game mode (hub menu, infinite play, daily challenge, tutorial)
-  hasSeenTutorial: boolean; // Track if user has completed tutorial
   currentLevel: number; // Current level being played
   isMapUnlocked: boolean; // Whether map has been unlocked
 
@@ -195,10 +194,6 @@ type SetGameModeAction = {
   value: { mode: GameMode };
 };
 
-type CompleteFirstTutorialAction = {
-  type: 'COMPLETE_FIRST_TUTORIAL';
-};
-
 type OpenMapAction = {
   type: 'OPEN_MAP';
 };
@@ -335,7 +330,6 @@ export type TetrixAction =
   | RemoveShapeOptionAction
   | SetLevelAction
   | SetGameModeAction
-  | CompleteFirstTutorialAction
   | OpenMapAction
   | CloseMapAction
   | UnlockMapAction

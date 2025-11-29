@@ -4,42 +4,23 @@ import GameMap from './components/GameMap';
 import MainMenu from './components/MainMenu';
 import DailyChallenge from './components/DailyChallenge';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
-import TutorialOverlay from './components/TutorialOverlay';
 import DebugEditor from './components/DebugEditor';
 import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
 import ColorOverrideApplier from './components/ColorPicker/ColorOverrideApplier';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
 import { useSoundEffects } from './components/SoundEffectsContext';
-import { useGameNavigation } from './hooks/useGameNavigation';
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from './utils/colorUtils';
 import { GRID_SIZE } from './utils/gridConstants';
 import './App.css';
 
 const App = () => {
-  const { gameState, gameMode, dragState, gridTileSize, gridBounds, tiles, currentTheme, hasSeenTutorial } = useTetrixStateContext();
+  const { gameState, gameMode, dragState, gridTileSize, gridBounds, tiles, currentTheme } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
-  const { navigateToMode } = useGameNavigation();
   const { playSound } = useSoundEffects();
-  const [showTutorial, setShowTutorial] = useState(false);
   const gridRef = useRef<HTMLElement | null>(null);
-
-  // Tutorial handlers
-  const handleSelectTutorial = () => {
-    setShowTutorial(true);
-    navigateToMode('tutorial');
-  };
-
-  const handleCloseTutorial = () => {
-    setShowTutorial(false);
-    // Mark tutorial as completed and save to localStorage
-    localStorage.setItem('hasSeenTutorial', 'true');
-    dispatch({ type: 'COMPLETE_FIRST_TUTORIAL' });
-    // Go to infinite mode after tutorial
-    navigateToMode('infinite');
-  };
 
   // Global mouse/pointer tracking for DraggingShape
   useEffect(() => {
@@ -297,16 +278,13 @@ const App = () => {
       
       {/* Show main menu if in hub mode */}
       {gameMode === 'hub' && (
-        <MainMenu
-          showTutorial={!hasSeenTutorial}
-          onSelectTutorial={handleSelectTutorial}
-        />
+        <MainMenu />
       )}
       
       {/* Show game UI when not in hub mode */}
       {gameMode !== 'hub' && (
         <>
-          <Header onShowTutorial={() => setShowTutorial(true)} />
+          <Header />
           <div className="game-container">
             {gameMode === 'daily' ? (
               <DailyChallenge />
@@ -318,13 +296,6 @@ const App = () => {
           </div>
           <FullScreenFloatingActionButton />
         </>
-      )}
-      
-      {/* Tutorial overlay - shown from menu button or first-time tutorial spoke */}
-      {showTutorial && (
-        <TutorialOverlay
-          onClose={handleCloseTutorial}
-        />
       )}
       
       <DebugEditor />

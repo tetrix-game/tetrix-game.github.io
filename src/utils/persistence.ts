@@ -37,7 +37,6 @@ import {
   saveSoundEffectsSettings,
   saveDebugSettings,
   saveTheme,
-  saveTutorialStatus,
   saveModifiers,
   loadModifiers,
   clearAllGameData,
@@ -72,7 +71,6 @@ export {
   saveSoundEffectsSettings,
   saveDebugSettings,
   saveTheme,
-  saveTutorialStatus,
   
   // Stats are now mode-specific (part of ViewGameState)
   // Use saveViewGameState/loadViewGameState or saveGameForMode/loadGameForMode
@@ -330,14 +328,6 @@ export async function loadDebugSettings(): Promise<boolean> {
 export async function loadTheme(): Promise<string | null> {
   const settings = await loadSettings();
   return settings?.theme ?? null;
-}
-
-/**
- * Convenience function: Load tutorial status
- */
-export async function loadTutorialStatus(): Promise<boolean> {
-  const settings = await loadSettings();
-  return settings?.hasSeenTutorial ?? false;
 }
 
 /**

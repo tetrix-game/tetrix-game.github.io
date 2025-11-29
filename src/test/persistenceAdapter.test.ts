@@ -210,7 +210,6 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         },
         debugUnlocked: true,
         theme: 'dark',
-        hasSeenTutorial: true,
         lastUpdated: Date.now(),
         stats: INITIAL_STATS_PERSISTENCE,
       };
@@ -224,7 +223,6 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       expect(loaded?.soundEffects.volume).toBe(80);
       expect(loaded?.debugUnlocked).toBe(true);
       expect(loaded?.theme).toBe('dark');
-      expect(loaded?.hasSeenTutorial).toBe(true);
     });
 
     it('should preserve settings across game mode clears', async () => {

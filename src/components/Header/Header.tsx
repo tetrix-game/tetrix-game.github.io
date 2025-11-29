@@ -9,11 +9,7 @@ import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useGameNavigation } from '../../hooks/useGameNavigation';
 import './Header.css';
 
-interface HeaderProps {
-  onShowTutorial: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onShowTutorial }) => {
+const Header: React.FC = () => {
   // Use the main sound effects context
   const { volume, setVolume, isEnabled, setEnabled } = useSoundEffects();
   // We don't need music control here anymore as BackgroundMusic handles it internally via context
@@ -55,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ onShowTutorial }) => {
         <div className="header-center">
           <ScoreDisplay />
         </div>
-        <SettingsOverlay onShowTutorial={onShowTutorial} />
+        <SettingsOverlay />
       </div>
     </SoundEffectsControlContext.Provider>
   );

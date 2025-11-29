@@ -65,7 +65,6 @@ export type GameSettingsPersistenceData = {
   soundEffects: SoundEffectsPersistenceData;
   debugUnlocked?: boolean;
   theme?: string; // Theme name
-  hasSeenTutorial?: boolean; // Track tutorial completion
   lastUpdated: number;
 };
 

@@ -226,7 +226,6 @@ describe('Full Board Clear - Reducer Integration', () => {
       queueSize: -1,
       gameState: 'playing',
       gameMode: 'infinite',
-      hasSeenTutorial: true,
       currentLevel: 1,
       isMapUnlocked: false,
       savedShape: null,

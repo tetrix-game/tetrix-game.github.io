@@ -21,11 +21,6 @@ import {
 } from '../../utils/persistenceUtils';
 import './SettingsOverlay.css';
 
-interface SettingsOverlayProps {
-  onShowTutorial?: () => void;
-}
-
-// Theme selector component
 const ThemeSelector: React.FC = () => {
   const { currentTheme } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
@@ -53,7 +48,7 @@ const ThemeSelector: React.FC = () => {
   );
 };
 
-const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ onShowTutorial }) => {
+const SettingsOverlay: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
@@ -140,9 +135,6 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ onShowTutorial }) => 
     );
 
     if (confirmed) {
-      // Ensure tutorial is shown again
-      localStorage.removeItem('hasSeenTutorial');
-
       clearAllDataAndReload().catch((error: Error) => {
         console.error('Failed to clear all data:', error);
         alert('Failed to clear data completely. Reloading anyway...');
@@ -329,21 +321,6 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ onShowTutorial }) => 
             </div>
 
             <ThemeSelector />
-
-            {onShowTutorial && (
-              <div className="menu-item">
-                <button
-                  className="menu-action-button"
-                  onClick={() => {
-                    onShowTutorial();
-                    setIsOpen(false);
-                  }}
-                  title="Show the tutorial overlay"
-                >
-                  Tutorial
-                </button>
-              </div>
-            )}
 
             <div className="menu-item">
               <button

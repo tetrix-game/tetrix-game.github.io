@@ -206,13 +206,6 @@ export async function saveTheme(theme: string): Promise<void> {
   await updateSettings({ theme });
 }
 
-/**
- * Save tutorial completion status
- */
-export async function saveTutorialStatus(hasSeenTutorial: boolean): Promise<void> {
-  await updateSettings({ hasSeenTutorial });
-}
-
 // ============================================================================
 // STATS ARE NOW MODE-SPECIFIC (stored in ViewGameState)
 // ============================================================================

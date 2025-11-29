@@ -103,12 +103,12 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "SET_GAME_MODE": {
       const { mode } = action.value;
-      
+
       // Save game mode to settings
       updateSettings({ lastGameMode: mode }).catch((error: Error) => {
         console.error('Failed to save game mode:', error);
       });
-      
+
       return {
         ...state,
         gameMode: mode,
@@ -134,7 +134,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       updateSettings({ isMapUnlocked: true }).catch((error: Error) => {
         console.error('Failed to save map unlock status:', error);
       });
-      
+
       return {
         ...state,
         isMapUnlocked: true,
@@ -235,7 +235,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // Convert tiles from persistence format to Map of Tile objects
       const tilesMap = new Map<string, Tile>();
       let hasFilledTiles = false;
-      
+
       if (Array.isArray(gameData.tiles)) {
         gameData.tiles.forEach((tileData) => {
           // Old format: has location and block properties
@@ -358,7 +358,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         // Update queueSize for backward compatibility
         queueSize: mode === 'infinite' ? -1 : state.queueSize,
       };
-      
+
       // Save queue configuration (only if not in hub mode)
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, {
@@ -369,13 +369,13 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
           console.error('Failed to save queue mode:', error);
         });
       }
-      
+
       return newState;
     }
 
     case "UPDATE_COLOR_PROBABILITIES": {
       const { colorProbabilities } = action.value;
-      
+
       // Save color probabilities (only if not in hub mode)
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, {
@@ -384,7 +384,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
           console.error('Failed to save color probabilities:', error);
         });
       }
-      
+
       return {
         ...state,
         queueColorProbabilities: colorProbabilities,
@@ -394,7 +394,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     case "POPULATE_FINITE_QUEUE": {
       const { shapes } = action.value;
       const newQueueSize = shapes.length + state.nextShapes.length;
-      
+
       // Save queue state (only if not in hub mode)
       if (state.gameMode !== 'hub') {
         safeBatchSave(state.gameMode, {
@@ -404,7 +404,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
           console.error('Failed to save queue state:', error);
         });
       }
-      
+
       return {
         ...state,
         queueHiddenShapes: shapes,

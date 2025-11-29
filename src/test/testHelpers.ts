@@ -66,7 +66,7 @@ export function setTileData(
   const newTiles = new Map(tiles);
   const position = `R${row}C${column}`;
   const existingTile = newTiles.get(position);
-  
+
   if (existingTile) {
     newTiles.set(position, {
       ...existingTile,
@@ -81,7 +81,7 @@ export function setTileData(
     };
     newTiles.set(position, tile);
   }
-  
+
   return newTiles;
 }
 

@@ -43,7 +43,7 @@ function placeShape(state: TetrixReducerState, location: { row: number; column: 
       mousePosition: { x: 100, y: 100 },
     },
   });
-  
+
   return tetrixReducer(stateAfterPlace, { type: 'COMPLETE_PLACEMENT' });
 }
 

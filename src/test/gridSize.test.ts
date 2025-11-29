@@ -80,11 +80,11 @@ describe('Dynamic Grid Size', () => {
     it('should contain all correct addresses in row-major order for 5x5', () => {
       setGridSize(5);
       expect(GRID_ADDRESSES.length).toBe(25);
-      
+
       // Check first row
       expect(GRID_ADDRESSES[0]).toBe('R1C1');
       expect(GRID_ADDRESSES[4]).toBe('R1C5');
-      
+
       // Check last row
       expect(GRID_ADDRESSES[20]).toBe('R5C1');
       expect(GRID_ADDRESSES[24]).toBe('R5C5');

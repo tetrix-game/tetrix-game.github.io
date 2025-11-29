@@ -60,25 +60,25 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // Perform line clearing with orchestrator (handles animations, sounds, scoring)
       const lineClearResult = performLineClearing(newTiles);
-      
+
       const newScore = state.score + lineClearResult.pointsEarned;
-      const newTotalLinesCleared = state.totalLinesCleared + 
-        lineClearResult.clearedRowIndices.length + 
+      const newTotalLinesCleared = state.totalLinesCleared +
+        lineClearResult.clearedRowIndices.length +
         lineClearResult.clearedColumnIndices.length;
 
       // Update stats (only for infinite mode)
       let newStats = state.stats;
       if (state.gameMode === 'infinite') {
         // Convert indices back to full row/column objects for stats
-        const clearedRows = lineClearResult.clearedRowIndices.map(index => ({ 
-          index, 
+        const clearedRows = lineClearResult.clearedRowIndices.map(index => ({
+          index,
           color: 'grey' as const // Color doesn't matter for stats
         }));
-        const clearedColumns = lineClearResult.clearedColumnIndices.map(index => ({ 
-          index, 
-          color: 'grey' as const 
+        const clearedColumns = lineClearResult.clearedColumnIndices.map(index => ({
+          index,
+          color: 'grey' as const
         }));
-        
+
         newStats = updateStats(state.stats, clearedRows, clearedColumns);
         // Increment no-turn streak (since shape was placed without rotating)
         newStats = incrementNoTurnStreak(newStats);
@@ -112,13 +112,13 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Add a new shape immediately to create the 4th shape during removal animation
       const updatedNextShapes = [...state.nextShapes];
       let updatedHiddenShapes = [...state.queueHiddenShapes];
-      
+
       // Only add shapes if: infinite mode OR (finite mode AND shapes remain in hidden queue)
       const shouldAddShape = state.queueMode === 'infinite' || updatedHiddenShapes.length > 0;
-      
+
       if (shouldAddShape) {
         let newShape;
-        
+
         // In finite mode, pull from hidden shapes if available
         if (state.queueMode === 'finite' && updatedHiddenShapes.length > 0) {
           newShape = updatedHiddenShapes.shift()!; // Take first shape from queue
@@ -129,7 +129,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           // Generate shape using color probabilities (infinite mode only)
           newShape = generateRandomShapeWithProbabilities(state.queueColorProbabilities);
         }
-        
+
         updatedNextShapes.push(newShape);
       }
 

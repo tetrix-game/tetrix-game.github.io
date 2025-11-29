@@ -85,12 +85,12 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
       {
         allPositions.map((position) => {
           const tileData = tiles.get(position);
-          
+
           // In editor mode or for empty spaces, create default tile
           const defaultBlock = { isFilled: false, color: 'grey' as const };
           const backgroundColor = tileData?.backgroundColor || 'grey';
           const block = tileData ? tileData.block : defaultBlock;
-          
+
           // Parse position to location
           const match = position.match(/R(\d+)C(\d+)/);
           if (!match) {
@@ -99,10 +99,10 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
           }
           const row = parseInt(match[1]);
           const column = parseInt(match[2]);
-          
+
           // Get tile background color from editor if in editor mode
           const editorTileBackground = isEditorOpen ? gridLayout.tileBackgrounds.get(position) : undefined;
-          
+
           const tile: Tile = {
             position,
             backgroundColor,
@@ -113,7 +113,7 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
           const posKey = `${row},${column}`;
           const hoveredBlock = hoveredBlockMap.get(posKey);
           const isHovered = hoveredBlock?.isFilled ?? false;
-          
+
           // In grid editor mode, check if this tile exists in the layout and pass color
           const tileExistsInLayout = isEditorOpen ? gridLayout.tiles.has(position) : true;
           const editorColor = isEditorOpen && tileExistsInLayout && selectedColor !== 'eraser' ? selectedColor : undefined;

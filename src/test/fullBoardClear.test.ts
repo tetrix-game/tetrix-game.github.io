@@ -68,7 +68,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     for (const tile of animatedTiles.values()) {
       expect(tile.activeAnimations).toBeDefined();
       expect(tile.activeAnimations.length).toBe(2);
-      
+
       const types = tile.activeAnimations.map(a => a.type);
       expect(types).toContain('full-board-columns');
       expect(types).toContain('full-board-rows');
@@ -90,16 +90,16 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     // Check a tile in column 1
     const tile11 = animatedTiles.get(makeTileKey(1, 1));
     expect(tile11?.activeAnimations).toBeDefined();
-    
+
     const columnAnim = tile11!.activeAnimations!.find(a => a.type === 'full-board-columns');
     const rowAnim = tile11!.activeAnimations!.find(a => a.type === 'full-board-rows');
-    
+
     expect(columnAnim).toBeDefined();
     expect(rowAnim).toBeDefined();
-    
+
     // Column animation starts at baseStartTime + delay
     expect(columnAnim!.startTime).toBe(baseStartTime + delayAfterNormalAnimations);
-    
+
     // Row animation starts after columns (startDelay: 900) + delay
     expect(rowAnim!.startTime).toBe(baseStartTime + delayAfterNormalAnimations + 900);
   });
@@ -123,7 +123,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     for (let column = 1; column <= 10; column++) {
       const tile = animatedTiles.get(makeTileKey(5, column)); // Check row 5 across all columns
       const columnAnim = tile!.activeAnimations!.find(a => a.type === 'full-board-columns');
-      
+
       const expectedStartTime = baseStartTime + delayAfterNormal + (column - 1) * waveDelay;
       expect(columnAnim!.startTime).toBe(expectedStartTime);
     }
@@ -149,7 +149,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     for (let row = 1; row <= 10; row++) {
       const tile = animatedTiles.get(makeTileKey(row, 5)); // Check column 5 across all rows
       const rowAnim = tile!.activeAnimations!.find(a => a.type === 'full-board-rows');
-      
+
       const expectedStartTime = baseStartTime + delayAfterNormal + rowStartDelay + (row - 1) * rowWaveDelay;
       expect(rowAnim!.startTime).toBe(expectedStartTime);
     }
@@ -410,7 +410,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         // 4 for column clear (single, double, triple, quad)
         // 2 for full board clear (columns, rows)
         expect(tile.activeAnimations.length).toBe(10);
-        
+
         const types = tile.activeAnimations.map(a => a.type);
         expect(types).toContain('full-board-columns');
         expect(types).toContain('full-board-rows');
@@ -422,36 +422,36 @@ describe('Full Board Clear - Reducer Integration', () => {
   it('should NOT trigger full board clear if grid is not completely empty after clearing', () => {
     // Reset tiles to a simpler state
     mockInitialState.tiles = new Map();
-    
+
     // Fill Row 1 except last column (R1C10)
     for (let col = 1; col <= 9; col++) {
       const pos = makeTileKey(1, col);
-      mockInitialState.tiles.set(pos, { 
-        position: pos, 
-        backgroundColor: 'grey', 
-        block: { isFilled: true, color: 'blue' }, 
-        activeAnimations: [] 
+      mockInitialState.tiles.set(pos, {
+        position: pos,
+        backgroundColor: 'grey',
+        block: { isFilled: true, color: 'blue' },
+        activeAnimations: []
       });
     }
-    
+
     // Add a tile in Row 2 that won't be cleared
     // We need to make sure Row 2 is NOT full, and the column it's in is NOT full
     // R2C1 is safe because Column 1 has R1C1 filled, but R3C1..R10C1 are empty.
     // So Column 1 is not full.
     // Row 2 is not full (only R2C1 filled).
     const pos = makeTileKey(2, 1);
-    mockInitialState.tiles.set(pos, { 
-      position: pos, 
-      backgroundColor: 'grey', 
-      block: { isFilled: true, color: 'red' }, 
-      activeAnimations: [] 
+    mockInitialState.tiles.set(pos, {
+      position: pos,
+      backgroundColor: 'grey',
+      block: { isFilled: true, color: 'red' },
+      activeAnimations: []
     });
 
     // Place shape at R1C10 (from default dragState)
     // This will fill R1C10, completing Row 1.
     // Column 10 will have R1C10 filled, but others empty.
     // So only Row 1 is cleared.
-    
+
     const result = tileReducer(mockInitialState, { type: 'COMPLETE_PLACEMENT' });
 
     // Should NOT award 300 bonus
@@ -462,10 +462,10 @@ describe('Full Board Clear - Reducer Integration', () => {
     // Score = 1^2 + 0 + 0 = 1.
     // Wait, scoring might be different.
     // But definitely not 2300.
-    
+
     expect(result.score).not.toBe(2300);
     expect(result.score).toBeGreaterThan(0);
-    
+
     // Check that R2C1 is still filled
     const tile = result.tiles.get(makeTileKey(2, 1));
     expect(tile?.block.isFilled).toBe(true);

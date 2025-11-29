@@ -4,7 +4,7 @@
  */
 
 import type { TetrixReducerState, TetrixAction, TileData } from '../types';
-import { getShapeGridPositions, generateRandomShape, detectSuperComboPattern, generateSuperShape } from '../utils/shapes';
+import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithProbabilities } from '../utils/shapes';
 import { clearFullLines, isGridCompletelyEmpty } from '../utils/lineUtils';
 import { calculateScore } from '../utils/scoringUtils';
 import { safeBatchSave } from '../utils/persistence';
@@ -234,9 +234,22 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // Add a new shape immediately to create the 4th shape during removal animation
       const updatedNextShapes = [...state.nextShapes];
+      let updatedHiddenShapes = [...state.queueHiddenShapes];
+      
       if (state.queueSize === -1 || state.shapesUsed < state.queueSize) {
-        // Generate super shape if pattern detected, otherwise generate random shape
-        const newShape = hasSuperComboPattern ? generateSuperShape() : generateRandomShape();
+        let newShape;
+        
+        // In finite mode, pull from hidden shapes if available
+        if (state.queueMode === 'finite' && updatedHiddenShapes.length > 0) {
+          newShape = updatedHiddenShapes.shift()!; // Take first shape from queue
+        } else if (hasSuperComboPattern) {
+          // Generate super shape if pattern detected
+          newShape = generateSuperShape();
+        } else {
+          // Generate shape using color probabilities (infinite mode or finite mode fallback)
+          newShape = generateRandomShapeWithProbabilities(state.queueColorProbabilities);
+        }
+        
         updatedNextShapes.push(newShape);
       }
 
@@ -266,6 +279,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         totalLinesCleared: newTotalLinesCleared,
         stats: newStats,
         nextShapes: updatedNextShapes,
+        queueHiddenShapes: updatedHiddenShapes, // Update hidden shapes queue
         shapesUsed: state.shapesUsed, // Don't increment until shape is fully removed
         openRotationMenus: newOpenRotationMenus,
         newShapeAnimationStates: newAnimationStates,

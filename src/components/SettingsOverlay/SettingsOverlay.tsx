@@ -11,6 +11,7 @@ import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useDebugEditor } from '../DebugEditor';
+import { generateShapesWithProbabilities } from '../../utils/shapes';
 import ColorPicker from '../ColorPicker';
 import { THEMES, ThemeName } from '../../types';
 import {
@@ -56,6 +57,7 @@ const SettingsOverlay: React.FC = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled } = useMusicControl();
   const { volume: soundVolume, setVolume: setSoundVolume, isEnabled: isSoundEnabled, toggleEnabled: toggleSoundEnabled } = useSoundEffectsControl();
+  const state = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { openEditor } = useDebugEditor();
   const [debugUnlocked, setDebugUnlocked] = useState(false);
@@ -161,6 +163,25 @@ const SettingsOverlay: React.FC = () => {
         mousePosition: clickPosition
       }
     });
+  };
+
+  // Toggle finite queue mode and populate with 20 shapes if enabling
+  const toggleFiniteMode = () => {
+    const newMode = state.queueMode === 'infinite' ? 'finite' : 'infinite';
+    
+    dispatch({
+      type: 'SET_QUEUE_MODE',
+      value: { mode: newMode }
+    });
+    
+    // If switching to finite mode, populate with 20 shapes
+    if (newMode === 'finite') {
+      const shapes = generateShapesWithProbabilities(20, state.queueColorProbabilities);
+      dispatch({
+        type: 'POPULATE_FINITE_QUEUE',
+        value: { shapes }
+      });
+    }
   };
 
   // Handle clicking on the overlay background (not the content)
@@ -397,6 +418,15 @@ const SettingsOverlay: React.FC = () => {
                     title="Open color picker to customize block colors"
                   >
                     Color Picker
+                  </button>
+                </div>
+                <div className="menu-item submenu-item">
+                  <button
+                    className={`debug-action-button ${state.queueMode === 'finite' ? 'active' : ''}`}
+                    onClick={toggleFiniteMode}
+                    title="Toggle between infinite and finite queue modes. Finite mode populates 20 shapes for testing."
+                  >
+                    {state.queueMode === 'finite' ? '✓ Finite Queue (20)' : 'Infinite Queue'}
                   </button>
                 </div>
                 <div className="menu-item submenu-item">

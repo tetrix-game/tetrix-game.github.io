@@ -58,6 +58,9 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   showCoinDisplay: false,
   queueSize: -1,
   shapesUsed: 0,
+  queueMode: 'infinite' as const,
+  queueColorProbabilities: [],
+  queueHiddenShapes: [],
   hasPlacedFirstShape: false,
   isTurningModeActive: false,
   turningDirection: null,
@@ -79,6 +82,7 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   },
   hasLoadedPersistedState: true,
   isStatsOpen: false,
+  isQueueOverlayOpen: false,
   insufficientFundsError: null
 });
 

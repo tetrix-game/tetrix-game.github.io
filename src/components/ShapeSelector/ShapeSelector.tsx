@@ -1,5 +1,7 @@
 import './ShapeSelector.css';
 import ShapeOption from '../ShapeOption'
+import QueueIndicator from '../QueueIndicator';
+import QueueOverlay from '../QueueOverlay';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
@@ -18,7 +20,7 @@ const getShapeId = (shape: object): string => {
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes, removingShapeIndex, shapeRemovalAnimationState } = useTetrixStateContext();
+  const { nextShapes, removingShapeIndex, shapeRemovalAnimationState, queueMode, queueHiddenShapes, isQueueOverlayOpen } = useTetrixStateContext();
 
   // Create initial shapes - start with 3 shapes (can be changed via debug menu)
   const initialShapes = useMemo(() => {
@@ -70,6 +72,14 @@ const ShapeSelector = (): JSX.Element => {
   // This should be very close to 0 if the math above is correct, but handles rounding differences
   const centeringPadding = Math.max(0, (shapeSelectorSize - totalPadding - actualContentWidth) / 2);
 
+  // Handle queue indicator click
+  const handleQueueIndicatorClick = () => {
+    dispatch({ type: 'TOGGLE_QUEUE_OVERLAY' });
+  };
+
+  // Calculate hidden shape count for indicator
+  const hiddenCount = queueHiddenShapes.length;
+
   return (
     <div
       className="shape-selector"
@@ -111,6 +121,19 @@ const ShapeSelector = (): JSX.Element => {
           );
         })}
       </div>
+      
+      <QueueIndicator
+        mode={queueMode}
+        hiddenCount={hiddenCount}
+        onClick={handleQueueIndicatorClick}
+      />
+      
+      {isQueueOverlayOpen && (
+        <QueueOverlay
+          hiddenShapes={queueHiddenShapes}
+          onClose={handleQueueIndicatorClick}
+        />
+      )}
     </div>
   )
 }

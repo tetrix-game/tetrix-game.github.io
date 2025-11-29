@@ -9,6 +9,7 @@ import type { ScoreData } from './scoring';
 import type { GamePersistenceData } from './persistence';
 import type { StatsPersistenceData } from './stats';
 import type { ThemeName } from './theme';
+import type { QueueMode, ColorProbability } from './shapeQueue';
 
 // Game state types - simplified for level-based play
 export type GameState = 'playing' | 'map' | 'gameover';
@@ -48,6 +49,9 @@ export type TetrixReducerState = {
   // Coin display visibility control
   showCoinDisplay: boolean;
   // Shape queue configuration
+  queueMode: QueueMode; // 'infinite' or 'finite'
+  queueColorProbabilities: ColorProbability[]; // Color weights for shape generation
+  queueHiddenShapes: Shape[]; // Shapes in queue but not visible (finite mode only)
   queueSize: number; // Total shapes available (-1 = infinite)
   shapesUsed: number; // Track how many shapes have been used (for finite mode)
 
@@ -67,6 +71,7 @@ export type TetrixReducerState = {
 
   // UI State
   isStatsOpen: boolean; // Whether the stats overlay is currently open
+  isQueueOverlayOpen: boolean; // Whether the queue overlay is currently open
   insufficientFundsError: number | null; // Timestamp of last insufficient funds error
   
   // Theme
@@ -305,6 +310,25 @@ type SetThemeAction = {
   value: { theme: ThemeName };
 };
 
+type SetQueueModeAction = {
+  type: 'SET_QUEUE_MODE';
+  value: { mode: QueueMode };
+};
+
+type UpdateColorProbabilitiesAction = {
+  type: 'UPDATE_COLOR_PROBABILITIES';
+  value: { colorProbabilities: ColorProbability[] };
+};
+
+type PopulateFiniteQueueAction = {
+  type: 'POPULATE_FINITE_QUEUE';
+  value: { shapes: Shape[] };
+};
+
+type ToggleQueueOverlayAction = {
+  type: 'TOGGLE_QUEUE_OVERLAY';
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -354,6 +378,10 @@ export type TetrixAction =
   | OpenStatsAction
   | CloseStatsAction
   | InitializationCompleteAction
-  | SetThemeAction;
+  | SetThemeAction
+  | SetQueueModeAction
+  | UpdateColorProbabilitiesAction
+  | PopulateFiniteQueueAction
+  | ToggleQueueOverlayAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

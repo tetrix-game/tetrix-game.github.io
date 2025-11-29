@@ -8,6 +8,7 @@
 import type { TetrixReducerState, TetrixAction, TileData } from '../types';
 import { saveModifiers, safeBatchSave } from '../utils/persistence';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
+import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
 import { ColorName } from '../types/core';
 import { updateStats } from '../utils/statsUtils';
 import { GRID_ADDRESSES, makeTileKey } from '../utils/gridConstants';
@@ -58,6 +59,9 @@ export const initialGameState = {
   score: 0,
   totalLinesCleared: 0,
   showCoinDisplay: false,
+  queueMode: 'infinite' as const,
+  queueColorProbabilities: DEFAULT_COLOR_PROBABILITIES,
+  queueHiddenShapes: [],
   queueSize: -1,
   shapesUsed: 0,
   openRotationMenus: [],
@@ -70,6 +74,7 @@ export const initialGameState = {
   clearingAnimations: [],
   stats: INITIAL_STATS_PERSISTENCE,
   isStatsOpen: false,
+  isQueueOverlayOpen: false,
   insufficientFundsError: null,
   currentTheme: 'dark' as const,
 };
@@ -291,6 +296,42 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         currentTheme: theme,
+      };
+    }
+
+    case "SET_QUEUE_MODE": {
+      const { mode } = action.value;
+      return {
+        ...state,
+        queueMode: mode,
+        // Clear hidden shapes when switching modes
+        queueHiddenShapes: [],
+        // Update queueSize for backward compatibility
+        queueSize: mode === 'infinite' ? -1 : state.queueSize,
+      };
+    }
+
+    case "UPDATE_COLOR_PROBABILITIES": {
+      const { colorProbabilities } = action.value;
+      return {
+        ...state,
+        queueColorProbabilities: colorProbabilities,
+      };
+    }
+
+    case "POPULATE_FINITE_QUEUE": {
+      const { shapes } = action.value;
+      return {
+        ...state,
+        queueHiddenShapes: shapes,
+        queueSize: shapes.length + state.nextShapes.length,
+      };
+    }
+
+    case "TOGGLE_QUEUE_OVERLAY": {
+      return {
+        ...state,
+        isQueueOverlayOpen: !state.isQueueOverlayOpen,
       };
     }
 

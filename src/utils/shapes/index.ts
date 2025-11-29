@@ -50,6 +50,13 @@ export {
   generateRandomShape,
 } from './shapeGeneration';
 
+// Re-export generation with probabilities
+export {
+  selectColorByProbability,
+  generateRandomShapeWithProbabilities,
+  generateShapesWithProbabilities,
+} from './shapeGenerationWithProbabilities';
+
 // Re-export pattern detection functions
 export {
   detectSuperComboPattern,

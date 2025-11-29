@@ -80,6 +80,15 @@ export type {
 } from './theme';
 export { THEMES } from './theme';
 
+// Shape queue types
+export type {
+  QueueMode,
+  ColorProbability,
+  ShapeQueueConfig,
+  ShapeQueueState,
+} from './shapeQueue';
+export { DEFAULT_COLOR_PROBABILITIES } from './shapeQueue';
+
 // Game state types
 export type {
   GameState,

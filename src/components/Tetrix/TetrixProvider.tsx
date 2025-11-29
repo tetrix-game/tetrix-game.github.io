@@ -2,7 +2,7 @@ import { useReducer, useEffect, useState } from 'react';
 import { initialState, tetrixReducer } from './TetrixReducer';
 import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
 import { loadCompleteGameState, loadModifiers, loadTheme } from '../../utils/persistenceUtils';
-import { loadViewGameState } from '../../utils/persistenceAdapter';
+import { loadViewGameState, loadSettings } from '../../utils/persistenceAdapter';
 import { ThemeName } from '../../types';
 
 export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
@@ -13,11 +13,12 @@ export default function TetrixProvider({ children }: { readonly children: React.
   useEffect(() => {
     const loadSavedData = async () => {
       try {
-        const [gameData, unlockedModifiers, savedTheme, infiniteViewState] = await Promise.all([
+        const [gameData, unlockedModifiers, savedTheme, infiniteViewState, settings] = await Promise.all([
           loadCompleteGameState(),
           loadModifiers(),
           loadTheme(),
-          loadViewGameState('infinite') // Load infinite mode stats if available
+          loadViewGameState('infinite'), // Load infinite mode stats if available
+          loadSettings() // Load settings for lastGameMode and isMapUnlocked
         ]);
 
         // Load theme first
@@ -33,6 +34,21 @@ export default function TetrixProvider({ children }: { readonly children: React.
           type: 'LOAD_MODIFIERS',
           value: { unlockedModifiers }
         });
+
+        // Restore last game mode if available
+        if (settings?.lastGameMode && settings.lastGameMode !== 'hub') {
+          dispatch({
+            type: 'SET_GAME_MODE',
+            value: { mode: settings.lastGameMode }
+          });
+        }
+
+        // Restore map unlock status
+        if (settings?.isMapUnlocked) {
+          dispatch({
+            type: 'UNLOCK_MAP'
+          });
+        }
 
         // Only load if we have valid tile data (100 tiles for 10x10 grid)
         if (gameData?.tiles.length === 100) {

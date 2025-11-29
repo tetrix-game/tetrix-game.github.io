@@ -7,6 +7,7 @@
 
 import type { TetrixReducerState, TetrixAction, TileData } from '../types';
 import { saveModifiers, safeBatchSave } from '../utils/persistence';
+import { updateSettings } from '../utils/persistenceAdapter';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
 import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
 import { ColorName } from '../types/core';
@@ -91,6 +92,12 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "SET_GAME_MODE": {
       const { mode } = action.value;
+      
+      // Save game mode to settings
+      updateSettings({ lastGameMode: mode }).catch((error: Error) => {
+        console.error('Failed to save game mode:', error);
+      });
+      
       return {
         ...state,
         gameMode: mode,
@@ -112,6 +119,11 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     }
 
     case "UNLOCK_MAP": {
+      // Save map unlock status to settings
+      updateSettings({ isMapUnlocked: true }).catch((error: Error) => {
+        console.error('Failed to save map unlock status:', error);
+      });
+      
       return {
         ...state,
         isMapUnlocked: true,
@@ -237,6 +249,11 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
         // Load stats if provided in action value (for infinite mode)
         stats: action.value.stats ? action.value.stats : state.stats,
+        // Load queue configuration if available
+        queueMode: gameData.queueMode ?? state.queueMode,
+        queueColorProbabilities: gameData.queueColorProbabilities ?? state.queueColorProbabilities,
+        queueHiddenShapes: gameData.queueHiddenShapes ?? state.queueHiddenShapes,
+        queueSize: gameData.queueSize ?? state.queueSize,
       };
     }
 
@@ -301,7 +318,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "SET_QUEUE_MODE": {
       const { mode } = action.value;
-      return {
+      const newState = {
         ...state,
         queueMode: mode,
         // Clear hidden shapes when switching modes
@@ -309,10 +326,33 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         // Update queueSize for backward compatibility
         queueSize: mode === 'infinite' ? -1 : state.queueSize,
       };
+      
+      // Save queue configuration (only if not in hub mode)
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, {
+          queueMode: mode,
+          queueHiddenShapes: [],
+          queueSize: mode === 'infinite' ? -1 : state.queueSize,
+        }).catch((error: Error) => {
+          console.error('Failed to save queue mode:', error);
+        });
+      }
+      
+      return newState;
     }
 
     case "UPDATE_COLOR_PROBABILITIES": {
       const { colorProbabilities } = action.value;
+      
+      // Save color probabilities (only if not in hub mode)
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, {
+          queueColorProbabilities: colorProbabilities,
+        }).catch((error: Error) => {
+          console.error('Failed to save color probabilities:', error);
+        });
+      }
+      
       return {
         ...state,
         queueColorProbabilities: colorProbabilities,
@@ -321,10 +361,22 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "POPULATE_FINITE_QUEUE": {
       const { shapes } = action.value;
+      const newQueueSize = shapes.length + state.nextShapes.length;
+      
+      // Save queue state (only if not in hub mode)
+      if (state.gameMode !== 'hub') {
+        safeBatchSave(state.gameMode, {
+          queueHiddenShapes: shapes,
+          queueSize: newQueueSize,
+        }).catch((error: Error) => {
+          console.error('Failed to save queue state:', error);
+        });
+      }
+      
       return {
         ...state,
         queueHiddenShapes: shapes,
-        queueSize: shapes.length + state.nextShapes.length,
+        queueSize: newQueueSize,
       };
     }
 

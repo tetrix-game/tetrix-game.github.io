@@ -108,6 +108,10 @@ export async function saveGameForMode(
     shapesUsed?: number;
     hasPlacedFirstShape?: boolean;
     stats?: StatsPersistenceData;
+    queueMode?: import('../types/shapeQueue').QueueMode;
+    queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
+    queueHiddenShapes?: Shape[];
+    queueSize?: number;
   }
 ): Promise<void> {
   // Convert tiles to serialized format if needed
@@ -136,6 +140,10 @@ export async function saveGameForMode(
     shapesUsed: data.shapesUsed ?? 0,
     hasPlacedFirstShape: data.hasPlacedFirstShape ?? false,
     stats: data.stats ?? (await import('../types/stats')).INITIAL_STATS_PERSISTENCE,
+    queueMode: data.queueMode,
+    queueColorProbabilities: data.queueColorProbabilities,
+    queueHiddenShapes: data.queueHiddenShapes,
+    queueSize: data.queueSize,
     lastUpdated: Date.now(),
   };
   
@@ -156,6 +164,10 @@ export async function loadGameForMode(
   shapesUsed: number;
   hasPlacedFirstShape: boolean;
   stats: StatsPersistenceData;
+  queueMode?: import('../types/shapeQueue').QueueMode;
+  queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
+  queueHiddenShapes?: Shape[];
+  queueSize?: number;
 } | null> {
   const state = await loadViewGameState(gameMode);
   
@@ -191,6 +203,10 @@ export async function loadGameForMode(
     shapesUsed: state.shapesUsed,
     hasPlacedFirstShape: state.hasPlacedFirstShape,
     stats: state.stats,
+    queueMode: state.queueMode,
+    queueColorProbabilities: state.queueColorProbabilities,
+    queueHiddenShapes: state.queueHiddenShapes,
+    queueSize: state.queueSize,
   };
 }
 
@@ -208,11 +224,15 @@ export async function safeBatchSave(
     totalLinesCleared?: number;
     shapesUsed?: number;
     hasPlacedFirstShape?: boolean;
+    queueMode?: import('../types/shapeQueue').QueueMode;
+    queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
+    queueHiddenShapes?: Shape[];
+    queueSize?: number;
   }
 ): Promise<void> {
   const promises: Promise<void>[] = [];
   
-  // Save game state if any game data provided (including stats)
+  // Save game state if any game data provided (including stats and queue config)
   if (
     data.score !== undefined ||
     data.tiles !== undefined ||
@@ -221,7 +241,11 @@ export async function safeBatchSave(
     data.totalLinesCleared !== undefined ||
     data.shapesUsed !== undefined ||
     data.hasPlacedFirstShape !== undefined ||
-    data.stats !== undefined
+    data.stats !== undefined ||
+    data.queueMode !== undefined ||
+    data.queueColorProbabilities !== undefined ||
+    data.queueHiddenShapes !== undefined ||
+    data.queueSize !== undefined
   ) {
     // Load current state to avoid overwriting fields
     const current = await loadViewGameState(gameMode);
@@ -237,6 +261,10 @@ export async function safeBatchSave(
       if (data.nextShapes !== undefined) updates.nextShapes = data.nextShapes;
       if (data.savedShape !== undefined) updates.savedShape = data.savedShape;
       if (data.stats !== undefined) updates.stats = data.stats;
+      if (data.queueMode !== undefined) updates.queueMode = data.queueMode;
+      if (data.queueColorProbabilities !== undefined) updates.queueColorProbabilities = data.queueColorProbabilities;
+      if (data.queueHiddenShapes !== undefined) updates.queueHiddenShapes = data.queueHiddenShapes;
+      if (data.queueSize !== undefined) updates.queueSize = data.queueSize;
       
       if (data.tiles !== undefined) {
         // Convert tiles if needed

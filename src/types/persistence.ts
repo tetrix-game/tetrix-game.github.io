@@ -14,6 +14,11 @@ export type GamePersistenceData = {
   tiles: Tile[]; // Keep as array for backward compatibility
   nextShapes: Shape[];
   savedShape: Shape | null;
+  // Queue configuration (optional for backward compatibility)
+  queueMode?: import('./shapeQueue').QueueMode;
+  queueColorProbabilities?: import('./shapeQueue').ColorProbability[];
+  queueHiddenShapes?: Shape[];
+  queueSize?: number;
 };
 
 // View-specific game state (separate data per game mode)
@@ -26,6 +31,11 @@ export type ViewGameState = {
   shapesUsed: number;
   hasPlacedFirstShape: boolean;
   stats: import('./stats').StatsPersistenceData; // Mode-specific stats
+  // Queue configuration
+  queueMode?: import('./shapeQueue').QueueMode;
+  queueColorProbabilities?: import('./shapeQueue').ColorProbability[];
+  queueHiddenShapes?: Shape[];
+  queueSize?: number;
   lastUpdated: number;
 };
 
@@ -65,6 +75,8 @@ export type GameSettingsPersistenceData = {
   soundEffects: SoundEffectsPersistenceData;
   debugUnlocked?: boolean;
   theme?: string; // Theme name
+  lastGameMode?: import('./gameState').GameMode; // Remember active game mode
+  isMapUnlocked?: boolean; // Map unlock status
   lastUpdated: number;
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import type { Shape } from '../../types';
-import BlockVisual from '../BlockVisual';
+import ShapeDisplay from '../ShapeDisplay';
 import './QueueOverlay.css';
 
 interface QueueOverlayProps {
@@ -66,18 +66,7 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
               {hiddenShapes.map((shape, index) => (
                 <div key={`hidden-shape-${index}`} className="queue-overlay-shape">
                   <div className="queue-overlay-shape-label">#{index + 4}</div>
-                  <div className="queue-overlay-shape-grid">
-                    {shape.flatMap((row, rowIndex) =>
-                      row.map((block, colIndex) => (
-                        <div
-                          key={`${rowIndex}-${colIndex}`}
-                          className="queue-overlay-shape-cell"
-                        >
-                          {block.isFilled && <BlockVisual block={block} />}
-                        </div>
-                      ))
-                    )}
-                  </div>
+                  <ShapeDisplay shape={shape} />
                 </div>
               ))}
             </div>

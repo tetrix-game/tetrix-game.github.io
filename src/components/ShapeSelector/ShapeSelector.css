@@ -47,48 +47,22 @@
   /* Transition for smooth shrinking when shape is removed */
   transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
     height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-    opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-    margin-right 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-    margin-bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   flex-shrink: 0;
   /* Prevent wrapper from shrinking on its own */
 }
 
-/* Portrait: horizontal flow with right margins */
-.shape-selector-shape-wrapper[data-landscape="0"] {
-  margin-right: var(--wrapper-gap);
-  margin-bottom: 0;
-}
-
-.shape-selector-shape-wrapper[data-landscape="0"]:last-child {
-  margin-right: 0;
-}
-
-/* Landscape: vertical flow with bottom margins */
+/* No margins - shapes are directly adjacent */
+.shape-selector-shape-wrapper[data-landscape="0"],
 .shape-selector-shape-wrapper[data-landscape="1"] {
-  margin-right: 0;
-  margin-bottom: var(--wrapper-gap);
-}
-
-.shape-selector-shape-wrapper[data-landscape="1"]:last-child {
-  margin-bottom: 0;
+  margin: 0;
 }
 
 /* Animation state for removing shapes */
 .shape-selector-shape-wrapper.removing {
   opacity: 0;
-}
-
-/* Portrait: shrink width and margin when removing */
-.shape-selector-shape-wrapper.removing[data-landscape="0"] {
   width: 0;
-  margin-right: 0;
-}
-
-/* Landscape: shrink height and margin when removing */
-.shape-selector-shape-wrapper.removing[data-landscape="1"] {
   height: 0;
-  margin-bottom: 0;
 }
 
 /* Portrait screens (taller than wide): horizontal button flow */

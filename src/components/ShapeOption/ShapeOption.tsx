@@ -1,9 +1,8 @@
 import './ShapeOption.css';
 import type { Shape } from '../../utils/types';
-import BlockVisual from '../BlockVisual';
+import ShapeDisplay from '../ShapeDisplay';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
-import React, { useRef, useEffect, useCallback, useMemo } from 'react';
-import { getShapeBounds } from '../../utils/shapeUtils';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { ANIMATION_TIMING } from '../../utils/animationConstants';
 
 type ShapeOptionProps = {
@@ -29,35 +28,6 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
 
   // Track if bounds are currently null (need registration)
   const boundsAreNull = shapeOptionBounds[shapeIndex] === null || shapeOptionBounds[shapeIndex] === undefined;
-
-  // ShapeOption has 4x4 grid with 1px gaps (3 gaps total)
-  // Add padding to prevent clipping of shape edges/borders
-  const containerPadding = 4;
-  const cellGap = 1;
-  const cellGapSpace = cellGap * 3;
-  const availableSize = shapeOptionFullSize - (containerPadding * 2);
-  const shapeOptionCellSize = (availableSize - cellGapSpace) / 4;
-
-  // Calculate centering offset for shapes with odd dimensions
-  const shapeBounds = useMemo(() => getShapeBounds(shape), [shape]);
-  const centeringOffset = useMemo(() => {
-    // Calculate how much to shift the shape to center it in the 4x4 grid
-    // Each cell + gap is (shapeOptionCellSize + cellGap)
-    const cellWithGap = shapeOptionCellSize + cellGap;
-
-    // The shape's visual center in grid coordinates (0-based, fractional)
-    const shapeVisualCenterCol = shapeBounds.minCol + (shapeBounds.width - 1) / 2;
-    const shapeVisualCenterRow = shapeBounds.minRow + (shapeBounds.height - 1) / 2;
-
-    // The 4x4 grid's center (1.5, 1.5 in 0-based coordinates)
-    const gridCenter = 1.5;
-
-    // Calculate offset needed to center the shape
-    const offsetX = (gridCenter - shapeVisualCenterCol) * cellWithGap;
-    const offsetY = (gridCenter - shapeVisualCenterRow) * cellWithGap;
-
-    return { x: offsetX, y: offsetY };
-  }, [shapeBounds, shapeOptionCellSize, cellGap]);
 
   // Register bounds when component mounts or updates
   // Re-register when shape changes (e.g., after rotation or queue updates)
@@ -193,28 +163,16 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
   return (
     <div
       ref={containerRef}
-      className={`shape-container${isSelected ? ' selected' : ''}`}
+      className={`shape-option-container${isSelected ? ' selected' : ''}`}
       style={{
-        '--shape-cell-size': `${shapeOptionCellSize}px`,
-        '--shape-cell-gap': `${cellGap}px`,
-        '--block-overlap': `${cellGap}px`,
-        '--centering-offset-x': `${centeringOffset.x}px`,
-        '--centering-offset-y': `${centeringOffset.y}px`,
+        width: `${shapeOptionFullSize}px`,
+        height: `${shapeOptionFullSize}px`,
         opacity,
         transition: 'opacity 0.15s ease-out',
       } as React.CSSProperties}
       onPointerDown={handlePointerDown}
     >
-      {displayShape.map((row, rowIndex) => (
-        row.map((block, colIndex) => (
-          <div
-            key={`${rowIndex}-${colIndex}`}
-            className="shape-tile-visual"
-          >
-            <BlockVisual block={block} size={shapeOptionCellSize} />
-          </div>
-        ))
-      ))}
+      <ShapeDisplay shape={displayShape} />
     </div>
   )
 }

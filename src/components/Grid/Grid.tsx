@@ -10,14 +10,25 @@ import { GRID_SIZE } from '../../utils/gridConstants';
 interface GridProps {
   width?: number; // Grid width in tiles (default: GRID_SIZE)
   height?: number; // Grid height in tiles (default: GRID_SIZE)
+  pixelSize?: number; // Optional override for grid size in pixels
 }
 
-export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProps) {
+export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps) {
   const { tiles, dragState, gameMode } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
-  const { gridSize, gridGap, gridCellSize } = useGameSizing();
+  const { gridSize: hookGridSize, gridGap, gridCellSize: hookGridCellSize } = useGameSizing();
   const { isDebugMode, handleDebugClick } = useDebugGridInteractions();
+
+  // Use provided pixelSize or fall back to responsive hook size
+  const gridSize = pixelSize ?? hookGridSize;
+  
+  // Calculate cell size if pixelSize is provided, otherwise use hook value
+  // Note: This assumes square cells. If width != height, this logic might need adjustment
+  // but for now we assume square grid or at least square cells.
+  const gridCellSize = pixelSize 
+    ? (pixelSize - (gridGap * (Math.max(width, height) - 1))) / Math.max(width, height)
+    : hookGridCellSize;
 
   // Periodically clean up expired animations
   useEffect(() => {

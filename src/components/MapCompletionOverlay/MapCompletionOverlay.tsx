@@ -39,7 +39,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
     <div className="map-completion-overlay">
       <div className="map-completion-content">
         <div className="completion-grid-preview">
-          <Grid />
+          <Grid pixelSize={250} />
         </div>
         
         <div className="completion-details">

@@ -26,7 +26,6 @@
   flex-shrink: 0;
   pointer-events: none;
   opacity: 0.9;
-  transform: scale(0.8);
   filter: brightness(0.8);
 }
 
@@ -210,10 +209,6 @@
   .map-completion-content {
     flex-direction: column;
     gap: 1rem;
-  }
-
-  .completion-grid-preview {
-    transform: scale(0.6);
   }
 
   .completion-details {

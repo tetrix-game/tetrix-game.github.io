@@ -1,10 +1,11 @@
 .queue-indicator {
-  /* Positioned to not interfere with shape selector sizing */
-  position: absolute;
+  /* Part of flex layout - no absolute positioning */
+  position: relative;
   
-  /* Square button */
-  width: 40px;
-  height: 40px;
+  /* Square button - half the normal button size */
+  width: calc(var(--game-controls-button-size) * 0.5);
+  height: calc(var(--game-controls-button-size) * 0.5);
+  flex-shrink: 0;
   
   /* Styling */
   background: var(--theme-button-bg, rgba(255, 255, 255, 0.1));

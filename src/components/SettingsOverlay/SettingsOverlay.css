@@ -345,3 +345,38 @@
 .volume-control-header .menu-label {
   flex: 1;
 }
+
+/* Button size control styles */
+.menu-item.button-size-control {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 12px;
+}
+
+.button-size-control-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.button-size-control-header .menu-label {
+  flex: 1;
+}
+
+.button-size-control-header .reset-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 4px;
+  color: var(--theme-text, #eee);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button-size-control-header .reset-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}

@@ -8,7 +8,7 @@
   gap: var(--grid-gap);
   width: var(--grid-size);
   height: var(--grid-size);
-  padding: 1px;
+  padding: var(--grid-gap);
   box-sizing: content-box;
 }
 

@@ -4,10 +4,6 @@
 - Tutorial auto-starts and accessible only from the menu
 - "Look at this!" moments
 - Architecture
-    - Solver that generates lowball shapes
-    - Additional shape types
-    - 1d: LevelMap spoke on main menu
-    - 5d: Document what display layers there are, and give each a taxonomy
 - Juice
     - 5m: The heartbeat isn't loud enough on phones
     - Better clearance animations
@@ -18,8 +14,13 @@
     - cw turn sound
     - ccw turn sound
 - Bug
+    - Success screen isn't fitting on mobile
+    - Grid needs padding
 - Expectation Mismatch
+    - Can full screen be a default?
+    - Can a PWA download be ubiquitous?
 - Curb appeal
+    - Get rid of the ShapeQueue drop shadow
     - 3h: Better share images
     - 10m: Better App Icon
 

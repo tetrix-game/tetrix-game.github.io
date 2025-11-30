@@ -65,6 +65,14 @@ export default function TetrixProvider({ children }: { readonly children: React.
           });
         }
 
+        // Restore button size multiplier
+        if (settings?.buttonSizeMultiplier !== undefined) {
+          dispatch({
+            type: 'SET_BUTTON_SIZE_MULTIPLIER',
+            value: { multiplier: settings.buttonSizeMultiplier }
+          });
+        }
+
         // Only load if we have valid tile data (100 tiles for 10x10 grid)
         if (gameData?.tiles.length === 100) {
           dispatch({

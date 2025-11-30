@@ -38,6 +38,7 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   gemIconPosition: { x: 100, y: 50 },
   gridTileSize: null,
   gridBounds: null,
+  buttonSizeMultiplier: 1.0,
   currentTheme: 'dark',
   dragState: {
     phase: dragPhase,

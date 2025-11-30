@@ -208,6 +208,7 @@ describe('Full Board Clear - Reducer Integration', () => {
       hasPlacedFirstShape: false,
       isTurningModeActive: false,
       turningDirection: null,
+      buttonSizeMultiplier: 1.0,
       isDoubleTurnModeActive: false,
       unlockedModifiers: new Set<number>(),
       hasLoadedPersistedState: false,

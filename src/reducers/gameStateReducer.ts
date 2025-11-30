@@ -93,6 +93,7 @@ export const initialGameState = {
   isStatsOpen: false,
   isQueueOverlayOpen: false,
   insufficientFundsError: null,
+  buttonSizeMultiplier: 1.0,
   currentTheme: 'dark' as const,
 };
 
@@ -336,6 +337,17 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         currentTheme: theme,
+      };
+    }
+
+    case "SET_BUTTON_SIZE_MULTIPLIER": {
+      const { multiplier } = action.value;
+      // Clamp between 0.5 and 1.5
+      const clampedMultiplier = Math.max(0.5, Math.min(1.5, multiplier));
+      // Persistence handled by listener
+      return {
+        ...state,
+        buttonSizeMultiplier: clampedMultiplier,
       };
     }
 

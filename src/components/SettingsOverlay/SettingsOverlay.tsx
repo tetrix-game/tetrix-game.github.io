@@ -389,6 +389,58 @@ const SettingsOverlay: React.FC = () => {
 
             {isDebugOpen && (
               <div className="debug-submenu-content">
+                <div className="menu-item submenu-item button-size-control">
+                  <div className="button-size-control-header">
+                    <span className="menu-label">Button Size: {Math.round(state.buttonSizeMultiplier * 100)}%</span>
+                    <button
+                      className="reset-button"
+                      onClick={() => dispatch({ type: 'SET_BUTTON_SIZE_MULTIPLIER', value: { multiplier: 1.0 } })}
+                      title="Reset to 100%"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                  <Slider
+                    value={state.buttonSizeMultiplier}
+                    onChange={(_, value) => dispatch({ type: 'SET_BUTTON_SIZE_MULTIPLIER', value: { multiplier: value as number } })}
+                    min={0.5}
+                    max={1.5}
+                    step={0.1}
+                    marks={[
+                      { value: 0.5, label: '50%' },
+                      { value: 1.0, label: '100%' },
+                      { value: 1.5, label: '150%' }
+                    ]}
+                    sx={{
+                      color: '#4fc3f7',
+                      width: 'calc(100% - 16px)',
+                      margin: '8px 8px 0',
+                      '& .MuiSlider-thumb': {
+                        width: 16,
+                        height: 16,
+                        '&:hover, &.Mui-focusVisible': {
+                          boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)'
+                        }
+                      },
+                      '& .MuiSlider-track': {
+                        height: 4
+                      },
+                      '& .MuiSlider-rail': {
+                        height: 4,
+                        opacity: 0.3
+                      },
+                      '& .MuiSlider-mark': {
+                        height: 8,
+                        width: 2,
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)'
+                      },
+                      '& .MuiSlider-markLabel': {
+                        fontSize: '10px',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                      }
+                    }}
+                  />
+                </div>
                 <div className="menu-item submenu-item">
                   <button
                     className="debug-action-button"

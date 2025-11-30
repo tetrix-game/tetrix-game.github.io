@@ -3,13 +3,12 @@
   flex-direction: column;
   gap: 12px;
   padding: 12px;
-  /* Match ShapeSelector styling */
-  border: 2px solid var(--theme-shape-selector-border, rgba(255, 255, 255, 0.3));
+  /* Remove container styling */
+  border: none;
   border-radius: 12px;
-  background: var(--theme-shape-selector-bg, linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 50%, rgba(240, 147, 251, 0.2) 100%));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
-    0 2px 4px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
   align-items: center;
   justify-content: center;
   width: auto;
@@ -17,13 +16,13 @@
 }
 
 .purchases-container-button {
-  /* Use dynamically calculated button size */
-  width: var(--button-size);
-  height: var(--button-size);
-  min-width: var(--button-size);
-  min-height: var(--button-size);
-  max-width: var(--button-size);
-  max-height: var(--button-size);
+  /* Use unified game controls button size */
+  width: var(--game-controls-button-size);
+  height: var(--game-controls-button-size);
+  min-width: var(--game-controls-button-size);
+  min-height: var(--game-controls-button-size);
+  max-width: var(--game-controls-button-size);
+  max-height: var(--game-controls-button-size);
   background: var(--theme-button-bg, rgba(0, 0, 0, 0.8));
   border: 2px solid #4a90e2;
   border-radius: 8px;
@@ -92,7 +91,7 @@
 
 .purchases-container-icon {
   /* Scale icon size based on button size */
-  font-size: calc(var(--button-size) * 0.5);
+  font-size: calc(var(--game-controls-button-size) * 0.5);
   font-weight: bold;
   line-height: 1;
   flex: 2;
@@ -103,7 +102,7 @@
 
 .purchases-container-cost {
   /* Scale cost text based on button size */
-  font-size: calc(var(--button-size) * 0.25);
+  font-size: calc(var(--game-controls-button-size) * 0.25);
   opacity: 0.8;
   flex: 1;
   display: flex;

@@ -5,6 +5,18 @@
   transition: background-color 0.2s ease;
   /* Default overlap for children positioning */
   --block-overlap: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile-icon-background {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .tile-base-dark {

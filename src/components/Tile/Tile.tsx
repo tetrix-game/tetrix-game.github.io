@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import type { ColorName } from '../../utils/types';
+import ShapeIcon from '../ShapeIcon';
 import './Tile.css';
 
 export interface TileProps {
@@ -49,6 +50,11 @@ export const Tile: React.FC<TileProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseDown={onMouseDown}
     >
+      {hasCustomBackground && backgroundColor && (
+        <div className="tile-icon-background">
+          <ShapeIcon color={backgroundColor} size={20} opacity={0.3} useBorderLeftColor={true} />
+        </div>
+      )}
       {children}
     </div>
   );

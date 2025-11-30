@@ -82,6 +82,7 @@ export type TetrixReducerState = {
   isStatsOpen: boolean; // Whether the stats overlay is currently open
   isQueueOverlayOpen: boolean; // Whether the queue overlay is currently open
   insufficientFundsError: number | null; // Timestamp of last insufficient funds error
+  buttonSizeMultiplier: number; // UI scaling: 0.5 to 1.5, default 1.0
 
   // Theme
   currentTheme: ThemeName; // Current theme selection
@@ -329,6 +330,11 @@ type SetThemeAction = {
   value: { theme: ThemeName };
 };
 
+type SetButtonSizeMultiplierAction = {
+  type: 'SET_BUTTON_SIZE_MULTIPLIER';
+  value: { multiplier: number };
+};
+
 type SetQueueModeAction = {
   type: 'SET_QUEUE_MODE';
   value: { mode: QueueMode };
@@ -415,6 +421,7 @@ export type TetrixAction =
   | CloseStatsAction
   | InitializationCompleteAction
   | SetThemeAction
+  | SetButtonSizeMultiplierAction
   | SetQueueModeAction
   | UpdateColorProbabilitiesAction
   | PopulateFiniteQueueAction

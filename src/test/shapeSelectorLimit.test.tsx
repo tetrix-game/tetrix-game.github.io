@@ -49,7 +49,7 @@ describe('ShapeSelector 4-Element Limit', () => {
     );
 
     await waitFor(() => {
-      const shapesContainer = container.querySelector('.shape-selector-shapes-container');
+      const shapesContainer = container.querySelector('.shape-selector');
       expect(shapesContainer).toBeTruthy();
     });
   });

@@ -33,7 +33,8 @@ export const PersistenceListener = () => {
     hasLoadedPersistedState,
     totalLinesCleared,
     shapesUsed,
-    hasPlacedFirstShape
+    hasPlacedFirstShape,
+    buttonSizeMultiplier
   } = state;
 
   // Track previous values to avoid unnecessary saves if we want to optimize further,
@@ -91,17 +92,18 @@ export const PersistenceListener = () => {
     });
   }, [unlockedModifiers, hasLoadedPersistedState]);
 
-  // Effect for Settings (Map Unlock, Game Mode)
+  // Effect for Settings (Map Unlock, Game Mode, Button Size)
   useEffect(() => {
     if (!hasLoadedPersistedState) return;
 
     updateSettings({
       lastGameMode: gameMode,
-      isMapUnlocked: isMapUnlocked
+      isMapUnlocked: isMapUnlocked,
+      buttonSizeMultiplier: buttonSizeMultiplier
     }).catch(error => {
       console.error('Failed to save settings via listener:', error);
     });
-  }, [gameMode, isMapUnlocked, hasLoadedPersistedState]);
+  }, [gameMode, isMapUnlocked, buttonSizeMultiplier, hasLoadedPersistedState]);
 
   // Effect for Theme
   useEffect(() => {

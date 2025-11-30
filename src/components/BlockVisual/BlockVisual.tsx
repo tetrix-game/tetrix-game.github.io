@@ -1,4 +1,5 @@
 import { Block } from "../../utils/types";
+import ShapeIcon from "../ShapeIcon";
 import './BlockVisual.css';
 
 type BlockVisualProps = {
@@ -18,7 +19,14 @@ export default function BlockVisual({ block, size }: BlockVisualProps): JSX.Elem
     style['--block-shadow-inset'] = `${size * 0.5}px`;
   }
 
+  // Calculate icon size: 60% of block size, or default 24px if size not provided
+  const iconSize = size !== undefined ? size * 0.6 : 24;
+
   return (
-    <div className={`block-visual block-color-${block.color}`} style={style} />
+    <div className={`block-visual block-color-${block.color}`} style={style}>
+      <div className="block-icon-container">
+        <ShapeIcon color={block.color} size={iconSize} opacity={1.0} useBorderLeftColor={true} />
+      </div>
+    </div>
   )
 }

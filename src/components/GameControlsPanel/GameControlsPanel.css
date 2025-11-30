@@ -1,35 +1,25 @@
 .game-controls-panel {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
-  height: var(--controls-height);
-  width: var(--controls-width);
+  justify-content: space-around;
   overflow: hidden;
-  /* Prevent any scrolling */
   box-sizing: border-box;
 }
 
-/* Portrait screens (taller than wide): ShapeSelector between Grid and PurchasesContainer */
+/* Portrait screens (taller than wide): vertical stack */
 @media (max-aspect-ratio: 1/1) {
   .game-controls-panel {
     flex-direction: column;
     align-items: center;
-    /* Center align */
-    justify-content: center;
-    /* Center align */
-    gap: 16px;
+    justify-content: space-around;
   }
 }
 
-/* Landscape screens (wider than tall): ShapeSelector next to PurchasesContainer */
+/* Landscape screens (wider than tall): horizontal stack */
 @media (min-aspect-ratio: 1/1) {
   .game-controls-panel {
     flex-direction: row;
     align-items: center;
-    /* Center align vertically */
-    justify-content: center;
-    /* Center align horizontally */
-    gap: 20px;
+    justify-content: space-around;
   }
 }

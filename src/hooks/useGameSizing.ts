@@ -5,12 +5,20 @@ export interface GameSizing {
   gridSize: number;
   gridCellSize: number;
   gridGap: number;
-  gameControlsLength: number;
-  gameControlsWidth: number;
-  buttonSize: number;
+  gameControlsButtonSize: number;
 }
 
-export const useGameSizing = (): GameSizing => {
+/**
+ * Hook to calculate responsive sizing for game elements
+ * 
+ * Core principle:
+ * - Portrait: Grid and controls stack vertically, share available height (2/3 + 1/3)
+ * - Landscape: Grid and controls sit side-by-side, share available width (2/3 + 1/3)
+ * - Grid is constrained to fit within viewport dimensions (won't overflow)
+ * - All buttons in GameControlsPanel use same size (shapes, indicator, turn buttons)
+ * - Button size can be scaled by user preference (0.5x to 1.5x)
+ */
+export const useGameSizing = (buttonSizeMultiplier: number = 1.0): GameSizing => {
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   useEffect(() => {
@@ -24,99 +32,86 @@ export const useGameSizing = (): GameSizing => {
 
   const sizing = useMemo(() => {
     const { width: vw, height: vh } = windowSize;
-    const isLandscape = vw >= vh;
-
-    // Available space in the .tetrix container
-    // .tetrix is 90vh tall, full width, with 20px gap between grid and controls
-    const containerHeight = vh * 0.9; // 90vh
-    const containerWidth = vw;
-    const gap = 20; // Gap between grid and controls
-    const padding = 40; // Total padding to ensure content doesn't touch edges
-
+    
+    // Header takes 10vh
+    const headerHeight = vh * 0.1;
+    const availableHeight = vh - headerHeight;
+    
+    // Determine orientation
+    const isPortrait = vw < vh;
+    
+    // In portrait: Grid and controls stack vertically (share available height)
+    // In landscape: Grid and controls sit side-by-side (share available width)
+    // Both need to fit within viewport constraints
+    
     let gridSize: number;
-    let gameControlsLength: number;
-    let gameControlsWidth: number;
-
-    if (isLandscape) {
-      // Landscape: controls on the right, side-by-side layout
-      // Total width constraint: gridSize + gap + gameControlsWidth <= containerWidth - padding
-      // Total height constraint: max(gridSize, gameControlsLength) <= containerHeight - padding
-
-      const availableWidth = containerWidth - gap - padding;
-      const availableHeight = containerHeight - padding;
-
-      // Aim for controls to be ~35-40% of available width
-      const targetControlsRatio = 0.35;
-      const targetGridWidth = availableWidth * (1 - targetControlsRatio);
-
-      // Grid must be square and fit in available height
-      gridSize = Math.min(targetGridWidth, availableHeight);
-
-      // Ensure grid + controls + gap actually fit
-      gameControlsWidth = Math.min(
-        availableWidth - gridSize,
-        gridSize * 0.6  // Cap at 60% of grid size
-      );
-
-      // Verify total width fits, shrink grid if needed
-      const totalWidth = gridSize + gap + gameControlsWidth;
-      if (totalWidth > containerWidth - padding) {
-        const scale = (containerWidth - padding) / totalWidth;
-        gridSize *= scale;
-        gameControlsWidth *= scale;
-      }
-
-      gameControlsLength = gridSize; // Match grid height
-
-    } else {
-      // Portrait: controls below, stacked layout
-      // Total height constraint: gridSize + gap + gameControlsWidth <= containerHeight - padding
-      // Total width constraint: max(gridSize, gameControlsLength) <= containerWidth - padding
-
-      const availableHeight = containerHeight - gap - padding;
-      const availableWidth = containerWidth - padding;
-
-      // Aim for controls to be ~35-40% of available height
-      const targetControlsRatio = 0.35;
-      const targetGridHeight = availableHeight * (1 - targetControlsRatio);
-
-      // Grid must be square and fit in available width
-      gridSize = Math.min(targetGridHeight, availableWidth);
-
-      // Ensure grid + controls + gap actually fit
-      gameControlsWidth = Math.min(
-        availableHeight - gridSize,
-        gridSize * 0.6  // Cap at 60% of grid size
-      );
-
-      // Verify total height fits, shrink grid if needed
-      const totalHeight = gridSize + gap + gameControlsWidth;
-      if (totalHeight > containerHeight - padding) {
-        const scale = (containerHeight - padding) / totalHeight;
-        gridSize *= scale;
-        gameControlsWidth *= scale;
-      }
-
-      gameControlsLength = gridSize; // Match grid width
-    }
-
-    // Grid has GRID_SIZE cells with GRID_GAP px gaps
+    let gameControlsPanelSize: number;
+    
+    // Calculate grid gap first (used for padding calculation)
     const gridGap = GRID_GAP;
+    const gridPadding = gridGap * 2; // Grid has padding on all sides
+    
+    // Minimum edge spacing: ensure grid stays away from viewport edges
+    // This should be at least half a tile's width
+    const minEdgeSpacing = 20; // Minimum pixels from screen edge
+    
+    if (isPortrait) {
+      // Portrait: Stack vertically, use available height, account for gap
+      const gap = 20; // From Tetrix.css
+      const availableForContent = availableHeight - gap;
+      
+      // Grid gets 2/3, controls get 1/3
+      const gridHeightTarget = (availableForContent * 2) / 3;
+      const controlsHeightTarget = availableForContent / 3;
+      
+      // Subtract padding from target size (grid has box-sizing: content-box)
+      // Also ensure grid fits within viewport width with edge spacing
+      const maxWidthConstraint = vw - gridPadding - (minEdgeSpacing * 2);
+      gridSize = Math.min(gridHeightTarget - gridPadding, maxWidthConstraint);
+      gameControlsPanelSize = controlsHeightTarget;
+    } else {
+      // Landscape: Side-by-side, use available width, account for gap
+      const gap = 20; // From Tetrix.css
+      const availableForContent = vw - gap;
+      
+      // Grid gets 2/3, controls get 1/3
+      const gridWidthTarget = (availableForContent * 2) / 3;
+      const controlsWidthTarget = availableForContent / 3;
+      
+      // Subtract padding from target size (grid has box-sizing: content-box)
+      // Also ensure grid fits within available height with edge spacing
+      const maxHeightConstraint = availableHeight - gridPadding - (minEdgeSpacing * 2);
+      gridSize = Math.min(gridWidthTarget - gridPadding, maxHeightConstraint);
+      gameControlsPanelSize = controlsWidthTarget;
+    }
+    
+    // Calculate grid internals
     const gridGapSpace = gridGap * (GRID_SIZE - 1);
     const gridCellSize = (gridSize - gridGapSpace) / GRID_SIZE;
-
-    // Button sizing based on controls width
-    const buttonSize = gameControlsWidth * 0.9; // Slightly smaller to ensure padding
-
+    
+    // Calculate button size from controls panel size
+    // Panel needs to fit: 3 buttons + padding + indicator + spacing
+    // With padding 24px (12px each side), we have gameControlsPanelSize - 24 for content
+    // Content: 3 buttons + 1 indicator + natural spacing from flex space-around
+    // Buttons and indicator are same size, so effectively 4 button widths worth of space
+    // But with space-around, we get extra space, so let's be conservative
+    const panelPadding = 24;
+    const availableSpace = gameControlsPanelSize - panelPadding;
+    
+    // Conservative estimate: 3.5 button widths (accounts for indicator + spacing)
+    const baseButtonSize = availableSpace / 3.5;
+    
+    // Apply user multiplier (clamped between 0.5 and 1.5)
+    const clampedMultiplier = Math.max(0.5, Math.min(1.5, buttonSizeMultiplier));
+    const gameControlsButtonSize = baseButtonSize * clampedMultiplier;
+    
     return {
       gridSize,
       gridCellSize,
       gridGap,
-      gameControlsLength,
-      gameControlsWidth,
-      buttonSize,
+      gameControlsButtonSize,
     };
-  }, [windowSize]);
+  }, [windowSize, buttonSizeMultiplier]);
 
   return sizing;
 };

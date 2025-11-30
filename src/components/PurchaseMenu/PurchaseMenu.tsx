@@ -12,7 +12,7 @@ type PurchaseMenuProps = {
 const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => {
   const dispatch = useTetrixDispatchContext();
   const state = useTetrixStateContext();
-  const { buttonSize } = useGameSizing();
+  const { gameControlsButtonSize } = useGameSizing(state.buttonSizeMultiplier);
 
   // Disable rotation buttons when any turning mode is active
   const isRotationDisabled = state.isTurningModeActive || state.isDoubleTurnModeActive;
@@ -49,7 +49,7 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
       <div
         className="purchase-menu-button-group"
         style={{
-          '--button-size': `${buttonSize}px`,
+          '--button-size': `${gameControlsButtonSize}px`,
         } as React.CSSProperties}
       >
         <button
@@ -79,7 +79,7 @@ const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => 
     <button
       className="purchase-menu-dollar-button"
       style={{
-        '--button-size': `${buttonSize}px`,
+        '--button-size': `${gameControlsButtonSize}px`,
       } as React.CSSProperties}
       onClick={handleSpendCoin}
       title="Spend 1 gem to unlock rotation"

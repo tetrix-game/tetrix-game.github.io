@@ -8,11 +8,10 @@ import { ANIMATION_TIMING } from '../../utils/animationConstants';
 type ShapeOptionProps = {
   shape: Shape;
   shapeIndex: number;
-  shapeOptionFullSize: number;
   id?: string;
 };
 
-const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize, id }: ShapeOptionProps) => {
+const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
   const {
     dragState,
@@ -184,8 +183,8 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize, id }: ShapeOption
       data-shape-id={shapeId}
       className={`shape-option-container${isSelected ? ' selected' : ''}`}
       style={{
-        width: `${shapeOptionFullSize}px`,
-        height: `${shapeOptionFullSize}px`,
+        width: 'var(--game-controls-button-size)',
+        height: 'var(--game-controls-button-size)',
         opacity,
         transition: 'opacity 0.15s ease-out',
       } as React.CSSProperties}

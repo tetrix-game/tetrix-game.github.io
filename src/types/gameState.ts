@@ -73,7 +73,7 @@ export type TetrixReducerState = {
   isStatsOpen: boolean; // Whether the stats overlay is currently open
   isQueueOverlayOpen: boolean; // Whether the queue overlay is currently open
   insufficientFundsError: number | null; // Timestamp of last insufficient funds error
-  
+
   // Theme
   currentTheme: ThemeName; // Current theme selection
 };
@@ -82,6 +82,16 @@ type SelectShapeAction = {
   type: 'SELECT_SHAPE';
   value: {
     shapeIndex: number;
+  };
+};
+
+type StartDragAction = {
+  type: 'START_DRAG';
+  value: {
+    shape: Shape;
+    sourceId: string;
+    sourceBounds: { top: number; left: number; width: number; height: number };
+    shapeIndex?: number; // Optional, for backward compatibility with ShapeSelector logic
   };
 };
 
@@ -150,7 +160,7 @@ type AddScoreAction = {
 
 type LoadGameStateAction = {
   type: 'LOAD_GAME_STATE';
-  value: { 
+  value: {
     gameData: GamePersistenceData;
     stats?: import('./stats').StatsPersistenceData; // Optional stats for infinite mode
   };
@@ -333,6 +343,7 @@ type ToggleQueueOverlayAction = {
 
 export type TetrixAction =
   | SelectShapeAction
+  | StartDragAction
   | UpdateMouseLocationAction
   | PlaceShapeAction
   | CompletePlacementAction

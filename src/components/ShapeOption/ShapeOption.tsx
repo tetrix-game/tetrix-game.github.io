@@ -9,9 +9,10 @@ type ShapeOptionProps = {
   shape: Shape;
   shapeIndex: number;
   shapeOptionFullSize: number;
+  id?: string;
 };
 
-const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProps) => {
+const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize, id }: ShapeOptionProps) => {
   const dispatch = useTetrixDispatchContext();
   const {
     dragState,
@@ -25,6 +26,9 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
   } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
+
+  // Generate stable ID if not provided
+  const shapeId = id || `shape-option-${shapeIndex}`;
 
   // Track if bounds are currently null (need registration)
   const boundsAreNull = shapeOptionBounds[shapeIndex] === null || shapeOptionBounds[shapeIndex] === undefined;
@@ -144,13 +148,26 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
     }
 
     // Select this shape - DraggingShape will handle all animations
-    dispatch({
-      type: 'SELECT_SHAPE',
-      value: { shapeIndex }
-    });
-  }, [dispatch, shapeIndex, dragState.selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval, score]);
+    const element = e.currentTarget;
+    const rect = element.getBoundingClientRect();
 
-  const isSelected = dragState.selectedShapeIndex === shapeIndex;
+    dispatch({
+      type: 'START_DRAG',
+      value: {
+        shape,
+        sourceId: shapeId,
+        sourceBounds: {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height
+        },
+        shapeIndex
+      }
+    });
+  }, [dispatch, shapeIndex, dragState.selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval, score, shape, shapeId]);
+
+  const isSelected = dragState.sourceId === shapeId || dragState.selectedShapeIndex === shapeIndex;
 
   // Render empty blocks during removal animation
   const displayShape = isAnimatingRemoval
@@ -164,6 +181,7 @@ const ShapeOption = ({ shape, shapeIndex, shapeOptionFullSize }: ShapeOptionProp
     <div
       ref={containerRef}
       data-shape-index={shapeIndex}
+      data-shape-id={shapeId}
       className={`shape-option-container${isSelected ? ' selected' : ''}`}
       style={{
         width: `${shapeOptionFullSize}px`,

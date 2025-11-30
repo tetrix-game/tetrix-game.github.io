@@ -21,7 +21,8 @@ export type DragOffsets = {
 export type DragState = {
   phase: DragPhase;
   selectedShape: Shape | null;
-  selectedShapeIndex: number | null;
+  selectedShapeIndex: number | null; // Deprecated: use sourceId instead
+  sourceId: string | null; // Unique ID of the component that initiated the drag
   isValidPlacement: boolean;
   hoveredBlockPositions: Array<{ location: Location; block: Block }>;
   invalidBlockPositions: Array<{ shapeRow: number; shapeCol: number }>; // Blocks that don't fit

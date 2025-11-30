@@ -157,7 +157,7 @@ export default function DraggingShape() {
 
   // --- Render Logic ---
 
-  if (!dragState.selectedShape || dragState.selectedShapeIndex === null || dragState.phase === 'none') {
+  if (!dragState.selectedShape || dragState.phase === 'none') {
     return null;
   }
 

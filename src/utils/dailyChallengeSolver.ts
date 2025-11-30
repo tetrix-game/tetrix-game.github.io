@@ -92,6 +92,72 @@ export type SolvedShape = {
   gridPosition: { row: number; col: number }; // Top-left of the shape grid
 };
 
+// State for best-first search
+type PartialSolution = {
+  grid: (ColorName | null)[][];
+  usedShapes: SolvedShape[];
+  score: number;
+  smallShapesUsed: { [key: string]: number }; // Track usage of small shapes
+};
+
+// Calculate heuristic score for a partial solution
+function calculateScore(
+  grid: (ColorName | null)[][],
+  usedShapes: SolvedShape[],
+  smallShapesUsed: { [key: string]: number },
+  minRow: number,
+  maxRow: number,
+  minCol: number,
+  maxCol: number
+): number {
+  let score = 0;
+
+  // Penalty for small shapes (heavily discourage 1x1 and 2x1)
+  score -= (smallShapesUsed['1x1'] || 0) * 15;
+  score -= (smallShapesUsed['2x1'] || 0) * 8;
+  score -= (smallShapesUsed['3x1'] || 0) * 4;
+
+  // Reward for larger shapes
+  for (const solved of usedShapes) {
+    const size = getFilledBlocks(solved.shape).length;
+    if (size >= 4) {
+      score += 10;
+    }
+    if (size >= 6) {
+      score += 5; // Extra bonus for very large shapes
+    }
+  }
+
+  // Penalty for isolated/trapped cells (cells that can't be easily filled)
+  let trappedCells = 0;
+  for (let r = minRow; r <= maxRow; r++) {
+    for (let c = minCol; c <= maxCol; c++) {
+      if (grid[r][c] !== null) {
+        // Check if this cell has limited neighbors (potential trap)
+        let neighbors = 0;
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for (const [dr, dc] of dirs) {
+          const nr = r + dr;
+          const nc = c + dc;
+          if (nr >= minRow && nr <= maxRow && nc >= minCol && nc <= maxCol && grid[nr][nc] !== null) {
+            neighbors++;
+          }
+        }
+        // Isolated cells (0-1 neighbors) are hard to fill efficiently
+        if (neighbors <= 1) {
+          trappedCells++;
+        }
+      }
+    }
+  }
+  score -= trappedCells * 12;
+
+  // Bonus for progress (tiles covered)
+  score += usedShapes.length * 3;
+
+  return score;
+}
+
 export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[] | null {
   const rng = new SeededRNG(seed);
 
@@ -126,15 +192,29 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
   if (tileCount === 0) return [];
 
-  // Recursive solver
-  function solve(currentGrid: (ColorName | null)[][], usedShapes: SolvedShape[]): SolvedShape[] | null {
-    // Find first empty (but filled in original) cell
-    let targetR = -1, targetC = -1;
+  // Priority queue implemented as sorted array (simple for small search spaces)
+  const queue: PartialSolution[] = [{
+    grid: grid.map(row => [...row]),
+    usedShapes: [],
+    score: 0,
+    smallShapesUsed: {}
+  }];
 
-    // Scan within bounds
+  let iterations = 0;
+  const MAX_ITERATIONS = 50000; // Prevent infinite loops
+
+  while (queue.length > 0 && iterations < MAX_ITERATIONS) {
+    iterations++;
+
+    // Pop best solution
+    queue.sort((a, b) => b.score - a.score);
+    const current = queue.shift()!;
+
+    // Find first empty cell
+    let targetR = -1, targetC = -1;
     outer: for (let r = minRow; r <= maxRow; r++) {
       for (let c = minCol; c <= maxCol; c++) {
-        if (currentGrid[r][c] !== null) {
+        if (current.grid[r][c] !== null) {
           targetR = r;
           targetC = c;
           break outer;
@@ -142,91 +222,68 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
       }
     }
 
-    // If no target found, we are done!
+    // If no target found, we have a complete solution!
     if (targetR === -1) {
-      return usedShapes;
+      return current.usedShapes;
     }
 
     // Find all shapes that can cover targetR, targetC
-    // The shape must cover (targetR, targetC) with its *first* filled block (in reading order)
-    // to ensure unique placement order.
-
-    const candidates: { shape: Shape, gridPos: { row: number, col: number } }[] = [];
+    const candidates: { shape: Shape, gridPos: { row: number, col: number }, variant: SolverShape }[] = [];
 
     for (const variant of ALL_SHAPE_VARIANTS) {
       const shape = variant.shape;
       const filledBlocks = getFilledBlocks(shape);
       if (filledBlocks.length === 0) continue;
 
-      // The first filled block of the shape MUST align with (targetR, targetC)
-      const firstBlock = filledBlocks[0];
-
-      // Calculate where the top-left of the shape would be
-      const shapeGridRow = targetR - firstBlock.row;
-      const shapeGridCol = targetC - firstBlock.col;
-
-      // Check if this placement is valid
-      let isValid = true;
-      const coloredShape: Shape = shape.map(row => row.map(b => ({ ...b }))); // Deep copy to apply colors
-
+      // Try all positions where this shape can cover the target cell
       for (const fb of filledBlocks) {
-        const gridR = shapeGridRow + fb.row;
-        const gridC = shapeGridCol + fb.col;
+        const shapeGridRow = targetR - fb.row;
+        const shapeGridCol = targetC - fb.col;
 
-        // Check bounds
-        if (gridR < 0 || gridR >= gridHeight || gridC < 0 || gridC >= gridWidth) {
-          isValid = false;
-          break;
+        // Check if this placement is valid
+        let isValid = true;
+        const coloredShape: Shape = shape.map(row => row.map(b => ({ ...b }))); // Deep copy
+
+        for (const block of filledBlocks) {
+          const gridR = shapeGridRow + block.row;
+          const gridC = shapeGridCol + block.col;
+
+          // Check bounds
+          if (gridR < 0 || gridR >= gridHeight || gridC < 0 || gridC >= gridWidth) {
+            isValid = false;
+            break;
+          }
+
+          // Check if grid has a tile here
+          if (current.grid[gridR][gridC] === null) {
+            isValid = false;
+            break;
+          }
+
+          // Apply color from grid to shape
+          coloredShape[block.row][block.col].color = current.grid[gridR][gridC]!;
         }
 
-        // Check if grid has a tile here
-        if (currentGrid[gridR][gridC] === null) {
-          isValid = false;
-          break;
+        if (isValid) {
+          candidates.push({
+            shape: coloredShape,
+            gridPos: { row: shapeGridRow + 1, col: shapeGridCol + 1 },
+            variant
+          });
         }
-
-        // Apply color from grid to shape
-        coloredShape[fb.row][fb.col].color = currentGrid[gridR][gridC]!;
-      }
-
-      if (isValid) {
-        candidates.push({
-          shape: coloredShape,
-          gridPos: { row: shapeGridRow + 1, col: shapeGridCol + 1 } // Convert back to 1-indexed for result
-        });
       }
     }
 
-    // Prioritize larger shapes to avoid 1x1 spam
-    // But don't strictly prefer 9-block over 4-block, as that makes puzzles too blocky.
-    // Tier 1: Size >= 4 (Standard Tetris + large custom shapes)
-    // Tier 2: Size < 4 (Small fillers)
+    // Limit candidates with seeded randomization to keep queue manageable
+    const shuffledCandidates = rng.shuffle(candidates);
+    const limitedCandidates = shuffledCandidates.slice(0, 30); // Explore top 30 options
 
-    const tier1: typeof candidates = [];
-    const tier2: typeof candidates = [];
-
-    for (const candidate of candidates) {
-      const size = getFilledBlocks(candidate.shape).length;
-      if (size >= 4) {
-        tier1.push(candidate);
-      } else {
-        tier2.push(candidate);
-      }
-    }
-
-    const prioritizedCandidates = [
-      ...rng.shuffle(tier1),
-      ...rng.shuffle(tier2)
-    ];
-
-    // Try each candidate
-    for (const candidate of prioritizedCandidates) {
-      // Create new grid state
-      const nextGrid = currentGrid.map(row => [...row]);
+    // Create new states for each candidate
+    for (const candidate of limitedCandidates) {
+      const nextGrid = current.grid.map(row => [...row]);
       const filledBlocks = getFilledBlocks(candidate.shape);
 
       // Remove covered tiles from grid
-      // gridPos is 1-indexed, so subtract 1
       const startR = candidate.gridPos.row - 1;
       const startC = candidate.gridPos.col - 1;
 
@@ -234,18 +291,41 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
         nextGrid[startR + fb.row][startC + fb.col] = null;
       }
 
-      const result = solve(nextGrid, [...usedShapes, { shape: candidate.shape, gridPosition: candidate.gridPos }]);
-      if (result) return result;
+      // Track small shape usage
+      const nextSmallShapesUsed = { ...current.smallShapesUsed };
+      const shapeSize = filledBlocks.length;
+      if (shapeSize <= 3) {
+        const key = `${shapeSize}x1`; // Simplified tracking
+        nextSmallShapesUsed[key] = (nextSmallShapesUsed[key] || 0) + 1;
+      }
+
+      const nextSolution: PartialSolution = {
+        grid: nextGrid,
+        usedShapes: [...current.usedShapes, { shape: candidate.shape, gridPosition: candidate.gridPos }],
+        smallShapesUsed: nextSmallShapesUsed,
+        score: 0 // Will be calculated below
+      };
+
+      nextSolution.score = calculateScore(
+        nextGrid,
+        nextSolution.usedShapes,
+        nextSolution.smallShapesUsed,
+        minRow,
+        maxRow,
+        minCol,
+        maxCol
+      );
+
+      queue.push(nextSolution);
     }
 
-    // Backtrack
-    return null;
+    // Keep queue size manageable
+    if (queue.length > 1000) {
+      queue.sort((a, b) => b.score - a.score);
+      queue.splice(500); // Keep top 500
+    }
   }
 
-  // Start solving
-  // We might need a timeout or retry mechanism if it takes too long, 
-  // but for now let's trust the "fallback shapes" (1x1) will ensure a solution is found quickly.
-  // With 1x1 available, a solution is ALWAYS guaranteed (worst case: all 1x1s).
-
-  return solve(grid, []);
+  // If we exhausted iterations, return null (no solution found)
+  return null;
 }

@@ -25,6 +25,15 @@ export type TetrixReducerState = {
   currentLevel: number; // Current level being played
   isMapUnlocked: boolean; // Whether map has been unlocked
 
+  // Map completion tracking
+  mapCompletionResult: {
+    stars: number;
+    matchedTiles: number;
+    totalTiles: number;
+    missedTiles: number;
+  } | null; // Set when level is completed, null otherwise
+  targetTiles: Set<string> | null; // Tiles that should be filled for completion (from challenge data)
+
   tiles: TilesSet; // Keyed tile storage for O(1) lookup
   nextShapes: Shape[];
   savedShape: Shape | null;
@@ -347,6 +356,14 @@ type StartDailyChallengeAction = {
   };
 };
 
+type CheckMapCompletionAction = {
+  type: 'CHECK_MAP_COMPLETION';
+};
+
+type ClearMapCompletionAction = {
+  type: 'CLEAR_MAP_COMPLETION';
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -402,6 +419,8 @@ export type TetrixAction =
   | UpdateColorProbabilitiesAction
   | PopulateFiniteQueueAction
   | ToggleQueueOverlayAction
-  | StartDailyChallengeAction;
+  | StartDailyChallengeAction
+  | CheckMapCompletionAction
+  | ClearMapCompletionAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

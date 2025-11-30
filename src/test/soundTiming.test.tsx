@@ -28,6 +28,8 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   gameMode: 'infinite',
   currentLevel: 1,
   isMapUnlocked: false,
+  mapCompletionResult: null,
+  targetTiles: null,
   tiles: new Map(),
   nextShapes: [],
   savedShape: null,

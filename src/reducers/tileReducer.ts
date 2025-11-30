@@ -9,6 +9,7 @@ import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, gen
 import { cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
 import { updateStats, incrementNoTurnStreak } from '../utils/statsUtils';
 import { checkGameOver } from '../utils/gameOverUtils';
+import { checkMapCompletion } from '../utils/mapCompletionUtils';
 import { makeTileKey } from '../utils/gridConstants';
 import { performLineClearing } from '../utils/lineClearingOrchestrator';
 
@@ -136,8 +137,56 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       if (state.gameMode === 'infinite') {
         isGameOver = checkGameOver(lineClearResult.tiles, updatedNextShapes, newScore, newOpenRotationMenus);
       } else if (state.queueMode === 'finite') {
-        // In finite mode, game over when both visible and hidden shapes are depleted
-        isGameOver = updatedNextShapes.length === 0 && updatedHiddenShapes.length === 0;
+        // In finite mode, check if queue is depleted
+        const queueDepleted = updatedNextShapes.length === 0 && updatedHiddenShapes.length === 0;
+        
+        // If queue is depleted, check map completion
+        if (queueDepleted && state.targetTiles) {
+          const completionResult = checkMapCompletion(lineClearResult.tiles, state.targetTiles);
+          
+          // Always show completion overlay when queue is depleted (whether success or failure)
+          return {
+            ...state,
+            gameState: 'gameover',
+            tiles: lineClearResult.tiles,
+            score: newScore,
+            totalLinesCleared: newTotalLinesCleared,
+            stats: newStats,
+            nextShapes: updatedNextShapes,
+            queueHiddenShapes: updatedHiddenShapes,
+            shapesUsed: state.shapesUsed,
+            openRotationMenus: newOpenRotationMenus,
+            newShapeAnimationStates: newAnimationStates,
+            shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
+            mouseGridLocation: null,
+            mapCompletionResult: {
+              stars: completionResult.stars,
+              matchedTiles: completionResult.matchedTiles,
+              totalTiles: completionResult.totalTiles,
+              missedTiles: completionResult.missedTiles,
+            },
+            dragState: {
+              phase: 'none' as const,
+              selectedShape: null,
+              selectedShapeIndex: null,
+              sourceId: null,
+              isValidPlacement: false,
+              hoveredBlockPositions: [],
+              invalidBlockPositions: [],
+              sourcePosition: null,
+              targetPosition: null,
+              placementLocation: null,
+              placementStartPosition: null,
+              startTime: null,
+              dragOffsets: null,
+            },
+            hasPlacedFirstShape: true,
+            removingShapeIndex: removedIndex,
+            shapeRemovalAnimationState: 'removing' as const,
+          };
+        }
+        
+        isGameOver = queueDepleted;
       }
 
       const newState = {

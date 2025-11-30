@@ -197,6 +197,8 @@ describe('Full Board Clear - Reducer Integration', () => {
       gameMode: 'infinite',
       currentLevel: 1,
       isMapUnlocked: false,
+      mapCompletionResult: null,
+      targetTiles: null,
       savedShape: null,
       openRotationMenus: [],
       newShapeAnimationStates: [],

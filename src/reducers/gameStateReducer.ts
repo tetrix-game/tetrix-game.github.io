@@ -12,6 +12,7 @@ import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
 import { ColorName } from '../types/core';
 import { updateStats } from '../utils/statsUtils';
 import { GRID_ADDRESSES, makeTileKey } from '../utils/gridConstants';
+import { checkMapCompletion } from '../utils/mapCompletionUtils';
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = () => {
@@ -41,6 +42,8 @@ export const initialGameState = {
   gameMode: 'hub' as const,
   currentLevel: 0,
   isMapUnlocked: false,
+  mapCompletionResult: null,
+  targetTiles: null,
   mousePosition: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
   gemIconPosition: { x: 100, y: 50 },
   gridTileSize: null,
@@ -384,6 +387,16 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     case "START_DAILY_CHALLENGE": {
       const { tiles, shapes } = action.value;
 
+      // Derive target tiles from the tiles Map - any tile with a non-grey background
+      // In daily challenges, tiles with custom backgrounds are the ones that should be filled
+      const targetTilesSet = new Set<string>();
+      for (const [position, tile] of tiles.entries()) {
+        // Tiles with non-grey backgrounds are targets in daily challenges
+        if (tile.backgroundColor !== 'grey') {
+          targetTilesSet.add(position);
+        }
+      }
+
       // Reset game state but keep stats/modifiers
       const newState = {
         ...initialGameState,
@@ -394,6 +407,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         queueMode: 'finite' as const,
         queueSize: shapes.length,
         shapesUsed: 0,
+        targetTiles: targetTilesSet, // Automatically derived from tiles with custom backgrounds
+        mapCompletionResult: null, // Clear any previous completion result
 
         // Preserve persistent data
         stats: state.stats,
@@ -407,6 +422,38 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
 
       return newState;
+    }
+
+    case "CHECK_MAP_COMPLETION": {
+      // Only check completion for finite modes (daily challenges)
+      if (state.queueMode !== 'finite') {
+        return state;
+      }
+      
+      const result = checkMapCompletion(state.tiles, state.targetTiles || undefined);
+      
+      // If the map is complete, store the results
+      if (result.isComplete) {
+        return {
+          ...state,
+          mapCompletionResult: {
+            stars: result.stars,
+            matchedTiles: result.matchedTiles,
+            totalTiles: result.totalTiles,
+            missedTiles: result.missedTiles,
+          },
+          gameState: 'gameover', // Transition to game over state to show completion
+        };
+      }
+      
+      return state;
+    }
+
+    case "CLEAR_MAP_COMPLETION": {
+      return {
+        ...state,
+        mapCompletionResult: null,
+      };
     }
 
     case "CLEANUP_ANIMATIONS": {

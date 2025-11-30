@@ -88,3 +88,23 @@ export type ModifiersPersistenceData = {
 };
 
 export type StatsPersistenceData = import('./stats').StatsPersistenceData;
+
+// Daily challenge completion record
+export type DailyChallengeRecord = {
+  date: string; // YYYY-MM-DD format
+  score: number;
+  stars: number; // 0-3 stars
+  matchedTiles: number;
+  totalTiles: number;
+  missedTiles: number;
+  completedAt: number; // Timestamp
+};
+
+// Daily challenge history and streak tracking
+export type DailyChallengeHistory = {
+  records: DailyChallengeRecord[]; // Sorted by date (oldest to newest)
+  currentStreak: number; // Consecutive days played
+  longestStreak: number; // Best streak ever
+  lastPlayedDate: string | null; // YYYY-MM-DD of last completed challenge
+  lastUpdated: number;
+};

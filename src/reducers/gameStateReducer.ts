@@ -13,6 +13,8 @@ import { ColorName } from '../types/core';
 import { updateStats } from '../utils/statsUtils';
 import { GRID_ADDRESSES, makeTileKey } from '../utils/gridConstants';
 import { checkMapCompletion } from '../utils/mapCompletionUtils';
+import { recordDailyChallengeCompletion } from '../utils/persistenceAdapter';
+import { getTodayDateString } from '../utils/dailyStreakUtils';
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = () => {
@@ -432,8 +434,22 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       
       const result = checkMapCompletion(state.tiles, state.targetTiles || undefined);
       
-      // If the map is complete, store the results
-      if (result.isComplete) {
+      // If the map is complete, store the results and record in history
+      if (result.isComplete && state.gameMode === 'daily') {
+        // Record completion in daily challenge history (async, doesn't block state update)
+        const today = getTodayDateString();
+        recordDailyChallengeCompletion({
+          date: today,
+          score: state.score,
+          stars: result.stars,
+          matchedTiles: result.matchedTiles,
+          totalTiles: result.totalTiles,
+          missedTiles: result.missedTiles,
+          completedAt: Date.now(),
+        }).catch(error => {
+          console.error('Failed to record daily challenge completion:', error);
+        });
+
         return {
           ...state,
           mapCompletionResult: {

@@ -25,6 +25,7 @@ export const STORES = {
   SETTINGS: 'settings',
   STATS: 'stats',
   MODIFIERS: 'modifiers',
+  DAILY_HISTORY: 'dailyHistory', // Daily challenge completion history and streaks
 
   // Legacy stores (for migration)
   LEGACY_GAME_STATE: 'gameState',
@@ -83,7 +84,7 @@ async function openDatabase(): Promise<IDBDatabase> {
       }
 
       // Create shared stores
-      for (const storeName of [STORES.SETTINGS, STORES.STATS, STORES.MODIFIERS]) {
+      for (const storeName of [STORES.SETTINGS, STORES.STATS, STORES.MODIFIERS, STORES.DAILY_HISTORY]) {
         if (!db.objectStoreNames.contains(storeName)) {
           db.createObjectStore(storeName);
         }

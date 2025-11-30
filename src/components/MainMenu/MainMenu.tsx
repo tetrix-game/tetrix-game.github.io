@@ -1,11 +1,14 @@
 import React from 'react';
 import { useGameNavigation } from '../../hooks/useGameNavigation';
 import { useDailyChallengeLoader } from '../../hooks/useDailyChallengeLoader';
+import { useDailyHistory } from '../../hooks/useDailyHistory';
+import { hasCompletedToday } from '../../utils/dailyStreakUtils';
 import './MainMenu.css';
 
 const MainMenu: React.FC = () => {
   const { navigateToMode } = useGameNavigation();
   const { loadDailyChallenge, isLoading, error } = useDailyChallengeLoader();
+  const { history, isLoading: isHistoryLoading } = useDailyHistory();
 
   const handleDailyClick = async () => {
     await loadDailyChallenge();
@@ -14,6 +17,10 @@ const MainMenu: React.FC = () => {
     // Ah, START_DAILY_CHALLENGE sets gameMode: 'daily'.
     // So we don't need to call navigateToMode('daily') manually if the loader dispatches that action.
   };
+
+  const completedToday = hasCompletedToday(history);
+  const currentStreak = history.currentStreak;
+  const longestStreak = history.longestStreak;
 
   return (
     <div className="hub-menu-overlay">
@@ -27,11 +34,20 @@ const MainMenu: React.FC = () => {
             onClick={handleDailyClick}
             disabled={isLoading}
           >
-            <div className="spoke-icon">{isLoading ? '⏳' : '🎯'}</div>
+            <div className="spoke-icon">{isLoading ? '⏳' : completedToday ? '✅' : '🎯'}</div>
             <div className="spoke-title">Daily Challenge</div>
             <div className="spoke-description">
-              {error ? 'No challenge today' : 'Complete today\'s puzzle'}
+              {error ? 'No challenge today' : completedToday ? 'Completed today!' : 'Complete today\'s puzzle'}
             </div>
+            {!isHistoryLoading && currentStreak > 0 && (
+              <div className="spoke-streak">
+                <span className="streak-icon">🔥</span>
+                <span className="streak-count">{currentStreak} day{currentStreak !== 1 ? 's' : ''}</span>
+                {longestStreak > currentStreak && (
+                  <span className="streak-best"> (Best: {longestStreak})</span>
+                )}
+              </div>
+            )}
           </button>
 
 

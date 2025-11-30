@@ -14,9 +14,12 @@ import {
   type ViewGameState,
   type GameSettingsPersistenceData,
   type ModifiersPersistenceData,
+  type DailyChallengeHistory,
+  type DailyChallengeRecord,
   type Shape,
 } from '../types';
 import { STORES } from './indexedDBCrud';
+import { createEmptyHistory, addCompletionRecord } from './dailyStreakUtils';
 
 /**
  * Get the store name for a specific game mode
@@ -240,6 +243,46 @@ export async function loadModifiers(): Promise<Set<number>> {
     console.error('Failed to load modifiers:', error);
   }
   return new Set();
+}
+
+// ============================================================================
+// DAILY CHALLENGE HISTORY & STREAKS
+// ============================================================================
+
+/**
+ * Load daily challenge history
+ */
+export async function loadDailyHistory(): Promise<DailyChallengeHistory> {
+  try {
+    const data = await crud.read<DailyChallengeHistory>(STORES.DAILY_HISTORY, 'current');
+    if (data) {
+      return data;
+    }
+  } catch (error) {
+    console.error('Failed to load daily history:', error);
+  }
+  return createEmptyHistory();
+}
+
+/**
+ * Save daily challenge history
+ */
+export async function saveDailyHistory(history: DailyChallengeHistory): Promise<void> {
+  await crud.write(STORES.DAILY_HISTORY, 'current', history);
+}
+
+/**
+ * Record a daily challenge completion
+ */
+export async function recordDailyChallengeCompletion(
+  record: DailyChallengeRecord
+): Promise<DailyChallengeHistory> {
+  const currentHistory = await loadDailyHistory();
+  const updatedHistory = addCompletionRecord(currentHistory, record);
+  await saveDailyHistory(updatedHistory);
+  console.log(`Daily challenge completed for ${record.date}: ${record.score} points, ${record.stars} stars`);
+  console.log(`Current streak: ${updatedHistory.currentStreak} days`);
+  return updatedHistory;
 }
 
 // ============================================================================

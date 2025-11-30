@@ -13,7 +13,7 @@ interface GridProps {
 }
 
 export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProps) {
-  const { tiles, dragState } = useTetrixStateContext();
+  const { tiles, dragState, gameMode } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const { gridSize, gridGap, gridCellSize } = useGameSizing();
@@ -78,6 +78,12 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
       {
         allPositions.map((position) => {
           const tileData = tiles.get(position);
+
+          // In daily challenge mode, only render tiles that exist in the tiles Map
+          // This prevents out-of-bounds areas from showing as gray tiles
+          if (gameMode === 'daily' && !tileData) {
+            return null;
+          }
 
           // For empty spaces, create default tile
           const defaultBlock = { isFilled: false, color: 'grey' as const };

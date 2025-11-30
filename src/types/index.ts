@@ -59,6 +59,8 @@ export type {
   SoundEffectsPersistenceData,
   GameSettingsPersistenceData,
   ModifiersPersistenceData,
+  DailyChallengeRecord,
+  DailyChallengeHistory,
 } from './persistence';
 
 // Stats types

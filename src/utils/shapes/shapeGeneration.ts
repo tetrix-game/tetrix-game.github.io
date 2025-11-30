@@ -125,6 +125,128 @@ export function generateLPiece(color: ColorName): Shape {
 }
 
 /**
+ * Generate a 3x3 square piece (9 blocks)
+ */
+export function generate3x3Piece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [X(), X(), X(), _()],
+    [X(), X(), X(), _()],
+    [X(), X(), X(), _()],
+  ];
+}
+
+/**
+ * Generate a 3x2 rectangle piece (6 blocks)
+ */
+export function generate3x2Piece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [X(), X(), X(), _()],
+    [X(), X(), X(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate a 5x1 line piece (5 blocks)
+ * Note: This requires a 5x5 grid if we want to rotate it fully without clipping, 
+ * but our Shape type is 4x4. We'll fit it in 4x4 if possible or truncate?
+ * Wait, Shape is Block[][]. It's usually 4x4.
+ * If I need 5x1, I need to expand the Shape definition or accept that it won't fit in 4x4.
+ * The user said "shapes (stored as 4x4 grids)".
+ * A 5x1 shape cannot fit in a 4x4 grid.
+ * I will assume the user knows this and maybe I should use a larger grid for this specific shape,
+ * or maybe the user meant 4x1?
+ * "add a 3x3 shape... a 3x2 shape, a 5x1 shape"
+ * If the system is hardcoded to 4x4, 5x1 will break it.
+ * However, looking at `src/types/index.ts` (inferred), Shape is `Block[][]`.
+ * Let's check if the renderer handles larger shapes.
+ * `getShapeBounds` loops through `shape.length` and `shape[row].length`.
+ * So it supports dynamic sizes!
+ * I will make the 5x1 shape a 5x5 grid (or 1x5).
+ */
+export function generate5x1Piece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  // 5x5 grid to accommodate rotation
+  return [
+    [_(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _()],
+    [X(), X(), X(), X(), X()],
+    [_(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate a 3x1 line piece (3 blocks)
+ */
+export function generate3x1Piece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [_(), _(), _(), _()],
+    [X(), X(), X(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate a 2x1 line piece (2 blocks)
+ */
+export function generate2x1Piece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [_(), _(), _(), _()],
+    [X(), X(), _(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate a 1x1 dot piece (1 block)
+ */
+export function generate1x1Piece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [_(), _(), _(), _()],
+    [X(), _(), _(), _()],
+    [_(), _(), _(), _()],
+  ];
+}
+
+/**
+ * Generate an "Even L" piece (3x3 with 2x2 missing = 5 blocks)
+ */
+export function generateEvenLPiece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = () => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _()],
+    [X(), X(), X(), _()],
+    [X(), _(), _(), _()],
+    [X(), _(), _(), _()],
+  ];
+}
+
+/**
  * Generate the super combo shape - a 4x4 diagonal piece (easter egg)
  */
 export function generateSuperShape(): Shape {

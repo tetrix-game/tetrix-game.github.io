@@ -46,6 +46,13 @@ export {
   generateZPiece,
   generateJPiece,
   generateLPiece,
+  generate3x3Piece,
+  generate3x2Piece,
+  generate5x1Piece,
+  generate3x1Piece,
+  generate2x1Piece,
+  generate1x1Piece,
+  generateEvenLPiece,
   generateSuperShape,
   generateRandomShape,
 } from './shapeGeneration';

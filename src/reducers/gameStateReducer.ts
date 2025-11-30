@@ -53,6 +53,7 @@ export const initialGameState = {
     phase: 'none' as const,
     selectedShape: null,
     selectedShapeIndex: null,
+    sourceId: null,
     isValidPlacement: false,
     hoveredBlockPositions: [],
     invalidBlockPositions: [],
@@ -378,6 +379,34 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         ...state,
         isQueueOverlayOpen: !state.isQueueOverlayOpen,
       };
+    }
+
+    case "START_DAILY_CHALLENGE": {
+      const { tiles, shapes } = action.value;
+
+      // Reset game state but keep stats/modifiers
+      const newState = {
+        ...initialGameState,
+        gameMode: 'daily' as const,
+        tiles: tiles, // Use the custom grid
+        nextShapes: shapes.slice(0, 3), // First 3 shapes visible
+        queueHiddenShapes: shapes.slice(3), // Rest in queue
+        queueMode: 'finite' as const,
+        queueSize: shapes.length,
+        shapesUsed: 0,
+
+        // Preserve persistent data
+        stats: state.stats,
+        unlockedModifiers: state.unlockedModifiers,
+        isMapUnlocked: state.isMapUnlocked,
+        currentTheme: state.currentTheme,
+
+        // Ensure UI is ready
+        hasLoadedPersistedState: true,
+        hasPlacedFirstShape: true, // Start music immediately
+      };
+
+      return newState;
     }
 
     case "CLEANUP_ANIMATIONS": {

@@ -339,6 +339,14 @@ type ToggleQueueOverlayAction = {
   type: 'TOGGLE_QUEUE_OVERLAY';
 };
 
+type StartDailyChallengeAction = {
+  type: 'START_DAILY_CHALLENGE';
+  value: {
+    tiles: TilesSet;
+    shapes: Shape[];
+  };
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -393,6 +401,7 @@ export type TetrixAction =
   | SetQueueModeAction
   | UpdateColorProbabilitiesAction
   | PopulateFiniteQueueAction
-  | ToggleQueueOverlayAction;
+  | ToggleQueueOverlayAction
+  | StartDailyChallengeAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

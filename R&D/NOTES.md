@@ -20,7 +20,7 @@
     - Can full screen be a default?
     - Can a PWA download be ubiquitous?
 - Curb appeal
-    - Get rid of the ShapeQueue drop shadow
+    - Ubiquitous download option
     - 3h: Better share images
     - 10m: Better App Icon
 

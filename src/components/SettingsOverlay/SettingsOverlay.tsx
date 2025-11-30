@@ -21,6 +21,7 @@ import {
   loadDebugSettings,
   saveDebugSettings
 } from '../../utils/persistenceUtils';
+import InstallButton from '../InstallButton';
 import './SettingsOverlay.css';
 
 const ThemeSelector: React.FC = () => {
@@ -363,6 +364,10 @@ const SettingsOverlay: React.FC = () => {
               >
                 Strategy Guide
               </a>
+            </div>
+
+            <div className="menu-item">
+              <InstallButton />
             </div>
 
             <div className="menu-item debug-submenu">

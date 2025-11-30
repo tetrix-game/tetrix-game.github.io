@@ -8,6 +8,8 @@ import type { TetrixReducerState, TetrixAction } from '../types';
 import { generateRandomShape, rotateShape, cloneShape } from '../utils/shapes';
 import { safeBatchSave } from '../utils/persistence';
 import { resetNoTurnStreak } from '../utils/statsUtils';
+import { checkMapCompletion } from '../utils/mapCompletionUtils';
+import { checkGameOver } from '../utils/gameOverUtils';
 
 export function shapeReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
@@ -200,6 +202,37 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
 
       // No need to add a new shape here - it was already added during COMPLETE_PLACEMENT
 
+      // Check for game over / completion after shape removal
+      // In finite mode (daily challenge), check if this was the last shape
+      let isGameOver = false;
+      let mapCompletionResult = state.mapCompletionResult;
+      let newGameState = state.gameState;
+
+      if (state.queueMode === 'finite') {
+        // Queue is depleted when no visible shapes remain and no hidden shapes in queue
+        const queueDepleted = updatedNextShapes.length === 0 && state.queueHiddenShapes.length === 0;
+        
+        if (queueDepleted && state.targetTiles) {
+          // Check map completion and show overlay
+          const completionResult = checkMapCompletion(state.tiles, state.targetTiles);
+          
+          mapCompletionResult = {
+            stars: completionResult.stars,
+            matchedTiles: completionResult.matchedTiles,
+            totalTiles: completionResult.totalTiles,
+            missedTiles: completionResult.missedTiles,
+          };
+          newGameState = 'gameover';
+          isGameOver = true;
+        }
+      } else if (state.gameMode === 'infinite') {
+        // In infinite mode, check if any remaining shapes can be placed
+        isGameOver = checkGameOver(state.tiles, updatedNextShapes, state.score, newOpenRotationMenus);
+        if (isGameOver) {
+          newGameState = 'gameover';
+        }
+      }
+
       return {
         ...state,
         nextShapes: updatedNextShapes,
@@ -209,6 +242,8 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
         removingShapeIndex: null,
         shapeRemovalAnimationState: 'none',
         shapesUsed: state.shapesUsed + 1, // Increment when shape is fully removed and replaced
+        gameState: newGameState,
+        mapCompletionResult: mapCompletionResult,
       };
     }
 

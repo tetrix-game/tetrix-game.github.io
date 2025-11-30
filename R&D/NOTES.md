@@ -15,12 +15,9 @@
     - ccw turn sound
 - Bug
     - Success screen isn't fitting on mobile
-    - Grid needs padding
 - Expectation Mismatch
     - Can full screen be a default?
-    - Can a PWA download be ubiquitous?
 - Curb appeal
-    - Ubiquitous download option
     - 3h: Better share images
     - 10m: Better App Icon
 

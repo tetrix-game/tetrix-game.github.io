@@ -15,7 +15,7 @@ export default defineConfig({
         description: 'A free, ad-free relaxing puzzle game. Drag and drop shapes, clear lines, and enjoy infinite gameplay with no interruptions. Perfect for casual gaming and brain training.',
         theme_color: '#4fd1c7',
         background_color: '#1a1a2e',
-        display: 'standalone',
+        display: 'fullscreen',
         orientation: 'portrait',
         start_url: '/',
         icons: [

@@ -5,7 +5,7 @@
 
 import type { TetrixReducerState, TetrixAction, Tile } from '../types';
 import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithProbabilities } from '../utils/shapes';
-import { safeBatchSave } from '../utils/persistence';
+// safeBatchSave removed - persistence handled by PersistenceListener
 import { tilesToArray } from '../types';
 import { cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
 import { updateStats, incrementNoTurnStreak } from '../utils/statsUtils';
@@ -84,23 +84,8 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         newStats = incrementNoTurnStreak(newStats);
       }
 
-      // Save game state to browser DB asynchronously (don't block UI)
-      // Convert tiles to serializable format for persistence
-      const tilesPersistenceData = tilesToArray(lineClearResult.tiles);
-      if (lineClearResult.pointsEarned > 0 || Array.from(lineClearResult.tiles.values()).some(tile => tile.block.isFilled)) {
-        // Only persist for non-hub modes
-        if (state.gameMode !== 'hub') {
-          safeBatchSave(state.gameMode, {
-            score: newScore,
-            tiles: tilesPersistenceData,
-            nextShapes: state.nextShapes,
-            savedShape: state.savedShape,
-            stats: state.gameMode === 'infinite' ? newStats : undefined,
-          }).catch((error: Error) => {
-            console.error('Failed to save game state:', error);
-          });
-        }
-      }
+      // Persistence is now handled by PersistenceListener
+      // No side effects in reducer!
 
       // Emit gems for GemShower animation
       // Start the removal animation but keep the shape in the array until animation completes
@@ -111,7 +96,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // Add a new shape immediately to create the 4th shape during removal animation
       const updatedNextShapes = [...state.nextShapes];
-      let updatedHiddenShapes = [...state.queueHiddenShapes];
+      const updatedHiddenShapes = [...state.queueHiddenShapes];
 
       // Only add shapes if: infinite mode OR (finite mode AND shapes remain in hidden queue)
       const shouldAddShape = state.queueMode === 'infinite' || updatedHiddenShapes.length > 0;
@@ -232,13 +217,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         }
       }
 
-      const tilesPersistenceData = tilesToArray(newTiles);
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
-          .catch((error: Error) => {
-            console.error('Failed to save tiles after debug fill row:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -271,13 +250,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         }
       }
 
-      const tilesPersistenceData = tilesToArray(newTiles);
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
-          .catch((error: Error) => {
-            console.error('Failed to save tiles after debug fill column:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -298,13 +271,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         });
       }
 
-      const tilesPersistenceData = tilesToArray(newTiles);
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
-          .catch((error: Error) => {
-            console.error('Failed to save tiles after debug remove block:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -333,13 +300,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         newTiles.set(position, tile);
       }
 
-      const tilesPersistenceData = tilesToArray(newTiles);
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
-          .catch((error: Error) => {
-            console.error('Failed to save tiles after debug add block:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -363,13 +324,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         }
       }
 
-      const tilesPersistenceData = tilesToArray(newTiles);
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
-          .catch((error: Error) => {
-            console.error('Failed to save tiles after debug clear all:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -431,14 +386,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         }
       }
 
-      // Save the new tile state (convert to serializable format)
-      const tilesPersistenceData = tilesToArray(newTiles);
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { tiles: tilesPersistenceData })
-          .catch((error: Error) => {
-            console.error('Failed to save tiles after generating super combo pattern:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -453,12 +401,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       if (state.nextShapes.length === 0) {
         // If there are no shapes, just add this one
         const newShapes = [shape];
-        if (state.gameMode !== 'hub') {
-          safeBatchSave(state.gameMode, { nextShapes: newShapes, savedShape: state.savedShape })
-            .catch((error: Error) => {
-              console.error('Failed to save shapes after debug replace:', error);
-            });
-        }
+        // Persistence handled by listener
 
         return {
           ...state,
@@ -472,12 +415,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Remove first shape and add new shape to the end
       const newShapes = [...state.nextShapes.slice(1), shape];
 
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { nextShapes: newShapes, savedShape: state.savedShape })
-          .catch((error: Error) => {
-            console.error('Failed to save shapes after debug replace:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,

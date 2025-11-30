@@ -9,6 +9,7 @@ import GridEditor from './components/GridEditor';
 import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
 import ColorOverrideApplier from './components/ColorPicker/ColorOverrideApplier';
+import { PersistenceListener } from './components/PersistenceListener/PersistenceListener';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
 import { useSoundEffects } from './components/SoundEffectsContext';
 import { useEffect, useRef } from 'react';
@@ -250,7 +251,7 @@ const App = () => {
       buttonHover: 'rgba(255, 255, 255, 0.25)',
     },
   };
-  
+
   const theme = themeDefinitions[currentTheme];
   const blockColors = blockPaletteToCssVars(BLOCK_COLOR_PALETTES[currentTheme]);
   const themeStyle = {
@@ -275,13 +276,14 @@ const App = () => {
 
   return (
     <div className="App" style={themeStyle}>
+      <PersistenceListener />
       <ColorOverrideApplier />
-      
+
       {/* Show main menu if in hub mode */}
       {gameMode === 'hub' && (
         <MainMenu />
       )}
-      
+
       {/* Show game UI when not in hub mode */}
       {gameMode !== 'hub' && (
         <>
@@ -298,7 +300,7 @@ const App = () => {
           <FullScreenFloatingActionButton />
         </>
       )}
-      
+
       <DebugEditor />
       <GridEditor />
       <DraggingShape />

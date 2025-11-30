@@ -6,8 +6,7 @@
  */
 
 import type { TetrixReducerState, TetrixAction, Tile } from '../types';
-import { saveModifiers, safeBatchSave } from '../utils/persistence';
-import { updateSettings } from '../utils/persistenceAdapter';
+// Persistence imports removed - handled by PersistenceListener
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
 import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
 import { ColorName } from '../types/core';
@@ -104,10 +103,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     case "SET_GAME_MODE": {
       const { mode } = action.value;
 
-      // Save game mode to settings
-      updateSettings({ lastGameMode: mode }).catch((error: Error) => {
-        console.error('Failed to save game mode:', error);
-      });
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -130,10 +126,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     }
 
     case "UNLOCK_MAP": {
-      // Save map unlock status to settings
-      updateSettings({ isMapUnlocked: true }).catch((error: Error) => {
-        console.error('Failed to save map unlock status:', error);
-      });
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -146,10 +139,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       const newUnlockedModifiers = new Set(state.unlockedModifiers);
       newUnlockedModifiers.add(primeId);
 
-      // Save unlocked modifiers to database
-      saveModifiers(newUnlockedModifiers).catch((error: Error) => {
-        console.error('Failed to save unlocked modifiers:', error);
-      });
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -336,12 +326,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
 
     case "SET_THEME": {
       const { theme } = action.value;
-      // Persist theme selection
-      import('../utils/persistenceUtils').then(({ saveTheme }) => {
-        saveTheme(theme).catch((error: Error) => {
-          console.error('Failed to save theme:', error);
-        });
-      });
+      // Persistence handled by listener
       return {
         ...state,
         currentTheme: theme,
@@ -359,16 +344,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         queueSize: mode === 'infinite' ? -1 : state.queueSize,
       };
 
-      // Save queue configuration (only if not in hub mode)
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, {
-          queueMode: mode,
-          queueHiddenShapes: [],
-          queueSize: mode === 'infinite' ? -1 : state.queueSize,
-        }).catch((error: Error) => {
-          console.error('Failed to save queue mode:', error);
-        });
-      }
+      // Persistence handled by listener
 
       return newState;
     }
@@ -376,14 +352,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
     case "UPDATE_COLOR_PROBABILITIES": {
       const { colorProbabilities } = action.value;
 
-      // Save color probabilities (only if not in hub mode)
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, {
-          queueColorProbabilities: colorProbabilities,
-        }).catch((error: Error) => {
-          console.error('Failed to save color probabilities:', error);
-        });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -395,15 +364,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       const { shapes } = action.value;
       const newQueueSize = shapes.length + state.nextShapes.length;
 
-      // Save queue state (only if not in hub mode)
-      if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, {
-          queueHiddenShapes: shapes,
-          queueSize: newQueueSize,
-        }).catch((error: Error) => {
-          console.error('Failed to save queue state:', error);
-        });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,
@@ -487,12 +448,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       });
 
       // Save stats (only for infinite mode)
-      if (state.gameMode === 'infinite') {
-        safeBatchSave(state.gameMode, { stats: newStats })
-          .catch((error: Error) => {
-            console.error('Failed to save stats after debug increment:', error);
-          });
-      }
+      // Persistence handled by listener
 
       return {
         ...state,

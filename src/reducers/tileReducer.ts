@@ -6,7 +6,6 @@
 import type { TetrixReducerState, TetrixAction, Tile } from '../types';
 import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithProbabilities } from '../utils/shapes';
 // safeBatchSave removed - persistence handled by PersistenceListener
-import { tilesToArray } from '../types';
 import { cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
 import { updateStats, incrementNoTurnStreak } from '../utils/statsUtils';
 import { checkGameOver } from '../utils/gameOverUtils';

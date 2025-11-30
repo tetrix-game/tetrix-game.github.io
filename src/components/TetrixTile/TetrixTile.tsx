@@ -1,23 +1,20 @@
-import './TileVisual.css';
-import type { Tile, Block, ColorName, Location } from '../../utils/types';
-import BlockVisual from '../BlockVisual';
 import React, { useState, useEffect } from 'react';
+import Tile from '../Tile/Tile';
+import BlockVisual from '../BlockVisual';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
+import type { Tile as TileType, Block, Location } from '../../utils/types';
+import './TetrixTile.css';
 
-type TileVisualProps = {
-  tile: Tile;
+type TetrixTileProps = {
+  tile: TileType;
   location: Location;
   isHovered?: boolean;
   hoveredBlock?: Block;
   onClick?: () => void;
   size?: number;
-  editorColor?: ColorName;
-  isEditorMode?: boolean;
-  tileExists?: boolean;
-  tileBackgroundColor?: ColorName; // Optional tile background color override
 }
 
-const TileVisual = ({ tile, location, isHovered = false, hoveredBlock, onClick, size, editorColor, isEditorMode = false, tileExists = true, tileBackgroundColor }: TileVisualProps) => {
+const TetrixTile = ({ tile, location, isHovered = false, hoveredBlock, onClick, size }: TetrixTileProps) => {
   const { dragState, tiles } = useTetrixStateContext();
   const [, setTick] = useState(0);
 
@@ -51,18 +48,8 @@ const TileVisual = ({ tile, location, isHovered = false, hoveredBlock, onClick, 
     anim => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration
   );
 
-  // Fixed border width for consistent grid sizing
-  // Always display the actual tile block
-  const displayBlock = tile.block;
-
   // Show a shadow overlay when hovering
   const showShadow = isHovered && hoveredBlock;
-
-  // Determine tile variant (dark vs light) - only if no custom background color
-  const dark = (location.row + location.column) % 2 === 0;
-  const effectiveBackgroundColor = tileBackgroundColor || tile.backgroundColor;
-  const hasCustomBackground = effectiveBackgroundColor !== 'grey';
-  const tileClass = `tile-visual ${hasCustomBackground ? `tile-visual-custom color-bg-${effectiveBackgroundColor}` : (dark ? 'tile-visual-dark' : 'tile-visual-light')}`;
 
   // Calculate shadow opacity: 70% for valid placement, 40% for invalid
   let shadowOpacity = 0;
@@ -70,32 +57,25 @@ const TileVisual = ({ tile, location, isHovered = false, hoveredBlock, onClick, 
     shadowOpacity = dragState.isValidPlacement ? 0.7 : 0.4;
   }
 
-  // Determine tile opacity in editor mode - dim tiles that don't exist
-  const tileOpacity = isEditorMode && !tileExists ? 0.2 : 1;
-
   return (
-    <div
-      className={tileClass}
-      style={{
-        gridColumn: location.column,
-        gridRow: location.row,
-        '--block-overlap': '2px',
-        opacity: tileOpacity,
-      } as React.CSSProperties}
+    <Tile
+      row={location.row}
+      col={location.column}
+      backgroundColor={tile.backgroundColor}
       onClick={onClick}
+      className="tetrix-tile"
     >
-      <BlockVisual block={displayBlock} size={size} />
+      <BlockVisual block={tile.block} size={size} />
+
       {showShadow && (
         <div
-          className="tile-visual-shadow"
+          className="tetrix-tile-shadow"
           style={{
             '--shadow-opacity': shadowOpacity,
           } as React.CSSProperties}
         />
       )}
-      {isEditorMode && editorColor && (
-        <div className={`tile-visual-editor-overlay color-${editorColor}`} />
-      )}
+
       {playingAnimations.map((anim) => {
         const elapsed = currentTime - anim.startTime;
         const progress = Math.min(elapsed / anim.duration, 1);
@@ -105,7 +85,7 @@ const TileVisual = ({ tile, location, isHovered = false, hoveredBlock, onClick, 
 
         // For quad animations, divide duration by beat count to get per-beat duration
         // and set the iteration count
-        const style: Record<string, any> = {
+        const style: React.CSSProperties & Record<string, string | number> = {
           '--animation-progress': progress,
           '--animation-duration': `${anim.duration}ms`,
           '--animation-delay': `${delay}ms`,
@@ -128,13 +108,13 @@ const TileVisual = ({ tile, location, isHovered = false, hoveredBlock, onClick, 
         return (
           <div
             key={anim.id}
-            className={`tile-visual-clearing ${anim.type}`}
+            className={`tetrix-tile-clearing ${anim.type}`}
             style={style as React.CSSProperties}
           />
         );
       })}
-    </div>
-  )
-}
+    </Tile>
+  );
+};
 
-export default React.memo(TileVisual);
+export default React.memo(TetrixTile);

@@ -54,7 +54,7 @@ export default function DraggingShape() {
 
   // ShapeOption constants (must match ShapeOption.tsx)
   const SHAPE_OPTION_PADDING = 4;
-  const SHAPE_OPTION_GAP = 1;
+  const SHAPE_OPTION_GAP = 2;
 
   // Calculate Grid dimensions
   const GRID_GAP = gridGap;
@@ -284,7 +284,7 @@ export default function DraggingShape() {
         '--container-left': `${containerLeft}px`,
         '--tile-size': `${currentCellSize}px`,
         '--grid-gap': `${currentGap}px`,
-        '--block-overlap': `${currentGap}px`,
+        '--block-overlap': `1px`,
         '--scale': scale,
         // Apply centering offset to children via CSS variable (matching ShapeOption)
         '--centering-offset-x': `${centeringOffset.x}px`,

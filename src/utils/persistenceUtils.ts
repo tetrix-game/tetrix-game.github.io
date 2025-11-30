@@ -61,14 +61,14 @@ function openDatabase(): Promise<IDBDatabase> {
     request.onerror = () => {
       const error = request.error;
       console.error('Failed to open IndexedDB:', error);
-      
+
       // Handle version errors by recreating the database
       if (error && error.name === 'VersionError') {
         console.warn('Database version mismatch detected. Recreating database...');
         recreateDatabase().then(resolve).catch(reject);
         return;
       }
-      
+
       reject(new Error(`Failed to open IndexedDB: ${error}`));
     };
 
@@ -824,7 +824,7 @@ export async function saveTheme(theme: string): Promise<void> {
   try {
     const db = await initializeDatabase();
     const settings = await loadGameSettings();
-    
+
     const updatedSettings: GameSettingsPersistenceData = {
       ...settings,
       music: settings?.music || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
@@ -902,8 +902,8 @@ export async function loadCompleteGameState(): Promise<GamePersistenceData | nul
 
       // Migrate legacy data to granular stores for future use
       // Convert old Tile[] format to TileData if needed
-      const tilesData: TileData[] = legacyData.tiles.map(tile => {
-        if ('location' in tile) {
+      const tilesData: TileData[] = legacyData.tiles.map((tile: any) => {
+        if (tile.location) {
           // Old format - convert
           return {
             position: `R${tile.location.row}C${tile.location.column}`,

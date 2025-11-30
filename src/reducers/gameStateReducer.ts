@@ -227,9 +227,9 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       let hasFilledTiles = false;
 
       if (Array.isArray(gameData.tiles)) {
-        gameData.tiles.forEach((tileData) => {
+        gameData.tiles.forEach((tileData: any) => {
           // Old format: has location and block properties
-          if ('location' in tileData && 'block' in tileData) {
+          if (tileData.location && tileData.block) {
             const position = makeTileKey(tileData.location.row, tileData.location.column);
             const tile: Tile = {
               position,
@@ -243,7 +243,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
             tilesMap.set(position, tile);
           }
           // New format: TileData with position property
-          else if ('position' in tileData) {
+          else if (tileData.position) {
             const tile: Tile = {
               position: tileData.position,
               backgroundColor: tileData.backgroundColor || 'grey',

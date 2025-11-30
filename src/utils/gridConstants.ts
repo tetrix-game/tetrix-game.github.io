@@ -17,7 +17,7 @@ export let GRID_SIZE = 10;
  * CRITICAL: This prevents tiles from collapsing into each other visually.
  * Must be large enough to clearly separate distinct grid cells.
  */
-export const GRID_GAP = 6;
+export const GRID_GAP = 2;
 
 /**
  * Generate grid addresses in row-major order

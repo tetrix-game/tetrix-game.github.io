@@ -15,7 +15,6 @@ import {
   type GameSettingsPersistenceData,
   type ModifiersPersistenceData,
   type Shape,
-  type Tile,
 } from '../types';
 import { STORES } from './indexedDBCrud';
 
@@ -96,17 +95,17 @@ export async function updateViewGameState(
 ): Promise<void> {
   const store = getGameStateStore(gameMode);
   const current = await crud.read<ViewGameState>(store, 'current');
-  
+
   if (!current) {
     throw new Error(`Cannot update non-existent game state for ${gameMode}`);
   }
-  
+
   const updated: ViewGameState = {
     ...current,
     ...updates,
     lastUpdated: Date.now(),
   };
-  
+
   await crud.write(store, 'current', updated);
 }
 
@@ -144,7 +143,7 @@ export async function updateSettings(
   updates: Partial<GameSettingsPersistenceData>
 ): Promise<void> {
   const current = await loadSettings();
-  
+
   const updated: GameSettingsPersistenceData = {
     music: current?.music || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
     soundEffects: current?.soundEffects || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
@@ -152,7 +151,7 @@ export async function updateSettings(
     ...updates,
     lastUpdated: Date.now(),
   };
-  
+
   await saveSettings(updated);
 }
 
@@ -252,32 +251,32 @@ export async function loadModifiers(): Promise<Set<number>> {
  */
 export async function migrateLegacyData(): Promise<void> {
   console.log('Checking for legacy data to migrate...');
-  
+
   try {
     // Check if we have legacy data
     const legacyGameState = await crud.read<{
       score: number;
-      tiles: Tile[];
+      tiles: any[]; // Use any[] to bypass strict type checks for legacy data
       nextShapes: Shape[];
       savedShape: Shape | null;
     }>(STORES.LEGACY_GAME_STATE, 'current');
-    
+
     if (!legacyGameState) {
       console.log('No legacy data found');
       return;
     }
-    
+
     console.log('Found legacy data, migrating to infinite mode...');
-    
+
     // Convert tiles from old array format to new TileData format
-    const tilesData = legacyGameState.tiles.map(tile => ({
+    const tilesData = legacyGameState.tiles.map((tile: any) => ({
       position: `R${tile.location.row}C${tile.location.column}`,
       backgroundColor: tile.tileBackgroundColor,
       isFilled: tile.block.isFilled,
       color: tile.block.color,
       activeAnimations: [],
     }));
-    
+
     // Create new view state
     const viewState: ViewGameState = {
       score: legacyGameState.score,
@@ -290,10 +289,10 @@ export async function migrateLegacyData(): Promise<void> {
       stats: (await import('../types/stats')).INITIAL_STATS_PERSISTENCE,
       lastUpdated: Date.now(),
     };
-    
+
     // Save to infinite mode store
     await saveViewGameState('infinite', viewState);
-    
+
     console.log('Legacy data migrated successfully');
   } catch (error) {
     console.error('Failed to migrate legacy data:', error);
@@ -305,7 +304,7 @@ export async function migrateLegacyData(): Promise<void> {
  */
 export async function clearAllGameData(): Promise<void> {
   console.log('Clearing all game data...');
-  
+
   // Clear all game state stores (stats are now part of each mode's state)
   await Promise.all([
     crud.clear(STORES.INFINITE_STATE),
@@ -313,10 +312,10 @@ export async function clearAllGameData(): Promise<void> {
     crud.clear(STORES.TUTORIAL_STATE),
     crud.clear(STORES.MODIFIERS),
   ]);
-  
+
   // Note: Stats are now per-mode in ViewGameState, not in a shared store
   // Each mode's stats will be reset when that mode's state is cleared
-  
+
   console.log('All game data cleared (settings preserved)');
 }
 
@@ -325,22 +324,22 @@ export async function clearAllGameData(): Promise<void> {
  */
 export async function clearAllDataAndReload(): Promise<void> {
   console.log('Clearing all data and reloading...');
-  
+
   try {
     // Clear all stores
     await Promise.all(
       Object.values(STORES).map(store => crud.clear(store))
     );
-    
+
     // Clear localStorage backup
     localStorage.clear();
-    
+
     // Clear caches
     if ('caches' in globalThis) {
       const cacheNames = await caches.keys();
       await Promise.all(cacheNames.map(name => caches.delete(name)));
     }
-    
+
     // Unregister service workers
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations();
@@ -349,7 +348,7 @@ export async function clearAllDataAndReload(): Promise<void> {
   } catch (error) {
     console.error('Error clearing data:', error);
   }
-  
+
   // Force reload
   globalThis.location.reload();
 }
@@ -368,12 +367,12 @@ export async function initializePersistence(): Promise<void> {
 export async function getSavedGameModes(): Promise<GameModeContext[]> {
   const modes: GameModeContext[] = ['infinite', 'daily', 'tutorial'];
   const saved: GameModeContext[] = [];
-  
+
   for (const mode of modes) {
     if (await hasViewGameState(mode)) {
       saved.push(mode);
     }
   }
-  
+
   return saved;
 }

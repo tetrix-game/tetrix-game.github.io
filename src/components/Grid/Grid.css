@@ -8,6 +8,8 @@
   gap: var(--grid-gap);
   width: var(--grid-size);
   height: var(--grid-size);
+  padding: 1px;
+  box-sizing: content-box;
 }
 
 /* Grid editor mode - add visual indication and maintain square cells */

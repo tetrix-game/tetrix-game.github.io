@@ -37,31 +37,23 @@ describe('Persistence Adapter - View-Aware Operations', () => {
   });
 
   describe('View-Specific Game State', () => {
-    it('should save and load game state for infinite mode', async () => {
-      const state: ViewGameState = {
-        score: 1000,
-        tiles: [
-          { position: 'R1C1', backgroundColor: 'grey', isFilled: true, color: 'red' },
-          { position: 'R1C2', backgroundColor: 'grey', isFilled: false, color: 'red' },
-        ],
+    it('should save and load view game state correctly', async () => {
+      const mockState: ViewGameState = {
+        score: 100,
+        tiles: [{ position: 'R1C1', isFilled: true, color: 'red', backgroundColor: 'grey' }],
         nextShapes: [],
         savedShape: null,
-        totalLinesCleared: 5,
-        shapesUsed: 10,
-        hasPlacedFirstShape: true,
+        totalLinesCleared: 0,
+        shapesUsed: 0,
+        hasPlacedFirstShape: false,
         lastUpdated: Date.now(),
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      await saveViewGameState('infinite', state);
-      const loaded = await loadViewGameState('infinite');
+      await saveViewGameState('infinite', mockState);
+      const loadedState = await loadViewGameState('infinite');
 
-      expect(loaded).toBeTruthy();
-      expect(loaded?.score).toBe(1000);
-      expect(loaded?.tiles).toHaveLength(2);
-      expect(loaded?.totalLinesCleared).toBe(5);
-      expect(loaded?.shapesUsed).toBe(10);
-      expect(loaded?.hasPlacedFirstShape).toBe(true);
+      expect(loadedState).toEqual(mockState);
     });
 
     it('should save and load game state for daily mode', async () => {
@@ -199,19 +191,16 @@ describe('Persistence Adapter - View-Aware Operations', () => {
           volume: 50,
           isEnabled: false,
           lastUpdated: Date.now(),
-        stats: INITIAL_STATS_PERSISTENCE,
         },
         soundEffects: {
           isMuted: false,
           volume: 80,
           isEnabled: true,
           lastUpdated: Date.now(),
-        stats: INITIAL_STATS_PERSISTENCE,
         },
         debugUnlocked: true,
         theme: 'dark',
         lastUpdated: Date.now(),
-        stats: INITIAL_STATS_PERSISTENCE,
       };
 
       await saveSettings(settings);
@@ -232,17 +221,14 @@ describe('Persistence Adapter - View-Aware Operations', () => {
           volume: 50,
           isEnabled: true,
           lastUpdated: Date.now(),
-        stats: INITIAL_STATS_PERSISTENCE,
         },
         soundEffects: {
           isMuted: false,
           volume: 80,
           isEnabled: true,
           lastUpdated: Date.now(),
-        stats: INITIAL_STATS_PERSISTENCE,
         },
         lastUpdated: Date.now(),
-        stats: INITIAL_STATS_PERSISTENCE,
       };
 
       const gameState: ViewGameState = {
@@ -285,7 +271,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
     it('should return empty set when no modifiers saved', async () => {
       // Clear any existing modifiers first
       await saveModifiers(new Set<number>());
-      
+
       const loaded = await loadModifiers();
       expect(loaded.size).toBe(0);
     });
@@ -295,7 +281,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
     it('should not leak data between infinite and daily modes', async () => {
       const infiniteState: ViewGameState = {
         score: 1000,
-        tiles: [{ key: 'R1C1', data: { isFilled: true, color: 'red' } }],
+        tiles: [{ position: 'R1C1', isFilled: true, color: 'red', backgroundColor: 'grey' }],
         nextShapes: [],
         savedShape: null,
         totalLinesCleared: 10,
@@ -307,7 +293,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
 
       const dailyState: ViewGameState = {
         score: 500,
-        tiles: [{ key: 'R2C2', data: { isFilled: true, color: 'blue' } }],
+        tiles: [{ position: 'R2C2', isFilled: true, color: 'blue', backgroundColor: 'grey' }],
         nextShapes: [],
         savedShape: null,
         totalLinesCleared: 5,
@@ -324,8 +310,8 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       const loadedDaily = await loadViewGameState('daily');
 
       // Verify complete isolation
-      expect(loadedInfinite?.tiles[0].key).toBe('R1C1');
-      expect(loadedDaily?.tiles[0].key).toBe('R2C2');
+      expect(loadedInfinite?.tiles[0].position).toBe('R1C1');
+      expect(loadedDaily?.tiles[0].position).toBe('R2C2');
       expect(loadedInfinite?.score).not.toBe(loadedDaily?.score);
       expect(loadedInfinite?.hasPlacedFirstShape).not.toBe(loadedDaily?.hasPlacedFirstShape);
     });

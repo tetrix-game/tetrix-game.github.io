@@ -50,7 +50,7 @@ export class TutorialRuntimeValidator {
   private monitor: TutorialRuntimeMonitor;
   private step: TutorialStepConfig;
   private onStuck: (reason: string) => void;
-  
+
   constructor(
     step: TutorialStepConfig,
     onStuck: (reason: string) => void
@@ -66,7 +66,7 @@ export class TutorialRuntimeValidator {
       warningShown: false,
     };
   }
-  
+
   /**
    * Check game state after every action.
    * 
@@ -89,13 +89,13 @@ export class TutorialRuntimeValidator {
   checkState(state: GameState, action: Action): ValidationResult {
     this.monitor.actionCount++;
     this.monitor.actionHistory.push(action);
-    
+
     const stateHash = hashGameState(state);
     if (stateHash !== this.monitor.lastStateHash) {
       this.monitor.stateChangeCount++;
       this.monitor.lastStateHash = stateHash;
     }
-    
+
     // Run all detection checks
     const checks = [
       this.checkMaxActions(),
@@ -104,9 +104,9 @@ export class TutorialRuntimeValidator {
       this.checkConstraintViolation(state),
       this.checkCustomStuckDetection(state),
     ];
-    
+
     const failures = checks.filter(c => !c.valid);
-    
+
     if (failures.length > 0) {
       const errors = failures.flatMap(f => f.errors || []);
       if (errors.length > 0) {
@@ -117,27 +117,27 @@ export class TutorialRuntimeValidator {
         errors
       };
     }
-    
+
     return { valid: true };
   }
-  
+
   /**
    * Get current monitor state (for recovery system)
    */
   getMonitor(): TutorialRuntimeMonitor {
     return this.monitor;
   }
-  
+
   // ==========================================================================
   // DETECTION CHECKS
   // ==========================================================================
-  
+
   /**
    * Check 1: Maximum actions exceeded
    */
   private checkMaxActions(): ValidationResult {
     const max = this.step.metadata.maxActionsBeforeStuck;
-    
+
     if (max && this.monitor.actionCount > max) {
       return {
         valid: false,
@@ -150,20 +150,20 @@ export class TutorialRuntimeValidator {
         }]
       };
     }
-    
+
     return { valid: true };
   }
-  
+
   /**
    * Check 2: Infinite loop detection (repeated actions)
    */
   private checkInfiniteLoop(): ValidationResult {
     const recentActions = this.monitor.actionHistory.slice(-10);
-    
+
     // Check for repeated action sequences
     if (this.monitor.actionCount > 20) {
       const pattern = detectRepeatingPattern(recentActions);
-      
+
       if (pattern && pattern.repetitions > 3) {
         return {
           valid: false,
@@ -177,7 +177,7 @@ export class TutorialRuntimeValidator {
         };
       }
     }
-    
+
     // Check for no state changes despite actions
     if (this.monitor.actionCount > 10 && this.monitor.stateChangeCount < 2) {
       return {
@@ -191,17 +191,17 @@ export class TutorialRuntimeValidator {
         }]
       };
     }
-    
+
     return { valid: true };
   }
-  
+
   /**
    * Check 3: Dead-end state detection
    */
   private checkDeadEnd(state: GameState): ValidationResult {
     // Can the step completion condition EVER be satisfied from current state?
     const canComplete = this.canStepBeCompletedFrom(state);
-    
+
     if (!canComplete) {
       return {
         valid: false,
@@ -214,22 +214,22 @@ export class TutorialRuntimeValidator {
         }]
       };
     }
-    
+
     return { valid: true };
   }
-  
+
   /**
    * Check 4: Constraint violations
    */
   private checkConstraintViolation(state: GameState): ValidationResult {
     if (!this.step.constraints) return { valid: true };
-    
+
     const { gridConstraints } = this.step.constraints;
-    
+
     if (gridConstraints) {
       const filledCount = countFilledTiles(state.tiles);
       const emptyCount = 100 - filledCount;
-      
+
       if (gridConstraints.maxFilled && filledCount > gridConstraints.maxFilled) {
         return {
           valid: false,
@@ -242,7 +242,7 @@ export class TutorialRuntimeValidator {
           }]
         };
       }
-      
+
       if (gridConstraints.minEmpty && emptyCount < gridConstraints.minEmpty) {
         return {
           valid: false,
@@ -255,7 +255,7 @@ export class TutorialRuntimeValidator {
           }]
         };
       }
-      
+
       // Check if any row/column can still be completed
       if (gridConstraints.noBlockedRows) {
         const hasCompletableRow = canCompleteAnyRow(state.tiles, state.nextShapes);
@@ -272,7 +272,7 @@ export class TutorialRuntimeValidator {
           };
         }
       }
-      
+
       if (gridConstraints.noBlockedColumns) {
         const hasCompletableColumn = canCompleteAnyColumn(state.tiles, state.nextShapes);
         if (!hasCompletableColumn) {
@@ -289,21 +289,21 @@ export class TutorialRuntimeValidator {
         }
       }
     }
-    
+
     return { valid: true };
   }
-  
+
   /**
    * Check 5: Custom stuck detection function
    */
   private checkCustomStuckDetection(state: GameState): ValidationResult {
     if (!this.step.recovery?.stuckDetection) return { valid: true };
-    
+
     const isStuck = this.step.recovery.stuckDetection(
       state,
       this.monitor.actionHistory
     );
-    
+
     if (isStuck) {
       return {
         valid: false,
@@ -316,14 +316,14 @@ export class TutorialRuntimeValidator {
         }]
       };
     }
-    
+
     return { valid: true };
   }
-  
+
   // ==========================================================================
   // HELPER METHODS
   // ==========================================================================
-  
+
   /**
    * Check if step can be completed from current state.
    * 
@@ -335,18 +335,18 @@ export class TutorialRuntimeValidator {
     if (this.step.completionCondition(state)) {
       return true;
     }
-    
+
     // If step is idempotent, it can complete from any state
     if (this.step.metadata.idempotent) {
       return true;
     }
-    
+
     // Check if there are any valid actions available
     const hasValidActions = this.hasAnyValidActions(state);
-    
+
     return hasValidActions;
   }
-  
+
   /**
    * Check if user can perform any valid actions in current state
    */
@@ -355,20 +355,20 @@ export class TutorialRuntimeValidator {
     if (!state.nextShapes || state.nextShapes.length === 0) {
       return false;
     }
-    
+
     // Check if any shape can be placed anywhere
     for (const shape of state.nextShapes) {
       for (let row = 1; row <= 10; row++) {
         for (let col = 1; col <= 10; col++) {
           const location: Location = { row, column: col };
-          
+
           if (isValidPlacement(shape, location, state.tiles)) {
             return true; // Found at least one valid placement
           }
         }
       }
     }
-    
+
     return false; // No valid placements found
   }
 }
@@ -394,10 +394,10 @@ function hashGameState(state: GameState): string {
 /**
  * Count filled tiles in the grid
  */
-function countFilledTiles(tiles: Map<string, { isFilled: boolean }>): number {
+function countFilledTiles(tiles: Map<string, import('../types').Tile>): number {
   let count = 0;
   for (const tile of tiles.values()) {
-    if (tile.isFilled) count++;
+    if (tile.block.isFilled) count++;
   }
   return count;
 }
@@ -410,12 +410,12 @@ function detectRepeatingPattern(
   actions: Action[]
 ): { sequence: Action[]; repetitions: number } | null {
   if (actions.length < 4) return null;
-  
+
   // Try different pattern lengths
   for (let patternLen = 2; patternLen <= actions.length / 2; patternLen++) {
     const pattern = actions.slice(-patternLen);
     const prevPattern = actions.slice(-patternLen * 2, -patternLen);
-    
+
     // Check if pattern matches
     if (JSON.stringify(pattern) === JSON.stringify(prevPattern)) {
       // Count how many times this pattern repeats
@@ -427,11 +427,11 @@ function detectRepeatingPattern(
         }
         reps++;
       }
-      
+
       return { sequence: pattern, repetitions: reps };
     }
   }
-  
+
   return null;
 }
 
@@ -439,25 +439,25 @@ function detectRepeatingPattern(
  * Check if any row can be completed with current shapes
  */
 function canCompleteAnyRow(
-  tiles: Map<string, { isFilled: boolean }>,
+  tiles: Map<string, import('../types').Tile>,
   shapes: unknown[]
 ): boolean {
   // Simplified check - in production, do more thorough analysis
   if (!shapes || shapes.length === 0) return false;
-  
+
   // Check each row
   for (let row = 1; row <= 10; row++) {
     let filled = 0;
     for (let col = 1; col <= 10; col++) {
-      const key = `${row},${col}`;
+      const key = `R${row}C${col}`;
       const tile = tiles.get(key);
-      if (tile?.isFilled) filled++;
+      if (tile?.block.isFilled) filled++;
     }
-    
+
     // If row is nearly complete, assume it can be finished
     if (filled >= 7) return true;
   }
-  
+
   return true; // Default to true to avoid false positives
 }
 
@@ -465,24 +465,24 @@ function canCompleteAnyRow(
  * Check if any column can be completed with current shapes
  */
 function canCompleteAnyColumn(
-  tiles: Map<string, { isFilled: boolean }>,
+  tiles: Map<string, import('../types').Tile>,
   shapes: unknown[]
 ): boolean {
   // Simplified check - in production, do more thorough analysis
   if (!shapes || shapes.length === 0) return false;
-  
+
   // Check each column
   for (let col = 1; col <= 10; col++) {
     let filled = 0;
     for (let row = 1; row <= 10; row++) {
-      const key = `${row},${col}`;
+      const key = `R${row}C${col}`;
       const tile = tiles.get(key);
-      if (tile?.isFilled) filled++;
+      if (tile?.block.isFilled) filled++;
     }
-    
+
     // If column is nearly complete, assume it can be finished
     if (filled >= 7) return true;
   }
-  
+
   return true; // Default to true to avoid false positives
 }

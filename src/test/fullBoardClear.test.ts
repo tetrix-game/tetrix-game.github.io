@@ -10,7 +10,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { isGridCompletelyEmpty } from '../utils/lineUtils';
 import { generateFullBoardClearAnimation } from '../utils/clearingAnimationUtils';
 import { tileReducer, makeTileKey } from '../reducers/tileReducer';
-import type { TetrixReducerState, Tile } from '../types';
+import type { TetrixReducerState } from '../types';
 import { createTilesWithFilled } from './testHelpers';
 
 describe('Full Board Clear - isGridCompletelyEmpty', () => {
@@ -161,8 +161,8 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     for (let column = 1; column <= 10; column++) {
       const tile = tiles.get(makeTileKey(5, column));
       if (tile) {
-        tile.isFilled = true;
-        tile.blockColor = 'blue';
+        tile.block.isFilled = true;
+        tile.block.color = 'blue';
       }
     }
 

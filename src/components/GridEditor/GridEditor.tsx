@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollableMenu, type MenuSectionConfig } from '../ScrollableMenu';
 import { useGridEditor } from './GridEditorContext';
 import { NumberInputSubmenu } from './NumberInputSubmenu';
 import { ColorBrushSubmenu } from './ColorBrushSubmenu';
+import EditorGrid from './EditorGrid';
 import './GridEditor.css';
 
 type SectionId = 'rows' | 'columns' | 'brush' | 'actions';
@@ -15,8 +16,6 @@ const GridEditor: React.FC = () => {
     setLastActiveSection,
     setGridHeight,
     setGridWidth,
-    addTile,
-    removeTile,
     clearAllTiles,
     exportGridLayout,
     hideInstructions,
@@ -50,99 +49,13 @@ const GridEditor: React.FC = () => {
       const delta = direction === 'forward' ? 1 : -1;
       const nextIndex = (currentIndex + delta + sections.length) % sections.length;
       setFocusedSection(sections[nextIndex]);
-      
+
       if (sections[nextIndex] !== 'actions') {
         setLastActiveSection(sections[nextIndex]);
       }
     }
     // In submenu mode, the context's cycleActiveSection handles the navigation
   }, [navMode, focusedSection, setLastActiveSection]);
-
-  // Track painting state
-  const [isPainting, setIsPainting] = useState(false);
-  const lastPaintedTileRef = useRef<string | null>(null);
-
-  // Helper function to get tile key from mouse event
-  const getTileKeyFromMouseEvent = useCallback((e: MouseEvent): string | null => {
-    const gridElement = document.querySelector('.grid');
-    if (!gridElement) return null;
-
-    const rect = gridElement.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Check if mouse is within grid bounds
-    if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
-      return null;
-    }
-
-    // Calculate which tile was clicked based on current grid dimensions
-    const column = Math.floor((x / rect.width) * state.gridLayout.width) + 1;
-    const row = Math.floor((y / rect.height) * state.gridLayout.height) + 1;
-
-    if (row >= 1 && row <= state.gridLayout.height && column >= 1 && column <= state.gridLayout.width) {
-      return `R${row}C${column}`;
-    }
-    
-    return null;
-  }, [state.gridLayout]);
-
-  // Paint a tile
-  const paintTile = useCallback((tileKey: string) => {
-    if (state.currentTool === 'paint') {
-      addTile(tileKey);
-    } else if (state.currentTool === 'erase') {
-      removeTile(tileKey);
-    }
-  }, [state.currentTool, addTile, removeTile]);
-
-  // Handle mouse down - start painting
-  const handleMouseDown = useCallback((e: MouseEvent) => {
-    // Ignore clicks on UI elements (buttons, menus, etc.)
-    const target = e.target as HTMLElement;
-    if (target.closest('.scrollable-menu-palette, .color-brush-submenu, button, .scrollable-menu-overlay')) {
-      return;
-    }
-
-    const tileKey = getTileKeyFromMouseEvent(e);
-    if (tileKey) {
-      setIsPainting(true);
-      lastPaintedTileRef.current = tileKey;
-      paintTile(tileKey);
-    }
-  }, [getTileKeyFromMouseEvent, paintTile]);
-
-  // Handle mouse move - continue painting while button is held
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isPainting) return;
-    
-    const tileKey = getTileKeyFromMouseEvent(e);
-    if (tileKey && tileKey !== lastPaintedTileRef.current) {
-      lastPaintedTileRef.current = tileKey;
-      paintTile(tileKey);
-    }
-  }, [isPainting, getTileKeyFromMouseEvent, paintTile]);
-
-  // Handle mouse up - stop painting
-  const handleMouseUp = useCallback(() => {
-    setIsPainting(false);
-    lastPaintedTileRef.current = null;
-  }, []);
-
-  // Set up mouse event listeners when brush submenu is expanded
-  useEffect(() => {
-    if (expandedSection !== 'brush') return;
-
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [expandedSection, handleMouseDown, handleMouseMove, handleMouseUp]);
 
   // Handle export layout to clipboard
   const handleExportLayout = useCallback(() => {
@@ -154,11 +67,11 @@ const GridEditor: React.FC = () => {
       tileBackgrounds: Array.from(layout.tileBackgrounds.entries()),
     };
     const jsonString = JSON.stringify(layoutData, null, 2);
-    
+
     console.log('✅ Grid layout exported!');
     console.log('Layout data:', layoutData);
     console.log('JSON:', jsonString);
-    
+
     const copyToClipboard = async () => {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         try {
@@ -169,7 +82,7 @@ const GridEditor: React.FC = () => {
           console.warn('Clipboard API failed, trying fallback:', err);
         }
       }
-      
+
       try {
         const textarea = document.createElement('textarea');
         textarea.value = jsonString;
@@ -187,7 +100,7 @@ const GridEditor: React.FC = () => {
         alert('Could not copy to clipboard, but data is logged to console!');
       }
     };
-    
+
     copyToClipboard();
   }, [exportGridLayout]);
 
@@ -274,8 +187,8 @@ const GridEditor: React.FC = () => {
           >
             🗑 Clear All Tiles
           </button>
-          <button 
-            className="grid-editor-action-button" 
+          <button
+            className="grid-editor-action-button"
             onClick={handleExportLayout}
           >
             📋 Export Layout
@@ -312,20 +225,23 @@ const GridEditor: React.FC = () => {
   );
 
   return (
-    <ScrollableMenu<SectionId>
-      isOpen={state.isEditorOpen}
-      title="Grid"
-      sections={menuSections}
-      focusedSection={focusedSection}
-      expandedSection={expandedSection}
-      navMode={navMode}
-      showInstructions={state.showInstructions}
-      instructionsContent={instructionsContent}
-      onClose={closeEditor}
-      onHideInstructions={hideInstructions}
-      onNavigate={handleNavigation}
-      initialPosition={{ x: 20, y: 120 }}
-    />
+    <>
+      {state.isEditorOpen && <EditorGrid />}
+      <ScrollableMenu<SectionId>
+        isOpen={state.isEditorOpen}
+        title="Grid"
+        sections={menuSections}
+        focusedSection={focusedSection}
+        expandedSection={expandedSection}
+        navMode={navMode}
+        showInstructions={state.showInstructions}
+        instructionsContent={instructionsContent}
+        onClose={closeEditor}
+        onHideInstructions={hideInstructions}
+        onNavigate={handleNavigation}
+        initialPosition={{ x: 20, y: 120 }}
+      />
+    </>
   );
 };
 

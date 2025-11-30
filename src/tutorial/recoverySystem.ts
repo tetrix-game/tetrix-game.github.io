@@ -45,13 +45,13 @@ import type {
 export class TutorialRecoverySystem {
   private step: TutorialStepConfig;
   private attemptedStrategies: Set<RecoveryStrategyType> = new Set();
-  
+
   constructor(
     step: TutorialStepConfig
   ) {
     this.step = step;
   }
-  
+
   /**
    * Attempt to recover from stuck state using progressive strategies.
    * 
@@ -76,23 +76,23 @@ export class TutorialRecoverySystem {
   ): Promise<RecoveryResult> {
     // Get ordered list of strategies to try
     const strategies = this.getRecoveryStrategies();
-    
+
     // Try each strategy in order
     for (const strategy of strategies) {
       // Skip if we've already tried this strategy
       if (this.attemptedStrategies.has(strategy)) {
         continue;
       }
-      
+
       this.attemptedStrategies.add(strategy);
-      
+
       const result = await this.executeStrategy(strategy, state, monitor);
-      
+
       if (result.success) {
         return result;
       }
     }
-    
+
     // All strategies failed
     return {
       success: false,
@@ -101,7 +101,7 @@ export class TutorialRecoverySystem {
       error: 'NO_RECOVERY_AVAILABLE'
     };
   }
-  
+
   /**
    * Get ordered list of recovery strategies to try.
    * 
@@ -111,11 +111,11 @@ export class TutorialRecoverySystem {
     if (this.step.recovery?.strategyOrder) {
       return this.step.recovery.strategyOrder;
     }
-    
+
     // Default order: least intrusive to most intrusive
     return ['hint', 'undo', 'reset', 'autoFix', 'skip'];
   }
-  
+
   /**
    * Execute a specific recovery strategy.
    */
@@ -127,19 +127,19 @@ export class TutorialRecoverySystem {
     switch (strategy) {
       case 'hint':
         return this.attemptHint(state);
-        
+
       case 'undo':
         return this.attemptUndo(state, monitor);
-        
+
       case 'reset':
         return this.attemptReset(state);
-        
+
       case 'autoFix':
         return this.attemptAutoFix(state);
-        
+
       case 'skip':
         return this.attemptSkip();
-        
+
       default:
         return {
           success: false,
@@ -149,11 +149,11 @@ export class TutorialRecoverySystem {
         };
     }
   }
-  
+
   // ==========================================================================
   // STRATEGY IMPLEMENTATIONS
   // ==========================================================================
-  
+
   /**
    * Strategy 1: Show a helpful hint message
    */
@@ -166,12 +166,12 @@ export class TutorialRecoverySystem {
         error: 'NO_HINT_CONFIGURED'
       });
     }
-    
+
     // Get hint message (can be function or string)
     const hintMessage = typeof this.step.recovery.hintMessage === 'function'
       ? this.step.recovery.hintMessage(state)
       : this.step.recovery.hintMessage;
-    
+
     // Show hint to user (caller should display this message)
     return Promise.resolve({
       success: true,
@@ -179,7 +179,7 @@ export class TutorialRecoverySystem {
       message: hintMessage
     });
   }
-  
+
   /**
    * Strategy 2: Undo the last action
    */
@@ -196,7 +196,7 @@ export class TutorialRecoverySystem {
         error: 'UNDO_NOT_ALLOWED'
       });
     }
-    
+
     if (monitor.actionHistory.length === 0) {
       return Promise.resolve({
         success: false,
@@ -205,7 +205,7 @@ export class TutorialRecoverySystem {
         error: 'NO_ACTIONS_TO_UNDO'
       });
     }
-    
+
     // NOTE: Undo functionality not yet implemented in reducer
     // For now, just return that undo would work
     // TODO: Implement UNDO_LAST_ACTION in reducer
@@ -215,7 +215,7 @@ export class TutorialRecoverySystem {
       message: 'Undo would work here (not yet implemented)'
     });
   }
-  
+
   /**
    * Strategy 3: Reset to step's initial state
    */
@@ -228,7 +228,7 @@ export class TutorialRecoverySystem {
         error: 'RESET_NOT_ALLOWED'
       });
     }
-    
+
     if (!this.step.initialState) {
       return Promise.resolve({
         success: false,
@@ -237,7 +237,7 @@ export class TutorialRecoverySystem {
         error: 'NO_INITIAL_STATE'
       });
     }
-    
+
     // Return success - orchestrator will handle the actual reset
     return Promise.resolve({
       success: true,
@@ -245,7 +245,7 @@ export class TutorialRecoverySystem {
       message: 'Step can be reset to initial state'
     });
   }
-  
+
   /**
    * Strategy 4: Automatically fix the state
    */
@@ -258,11 +258,11 @@ export class TutorialRecoverySystem {
         error: 'AUTO_FIX_NOT_CONFIGURED'
       });
     }
-    
+
     try {
       // Test if auto-fix function works without error
       this.step.recovery.autoFix(state);
-      
+
       // Return success - orchestrator will handle applying the fix
       return Promise.resolve({
         success: true,
@@ -278,7 +278,7 @@ export class TutorialRecoverySystem {
       });
     }
   }
-  
+
   /**
    * Strategy 5: Allow user to skip this step
    */
@@ -291,7 +291,7 @@ export class TutorialRecoverySystem {
         error: 'SKIP_NOT_ALLOWED'
       });
     }
-    
+
     // Return success - orchestrator will handle the skip
     return Promise.resolve({
       success: true,
@@ -315,13 +315,13 @@ export class TutorialRecoverySystem {
  */
 export function clearAllTiles(state: GameState): GameState {
   const newTiles = new Map(state.tiles);
-  
+
   for (const [, tile] of newTiles.entries()) {
-    if (tile.isFilled) {
+    if (tile.block.isFilled) {
       tile.block = { isFilled: false, color: 'grey' };
     }
   }
-  
+
   return {
     ...state,
     tiles: newTiles
@@ -333,7 +333,7 @@ export function clearAllTiles(state: GameState): GameState {
  */
 export function clearRows(state: GameState, rows: number[]): GameState {
   const newTiles = new Map(state.tiles);
-  
+
   for (const row of rows) {
     for (let col = 1; col <= 10; col++) {
       const key = `R${row}C${col}`;
@@ -343,7 +343,7 @@ export function clearRows(state: GameState, rows: number[]): GameState {
       }
     }
   }
-  
+
   return {
     ...state,
     tiles: newTiles
@@ -358,14 +358,14 @@ export function ensureValidPlacements(
   _minPlacements: number
 ): GameState {
   // This is a simplified version - in production, you'd do more sophisticated analysis
-  
+
   // If grid is too full, clear some random tiles
   const filledCount = countFilledTiles(state.tiles);
-  
+
   if (filledCount > 85) { // If more than 85% full, clear some space
     return clearRandomTiles(state, 10);
   }
-  
+
   return state;
 }
 
@@ -375,20 +375,20 @@ export function ensureValidPlacements(
 function clearRandomTiles(state: GameState, count: number): GameState {
   const newTiles = new Map(state.tiles);
   const filledKeys = Array.from(newTiles.entries())
-    .filter(([, tile]) => tile.isFilled)
+    .filter(([, tile]) => tile.block.isFilled)
     .map(([key]) => key);
-  
+
   // Shuffle and take N tiles
   const shuffled = filledKeys.sort(() => Math.random() - 0.5);
   const toClear = shuffled.slice(0, count);
-  
+
   for (const key of toClear) {
     const tile = newTiles.get(key);
     if (tile) {
       tile.block = { isFilled: false, color: 'grey' };
     }
   }
-  
+
   return {
     ...state,
     tiles: newTiles
@@ -398,10 +398,10 @@ function clearRandomTiles(state: GameState, count: number): GameState {
 /**
  * Count filled tiles in the grid
  */
-function countFilledTiles(tiles: Map<string, { isFilled: boolean }>): number {
+function countFilledTiles(tiles: Map<string, import('../types').Tile>): number {
   let count = 0;
   for (const tile of tiles.values()) {
-    if (tile.isFilled) count++;
+    if (tile.block.isFilled) count++;
   }
   return count;
 }

@@ -19,9 +19,9 @@ type ShapeDisplayProps = {
  * No interactivity - this is just for display purposes.
  * Used by ShapeOption (with drag/drop) and QueueOverlay (read-only).
  */
-const ShapeDisplay = ({ 
-  shape, 
-  cellGap = 1,
+const ShapeDisplay = ({
+  shape,
+  cellGap = 2,
   containerPadding = 4,
   className = ''
 }: ShapeDisplayProps) => {
@@ -32,29 +32,29 @@ const ShapeDisplay = ({
   useEffect(() => {
     const updateSize = () => {
       if (!containerRef.current) return;
-      
+
       const container = containerRef.current;
       const containerWidth = container.offsetWidth;
       const containerHeight = container.offsetHeight;
-      
+
       // Use the smaller dimension to ensure the shape fits
       const availableSize = Math.min(containerWidth, containerHeight);
-      
+
       // Calculate cell size: (availableSize - padding*2 - gaps*3) / 4
       const cellGapSpace = cellGap * 3;
       const calculatedCellSize = (availableSize - (containerPadding * 2) - cellGapSpace) / 4;
-      
+
       setCellSize(calculatedCellSize);
     };
 
     updateSize();
-    
+
     // Update on resize
     const resizeObserver = new ResizeObserver(updateSize);
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
-    
+
     return () => resizeObserver.disconnect();
   }, [cellGap, containerPadding]);
 
@@ -91,7 +91,7 @@ const ShapeDisplay = ({
       style={{
         '--shape-cell-size': `${cellSize}px`,
         '--shape-cell-gap': `${cellGap}px`,
-        '--block-overlap': `${cellGap}px`,
+        '--block-overlap': `1px`,
         '--centering-offset-x': `${centeringOffset.x}px`,
         '--centering-offset-y': `${centeringOffset.y}px`,
       } as React.CSSProperties}

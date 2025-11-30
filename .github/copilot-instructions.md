@@ -74,7 +74,7 @@ Main.tsx (wraps with TetrixProvider)
     │   ├── LocationButton (rant progression system)
     ├── Tetrix (game container)
     │   ├── Grid (10x10 game board + mouse events)
-    │   │   └── TileVisual × 100 → BlockVisual
+    │   │   └── TetrixTile × 100 → BlockVisual
     │   └── ShapeSelector (shape management)
     │       ├── ShapeOption × N → PurchaseMenu, rotation controls
     │       └── SavedShape (optional saved shape display)
@@ -174,7 +174,7 @@ npm start           # Development server
 
 ### Performance Considerations
 
-- **Memoization**: React.memo() for expensive renders (TileVisual, etc.)
+- **Memoization**: React.memo() for expensive renders (TetrixTile, etc.)
 - **Animation optimization**: GPU hints, will-change, transform-based animations
 - **Gem particle limits**: Performance tiers for different gem amounts
 - **Batch operations**: Database saves bundled via `safeBatchSave()`
@@ -201,7 +201,7 @@ npm start           # Development server
 
 - Explicit action types with discriminated unions (`TetrixAction`)
 - React.Dispatch typed as `TetrixDispatch` for type safety
-- Use `React.memo()` for performance (see TileVisual)
+- Use `React.memo()` for performance (see TetrixTile)
 - Prefer `useCallback` for event handlers to prevent re-renders
 
 

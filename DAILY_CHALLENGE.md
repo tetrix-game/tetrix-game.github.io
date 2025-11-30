@@ -66,5 +66,6 @@ The solver uses a deterministic "Exact Cover" approach with randomized backtrack
     *   Shuffles the candidates deterministically based on the seed.
     *   Places a shape and recurses.
     *   If a dead end is reached, it backtracks.
+    *   **Final Step**: The resulting sequence of shapes is shuffled deterministically so the order doesn't reveal the placement pattern (e.g., top-to-bottom).
 
 This ensures that every valid grid has a solution, and the solution is consistent for all players on a given day.

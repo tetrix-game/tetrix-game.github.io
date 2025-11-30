@@ -224,7 +224,8 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
     // If no target found, we have a complete solution!
     if (targetR === -1) {
-      return current.usedShapes;
+      // Randomize the order of shapes in the queue so it doesn't look like a linear scan
+      return rng.shuffle(current.usedShapes);
     }
 
     // Find all shapes that can cover targetR, targetC

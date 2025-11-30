@@ -16,7 +16,8 @@
 - Bug
     - Success screen isn't fitting on mobile
 - Expectation Mismatch
-    - Can full screen be a default?
+    - Track daily challenge completions and completion streak.
+    - Daily challenge needs a restart button
 - Curb appeal
     - 3h: Better share images
     - 10m: Better App Icon

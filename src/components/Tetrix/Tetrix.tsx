@@ -18,7 +18,7 @@ const Tetrix: React.FC = () => {
       <Grid />
       <GameControlsPanel />
       <GemShower />
-      {gameState === 'gameover' && gameMode === 'infinite' && !isStatsOpen && <GameOverOverlay />}
+      {gameState === 'gameover' && (gameMode === 'infinite' || gameMode === 'daily') && !isStatsOpen && <GameOverOverlay />}
     </div>
   )
 }

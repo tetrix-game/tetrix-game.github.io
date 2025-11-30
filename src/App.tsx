@@ -2,7 +2,6 @@ import Header from './components/Header';
 import Tetrix from './components/Tetrix';
 import GameMap from './components/GameMap';
 import MainMenu from './components/MainMenu';
-import DailyChallenge from './components/DailyChallenge';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
 import DebugEditor from './components/DebugEditor';
 import GridEditor from './components/GridEditor';
@@ -289,9 +288,7 @@ const App = () => {
         <>
           <Header />
           <div className="game-container">
-            {gameMode === 'daily' ? (
-              <DailyChallenge />
-            ) : gameState === 'playing' || gameState === 'gameover' ? (
+            {gameState === 'playing' || gameState === 'gameover' ? (
               <Tetrix />
             ) : (
               <GameMap />

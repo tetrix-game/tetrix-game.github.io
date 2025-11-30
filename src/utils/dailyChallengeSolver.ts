@@ -106,10 +106,12 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
   tiles.forEach((tile, key) => {
     if (tile.block.isFilled) {
-      // Parse key "row,col"
-      const [rStr, cStr] = key.split(',');
-      const r = parseInt(rStr) - 1; // 0-indexed
-      const c = parseInt(cStr) - 1; // 0-indexed
+      // Parse key "R{row}C{col}"
+      const match = key.match(/R(\d+)C(\d+)/);
+      if (!match) return;
+
+      const r = parseInt(match[1]) - 1; // 0-indexed
+      const c = parseInt(match[2]) - 1; // 0-indexed
 
       if (r >= 0 && r < gridHeight && c >= 0 && c < gridWidth) {
         grid[r][c] = tile.block.color;

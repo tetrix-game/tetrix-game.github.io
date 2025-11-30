@@ -12,7 +12,7 @@
  */
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 4; // Incremented for view separation support
+const DB_VERSION = 5; // Incremented for view separation support
 
 // Store names organized by data type
 export const STORES = {
@@ -20,12 +20,12 @@ export const STORES = {
   INFINITE_STATE: 'infiniteState',
   DAILY_STATE: 'dailyState',
   TUTORIAL_STATE: 'tutorialState',
-  
+
   // Shared stores (cross-mode)
   SETTINGS: 'settings',
   STATS: 'stats',
   MODIFIERS: 'modifiers',
-  
+
   // Legacy stores (for migration)
   LEGACY_GAME_STATE: 'gameState',
   LEGACY_SCORE: 'score',
@@ -60,15 +60,15 @@ async function openDatabase(): Promise<IDBDatabase> {
 
     request.onsuccess = () => {
       const db = request.result;
-      
+
       // Verify required stores exist
       const requiredStores = Object.values(STORES);
       const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
-      
+
       if (missingStores.length > 0) {
         console.warn('Missing stores:', missingStores, '- Database may need upgrade');
       }
-      
+
       resolve(db);
     };
 
@@ -114,7 +114,7 @@ async function getDatabase(): Promise<IDBDatabase> {
   if (dbConnection && dbConnection.objectStoreNames.length > 0) {
     return dbConnection;
   }
-  
+
   dbConnection = await openDatabase();
   return dbConnection;
 }
@@ -131,23 +131,23 @@ export async function write<T>(
   data: T
 ): Promise<void> {
   const db = await getDatabase();
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction([storeName], 'readwrite');
-      
+
       transaction.onerror = () => {
         console.error(`Transaction failed for ${storeName}:`, transaction.error);
         reject(new Error(`Transaction failed: ${transaction.error}`));
       };
-      
+
       const store = transaction.objectStore(storeName);
       const request = store.put(data, key);
-      
+
       request.onsuccess = () => {
         resolve();
       };
-      
+
       request.onerror = () => {
         console.error(`Failed to write to ${storeName}:`, request.error);
         reject(new Error(`Failed to write: ${request.error}`));
@@ -170,17 +170,17 @@ export async function read<T>(
   key: IDBValidKey
 ): Promise<T | null> {
   const db = await getDatabase();
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.get(key);
-      
+
       request.onsuccess = () => {
         resolve(request.result ?? null);
       };
-      
+
       request.onerror = () => {
         console.error(`Failed to read from ${storeName}:`, request.error);
         reject(new Error(`Failed to read: ${request.error}`));
@@ -202,17 +202,17 @@ export async function remove(
   key: IDBValidKey
 ): Promise<void> {
   const db = await getDatabase();
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.delete(key);
-      
+
       request.onsuccess = () => {
         resolve();
       };
-      
+
       request.onerror = () => {
         console.error(`Failed to delete from ${storeName}:`, request.error);
         reject(new Error(`Failed to delete: ${request.error}`));
@@ -231,17 +231,17 @@ export async function remove(
  */
 export async function listKeys(storeName: StoreName): Promise<IDBValidKey[]> {
   const db = await getDatabase();
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getAllKeys();
-      
+
       request.onsuccess = () => {
         resolve(request.result);
       };
-      
+
       request.onerror = () => {
         console.error(`Failed to list keys from ${storeName}:`, request.error);
         reject(new Error(`Failed to list keys: ${request.error}`));
@@ -260,17 +260,17 @@ export async function listKeys(storeName: StoreName): Promise<IDBValidKey[]> {
  */
 export async function readAll<T>(storeName: StoreName): Promise<T[]> {
   const db = await getDatabase();
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getAll();
-      
+
       request.onsuccess = () => {
         resolve(request.result as T[]);
       };
-      
+
       request.onerror = () => {
         console.error(`Failed to read all from ${storeName}:`, request.error);
         reject(new Error(`Failed to read all: ${request.error}`));
@@ -288,17 +288,17 @@ export async function readAll<T>(storeName: StoreName): Promise<T[]> {
  */
 export async function clear(storeName: StoreName): Promise<void> {
   const db = await getDatabase();
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.clear();
-      
+
       request.onsuccess = () => {
         resolve();
       };
-      
+
       request.onerror = () => {
         console.error(`Failed to clear ${storeName}:`, request.error);
         reject(new Error(`Failed to clear: ${request.error}`));
@@ -324,25 +324,25 @@ export async function batchWrite(
   if (operations.length === 0) {
     return;
   }
-  
+
   const db = await getDatabase();
-  
+
   // Group operations by store for efficient transactions
   const storeNames = [...new Set(operations.map(op => op.storeName))];
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction(storeNames, 'readwrite');
-      
+
       transaction.onerror = () => {
         console.error('Batch write transaction failed:', transaction.error);
         reject(new Error(`Batch write failed: ${transaction.error}`));
       };
-      
+
       transaction.oncomplete = () => {
         resolve();
       };
-      
+
       // Execute all operations
       for (const { storeName, key, data } of operations) {
         const store = transaction.objectStore(storeName);
@@ -369,30 +369,30 @@ export async function batchRead<T>(
   if (operations.length === 0) {
     return [];
   }
-  
+
   const db = await getDatabase();
   const storeNames = [...new Set(operations.map(op => op.storeName))];
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction(storeNames, 'readonly');
       const results: (T | null)[] = new Array(operations.length).fill(null);
       let completed = 0;
-      
+
       transaction.onerror = () => {
         console.error('Batch read transaction failed:', transaction.error);
         reject(new Error(`Batch read failed: ${transaction.error}`));
       };
-      
+
       for (let i = 0; i < operations.length; i++) {
         const { storeName, key } = operations[i];
         const store = transaction.objectStore(storeName);
         const request = store.get(key);
-        
+
         request.onsuccess = () => {
           results[i] = request.result ?? null;
           completed++;
-          
+
           if (completed === operations.length) {
             resolve(results);
           }
@@ -416,17 +416,17 @@ export async function exists(
   key: IDBValidKey
 ): Promise<boolean> {
   const db = await getDatabase();
-  
+
   return new Promise((resolve, reject) => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getKey(key);
-      
+
       request.onsuccess = () => {
         resolve(request.result !== undefined);
       };
-      
+
       request.onerror = () => {
         console.error(`Failed to check existence in ${storeName}:`, request.error);
         reject(new Error(`Failed to check existence: ${request.error}`));

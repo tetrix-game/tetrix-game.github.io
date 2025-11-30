@@ -3,14 +3,12 @@
 ## What's Up Next
 - Tutorial auto-starts and accessible only from the menu
 - "Look at this!" moments
-    - Daily challenge
 - Architecture
     - Solver that generates lowball shapes
     - Additional shape types
     - 1d: LevelMap spoke on main menu
     - 5d: Document what display layers there are, and give each a taxonomy
 - Juice
-    - Semi-translucent tile colors for background things later
     - 5m: The heartbeat isn't loud enough on phones
     - Better clearance animations
     - Better clearance sounds

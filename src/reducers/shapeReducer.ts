@@ -112,7 +112,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       if (state.queueMode === 'infinite' && state.nextShapes.length <= 1) {
         return state;
       }
-      
+
       // Don't allow removal if already at 0
       if (state.nextShapes.length === 0) {
         return state;
@@ -132,6 +132,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
           phase: 'none' as const,
           selectedShape: null,
           selectedShapeIndex: null,
+          sourceId: null,
           isValidPlacement: false,
           hoveredBlockPositions: [],
           invalidBlockPositions: [],

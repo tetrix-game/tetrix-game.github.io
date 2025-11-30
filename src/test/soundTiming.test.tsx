@@ -45,6 +45,7 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
     startTime: dragPhase !== 'none' ? performance.now() : null,
     selectedShape: null,
     selectedShapeIndex: null,
+    sourceId: null,
     isValidPlacement: false,
     hoveredBlockPositions: [],
     invalidBlockPositions: [],

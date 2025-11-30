@@ -324,6 +324,7 @@ describe('Full Board Clear - Reducer Integration', () => {
           ],
         ],
         selectedShapeIndex: 0,
+        sourceId: null,
         isValidPlacement: true,
         hoveredBlockPositions: [],
         invalidBlockPositions: [],

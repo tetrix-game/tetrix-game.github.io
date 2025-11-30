@@ -158,6 +158,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           phase: 'none' as const,
           selectedShape: null,
           selectedShapeIndex: null,
+          sourceId: null,
           isValidPlacement: false,
           hoveredBlockPositions: [],
           invalidBlockPositions: [],

@@ -197,11 +197,30 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
       }
     }
 
-    // Shuffle candidates
-    const shuffledCandidates = rng.shuffle(candidates);
+    // Prioritize larger shapes to avoid 1x1 spam
+    // But don't strictly prefer 9-block over 4-block, as that makes puzzles too blocky.
+    // Tier 1: Size >= 4 (Standard Tetris + large custom shapes)
+    // Tier 2: Size < 4 (Small fillers)
+
+    const tier1: typeof candidates = [];
+    const tier2: typeof candidates = [];
+
+    for (const candidate of candidates) {
+      const size = getFilledBlocks(candidate.shape).length;
+      if (size >= 4) {
+        tier1.push(candidate);
+      } else {
+        tier2.push(candidate);
+      }
+    }
+
+    const prioritizedCandidates = [
+      ...rng.shuffle(tier1),
+      ...rng.shuffle(tier2)
+    ];
 
     // Try each candidate
-    for (const candidate of shuffledCandidates) {
+    for (const candidate of prioritizedCandidates) {
       // Create new grid state
       const nextGrid = currentGrid.map(row => [...row]);
       const filledBlocks = getFilledBlocks(candidate.shape);

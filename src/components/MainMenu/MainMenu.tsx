@@ -30,7 +30,7 @@ const MainMenu: React.FC = () => {
         <div className="hub-spokes-container">
           {/* Daily Challenge Spoke */}
           <button
-            className="hub-spoke hub-spoke-daily"
+            className={`hub-spoke hub-spoke-daily ${!isHistoryLoading && currentStreak > 0 ? 'has-streak' : ''}`}
             onClick={handleDailyClick}
             disabled={isLoading}
           >
@@ -40,12 +40,19 @@ const MainMenu: React.FC = () => {
               {error ? 'No challenge today' : completedToday ? 'Completed today!' : 'Complete today\'s puzzle'}
             </div>
             {!isHistoryLoading && currentStreak > 0 && (
-              <div className="spoke-streak">
-                <span className="streak-icon">🔥</span>
-                <span className="streak-count">{currentStreak} day{currentStreak !== 1 ? 's' : ''}</span>
-                {longestStreak > currentStreak && (
-                  <span className="streak-best"> (Best: {longestStreak})</span>
-                )}
+              <div className="streak-container">
+                <div className="streak-flame-wrapper">
+                  <div className="streak-flame">🔥</div>
+                  <div className="streak-particles">
+                    <div className="particle p1"></div>
+                    <div className="particle p2"></div>
+                    <div className="particle p3"></div>
+                  </div>
+                </div>
+                <div className="streak-content">
+                  <div className="streak-value">{currentStreak}</div>
+                  <div className="streak-label">DAY STREAK</div>
+                </div>
               </div>
             )}
           </button>

@@ -124,6 +124,8 @@ export default function DraggingShape() {
 
       if (progress >= 1) {
         dispatch({ type: 'COMPLETE_PLACEMENT' });
+        // Check for map completion after placement
+        dispatch({ type: 'CHECK_MAP_COMPLETION' });
       } else {
         requestAnimationFrame(animate);
       }

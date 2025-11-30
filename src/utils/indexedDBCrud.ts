@@ -12,7 +12,7 @@
  */
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 5; // Incremented for view separation support
+const DB_VERSION = 6; // Incremented for view separation support
 
 // Store names organized by data type
 export const STORES = {

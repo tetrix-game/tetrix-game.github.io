@@ -14,11 +14,26 @@ export default function TetrixProvider({ children }: { readonly children: React.
     const loadSavedData = async () => {
       try {
         const [gameData, unlockedModifiers, savedTheme, infiniteViewState, settings] = await Promise.all([
-          loadCompleteGameState(),
-          loadModifiers(),
-          loadTheme(),
-          loadViewGameState('infinite'), // Load infinite mode stats if available
-          loadSettings() // Load settings for lastGameMode and isMapUnlocked
+          loadCompleteGameState().catch(err => {
+            console.error('Error loading game state:', err);
+            return null;
+          }),
+          loadModifiers().catch(err => {
+            console.error('Error loading modifiers:', err);
+            return new Set<number>();
+          }),
+          loadTheme().catch(err => {
+            console.error('Error loading theme:', err);
+            return null;
+          }),
+          loadViewGameState('infinite').catch(err => {
+            console.error('Error loading infinite view state:', err);
+            return null;
+          }),
+          loadSettings().catch(err => {
+            console.error('Error loading settings:', err);
+            return null;
+          })
         ]);
 
         // Load theme first
@@ -63,6 +78,7 @@ export default function TetrixProvider({ children }: { readonly children: React.
       } catch (error) {
         console.error('Failed to load saved game state:', error);
       } finally {
+        // Always complete initialization, even if loading fails
         dispatch({ type: 'INITIALIZATION_COMPLETE' });
         setIsInitialized(true);
       }
@@ -72,7 +88,19 @@ export default function TetrixProvider({ children }: { readonly children: React.
   }, []);
 
   if (!isInitialized) {
-    return null; // Or a loading spinner if desired
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: 'rgb(25, 25, 25)',
+        color: 'rgb(200, 200, 200)',
+        fontSize: '18px'
+      }}>
+        Loading...
+      </div>
+    );
   }
 
   return (

@@ -13,7 +13,7 @@ import type { TileData, ColorName } from '../types';
 import { INITIAL_GAME_STATS } from '../types/stats';
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 4; // Keep in sync with indexedDBCrud.ts
+const DB_VERSION = 6; // Keep in sync with indexedDBCrud.ts
 const GAME_STATE_STORE = 'gameState'; // Legacy store
 const SCORE_STORE = 'score';
 const TILES_STORE = 'tiles';
@@ -75,8 +75,19 @@ function openDatabase(): Promise<IDBDatabase> {
     request.onsuccess = async () => {
       const db = request.result;
 
-      // Verify all required stores exist
-      const requiredStores = [GAME_STATE_STORE, SCORE_STORE, TILES_STORE, SHAPES_STORE, SETTINGS_STORE, MODIFIERS_STORE, STATS_STORE];
+      // Verify all required stores exist (including new view-separated stores)
+      const requiredStores = [
+        GAME_STATE_STORE, 
+        SCORE_STORE, 
+        TILES_STORE, 
+        SHAPES_STORE, 
+        SETTINGS_STORE, 
+        MODIFIERS_STORE, 
+        STATS_STORE,
+        'infiniteState',
+        'dailyState',
+        'tutorialState'
+      ];
       const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
 
       if (missingStores.length > 0) {
@@ -126,6 +137,19 @@ function openDatabase(): Promise<IDBDatabase> {
 
       if (!db.objectStoreNames.contains(STATS_STORE)) {
         db.createObjectStore(STATS_STORE);
+      }
+
+      // Create new view-separated stores for version 5
+      if (!db.objectStoreNames.contains('infiniteState')) {
+        db.createObjectStore('infiniteState');
+      }
+
+      if (!db.objectStoreNames.contains('dailyState')) {
+        db.createObjectStore('dailyState');
+      }
+
+      if (!db.objectStoreNames.contains('tutorialState')) {
+        db.createObjectStore('tutorialState');
       }
     };
   });

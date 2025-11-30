@@ -51,11 +51,16 @@ export function canPlaceShape(
           return false; // Block doesn't fit
         }
 
-        // Check if position is already occupied
+        // Check if position exists and is not occupied
         const tileKey = makeTileKey(gridRow, gridCol);
         const tileData = tiles.get(tileKey);
 
-        if (tileData?.block.isFilled) {
+        // Tile must exist and must not be filled
+        if (!tileData) {
+          return false; // Tile doesn't exist at this position
+        }
+
+        if (tileData.block.isFilled) {
           return false; // Block overlaps
         }
       }
@@ -104,11 +109,16 @@ export function isValidPlacement(
           return false; // Block doesn't fit
         }
 
-        // Check if position is already occupied using O(1) Map lookup
+        // Check if position exists and is not occupied using O(1) Map lookup
         const tileKey = makeTileKey(gridRow, gridCol);
         const tileData = tiles.get(tileKey);
 
-        if (tileData?.block.isFilled) {
+        // Tile must exist and must not be filled
+        if (!tileData) {
+          return false; // Tile doesn't exist at this position
+        }
+
+        if (tileData.block.isFilled) {
           return false; // Block overlaps
         }
       }
@@ -156,16 +166,22 @@ export function getInvalidBlocks(
         // Check bounds (1-indexed)
         const outOfBounds = gridRow < 1 || gridRow > GRID_SIZE || gridCol < 1 || gridCol > GRID_SIZE;
 
-        // Check if position is already occupied using O(1) Map lookup
-        let overlapping = false;
+        // Check if position exists and is occupied using O(1) Map lookup
+        let invalid = false;
         if (!outOfBounds) {
           const tileKey = makeTileKey(gridRow, gridCol);
           const tileData = tiles.get(tileKey);
-          overlapping = tileData?.block.isFilled ?? false;
+          
+          // Tile must exist and must not be filled
+          if (!tileData) {
+            invalid = true; // Tile doesn't exist at this position
+          } else if (tileData.block.isFilled) {
+            invalid = true; // Block overlaps
+          }
         }
 
         // If invalid, add to the list
-        if (outOfBounds || overlapping) {
+        if (outOfBounds || invalid) {
           invalidBlocks.push({ shapeRow, shapeCol });
         }
       }

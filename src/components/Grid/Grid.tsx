@@ -69,6 +69,10 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
     return positions;
   }, [gridWidth, gridHeight]);
 
+  // Use fixed pixel size for tracks in editor mode to prevent collapse (since container is auto-sized)
+  // Use 1fr in game mode to ensure perfect fit within the fixed container size
+  const trackSize = isEditorOpen ? `${gridCellSize}px` : '1fr';
+
   return (
     <div
       ref={gridRef}
@@ -77,8 +81,8 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE }: GridProp
         {
           '--grid-gap': `${gridGap}px`,
           '--grid-size': `${gridSize}px`,
-          gridTemplateColumns: `repeat(${gridWidth}, 1fr)`,
-          gridTemplateRows: `repeat(${gridHeight}, 1fr)`,
+          gridTemplateColumns: `repeat(${gridWidth}, ${trackSize})`,
+          gridTemplateRows: `repeat(${gridHeight}, ${trackSize})`,
         } as React.CSSProperties
       }
     >

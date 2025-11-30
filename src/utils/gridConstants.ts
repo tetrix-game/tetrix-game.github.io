@@ -13,6 +13,13 @@ import type { TileData, ColorName, TilesSet } from '../types';
 export let GRID_SIZE = 10;
 
 /**
+ * Visual spacing between grid tiles in pixels.
+ * CRITICAL: This prevents tiles from collapsing into each other visually.
+ * Must be large enough to clearly separate distinct grid cells.
+ */
+export const GRID_GAP = 6;
+
+/**
  * Generate grid addresses in row-major order
  * Returns a frozen array of all grid keys (R1C1, R1C2, ..., RnCn)
  */
@@ -23,7 +30,7 @@ function generateGridAddresses(size: number): readonly string[] {
       addresses.push(`R${row}C${column}`);
     }
   }
-  
+
   // Freeze to prevent mutations
   return Object.freeze(addresses);
 }
@@ -77,7 +84,7 @@ export function validateTilesMap(tiles: Map<string, TileData>): void {
   if (tiles.size !== expectedSize) {
     throw new Error(`Tiles map must have exactly ${expectedSize} entries, got ${tiles.size}`);
   }
-  
+
   for (const key of GRID_ADDRESSES) {
     if (!tiles.has(key)) {
       throw new Error(`Missing required tile key: ${key}`);
@@ -104,20 +111,20 @@ export type ChallengeBoardData = {
  */
 export function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData {
   const tiles: Array<{ key: string; data: { isFilled: boolean; color: ColorName } }> = [];
-  
+
   tilesMap.forEach((tile, key) => {
     // Only save filled tiles to keep data compact
-    if (tile.isFilled) {
+    if (tile.block.isFilled) {
       tiles.push({
         key,
         data: {
-          isFilled: tile.isFilled,
-          color: tile.blockColor,
+          isFilled: tile.block.isFilled,
+          color: tile.block.color,
         }
       });
     }
   });
-  
+
   return { tiles };
 }
 
@@ -127,7 +134,7 @@ export function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData 
  */
 export function challengeDataToTilesMap(challengeData: ChallengeBoardData): Map<string, TileData> {
   const tiles = new Map<string, TileData>();
-  
+
   // Initialize empty board using static addresses
   for (const key of GRID_ADDRESSES) {
     tiles.set(key, {
@@ -136,7 +143,7 @@ export function challengeDataToTilesMap(challengeData: ChallengeBoardData): Map<
       color: 'grey',
     });
   }
-  
+
   // Apply challenge tiles with validation
   challengeData.tiles.forEach(({ key, data }) => {
     if (!GRID_ADDRESSES.includes(key)) {
@@ -148,6 +155,6 @@ export function challengeDataToTilesMap(challengeData: ChallengeBoardData): Map<
       color: data.color,
     });
   });
-  
+
   return tiles;
 }

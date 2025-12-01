@@ -1,5 +1,6 @@
 import './ShapeSelector.css';
 import ShapeOption from '../ShapeOption'
+import ShapeProducerViewport from '../ShapeProducerViewport';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
@@ -50,36 +51,36 @@ const ShapeSelector = (): JSX.Element => {
   // - Explicit sizing: 3 * button size (width in portrait, height in landscape)
 
   return (
-    <div
-      className={`shape-selector ${isLandscape ? 'shape-selector-landscape' : 'shape-selector-portrait'}`}
-    >
-      {displayedShapes.length > 0 ? (
-        displayedShapes.map((shape, index) => {
-          const isRemoving = removingShapeIndex === index && shapeRemovalAnimationState === 'removing';
-          return (
-            <div
-              key={getShapeId(shape)}
-              className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
-              data-landscape={isLandscape ? '1' : '0'}
-            >
-              <ShapeOption
-                shape={shape}
-                shapeIndex={index}
-              />
+    <div className="shape-selector">
+      <ShapeProducerViewport isLandscape={isLandscape}>
+        {displayedShapes.length > 0 ? (
+          displayedShapes.map((shape, index) => {
+            const isRemoving = removingShapeIndex === index && shapeRemovalAnimationState === 'removing';
+            return (
+              <div
+                key={getShapeId(shape)}
+                className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
+                data-landscape={isLandscape ? '1' : '0'}
+              >
+                <ShapeOption
+                  shape={shape}
+                  shapeIndex={index}
+                />
+              </div>
+            );
+          })
+        ) : (
+          // Show placeholder when queue is empty
+          <div
+            className="shape-selector-shape-wrapper shape-selector-empty-placeholder"
+            data-landscape={isLandscape ? '1' : '0'}
+          >
+            <div className="empty-queue-message">
+              Queue Empty
             </div>
-          );
-        })
-      ) : (
-        // Show placeholder when queue is empty
-        <div
-          className="shape-selector-shape-wrapper shape-selector-empty-placeholder"
-          data-landscape={isLandscape ? '1' : '0'}
-        >
-          <div className="empty-queue-message">
-            Queue Empty
           </div>
-        </div>
-      )}
+        )}
+      </ShapeProducerViewport>
     </div>
   )
 }

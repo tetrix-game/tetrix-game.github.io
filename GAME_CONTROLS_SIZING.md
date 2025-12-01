@@ -75,6 +75,12 @@
 4. Pass `gameControlsButtonSize` via CSS variable `--game-controls-button-size`
 5. All components reference this single variable
 
+### 11. Structural Enforcement
+- `ShapeProducerViewport` component strictly enforces the "Producer Illusion"
+- Wraps ShapeOptions and clips overflow
+- Dimensions fixed to exactly `3 * gameControlsButtonSize`
+- Prevents layout regressions from affecting the core shape selection window
+
 ## Success Metrics
 - [ ] No clipping of any UI elements
 - [ ] Grid + Panel exactly fill the larger dimension

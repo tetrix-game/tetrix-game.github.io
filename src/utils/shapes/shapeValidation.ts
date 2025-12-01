@@ -1,4 +1,4 @@
-import type { Shape, Location, TilesSet } from '../types';
+import type { Shape, Location, TilesSet, GameMode } from '../types';
 import { GRID_SIZE } from '../gridConstants';
 
 /**
@@ -81,12 +81,14 @@ export function canPlaceShape(
  * @param shape - The 4x4 shape grid to check
  * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed (can be any value, even negative)
  * @param tiles - Map of tile keys to tile data for O(1) lookup
+ * @param gameMode - The current game mode (optional, defaults to 'infinite')
  * @returns true if the shape can be placed without overlapping filled tiles or going out of bounds
  */
 export function isValidPlacement(
   shape: Shape,
   gridTopLeftLocation: Location | null,
-  tiles: TilesSet
+  tiles: TilesSet,
+  gameMode: GameMode = 'infinite'
 ): boolean {
   // Return false if location is null
   if (gridTopLeftLocation === null) {
@@ -121,6 +123,14 @@ export function isValidPlacement(
         if (tileData.block.isFilled) {
           return false; // Block overlaps
         }
+
+        // Daily Challenge Logic: Check color match
+        if (gameMode === 'daily') {
+          // In daily challenge, blocks must match the background color of the tile
+          if (tileData.backgroundColor !== block.color) {
+            return false; // Color mismatch
+          }
+        }
       }
     }
   }
@@ -138,12 +148,14 @@ export function isValidPlacement(
  * @param shape - The 4x4 shape grid to check
  * @param gridTopLeftLocation - Location where the 4x4 grid's top-left corner (0,0) would be placed (can be any value, even negative)
  * @param tiles - Map of tile keys to tile data for O(1) lookup
+ * @param gameMode - The current game mode (optional, defaults to 'infinite')
  * @returns Array of invalid block positions with their shape-relative coordinates
  */
 export function getInvalidBlocks(
   shape: Shape,
   gridTopLeftLocation: Location | null,
-  tiles: TilesSet
+  tiles: TilesSet,
+  gameMode: GameMode = 'infinite'
 ): Array<{ shapeRow: number; shapeCol: number }> {
   const invalidBlocks: Array<{ shapeRow: number; shapeCol: number }> = [];
 
@@ -177,6 +189,11 @@ export function getInvalidBlocks(
             invalid = true; // Tile doesn't exist at this position
           } else if (tileData.block.isFilled) {
             invalid = true; // Block overlaps
+          } else if (gameMode === 'daily') {
+            // Daily Challenge Logic: Check color match
+            if (tileData.backgroundColor !== block.color) {
+              invalid = true; // Color mismatch
+            }
           }
         }
 

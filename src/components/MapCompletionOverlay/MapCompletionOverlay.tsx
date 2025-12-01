@@ -32,7 +32,11 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
 
   const handleRetry = () => {
     // Reset the current level
-    dispatch({ type: 'RESET_GAME' });
+    if (gameMode === 'daily') {
+      dispatch({ type: 'RESTART_DAILY_CHALLENGE' });
+    } else {
+      dispatch({ type: 'RESET_GAME' });
+    }
   };
 
   return (

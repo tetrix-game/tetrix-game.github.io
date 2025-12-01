@@ -135,13 +135,16 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Finite mode: Game over when queue is completely empty (no visible shapes and no hidden shapes)
       let isGameOver = false;
       if (state.gameMode === 'infinite') {
-        isGameOver = checkGameOver(lineClearResult.tiles, updatedNextShapes, newScore, newOpenRotationMenus);
+        isGameOver = checkGameOver(lineClearResult.tiles, updatedNextShapes, newScore, newOpenRotationMenus, state.gameMode);
       } else if (state.queueMode === 'finite') {
         // In finite mode, check if queue is depleted
         const queueDepleted = updatedNextShapes.length === 0 && updatedHiddenShapes.length === 0;
         
-        // If queue is depleted, check map completion
-        if (queueDepleted && state.targetTiles) {
+        // Check if no moves are possible with remaining shapes
+        const noMovesPossible = checkGameOver(lineClearResult.tiles, updatedNextShapes, newScore, newOpenRotationMenus, state.gameMode);
+        
+        // If queue is depleted OR no moves possible, check map completion
+        if ((queueDepleted || noMovesPossible) && state.targetTiles) {
           const completionResult = checkMapCompletion(lineClearResult.tiles, state.targetTiles);
           
           // Always show completion overlay when queue is depleted (whether success or failure)
@@ -186,7 +189,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           };
         }
         
-        isGameOver = queueDepleted;
+        isGameOver = queueDepleted || noMovesPossible;
       }
 
       const newState = {

@@ -95,6 +95,7 @@ export const initialGameState = {
   insufficientFundsError: null,
   buttonSizeMultiplier: 1.0,
   currentTheme: 'dark' as const,
+  initialDailyState: null,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -433,9 +434,49 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         // Ensure UI is ready
         hasLoadedPersistedState: true,
         hasPlacedFirstShape: true, // Start music immediately
+        initialDailyState: { tiles, shapes },
       };
 
       return newState;
+    }
+
+    case "RESTART_DAILY_CHALLENGE": {
+      if (!state.initialDailyState) {
+        return state;
+      }
+      const { tiles, shapes } = state.initialDailyState;
+      
+      // Derive target tiles from the tiles Map
+      const targetTilesSet = new Set<string>();
+      for (const [position, tile] of tiles.entries()) {
+        if (tile.backgroundColor !== 'grey') {
+          targetTilesSet.add(position);
+        }
+      }
+
+      return {
+        ...initialGameState,
+        gameMode: 'daily' as const,
+        tiles: tiles, // Use the custom grid
+        nextShapes: shapes.slice(0, 3), // First 3 shapes visible
+        queueHiddenShapes: shapes.slice(3), // Rest in queue
+        queueMode: 'finite' as const,
+        queueSize: shapes.length,
+        shapesUsed: 0,
+        targetTiles: targetTilesSet,
+        mapCompletionResult: null,
+
+        // Preserve persistent data
+        stats: state.stats,
+        unlockedModifiers: state.unlockedModifiers,
+        isMapUnlocked: state.isMapUnlocked,
+        currentTheme: state.currentTheme,
+        initialDailyState: state.initialDailyState, // Keep the initial state for future restarts
+
+        // Ensure UI is ready
+        hasLoadedPersistedState: true,
+        hasPlacedFirstShape: true,
+      };
     }
 
     case "CHECK_MAP_COMPLETION": {

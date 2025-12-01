@@ -86,6 +86,12 @@ export type TetrixReducerState = {
 
   // Theme
   currentTheme: ThemeName; // Current theme selection
+
+  // Daily Challenge State
+  initialDailyState: {
+    tiles: TilesSet;
+    shapes: Shape[];
+  } | null;
 };
 
 type SelectShapeAction = {
@@ -362,6 +368,10 @@ type StartDailyChallengeAction = {
   };
 };
 
+type RestartDailyChallengeAction = {
+  type: 'RESTART_DAILY_CHALLENGE';
+};
+
 type CheckMapCompletionAction = {
   type: 'CHECK_MAP_COMPLETION';
 };
@@ -427,6 +437,7 @@ export type TetrixAction =
   | PopulateFiniteQueueAction
   | ToggleQueueOverlayAction
   | StartDailyChallengeAction
+  | RestartDailyChallengeAction
   | CheckMapCompletionAction
   | ClearMapCompletionAction;
 

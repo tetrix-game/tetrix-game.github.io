@@ -1,4 +1,4 @@
-import { Shape, TilesSet } from '../types';
+import { Shape, TilesSet, GameMode } from '../types';
 import { isValidPlacement } from './shapes/shapeValidation';
 import { rotateShape } from './shapes/shapeTransforms';
 
@@ -9,13 +9,15 @@ import { rotateShape } from './shapes/shapeTransforms';
  * @param shapes - The list of available shapes in the queue
  * @param score - The current player score (used to determine if rotation is possible)
  * @param openRotationMenus - The state of rotation menus for each shape
+ * @param gameMode - The current game mode (optional, defaults to 'infinite')
  * @returns true if no shape can be placed anywhere on the grid
  */
 export function checkGameOver(
   tiles: TilesSet,
   shapes: Shape[],
   score: number,
-  openRotationMenus: boolean[]
+  openRotationMenus: boolean[],
+  gameMode: GameMode = 'infinite'
 ): boolean {
   // If no shapes left, it's not game over (new ones will spawn)
   if (shapes.length === 0) {
@@ -45,7 +47,7 @@ export function checkGameOver(
       // (though isValidPlacement requires ALL filled blocks to be in bounds)
       for (let row = -3; row <= 10; row++) {
         for (let col = -3; col <= 10; col++) {
-          if (isValidPlacement(currentShape, { row, column: col }, tiles)) {
+          if (isValidPlacement(currentShape, { row, column: col }, tiles, gameMode)) {
             return false; // Found a valid move!
           }
         }

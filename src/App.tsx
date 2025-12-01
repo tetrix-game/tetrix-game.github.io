@@ -103,8 +103,8 @@ const App = () => {
           if (location) {
             // Always calculate validation - the location might be the same but we need to ensure
             // invalidBlocks is properly calculated for any location (including out of bounds)
-            isValid = isValidPlacement(dragState.selectedShape, location, tiles);
-            invalidBlocks = getInvalidBlocks(dragState.selectedShape, location, tiles);
+            isValid = isValidPlacement(dragState.selectedShape, location, tiles, gameMode);
+            invalidBlocks = getInvalidBlocks(dragState.selectedShape, location, tiles, gameMode);
           }
         }
       }
@@ -176,7 +176,7 @@ const App = () => {
       );
 
       // If location is null or placement is invalid, return the shape
-      if (location === null || !isValidPlacement(dragState.selectedShape, location, tiles)) {
+      if (location === null || !isValidPlacement(dragState.selectedShape, location, tiles, gameMode)) {
         playSound('invalid_placement');
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;

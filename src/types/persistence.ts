@@ -39,6 +39,7 @@ export type ViewGameState = {
   queueHiddenShapes?: Shape[];
   queueSize?: number;
   lastUpdated: number;
+  checksum?: string; // Data integrity verification
 };
 
 // Granular persistence types (legacy - for migration)

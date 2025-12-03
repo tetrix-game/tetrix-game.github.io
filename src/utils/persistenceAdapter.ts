@@ -22,6 +22,37 @@ import {
 import { STORES } from './indexedDBCrud';
 import { createEmptyHistory, addCompletionRecord } from './dailyStreakUtils';
 
+// Toggle this to enable/disable granular persistence logging
+const DEBUG_PERSISTENCE_CHECKSUMS = true;
+
+/**
+ * Generates a simple checksum for any data structure.
+ * Uses JSON stringification + hash for deep comparison.
+ * Excludes 'checksum' field to avoid circular dependency.
+ */
+function getChecksum(data: any): string {
+  if (data === undefined || data === null) return 'null';
+  try {
+    // Create a copy to avoid modifying original
+    const copy = { ...data };
+    // Remove checksum field if present to ensure stable calculation
+    if ('checksum' in copy) {
+      delete copy.checksum;
+    }
+    
+    const str = JSON.stringify(copy);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString(16);
+  } catch (e) {
+    return 'error-calculating-checksum';
+  }
+}
+
 /**
  * Get the store name for a specific game mode
  */
@@ -49,8 +80,62 @@ export async function saveViewGameState(
   gameMode: GameModeContext,
   state: ViewGameState
 ): Promise<void> {
+  // Calculate checksum for data integrity
+  const checksum = getChecksum(state);
+  
+  // Add checksum to state object
+  const stateWithChecksum: ViewGameState = {
+    ...state,
+    checksum
+  };
+export async function loadViewGameState(
+  gameMode: GameModeContext
+): Promise<LoadResult<ViewGameState>> {
   const store = getGameStateStore(gameMode);
-  await crud.write(store, 'current', state);
+  try {
+    const state = await crud.read<ViewGameState>(store, 'current');
+    if (state) {
+      // Validate checksum if present
+      if (state.checksum) {
+        const calculatedChecksum = getChecksum(state);
+        if (calculatedChecksum !== state.checksum) {
+          console.error(`[Persistence] Checksum mismatch for ${gameMode}!`);
+          console.error(`Expected: ${state.checksum}`);
+          console.error(`Calculated: ${calculatedChecksum}`);
+          console.warn('Data may be corrupted, but proceeding with load...');
+        } else if (DEBUG_PERSISTENCE_CHECKSUMS) {
+          console.log(`[Persistence] Checksum verified for ${gameMode}: ${state.checksum}`);
+        }
+      }
+
+      if (DEBUG_PERSISTENCE_CHECKSUMS) {
+        console.groupCollapsed(`[Persistence] Loaded ${gameMode} state`);
+        console.log(`TIMESTAMP: ${new Date().toISOString()}`);
+        console.log(`FULL STATE Checksum: ${getChecksum(state)}`);
+        
+        // Granular Checksums
+        console.log(`- Score: ${state.score}`);
+        console.log(`- Tiles Checksum: ${getChecksum(state.tiles)} (Count: ${state.tiles?.length})`);
+        console.log(`- NextShapes Checksum: ${getChecksum(state.nextShapes)}`);
+        console.log(`- SavedShape Checksum: ${getChecksum(state.savedShape)}`);
+        console.log(`- Stats Checksum: ${getChecksum(state.stats)}`);
+        console.groupEnd();
+      }
+
+      console.log(`Game state loaded for ${gameMode} mode`);
+      return { status: 'success', data: state };
+    }
+    
+    if (DEBUG_PERSISTENCE_CHECKSUMS) {
+      console.warn(`[Persistence] No saved state found for ${gameMode}`);
+    }
+    return { status: 'not_found' };
+  } catch (error) {
+    console.error(`Failed to load game state for ${gameMode}:`, error);
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
+  }
+} const store = getGameStateStore(gameMode);
+  await crud.write(store, 'current', stateWithChecksum);
   console.log(`Game state saved for ${gameMode} mode`);
 }
 

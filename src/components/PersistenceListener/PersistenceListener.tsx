@@ -17,6 +17,7 @@ import { tilesToArray } from '../../types';
 export const PersistenceListener = () => {
   const state = useTetrixStateContext();
   const {
+    gameState,
     gameMode,
     score,
     tiles,
@@ -57,13 +58,15 @@ export const PersistenceListener = () => {
       queueMode,
       queueHiddenShapes,
       queueSize,
-      queueColorProbabilities
+      queueColorProbabilities,
+      isGameOver: gameState === 'gameover'
     }).catch(error => {
       console.error('Failed to save game state via listener:', error);
     });
-
   }, [
     gameMode,
+    gameState,
+    score,
     score,
     tiles,
     nextShapes,

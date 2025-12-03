@@ -117,6 +117,7 @@ export async function saveGameForMode(
     queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
     queueHiddenShapes?: Shape[];
     queueSize?: number;
+    isGameOver?: boolean;
   }
 ): Promise<void> {
   // Tiles are already in TileData format
@@ -135,6 +136,7 @@ export async function saveGameForMode(
     queueColorProbabilities: data.queueColorProbabilities,
     queueHiddenShapes: data.queueHiddenShapes,
     queueSize: data.queueSize,
+    isGameOver: data.isGameOver,
     lastUpdated: Date.now(),
   };
   
@@ -159,6 +161,7 @@ export async function loadGameForMode(
   queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
+  isGameOver?: boolean;
 } | null> {
   const result = await loadViewGameState(gameMode);
   
@@ -182,6 +185,7 @@ export async function loadGameForMode(
     queueColorProbabilities: state.queueColorProbabilities,
     queueHiddenShapes: state.queueHiddenShapes,
     queueSize: state.queueSize,
+    isGameOver: state.isGameOver,
   };
 }
 
@@ -203,6 +207,7 @@ export async function safeBatchSave(
     queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
     queueHiddenShapes?: Shape[];
     queueSize?: number;
+    isGameOver?: boolean;
   }
 ): Promise<void> {
   const promises: Promise<void>[] = [];
@@ -220,34 +225,36 @@ export async function safeBatchSave(
     data.queueMode !== undefined ||
     data.queueColorProbabilities !== undefined ||
     data.queueHiddenShapes !== undefined ||
-    data.queueSize !== undefined
+    data.queueSize !== undefined ||
+    data.isGameOver !== undefined
   ) {
     // Load current state to avoid overwriting fields
     const currentResult = await loadViewGameState(gameMode);
     
     if (currentResult.status === 'success') {
       // Update existing state
-      const updates: Partial<ViewGameState> = {};
+      const current = currentResult.data;
+      const updated: ViewGameState = {
+        ...current,
+        lastUpdated: Date.now(),
+      };
       
-      if (data.score !== undefined) updates.score = data.score;
-      if (data.totalLinesCleared !== undefined) updates.totalLinesCleared = data.totalLinesCleared;
-      if (data.shapesUsed !== undefined) updates.shapesUsed = data.shapesUsed;
-      if (data.hasPlacedFirstShape !== undefined) updates.hasPlacedFirstShape = data.hasPlacedFirstShape;
-      if (data.nextShapes !== undefined) updates.nextShapes = data.nextShapes;
-      if (data.savedShape !== undefined) updates.savedShape = data.savedShape;
-      if (data.stats !== undefined) updates.stats = data.stats;
-      if (data.queueMode !== undefined) updates.queueMode = data.queueMode;
-      if (data.queueColorProbabilities !== undefined) updates.queueColorProbabilities = data.queueColorProbabilities;
-      if (data.queueHiddenShapes !== undefined) updates.queueHiddenShapes = data.queueHiddenShapes;
-      if (data.queueSize !== undefined) updates.queueSize = data.queueSize;
+      if (data.score !== undefined) updated.score = data.score;
+      if (data.totalLinesCleared !== undefined) updated.totalLinesCleared = data.totalLinesCleared;
+      if (data.shapesUsed !== undefined) updated.shapesUsed = data.shapesUsed;
+      if (data.hasPlacedFirstShape !== undefined) updated.hasPlacedFirstShape = data.hasPlacedFirstShape;
+      if (data.queueMode !== undefined) updated.queueMode = data.queueMode;
+      if (data.queueColorProbabilities !== undefined) updated.queueColorProbabilities = data.queueColorProbabilities;
+      if (data.queueHiddenShapes !== undefined) updated.queueHiddenShapes = data.queueHiddenShapes;
+      if (data.queueSize !== undefined) updated.queueSize = data.queueSize;
+      if (data.isGameOver !== undefined) updated.isGameOver = data.isGameOver;
       
       if (data.tiles !== undefined) {
-        // Tiles are already in the new TileData format with position property
-        updates.tiles = data.tiles;
+        updated.tiles = data.tiles;
       }
       
       promises.push(
-        updateViewGameState(gameMode, updates).catch(error => {
+        saveViewGameState(gameMode, updated).catch(error => {
           console.warn('Failed to update game state:', error.message);
         })
       );
@@ -263,6 +270,7 @@ export async function safeBatchSave(
           shapesUsed: data.shapesUsed,
           hasPlacedFirstShape: data.hasPlacedFirstShape,
           stats: data.stats,
+          isGameOver: data.isGameOver,
         }).catch(error => {
           console.warn('Failed to save game state:', error.message);
         })

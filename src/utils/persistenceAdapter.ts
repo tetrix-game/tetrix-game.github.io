@@ -87,11 +87,11 @@ export async function loadViewGameState(
 ): Promise<LoadResult<ViewGameState>> {
   const store = getGameStateStore(gameMode);
   try {
-    // Load Data and Manifest in parallel
-    const [state, manifest] = await Promise.all([
-      crud.read<ViewGameState>(store, 'current'),
-      crud.read<ChecksumManifest>(STORES.CHECKSUMS, `${gameMode}_manifest`)
-    ]);
+    // Load Data and Manifest in parallel using a single transaction for consistency
+    const [state, manifest] = await crud.batchRead([
+      { storeName: store, key: 'current' },
+      { storeName: STORES.CHECKSUMS, key: `${gameMode}_manifest` }
+    ]) as [ViewGameState | null, ChecksumManifest | null];
 
     if (state) {
       // Perform Strict Merkle Tree Verification

@@ -21,6 +21,7 @@ export type GamePersistenceData = {
   queueColorProbabilities?: import('./shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
+  isGameOver?: boolean;
 };
 
 // View-specific game state (separate data per game mode)
@@ -38,6 +39,7 @@ export type ViewGameState = {
   queueColorProbabilities?: import('./shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
+  isGameOver?: boolean; // Track if the game ended
   lastUpdated: number;
   checksum?: string; // Data integrity verification
 };

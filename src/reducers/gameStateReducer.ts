@@ -284,6 +284,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         queueColorProbabilities: gameData.queueColorProbabilities ?? state.queueColorProbabilities,
         queueHiddenShapes: gameData.queueHiddenShapes ?? state.queueHiddenShapes,
         queueSize: gameData.queueSize ?? state.queueSize,
+        gameState: gameData.isGameOver ? 'gameover' : state.gameState,
       };
     }
 

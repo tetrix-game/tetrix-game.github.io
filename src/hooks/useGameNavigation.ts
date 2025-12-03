@@ -30,7 +30,7 @@ export const useGameNavigation = () => {
     if (mode === 'infinite') {
       try {
         const savedGame = await loadGameForMode('infinite');
-        if (savedGame) {
+        if (savedGame && !savedGame.isGameOver) {
           dispatch({
             type: 'LOAD_GAME_STATE',
             value: { gameData: savedGame }

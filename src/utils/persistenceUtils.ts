@@ -12,8 +12,6 @@ import {
   saveViewGameState,
   loadViewGameState,
   updateViewGameState,
-  saveSettings,
-  loadSettings,
   saveMusicSettings,
   loadMusicSettings,
   saveSoundEffectsSettings,
@@ -78,7 +76,7 @@ export async function saveGameState(gameData: GamePersistenceData): Promise<void
   // Note: This assumes 'infinite' mode
   await saveViewGameState('infinite', {
     score: gameData.score,
-    tiles: gameData.tiles, // Assumes TileData[] format (which it should be in new code)
+    tiles: gameData.tiles as any, // Cast to any to bypass strict check for legacy data
     nextShapes: gameData.nextShapes,
     savedShape: gameData.savedShape,
     totalLinesCleared: 0, // Missing in legacy
@@ -107,7 +105,10 @@ export async function loadGameState(): Promise<LoadResult<GamePersistenceData>> 
     };
   }
   
-  return { status: result.status, error: result.error };
+  if (result.status === 'not_found') {
+    return { status: 'not_found' };
+  }
+  return { status: 'error', error: result.error };
 }
 
 /**
@@ -156,7 +157,10 @@ export async function loadStats(): Promise<LoadResult<StatsPersistenceData>> {
   if (result.status === 'success') {
     return { status: 'success', data: result.data.stats };
   }
-  return { status: result.status, error: result.error };
+  if (result.status === 'not_found') {
+    return { status: 'not_found' };
+  }
+  return { status: 'error', error: result.error };
 }
 
 /**

@@ -94,9 +94,27 @@ export async function loadViewGameState(
     ]) as [ViewGameState | null, ChecksumManifest | null];
 
     if (state) {
+      // Sanitize state to ensure all required fields exist (handles partial/corrupted data)
+      const sanitizedState: ViewGameState = {
+        score: typeof state.score === 'number' ? state.score : 0,
+        tiles: Array.isArray(state.tiles) ? state.tiles : [],
+        nextShapes: Array.isArray(state.nextShapes) ? state.nextShapes : [],
+        savedShape: state.savedShape ?? null,
+        totalLinesCleared: typeof state.totalLinesCleared === 'number' ? state.totalLinesCleared : 0,
+        shapesUsed: typeof state.shapesUsed === 'number' ? state.shapesUsed : 0,
+        hasPlacedFirstShape: typeof state.hasPlacedFirstShape === 'boolean' ? state.hasPlacedFirstShape : false,
+        stats: state.stats ?? (await import('../types/stats')).INITIAL_STATS_PERSISTENCE,
+        queueMode: state.queueMode,
+        queueColorProbabilities: state.queueColorProbabilities,
+        queueHiddenShapes: state.queueHiddenShapes,
+        queueSize: state.queueSize,
+        isGameOver: typeof state.isGameOver === 'boolean' ? state.isGameOver : false,
+        lastUpdated: typeof state.lastUpdated === 'number' ? state.lastUpdated : Date.now(),
+      };
+
       // Perform Strict Merkle Tree Verification
       if (manifest) {
-        const result = verifyChecksumManifest(state, manifest);
+        const result = verifyChecksumManifest(sanitizedState, manifest);
         
         if (!result.isValid) {
           console.error(`%c[Persistence] CRITICAL DATA CORRUPTION in ${gameMode}!`, 'color: red; font-weight: bold; font-size: 14px;');
@@ -116,7 +134,7 @@ export async function loadViewGameState(
         console.warn(`[Persistence] No checksum manifest found for ${gameMode}. This might be a legacy save.`);
       }
 
-      return { status: 'success', data: state };
+      return { status: 'success', data: sanitizedState };
     }
     
     if (DEBUG_PERSISTENCE_CHECKSUMS) {
@@ -353,6 +371,14 @@ export async function migrateLegacyData(): Promise<void> {
   console.log('Checking for legacy data to migrate...');
 
   try {
+    // 1. Check if we already have new data. If so, DO NOT migrate.
+    // This prevents overwriting new game progress with old legacy data on reload.
+    const hasNewData = await hasViewGameState('infinite');
+    if (hasNewData) {
+      console.log('New game data exists. Skipping migration.');
+      return;
+    }
+
     // Check if we have legacy data
     const legacyGameState = await crud.read<{
       score: number;
@@ -368,30 +394,42 @@ export async function migrateLegacyData(): Promise<void> {
 
     console.log('Found legacy data, migrating to infinite mode...');
 
+    // Validate legacy data structure before processing
+    if (!Array.isArray(legacyGameState.tiles)) {
+      console.error('Legacy data corrupted: tiles is not an array');
+      return;
+    }
+
     // Convert tiles from old array format to new TileData format
-    const tilesData = legacyGameState.tiles.map((tile: any) => ({
-      position: `R${tile.location.row}C${tile.location.column}`,
-      backgroundColor: tile.tileBackgroundColor,
-      isFilled: tile.block.isFilled,
-      color: tile.block.color,
-      activeAnimations: [],
-    }));
+    const tilesData = legacyGameState.tiles
+      .filter((tile: any) => tile && tile.location && tile.block) // Filter out malformed tiles
+      .map((tile: any) => ({
+        position: `R${tile.location.row}C${tile.location.column}`,
+        backgroundColor: tile.tileBackgroundColor || 'transparent',
+        isFilled: !!tile.block.isFilled,
+        color: tile.block.color || 'transparent',
+        activeAnimations: [],
+      }));
 
     // Create new view state
     const viewState: ViewGameState = {
-      score: legacyGameState.score,
+      score: typeof legacyGameState.score === 'number' ? legacyGameState.score : 0,
       tiles: tilesData,
-      nextShapes: legacyGameState.nextShapes,
-      savedShape: legacyGameState.savedShape,
+      nextShapes: Array.isArray(legacyGameState.nextShapes) ? legacyGameState.nextShapes : [],
+      savedShape: legacyGameState.savedShape || null,
       totalLinesCleared: 0,
       shapesUsed: 0,
-      hasPlacedFirstShape: legacyGameState.nextShapes.length < 3, // Infer if started
+      hasPlacedFirstShape: Array.isArray(legacyGameState.nextShapes) && legacyGameState.nextShapes.length < 3, // Infer if started
       stats: (await import('../types/stats')).INITIAL_STATS_PERSISTENCE,
       lastUpdated: Date.now(),
+      isGameOver: false,
     };
 
     // Save to infinite mode store
     await saveViewGameState('infinite', viewState);
+
+    // We do NOT delete the legacy data here, just in case something goes wrong.
+    // The 'hasNewData' check at the top protects us from re-migration.
 
     console.log('Legacy data migrated successfully');
   } catch (error) {

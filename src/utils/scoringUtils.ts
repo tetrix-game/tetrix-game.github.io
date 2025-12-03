@@ -30,6 +30,11 @@ export function calculateScore(rowsCleared: number, columnsCleared: number): Sco
  * Maximum of 3 digits with 1 decimal place, rounded to nearest tenth
  */
 export function formatScore(score: number): string {
+  // Handle invalid inputs gracefully
+  if (score === undefined || score === null || isNaN(score)) {
+    return "0";
+  }
+
   if (score < 1000) {
     return score.toString();
   }

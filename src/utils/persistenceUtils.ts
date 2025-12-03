@@ -26,7 +26,7 @@ import {
 } from './validationUtils';
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 6; // Keep in sync with indexedDBCrud.ts
+const DB_VERSION = 7; // Keep in sync with indexedDBCrud.ts
 const GAME_STATE_STORE = 'gameState'; // Legacy store
 const SCORE_STORE = 'score';
 const TILES_STORE = 'tiles';
@@ -94,7 +94,8 @@ function openDatabase(): Promise<IDBDatabase> {
         STATS_STORE,
         'infiniteState',
         'dailyState',
-        'tutorialState'
+        'tutorialState',
+        'dailyHistory'
       ];
       const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
 
@@ -153,6 +154,10 @@ function openDatabase(): Promise<IDBDatabase> {
 
       if (!db.objectStoreNames.contains('tutorialState')) {
         db.createObjectStore('tutorialState');
+      }
+
+      if (!db.objectStoreNames.contains('dailyHistory')) {
+        db.createObjectStore('dailyHistory');
       }
     };
   });

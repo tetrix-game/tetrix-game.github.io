@@ -12,6 +12,18 @@ import type {
 } from './types';
 import type { TileData, ColorName } from '../types';
 import { INITIAL_GAME_STATS } from '../types/stats';
+import {
+  ScorePersistenceDataSchema,
+  TilesPersistenceDataSchema,
+  ShapesPersistenceDataSchema,
+  MusicPersistenceDataSchema,
+  SoundEffectsPersistenceDataSchema,
+  StatsPersistenceDataSchema,
+  ModifiersPersistenceDataSchema,
+  GameSettingsPersistenceDataSchema,
+  LegacyGamePersistenceDataSchema,
+  validateSchema
+} from './validationUtils';
 
 const DB_NAME = 'TetrixGameDB';
 const DB_VERSION = 6; // Keep in sync with indexedDBCrud.ts
@@ -200,18 +212,28 @@ export async function loadGameState(): Promise<LoadResult<GamePersistenceData>> 
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result?.tiles && Array.isArray(result.tiles)) {
+        
+        if (!result) {
+          resolve({ status: 'not_found' });
+          return;
+        }
+
+        // Validate legacy data
+        const validation = validateSchema(LegacyGamePersistenceDataSchema, result);
+        
+        if (validation.success) {
+          const data = validation.data;
           // Ensure backward compatibility - add missing fields if they don't exist
           const gameData = {
-            score: result.score || 0,
-            tiles: result.tiles || [],
-            nextShapes: result.nextShapes || [],
-            savedShape: result.savedShape || null,
+            score: data.score || 0,
+            tiles: data.tiles || [],
+            nextShapes: data.nextShapes || [],
+            savedShape: data.savedShape || null,
           };
-          resolve({ status: 'success', data: gameData });
+          resolve({ status: 'success', data: gameData as GamePersistenceData });
         } else {
-          // No saved state or invalid data
-          resolve({ status: 'not_found' });
+          console.error('Legacy game state validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -516,10 +538,19 @@ export async function loadDebugSettings(): Promise<LoadResult<boolean>> {
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result && typeof result.debugUnlocked === 'boolean') {
-          resolve({ status: 'success', data: result.debugUnlocked });
-        } else {
+        
+        if (!result) {
           resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(GameSettingsPersistenceDataSchema, result);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: validation.data.debugUnlocked ?? false });
+        } else {
+          console.error('Debug settings validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -549,10 +580,19 @@ export async function loadScore(): Promise<LoadResult<number>> {
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result && typeof result.score === 'number') {
-          resolve({ status: 'success', data: result.score });
-        } else {
+        
+        if (!result) {
           resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(ScorePersistenceDataSchema, result);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: validation.data.score });
+        } else {
+          console.error('Score validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -582,10 +622,19 @@ export async function loadTiles(): Promise<LoadResult<TilesPersistenceData['tile
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result?.tiles && Array.isArray(result.tiles)) {
-          resolve({ status: 'success', data: result.tiles });
+        
+        if (!result) {
+          resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(TilesPersistenceDataSchema, result);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: validation.data.tiles });
         } else {
-          resolve({ status: 'not_found' }); // No tiles saved
+          console.error('Tiles validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -615,16 +664,25 @@ export async function loadShapes(): Promise<LoadResult<{ nextShapes: ShapesPersi
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result) {
+        
+        if (!result) {
+          resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(ShapesPersistenceDataSchema, result);
+        
+        if (validation.success) {
           resolve({
             status: 'success',
             data: {
-              nextShapes: result.nextShapes || [],
-              savedShape: result.savedShape || null
+              nextShapes: validation.data.nextShapes,
+              savedShape: validation.data.savedShape
             }
           });
         } else {
-          resolve({ status: 'not_found' }); // No shapes saved
+          console.error('Shapes validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -654,14 +712,19 @@ export async function loadMusicSettings(): Promise<LoadResult<{ isMuted: boolean
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result) {
-          // Provide backward compatibility with old data
-          const volume = result?.music?.volume ?? 100;
-          const isEnabled = result?.music?.isEnabled ?? !result?.music?.isMuted ?? true;
-          const isMuted = result?.music?.isMuted ?? false;
-          resolve({ status: 'success', data: { isMuted, volume, isEnabled } });
-        } else {
+        
+        if (!result) {
           resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(GameSettingsPersistenceDataSchema, result);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: validation.data.music });
+        } else {
+          console.error('Music settings validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -691,14 +754,19 @@ export async function loadSoundEffectsSettings(): Promise<LoadResult<{ isMuted: 
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result) {
-          // Provide backward compatibility with old data
-          const volume = result?.soundEffects?.volume ?? 100;
-          const isEnabled = result?.soundEffects?.isEnabled ?? !result?.soundEffects?.isMuted ?? true;
-          const isMuted = result?.soundEffects?.isMuted ?? false;
-          resolve({ status: 'success', data: { isMuted, volume, isEnabled } });
-        } else {
+        
+        if (!result) {
           resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(GameSettingsPersistenceDataSchema, result);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: validation.data.soundEffects });
+        } else {
+          console.error('Sound effects settings validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -743,12 +811,23 @@ export async function loadStats(): Promise<LoadResult<StatsPersistenceData>> {
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result) {
-          // Migrate old stats to ensure new properties exist
-          const migratedStats = migrateStats(result);
-          resolve({ status: 'success', data: migratedStats });
+        
+        if (!result) {
+          resolve({ status: 'not_found' });
+          return;
+        }
+
+        // Migrate old stats to ensure new properties exist
+        const migratedStats = migrateStats(result);
+        
+        // Validate migrated stats
+        const validation = validateSchema(StatsPersistenceDataSchema, migratedStats);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: validation.data });
         } else {
-          resolve({ status: 'not_found' }); // No stats saved yet
+          console.error('Stats validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -810,10 +889,19 @@ export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result?.unlockedModifiers && Array.isArray(result.unlockedModifiers)) {
-          resolve({ status: 'success', data: new Set(result.unlockedModifiers) });
+        
+        if (!result) {
+          resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(ModifiersPersistenceDataSchema, result);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: new Set(validation.data.unlockedModifiers) });
         } else {
-          resolve({ status: 'not_found' }); // No modifiers unlocked yet
+          console.error('Modifiers validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 
@@ -843,10 +931,19 @@ async function loadGameSettings(): Promise<LoadResult<GameSettingsPersistenceDat
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result) {
-          resolve({ status: 'success', data: result });
-        } else {
+        
+        if (!result) {
           resolve({ status: 'not_found' });
+          return;
+        }
+
+        const validation = validateSchema(GameSettingsPersistenceDataSchema, result);
+        
+        if (validation.success) {
+          resolve({ status: 'success', data: validation.data });
+        } else {
+          console.error('Game settings validation failed:', validation.error);
+          resolve({ status: 'error', error: validation.error });
         }
       };
 

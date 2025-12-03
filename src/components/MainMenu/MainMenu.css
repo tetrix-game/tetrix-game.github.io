@@ -331,3 +331,27 @@
   text-transform: uppercase;
   margin-top: 2px;
 }
+
+.hub-menu-footer {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: fadeIn 0.5s ease-in-out 0.2s backwards;
+}
+
+/* Override InstallButton styles when in footer */
+.hub-menu-footer .install-pwa-button {
+  max-width: 300px;
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+  border-radius: 50px; /* Pill shape */
+  background: linear-gradient(135deg, #4fd1c7 0%, #2c8f87 100%);
+  box-shadow: 0 4px 15px rgba(79, 209, 199, 0.4);
+  margin-bottom: 0;
+}
+
+.hub-menu-footer .install-pwa-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(79, 209, 199, 0.6);
+}

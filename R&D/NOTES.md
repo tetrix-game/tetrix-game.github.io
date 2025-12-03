@@ -1,9 +1,8 @@
 # Tetrix Game Backlog
 
 ## What's Up Next
-- Tutorial auto-starts and accessible only from the menu
-- "Look at this!" moments
 - Architecture
+    - Bulletproof PWA download
 - Juice
     - 5m: The heartbeat isn't loud enough on phones
     - Better clearance animations
@@ -21,6 +20,7 @@
 - Curb appeal
     - 3h: Better share images
     - 10m: Better App Icon
+    - "Look at this!" moments
 
 
 ## Related Documentation

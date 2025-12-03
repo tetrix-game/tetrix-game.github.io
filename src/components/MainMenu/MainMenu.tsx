@@ -3,6 +3,7 @@ import { useGameNavigation } from '../../hooks/useGameNavigation';
 import { useDailyChallengeLoader } from '../../hooks/useDailyChallengeLoader';
 import { useDailyHistory } from '../../hooks/useDailyHistory';
 import { hasCompletedToday } from '../../utils/dailyStreakUtils';
+import InstallButton from '../InstallButton';
 import './MainMenu.css';
 
 const MainMenu: React.FC = () => {
@@ -67,6 +68,10 @@ const MainMenu: React.FC = () => {
             <div className="spoke-title">Infinite Play</div>
             <div className="spoke-description">Play endlessly</div>
           </button>
+        </div>
+
+        <div className="hub-menu-footer">
+          <InstallButton />
         </div>
       </div>
     </div>

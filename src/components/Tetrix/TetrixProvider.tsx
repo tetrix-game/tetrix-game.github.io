@@ -42,6 +42,10 @@ export default function TetrixProvider({ children }: { readonly children: React.
           })
         ]);
 
+        // Extract data from LoadResults
+        const infiniteStateData = infiniteViewState?.status === 'success' ? infiniteViewState.data : null;
+        const settingsData = settings?.status === 'success' ? settings.data : null;
+
         // Load theme first
         if (savedThemeResult.status === 'success' && (savedThemeResult.data === 'dark' || savedThemeResult.data === 'light' || savedThemeResult.data === 'block-blast')) {
           dispatch({
@@ -59,25 +63,25 @@ export default function TetrixProvider({ children }: { readonly children: React.
         }
 
         // Restore last game mode if available
-        if (settings?.lastGameMode && settings.lastGameMode !== 'hub') {
+        if (settingsData?.lastGameMode && settingsData.lastGameMode !== 'hub') {
           dispatch({
             type: 'SET_GAME_MODE',
-            value: { mode: settings.lastGameMode }
+            value: { mode: settingsData.lastGameMode }
           });
         }
 
         // Restore map unlock status
-        if (settings?.isMapUnlocked) {
+        if (settingsData?.isMapUnlocked) {
           dispatch({
             type: 'UNLOCK_MAP'
           });
         }
 
         // Restore button size multiplier
-        if (settings?.buttonSizeMultiplier !== undefined) {
+        if (settingsData?.buttonSizeMultiplier !== undefined) {
           dispatch({
             type: 'SET_BUTTON_SIZE_MULTIPLIER',
-            value: { multiplier: settings.buttonSizeMultiplier }
+            value: { multiplier: settingsData.buttonSizeMultiplier }
           });
         }
 
@@ -87,7 +91,7 @@ export default function TetrixProvider({ children }: { readonly children: React.
             type: 'LOAD_GAME_STATE',
             value: { 
               gameData: gameDataResult.data,
-              stats: infiniteViewState?.stats // Include stats from infinite mode if available
+              stats: infiniteStateData?.stats // Include stats from infinite mode if available
             },
           });
         }

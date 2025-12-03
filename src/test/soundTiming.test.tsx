@@ -87,7 +87,8 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   hasLoadedPersistedState: true,
   isStatsOpen: false,
   isQueueOverlayOpen: false,
-  insufficientFundsError: null
+  insufficientFundsError: null,
+  initialDailyState: null
 });
 
 describe('Sound Timing in DraggingShape', () => {

@@ -20,7 +20,7 @@ import {
   clearAllDataAndReload,
   loadDebugSettings,
   saveDebugSettings
-} from '../../utils/persistenceUtils';
+} from '../../utils/persistence';
 import InstallButton from '../InstallButton';
 import './SettingsOverlay.css';
 

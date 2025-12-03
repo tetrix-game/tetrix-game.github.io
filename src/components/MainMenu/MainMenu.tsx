@@ -21,7 +21,6 @@ const MainMenu: React.FC = () => {
 
   const completedToday = hasCompletedToday(history);
   const currentStreak = history.currentStreak;
-  const longestStreak = history.longestStreak;
 
   return (
     <div className="hub-menu-overlay">

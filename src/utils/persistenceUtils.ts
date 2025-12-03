@@ -16,8 +16,6 @@ import {
   ScorePersistenceDataSchema,
   TilesPersistenceDataSchema,
   ShapesPersistenceDataSchema,
-  MusicPersistenceDataSchema,
-  SoundEffectsPersistenceDataSchema,
   StatsPersistenceDataSchema,
   ModifiersPersistenceDataSchema,
   GameSettingsPersistenceDataSchema,
@@ -945,7 +943,7 @@ async function loadGameSettings(): Promise<LoadResult<GameSettingsPersistenceDat
         const validation = validateSchema(GameSettingsPersistenceDataSchema, result);
         
         if (validation.success) {
-          resolve({ status: 'success', data: validation.data });
+          resolve({ status: 'success', data: validation.data as GameSettingsPersistenceData });
         } else {
           console.error('Game settings validation failed:', validation.error);
           resolve({ status: 'error', error: validation.error });

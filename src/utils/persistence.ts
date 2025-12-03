@@ -154,11 +154,13 @@ export async function loadGameForMode(
   queueHiddenShapes?: Shape[];
   queueSize?: number;
 } | null> {
-  const state = await loadViewGameState(gameMode);
+  const result = await loadViewGameState(gameMode);
   
-  if (!state) {
+  if (result.status !== 'success') {
     return null;
   }
+
+  const state = result.data;
   
   // Return TileData directly
   return {
@@ -215,9 +217,9 @@ export async function safeBatchSave(
     data.queueSize !== undefined
   ) {
     // Load current state to avoid overwriting fields
-    const current = await loadViewGameState(gameMode);
+    const currentResult = await loadViewGameState(gameMode);
     
-    if (current) {
+    if (currentResult.status === 'success') {
       // Update existing state
       const updates: Partial<ViewGameState> = {};
       
@@ -274,7 +276,9 @@ export async function loadMusicSettings(): Promise<{
   volume: number;
   isEnabled: boolean;
 }> {
-  const settings = await loadSettings();
+  const result = await loadSettings();
+  const settings = result.status === 'success' ? result.data : null;
+  
   return {
     isMuted: settings?.music?.isMuted ?? false,
     volume: settings?.music?.volume ?? 100,
@@ -290,7 +294,9 @@ export async function loadSoundEffectsSettings(): Promise<{
   volume: number;
   isEnabled: boolean;
 }> {
-  const settings = await loadSettings();
+  const result = await loadSettings();
+  const settings = result.status === 'success' ? result.data : null;
+
   return {
     isMuted: settings?.soundEffects?.isMuted ?? false,
     volume: settings?.soundEffects?.volume ?? 100,
@@ -302,7 +308,8 @@ export async function loadSoundEffectsSettings(): Promise<{
  * Convenience function: Load debug unlock status
  */
 export async function loadDebugSettings(): Promise<boolean> {
-  const settings = await loadSettings();
+  const result = await loadSettings();
+  const settings = result.status === 'success' ? result.data : null;
   return settings?.debugUnlocked ?? false;
 }
 
@@ -310,7 +317,8 @@ export async function loadDebugSettings(): Promise<boolean> {
  * Convenience function: Load theme preference
  */
 export async function loadTheme(): Promise<string | null> {
-  const settings = await loadSettings();
+  const result = await loadSettings();
+  const settings = result.status === 'success' ? result.data : null;
   return settings?.theme ?? null;
 }
 

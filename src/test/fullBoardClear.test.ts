@@ -216,6 +216,7 @@ describe('Full Board Clear - Reducer Integration', () => {
       isQueueOverlayOpen: false,
       insufficientFundsError: null,
       currentTheme: 'dark' as const,
+      initialDailyState: null,
       showCoinDisplay: true,
       mousePosition: { x: 0, y: 0 },
       gemIconPosition: { x: 0, y: 0 },

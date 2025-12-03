@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import type { ColorName } from '../types/core';
 
 // --- Core Schemas ---
 

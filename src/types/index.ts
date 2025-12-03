@@ -61,6 +61,7 @@ export type {
   ModifiersPersistenceData,
   DailyChallengeRecord,
   DailyChallengeHistory,
+  LoadResult,
 } from './persistence';
 
 // Stats types

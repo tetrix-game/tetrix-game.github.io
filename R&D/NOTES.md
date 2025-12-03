@@ -2,6 +2,7 @@
 
 ## What's Up Next
 - Architecture
+    - Bulletproof loading
     - Bulletproof PWA download
 - Juice
     - 5m: The heartbeat isn't loud enough on phones

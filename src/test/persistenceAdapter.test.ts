@@ -15,8 +15,15 @@ import {
   getSavedGameModes,
 } from '../utils/persistenceAdapter';
 import { closeDatabase } from '../utils/indexedDBCrud';
-import type { ViewGameState } from '../types';
+import type { ViewGameState, LoadResult } from '../types';
 import { INITIAL_STATS_PERSISTENCE } from '../types/stats';
+
+function expectSuccess<T>(result: LoadResult<T>): T {
+  if (result.status !== 'success') {
+    throw new Error(`Expected success but got ${result.status}`);
+  }
+  return result.data;
+}
 
 describe('Persistence Adapter - View-Aware Operations', () => {
   beforeEach(async () => {
@@ -53,7 +60,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       await saveViewGameState('infinite', mockState);
       const loadedState = await loadViewGameState('infinite');
 
-      expect(loadedState).toEqual(mockState);
+      expect(expectSuccess(loadedState)).toEqual(mockState);
     });
 
     it('should save and load game state for daily mode', async () => {
@@ -72,8 +79,8 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       await saveViewGameState('daily', state);
       const loaded = await loadViewGameState('daily');
 
-      expect(loaded).toBeTruthy();
-      expect(loaded?.score).toBe(500);
+      const data = expectSuccess(loaded);
+      expect(data.score).toBe(500);
     });
 
     it('should keep different modes isolated', async () => {
@@ -104,13 +111,13 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       await saveViewGameState('infinite', infiniteState);
       await saveViewGameState('daily', dailyState);
 
-      const loadedInfinite = await loadViewGameState('infinite');
-      const loadedDaily = await loadViewGameState('daily');
+      const loadedInfinite = expectSuccess(await loadViewGameState('infinite'));
+      const loadedDaily = expectSuccess(await loadViewGameState('daily'));
 
-      expect(loadedInfinite?.score).toBe(1000);
-      expect(loadedInfinite?.totalLinesCleared).toBe(10);
-      expect(loadedDaily?.score).toBe(500);
-      expect(loadedDaily?.totalLinesCleared).toBe(5);
+      expect(loadedInfinite.score).toBe(1000);
+      expect(loadedInfinite.totalLinesCleared).toBe(10);
+      expect(loadedDaily.score).toBe(500);
+      expect(loadedDaily.totalLinesCleared).toBe(5);
     });
 
     it('should clear specific mode without affecting others', async () => {
@@ -204,14 +211,13 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       };
 
       await saveSettings(settings);
-      const loaded = await loadSettings();
+      const loaded = expectSuccess(await loadSettings());
 
-      expect(loaded).toBeTruthy();
-      expect(loaded?.music.isMuted).toBe(true);
-      expect(loaded?.music.volume).toBe(50);
-      expect(loaded?.soundEffects.volume).toBe(80);
-      expect(loaded?.debugUnlocked).toBe(true);
-      expect(loaded?.theme).toBe('dark');
+      expect(loaded.music.isMuted).toBe(true);
+      expect(loaded.music.volume).toBe(50);
+      expect(loaded.soundEffects.volume).toBe(80);
+      expect(loaded.debugUnlocked).toBe(true);
+      expect(loaded.theme).toBe('dark');
     });
 
     it('should preserve settings across game mode clears', async () => {
@@ -247,8 +253,8 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       await saveViewGameState('infinite', gameState);
       await clearViewGameState('infinite');
 
-      const loadedSettings = await loadSettings();
-      expect(loadedSettings?.music.volume).toBe(50);
+      const loadedSettings = expectSuccess(await loadSettings());
+      expect(loadedSettings.music.volume).toBe(50);
     });
   });
 
@@ -257,7 +263,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       const modifiers = new Set([2, 3, 5, 7, 11]);
 
       await saveModifiers(modifiers);
-      const loaded = await loadModifiers();
+      const loaded = expectSuccess(await loadModifiers());
 
       expect(loaded.size).toBe(5);
       expect(loaded.has(2)).toBe(true);
@@ -272,7 +278,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       // Clear any existing modifiers first
       await saveModifiers(new Set<number>());
 
-      const loaded = await loadModifiers();
+      const loaded = expectSuccess(await loadModifiers());
       expect(loaded.size).toBe(0);
     });
   });
@@ -306,14 +312,14 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       await saveViewGameState('infinite', infiniteState);
       await saveViewGameState('daily', dailyState);
 
-      const loadedInfinite = await loadViewGameState('infinite');
-      const loadedDaily = await loadViewGameState('daily');
+      const loadedInfinite = expectSuccess(await loadViewGameState('infinite'));
+      const loadedDaily = expectSuccess(await loadViewGameState('daily'));
 
       // Verify complete isolation
-      expect(loadedInfinite?.tiles[0].position).toBe('R1C1');
-      expect(loadedDaily?.tiles[0].position).toBe('R2C2');
-      expect(loadedInfinite?.score).not.toBe(loadedDaily?.score);
-      expect(loadedInfinite?.hasPlacedFirstShape).not.toBe(loadedDaily?.hasPlacedFirstShape);
+      expect(loadedInfinite.tiles[0].position).toBe('R1C1');
+      expect(loadedDaily.tiles[0].position).toBe('R2C2');
+      expect(loadedInfinite.score).not.toBe(loadedDaily.score);
+      expect(loadedInfinite.hasPlacedFirstShape).not.toBe(loadedDaily.hasPlacedFirstShape);
     });
 
     it('should allow concurrent updates to different modes', async () => {
@@ -361,15 +367,19 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       ]);
 
       // Verify all saved correctly
-      const [loaded1, loaded2, loaded3] = await Promise.all([
+      const [result1, result2, result3] = await Promise.all([
         loadViewGameState('infinite'),
         loadViewGameState('daily'),
         loadViewGameState('tutorial'),
       ]);
 
-      expect(loaded1?.score).toBe(100);
-      expect(loaded2?.score).toBe(200);
-      expect(loaded3?.score).toBe(300);
+      const loaded1 = expectSuccess(result1);
+      const loaded2 = expectSuccess(result2);
+      const loaded3 = expectSuccess(result3);
+
+      expect(loaded1.score).toBe(100);
+      expect(loaded2.score).toBe(200);
+      expect(loaded3.score).toBe(300);
     });
   });
 });

@@ -1,8 +1,14 @@
 import { useReducer, useEffect, useState } from 'react';
 import { initialState, tetrixReducer } from './TetrixReducer';
 import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
-import { loadCompleteGameState, loadModifiers, loadTheme, initializeDatabase, clearAllDataAndReload } from '../../utils/persistenceUtils';
-import { loadViewGameState, loadSettings } from '../../utils/persistenceAdapter';
+import { 
+  loadModifiers, 
+  loadTheme, 
+  initializePersistence, 
+  clearAllDataAndReload,
+  loadViewGameState, 
+  loadSettings 
+} from '../../utils/persistence';
 import { ThemeName } from '../../types';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
@@ -17,13 +23,9 @@ export default function TetrixProvider({ children }: { readonly children: React.
       setInitState('LOADING');
       try {
         // Ensure DB is healthy before trying to load anything
-        await initializeDatabase();
+        await initializePersistence();
 
-        const [gameDataResult, unlockedModifiersResult, savedThemeResult, infiniteViewState, settings] = await Promise.all([
-          loadCompleteGameState().catch(err => {
-            console.error('Error loading game state:', err);
-            return { status: 'error', error: err } as const;
-          }),
+        const [unlockedModifiersResult, savedThemeResult, infiniteViewState, settings] = await Promise.all([
           loadModifiers().catch(err => {
             console.error('Error loading modifiers:', err);
             return { status: 'error', error: err } as const;
@@ -47,10 +49,10 @@ export default function TetrixProvider({ children }: { readonly children: React.
         const settingsData = settings?.status === 'success' ? settings.data : null;
 
         // Load theme first
-        if (savedThemeResult.status === 'success' && (savedThemeResult.data === 'dark' || savedThemeResult.data === 'light' || savedThemeResult.data === 'block-blast')) {
+        if (savedThemeResult && (savedThemeResult === 'dark' || savedThemeResult === 'light' || savedThemeResult === 'block-blast')) {
           dispatch({
             type: 'SET_THEME',
-            value: { theme: savedThemeResult.data as ThemeName }
+            value: { theme: savedThemeResult as ThemeName }
           });
         }
 
@@ -85,13 +87,13 @@ export default function TetrixProvider({ children }: { readonly children: React.
           });
         }
 
-        // Only load if we have valid tile data (100 tiles for 10x10 grid)
-        if (gameDataResult.status === 'success' && gameDataResult.data.tiles.length === 100) {
+        // Load infinite view state
+        if (infiniteStateData && infiniteStateData.tiles.length === 100) {
           dispatch({
             type: 'LOAD_GAME_STATE',
             value: { 
-              gameData: gameDataResult.data,
-              stats: infiniteStateData?.stats // Include stats from infinite mode if available
+              gameData: infiniteStateData,
+              stats: infiniteStateData.stats
             },
           });
         }

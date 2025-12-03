@@ -12,10 +12,8 @@ const mockDB = {
 };
 
 // Mock database operations
-vi.mock('../utils/persistenceUtils', async () => {
-  const actual = await vi.importActual('../utils/persistenceUtils');
+vi.mock('../utils/persistenceUtils', () => {
   return {
-    ...actual,
     saveGameState: vi.fn(async (data: GamePersistenceData) => {
       mockDB.gameState = data;
     }),

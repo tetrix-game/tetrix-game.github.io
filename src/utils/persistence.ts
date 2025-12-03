@@ -87,6 +87,10 @@ export {
   
   // Utilities
   getSavedGameModes,
+  
+  // Call to Action
+  saveCallToActionTimestamp,
+  loadCallToActionTimestamp,
 };
 
 // ============================================================================

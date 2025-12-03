@@ -21,37 +21,10 @@ import {
 } from '../types';
 import { STORES } from './indexedDBCrud';
 import { createEmptyHistory, addCompletionRecord } from './dailyStreakUtils';
+import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from './checksumUtils';
 
 // Toggle this to enable/disable granular persistence logging
 const DEBUG_PERSISTENCE_CHECKSUMS = true;
-
-/**
- * Generates a simple checksum for any data structure.
- * Uses JSON stringification + hash for deep comparison.
- * Excludes 'checksum' field to avoid circular dependency.
- */
-function getChecksum(data: any): string {
-  if (data === undefined || data === null) return 'null';
-  try {
-    // Create a copy to avoid modifying original
-    const copy = { ...data };
-    // Remove checksum field if present to ensure stable calculation
-    if ('checksum' in copy) {
-      delete copy.checksum;
-    }
-    
-    const str = JSON.stringify(copy);
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash.toString(16);
-  } catch (e) {
-    return 'error-calculating-checksum';
-  }
-}
 
 /**
  * Get the store name for a specific game mode
@@ -73,6 +46,7 @@ function getGameStateStore(gameMode: GameModeContext): crud.StoreName {
 // VIEW-SPECIFIC GAME STATE (per mode)
 // ============================================================================
 
+
 /**
  * Save complete game state for a specific mode
  */
@@ -80,63 +54,29 @@ export async function saveViewGameState(
   gameMode: GameModeContext,
   state: ViewGameState
 ): Promise<void> {
-  // Calculate checksum for data integrity
-  const checksum = getChecksum(state);
+  // Generate the Shadow Manifest (Merkle Tree)
+  const manifest = generateChecksumManifest(state);
   
-  // Add checksum to state object
-  const stateWithChecksum: ViewGameState = {
-    ...state,
-    checksum
-  };
-export async function loadViewGameState(
-  gameMode: GameModeContext
-): Promise<LoadResult<ViewGameState>> {
-  const store = getGameStateStore(gameMode);
-  try {
-    const state = await crud.read<ViewGameState>(store, 'current');
-    if (state) {
-      // Validate checksum if present
-      if (state.checksum) {
-        const calculatedChecksum = getChecksum(state);
-        if (calculatedChecksum !== state.checksum) {
-          console.error(`[Persistence] Checksum mismatch for ${gameMode}!`);
-          console.error(`Expected: ${state.checksum}`);
-          console.error(`Calculated: ${calculatedChecksum}`);
-          console.warn('Data may be corrupted, but proceeding with load...');
-        } else if (DEBUG_PERSISTENCE_CHECKSUMS) {
-          console.log(`[Persistence] Checksum verified for ${gameMode}: ${state.checksum}`);
-        }
-      }
-
-      if (DEBUG_PERSISTENCE_CHECKSUMS) {
-        console.groupCollapsed(`[Persistence] Loaded ${gameMode} state`);
-        console.log(`TIMESTAMP: ${new Date().toISOString()}`);
-        console.log(`FULL STATE Checksum: ${getChecksum(state)}`);
-        
-        // Granular Checksums
-        console.log(`- Score: ${state.score}`);
-        console.log(`- Tiles Checksum: ${getChecksum(state.tiles)} (Count: ${state.tiles?.length})`);
-        console.log(`- NextShapes Checksum: ${getChecksum(state.nextShapes)}`);
-        console.log(`- SavedShape Checksum: ${getChecksum(state.savedShape)}`);
-        console.log(`- Stats Checksum: ${getChecksum(state.stats)}`);
-        console.groupEnd();
-      }
-
-      console.log(`Game state loaded for ${gameMode} mode`);
-      return { status: 'success', data: state };
-    }
-    
-    if (DEBUG_PERSISTENCE_CHECKSUMS) {
-      console.warn(`[Persistence] No saved state found for ${gameMode}`);
-    }
-    return { status: 'not_found' };
-  } catch (error) {
-    console.error(`Failed to load game state for ${gameMode}:`, error);
-    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
+  // Remove legacy checksum if present to keep data clean
+  const stateToSave = { ...state };
+  if ('checksum' in stateToSave) {
+    delete (stateToSave as any).checksum;
   }
-} const store = getGameStateStore(gameMode);
-  await crud.write(store, 'current', stateWithChecksum);
-  console.log(`Game state saved for ${gameMode} mode`);
+
+  const store = getGameStateStore(gameMode);
+  
+  // Atomic-like write: Save Data AND Manifest
+  // Ideally this would be a single transaction, but our crud wrapper separates them.
+  // We write data first, then manifest.
+  
+  await crud.batchWrite([
+    { storeName: store, key: 'current', data: stateToSave },
+    { storeName: STORES.CHECKSUMS, key: `${gameMode}_manifest`, data: manifest }
+  ]);
+
+  if (DEBUG_PERSISTENCE_CHECKSUMS) {
+    console.log(`[Persistence] Saved ${gameMode} state with Root Hash: ${manifest.root.hash}`);
+  }
 }
 
 /**
@@ -147,10 +87,40 @@ export async function loadViewGameState(
 ): Promise<LoadResult<ViewGameState>> {
   const store = getGameStateStore(gameMode);
   try {
-    const state = await crud.read<ViewGameState>(store, 'current');
+    // Load Data and Manifest in parallel
+    const [state, manifest] = await Promise.all([
+      crud.read<ViewGameState>(store, 'current'),
+      crud.read<ChecksumManifest>(STORES.CHECKSUMS, `${gameMode}_manifest`)
+    ]);
+
     if (state) {
-      console.log(`Game state loaded for ${gameMode} mode`);
+      // Perform Strict Merkle Tree Verification
+      if (manifest) {
+        const result = verifyChecksumManifest(state, manifest);
+        
+        if (!result.isValid) {
+          console.error(`%c[Persistence] CRITICAL DATA CORRUPTION in ${gameMode}!`, 'color: red; font-weight: bold; font-size: 14px;');
+          console.error(`%cRoot Hash Mismatch! Expected: ${manifest.root.hash}`, 'color: red;');
+          console.group('%cCorruption Triage Report', 'color: orange;');
+          result.mismatches.forEach(mismatch => {
+            console.error(`❌ Validation Failed at Node: ${mismatch}`);
+          });
+          console.groupEnd();
+          
+          // We DO NOT fix it. We report it.
+          // The app will still load the data (to prevent crash), but the console is screaming.
+        } else if (DEBUG_PERSISTENCE_CHECKSUMS) {
+          console.log(`%c[Persistence] Integrity Verified for ${gameMode}. Root: ${manifest.root.hash}`, 'color: green;');
+        }
+      } else {
+        console.warn(`[Persistence] No checksum manifest found for ${gameMode}. This might be a legacy save.`);
+      }
+
       return { status: 'success', data: state };
+    }
+    
+    if (DEBUG_PERSISTENCE_CHECKSUMS) {
+      console.warn(`[Persistence] No saved state found for ${gameMode}`);
     }
     return { status: 'not_found' };
   } catch (error) {
@@ -164,16 +134,14 @@ export async function loadViewGameState(
  */
 export async function clearViewGameState(gameMode: GameModeContext): Promise<void> {
   const store = getGameStateStore(gameMode);
-  await crud.remove(store, 'current');
-  console.log(`Game state cleared for ${gameMode} mode`);
-}
-
-/**
- * Check if game state exists for a specific mode
- */
-export async function hasViewGameState(gameMode: GameModeContext): Promise<boolean> {
-  const store = getGameStateStore(gameMode);
-  return crud.exists(store, 'current');
+  await crud.clear(store);
+  
+  // Also clear the checksum manifest
+  await crud.remove(STORES.CHECKSUMS, `${gameMode}_manifest`);
+  
+  if (DEBUG_PERSISTENCE_CHECKSUMS) {
+    console.log(`[Persistence] Cleared state for ${gameMode}`);
+  }
 }
 
 /**
@@ -196,22 +164,15 @@ export async function updateViewGameState(
     lastUpdated: Date.now(),
   };
 
-  await crud.write(store, 'current', updated);
+  // Use the main save function to ensure checksums are updated correctly
+  await saveViewGameState(gameMode, updated);
 }
 
-// ============================================================================
-// SHARED SETTINGS (cross-mode)
-// ============================================================================
-
 /**
- * Save game settings (music, sound effects, theme, etc.)
+ * Save game settings
  */
 export async function saveSettings(settings: GameSettingsPersistenceData): Promise<void> {
-  await crud.write(STORES.SETTINGS, 'current', {
-    ...settings,
-    lastUpdated: Date.now(),
-  });
-  console.log('Settings saved');
+  await crud.write(STORES.SETTINGS, 'current', settings);
 }
 
 /**
@@ -501,6 +462,15 @@ export async function initializePersistence(): Promise<void> {
 }
 
 /**
+ * Check if a game mode has saved state
+ */
+export async function hasViewGameState(gameMode: GameModeContext): Promise<boolean> {
+  const store = getGameStateStore(gameMode);
+  const state = await crud.read<ViewGameState>(store, 'current');
+  return !!state;
+}
+
+/**
  * Get all game modes that have saved state
  */
 export async function getSavedGameModes(): Promise<GameModeContext[]> {
@@ -514,4 +484,34 @@ export async function getSavedGameModes(): Promise<GameModeContext[]> {
   }
 
   return saved;
+}
+
+// ============================================================================
+// CALL TO ACTION TIMESTAMPS
+// ============================================================================
+
+/**
+ * Save call-to-action timestamp
+ */
+export async function saveCallToActionTimestamp(callKey: string, timestamp: number): Promise<void> {
+  // We store these in the settings store with a prefix
+  const key = `cta-${callKey}`;
+  await crud.write(STORES.SETTINGS, key, timestamp);
+}
+
+/**
+ * Load call-to-action timestamp
+ */
+export async function loadCallToActionTimestamp(callKey: string): Promise<LoadResult<number>> {
+  const key = `cta-${callKey}`;
+  try {
+    const timestamp = await crud.read<number>(STORES.SETTINGS, key);
+    if (timestamp !== null && typeof timestamp === 'number') {
+      return { status: 'success', data: timestamp };
+    }
+    return { status: 'not_found' };
+  } catch (error) {
+    console.error('Failed to load call-to-action timestamp:', error);
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
+  }
 }

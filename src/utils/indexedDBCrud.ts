@@ -12,7 +12,7 @@
  */
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 7; // Incremented to ensure dailyHistory store is created
+const DB_VERSION = 8; // Incremented to ensure checksums store is created
 
 // Store names organized by data type
 export const STORES = {
@@ -32,6 +32,9 @@ export const STORES = {
   LEGACY_SCORE: 'score',
   LEGACY_TILES: 'tiles',
   LEGACY_SHAPES: 'shapes',
+
+  // Checksum store (Shadow Manifest)
+  CHECKSUMS: 'checksums',
 } as const;
 
 export type StoreName = typeof STORES[keyof typeof STORES];
@@ -84,7 +87,7 @@ async function openDatabase(): Promise<IDBDatabase> {
       }
 
       // Create shared stores
-      for (const storeName of [STORES.SETTINGS, STORES.STATS, STORES.MODIFIERS, STORES.DAILY_HISTORY]) {
+      for (const storeName of [STORES.SETTINGS, STORES.STATS, STORES.MODIFIERS, STORES.DAILY_HISTORY, STORES.CHECKSUMS]) {
         if (!db.objectStoreNames.contains(storeName)) {
           db.createObjectStore(storeName);
         }

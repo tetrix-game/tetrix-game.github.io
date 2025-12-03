@@ -43,6 +43,8 @@ import {
   clearAllDataAndReload,
   initializePersistence,
   getSavedGameModes,
+  saveCallToActionTimestamp,
+  loadCallToActionTimestamp,
 } from './persistenceAdapter';
 
 import type {

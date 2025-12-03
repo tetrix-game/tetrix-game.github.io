@@ -23,10 +23,13 @@ describe('Daily Challenge History Persistence', () => {
     const emptyHistory = createEmptyHistory();
     await saveDailyHistory(emptyHistory);
 
-    const loaded = await loadDailyHistory();
-    expect(loaded.records).toEqual([]);
-    expect(loaded.currentStreak).toBe(0);
-    expect(loaded.longestStreak).toBe(0);
+    const loadedResult = await loadDailyHistory();
+    expect(loadedResult.status).toBe('success');
+    if (loadedResult.status === 'success') {
+      expect(loadedResult.data.records).toEqual([]);
+      expect(loadedResult.data.currentStreak).toBe(0);
+      expect(loadedResult.data.longestStreak).toBe(0);
+    }
   });
 
   it('should record a daily challenge completion', async () => {
@@ -73,10 +76,13 @@ describe('Daily Challenge History Persistence', () => {
     await recordDailyChallengeCompletion(record1);
     await recordDailyChallengeCompletion(record2);
 
-    const loaded = await loadDailyHistory();
-    expect(loaded.records).toHaveLength(2);
-    expect(loaded.records[0].date).toBe('2025-01-01');
-    expect(loaded.records[1].date).toBe('2025-01-02');
+    const loadedResult = await loadDailyHistory();
+    expect(loadedResult.status).toBe('success');
+    if (loadedResult.status === 'success') {
+      expect(loadedResult.data.records).toHaveLength(2);
+      expect(loadedResult.data.records[0].date).toBe('2025-01-01');
+      expect(loadedResult.data.records[1].date).toBe('2025-01-02');
+    }
   });
 
   it('should update record with better score', async () => {
@@ -105,10 +111,13 @@ describe('Daily Challenge History Persistence', () => {
     await recordDailyChallengeCompletion(firstAttempt);
     await recordDailyChallengeCompletion(betterAttempt);
 
-    const loaded = await loadDailyHistory();
-    expect(loaded.records).toHaveLength(1);
-    expect(loaded.records[0].score).toBe(150);
-    expect(loaded.records[0].stars).toBe(3);
+    const loadedResult = await loadDailyHistory();
+    expect(loadedResult.status).toBe('success');
+    if (loadedResult.status === 'success') {
+      expect(loadedResult.data.records).toHaveLength(1);
+      expect(loadedResult.data.records[0].score).toBe(150);
+      expect(loadedResult.data.records[0].stars).toBe(3);
+    }
   });
 
   it('should calculate and persist streaks', async () => {
@@ -123,11 +132,14 @@ describe('Daily Challenge History Persistence', () => {
       await recordDailyChallengeCompletion(record);
     }
 
-    const loaded = await loadDailyHistory();
-    expect(loaded.records).toHaveLength(3);
-    // Streak calculation depends on today's date relative to record dates
-    // Just verify it's calculated (non-negative)
-    expect(loaded.currentStreak).toBeGreaterThanOrEqual(0);
-    expect(loaded.longestStreak).toBeGreaterThanOrEqual(0);
+    const loadedResult = await loadDailyHistory();
+    expect(loadedResult.status).toBe('success');
+    if (loadedResult.status === 'success') {
+      expect(loadedResult.data.records).toHaveLength(3);
+      // Streak calculation depends on today's date relative to record dates
+      // Just verify it's calculated (non-negative)
+      expect(loadedResult.data.currentStreak).toBeGreaterThanOrEqual(0);
+      expect(loadedResult.data.longestStreak).toBeGreaterThanOrEqual(0);
+    }
   });
 });

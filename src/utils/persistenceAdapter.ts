@@ -17,6 +17,7 @@ import {
   type DailyChallengeHistory,
   type DailyChallengeRecord,
   type Shape,
+  type LoadResult,
 } from '../types';
 import { STORES } from './indexedDBCrud';
 import { createEmptyHistory, addCompletionRecord } from './dailyStreakUtils';
@@ -58,17 +59,18 @@ export async function saveViewGameState(
  */
 export async function loadViewGameState(
   gameMode: GameModeContext
-): Promise<ViewGameState | null> {
+): Promise<LoadResult<ViewGameState>> {
   const store = getGameStateStore(gameMode);
   try {
     const state = await crud.read<ViewGameState>(store, 'current');
     if (state) {
       console.log(`Game state loaded for ${gameMode} mode`);
+      return { status: 'success', data: state };
     }
-    return state;
+    return { status: 'not_found' };
   } catch (error) {
     console.error(`Failed to load game state for ${gameMode}:`, error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -130,12 +132,16 @@ export async function saveSettings(settings: GameSettingsPersistenceData): Promi
 /**
  * Load game settings
  */
-export async function loadSettings(): Promise<GameSettingsPersistenceData | null> {
+export async function loadSettings(): Promise<LoadResult<GameSettingsPersistenceData>> {
   try {
-    return await crud.read<GameSettingsPersistenceData>(STORES.SETTINGS, 'current');
+    const settings = await crud.read<GameSettingsPersistenceData>(STORES.SETTINGS, 'current');
+    if (settings) {
+      return { status: 'success', data: settings };
+    }
+    return { status: 'not_found' };
   } catch (error) {
     console.error('Failed to load settings:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -145,7 +151,8 @@ export async function loadSettings(): Promise<GameSettingsPersistenceData | null
 export async function updateSettings(
   updates: Partial<GameSettingsPersistenceData>
 ): Promise<void> {
-  const current = await loadSettings();
+  const currentResult = await loadSettings();
+  const current = currentResult.status === 'success' ? currentResult.data : null;
 
   const updated: GameSettingsPersistenceData = {
     music: current?.music || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
@@ -233,16 +240,17 @@ export async function saveModifiers(unlockedModifiers: Set<number>): Promise<voi
 /**
  * Load unlocked modifiers
  */
-export async function loadModifiers(): Promise<Set<number>> {
+export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
   try {
     const data = await crud.read<ModifiersPersistenceData>(STORES.MODIFIERS, 'current');
     if (data?.unlockedModifiers) {
-      return new Set(data.unlockedModifiers);
+      return { status: 'success', data: new Set(data.unlockedModifiers) };
     }
+    return { status: 'not_found' };
   } catch (error) {
     console.error('Failed to load modifiers:', error);
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
-  return new Set();
 }
 
 // ============================================================================
@@ -252,16 +260,17 @@ export async function loadModifiers(): Promise<Set<number>> {
 /**
  * Load daily challenge history
  */
-export async function loadDailyHistory(): Promise<DailyChallengeHistory> {
+export async function loadDailyHistory(): Promise<LoadResult<DailyChallengeHistory>> {
   try {
     const data = await crud.read<DailyChallengeHistory>(STORES.DAILY_HISTORY, 'current');
     if (data) {
-      return data;
+      return { status: 'success', data };
     }
+    return { status: 'not_found' };
   } catch (error) {
     console.error('Failed to load daily history:', error);
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
-  return createEmptyHistory();
 }
 
 /**
@@ -277,7 +286,9 @@ export async function saveDailyHistory(history: DailyChallengeHistory): Promise<
 export async function recordDailyChallengeCompletion(
   record: DailyChallengeRecord
 ): Promise<DailyChallengeHistory> {
-  const currentHistory = await loadDailyHistory();
+  const historyResult = await loadDailyHistory();
+  const currentHistory = historyResult.status === 'success' ? historyResult.data : createEmptyHistory();
+  
   const updatedHistory = addCompletionRecord(currentHistory, record);
   await saveDailyHistory(updatedHistory);
   console.log(`Daily challenge completed for ${record.date}: ${record.score} points, ${record.stars} stars`);

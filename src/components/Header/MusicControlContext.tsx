@@ -30,21 +30,32 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const settings = await loadMusicSettings();
-        setVolumeState(settings.volume);
-        setIsEnabled(settings.isEnabled);
-      } catch (error) {
-        console.error('Failed to load music settings:', error);
-        // Fallback to localStorage for backward compatibility
-        try {
-          const saved = localStorage.getItem('tetrix-music-muted');
-          const wasMuted = saved ? JSON.parse(saved) : false;
-          setIsEnabled(!wasMuted);
-          setVolumeState(100);
-        } catch {
-          setIsEnabled(true);
-          setVolumeState(100);
+        const settingsResult = await loadMusicSettings();
+        
+        if (settingsResult.status === 'success') {
+          setVolumeState(settingsResult.data.volume);
+          setIsEnabled(settingsResult.data.isEnabled);
+        } else {
+          // Not found or error - try fallback
+          if (settingsResult.status === 'error') {
+            console.error('Failed to load music settings:', settingsResult.error);
+          }
+          
+          // Fallback to localStorage for backward compatibility
+          try {
+            const saved = localStorage.getItem('tetrix-music-muted');
+            const wasMuted = saved ? JSON.parse(saved) : false;
+            setIsEnabled(!wasMuted);
+            setVolumeState(100);
+          } catch {
+            setIsEnabled(true);
+            setVolumeState(100);
+          }
         }
+      } catch (error) {
+        console.error('Unexpected error loading music settings:', error);
+        setIsEnabled(true);
+        setVolumeState(100);
       } finally {
         setIsLoading(false);
       }

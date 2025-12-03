@@ -20,7 +20,7 @@ vi.mock('../utils/persistenceUtils', async () => {
       mockDB.gameState = data;
     }),
     loadGameState: vi.fn(async () => {
-      return mockDB.gameState;
+      return mockDB.gameState ? { status: 'success', data: mockDB.gameState } : { status: 'not_found' };
     }),
     clearAllSavedData: vi.fn(async () => {
       mockDB.gameState = null;
@@ -69,13 +69,16 @@ describe('Shape Options Persistence', () => {
     expect(mockDB.gameState).toEqual(gameData);
 
     // Load the game state
-    const loadedData = await loadGameState();
+    const loadedResult = await loadGameState();
 
     // Verify loaded data matches saved data
     expect(loadGameState).toHaveBeenCalled();
-    expect(loadedData).toEqual(gameData);
-    expect(loadedData?.nextShapes).toHaveLength(3);
-    expect(loadedData?.savedShape).toEqual(sampleShape);
+    expect(loadedResult.status).toBe('success');
+    if (loadedResult.status === 'success') {
+      expect(loadedResult.data).toEqual(gameData);
+      expect(loadedResult.data.nextShapes).toHaveLength(3);
+      expect(loadedResult.data.savedShape).toEqual(sampleShape);
+    }
   });
 
   it('should handle empty shapes correctly', async () => {
@@ -87,10 +90,13 @@ describe('Shape Options Persistence', () => {
     };
 
     await saveGameState(gameData);
-    const loadedData = await loadGameState();
+    const loadedResult = await loadGameState();
 
-    expect(loadedData?.nextShapes).toEqual([]);
-    expect(loadedData?.savedShape).toBeNull();
+    expect(loadedResult.status).toBe('success');
+    if (loadedResult.status === 'success') {
+      expect(loadedResult.data.nextShapes).toEqual([]);
+      expect(loadedResult.data.savedShape).toBeNull();
+    }
   });
 
   it('should clear saved shapes when resetting game', async () => {
@@ -125,10 +131,11 @@ describe('Shape Options Persistence', () => {
 
     mockDB.gameState = oldGameData;
 
-    const loadedData = await loadGameState();
+    const loadedResult = await loadGameState();
 
     // Should handle missing fields gracefully
     // Note: In actual implementation, loadGameState adds default values for missing fields
-    expect(loadedData).toBeTruthy();
+    expect(loadedResult.status).toBe('success');
+    expect(loadedResult).toBeTruthy();
   });
 });

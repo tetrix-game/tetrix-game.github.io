@@ -13,7 +13,7 @@ interface GemData {
 }
 
 const GemShower: React.FC = () => {
-  const { score, gemIconPosition, hasLoadedPersistedState } = useTetrixStateContext();
+  const { score, gemIconPosition } = useTetrixStateContext();
   const [gems, setGems] = useState<GemData[]>([]);
   const lastScoreRef = useRef<number | null>(null);
 
@@ -27,10 +27,6 @@ const GemShower: React.FC = () => {
 
   // Score change detection
   useEffect(() => {
-    // Skip if we haven't loaded persisted state yet (prevents shower on async load)
-    if (!hasLoadedPersistedState) {
-      return;
-    }
     // Skip gem shower on initial mount until persisted state is loaded
     if (lastScoreRef.current === null) {
       lastScoreRef.current = score;
@@ -68,7 +64,7 @@ const GemShower: React.FC = () => {
     setGems(prevGems => [...prevGems, ...coinsToSpawn]);
 
     lastScoreRef.current = score;
-  }, [score, centerScreenPosition, gemIconOrigin, hasLoadedPersistedState]);
+  }, [score, centerScreenPosition, gemIconOrigin]);
 
   const generateGems = (
     gemCount: number,

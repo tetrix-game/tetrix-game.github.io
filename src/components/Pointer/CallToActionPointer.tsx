@@ -56,8 +56,13 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
       }
 
       try {
-        const lastDismissed = await loadCallToActionTimestamp(callKey);
+        const lastDismissedResult = await loadCallToActionTimestamp(callKey);
         const now = Date.now();
+        
+        let lastDismissed: number | null = null;
+        if (lastDismissedResult.status === 'success') {
+          lastDismissed = lastDismissedResult.data;
+        }
         
         if (!lastDismissed || (now - lastDismissed) >= timeout) {
           setIsVisible(true);

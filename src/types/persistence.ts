@@ -109,3 +109,9 @@ export type DailyChallengeHistory = {
   lastPlayedDate: string | null; // YYYY-MM-DD of last completed challenge
   lastUpdated: number;
 };
+
+// RESTRICTION: You cannot ignore the difference between "Empty" and "Broken"
+export type LoadResult<T> =
+  | { status: 'success'; data: T }
+  | { status: 'not_found' }      // Valid: New user
+  | { status: 'error'; error: Error }; // Critical: Do not overwrite!

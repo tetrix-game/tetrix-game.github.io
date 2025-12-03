@@ -130,20 +130,32 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const settings = await loadSoundEffectsSettings();
-        setVolumeState(settings.volume);
-        setIsEnabledState(settings.isEnabled);
-      } catch {
-        // Fallback to localStorage
-        try {
-          const saved = localStorage.getItem('tetrix-soundeffects-muted');
-          const wasMuted = saved ? JSON.parse(saved) : false;
-          setIsEnabledState(!wasMuted);
-          setVolumeState(100);
-        } catch {
-          setIsEnabledState(true);
-          setVolumeState(100);
+        const settingsResult = await loadSoundEffectsSettings();
+        
+        if (settingsResult.status === 'success') {
+          setVolumeState(settingsResult.data.volume);
+          setIsEnabledState(settingsResult.data.isEnabled);
+        } else {
+          // Not found or error - try fallback
+          if (settingsResult.status === 'error') {
+            console.error('Failed to load sound effects settings:', settingsResult.error);
+          }
+          
+          // Fallback to localStorage
+          try {
+            const saved = localStorage.getItem('tetrix-soundeffects-muted');
+            const wasMuted = saved ? JSON.parse(saved) : false;
+            setIsEnabledState(!wasMuted);
+            setVolumeState(100);
+          } catch {
+            setIsEnabledState(true);
+            setVolumeState(100);
+          }
         }
+      } catch (error) {
+        console.error('Unexpected error loading sound effects settings:', error);
+        setIsEnabledState(true);
+        setVolumeState(100);
       }
     };
 

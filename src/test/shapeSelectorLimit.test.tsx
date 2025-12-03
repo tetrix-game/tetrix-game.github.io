@@ -6,20 +6,24 @@ import TetrixProvider from '../components/Tetrix/TetrixProvider';
 // Mock the persistence utilities to avoid IndexedDB issues in tests
 vi.mock('../utils/persistenceUtils', () => ({
   loadCompleteGameState: vi.fn().mockResolvedValue({
-    score: 0,
-    tiles: [],
-    shapes: [],
-    gameState: {
-      currentLevel: 1,
-      queueSize: -1,
-      shapesUsed: 0,
+    status: 'success',
+    data: {
+      score: 0,
+      tiles: [],
+      shapes: [],
+      gameState: {
+        currentLevel: 1,
+        queueSize: -1,
+        shapesUsed: 0,
+      }
     }
   }),
   safeBatchSave: vi.fn().mockResolvedValue(undefined),
-  loadModifiers: vi.fn().mockResolvedValue([]),
-  loadStats: vi.fn().mockResolvedValue({}),
-  loadTheme: vi.fn().mockResolvedValue('dark'),
+  loadModifiers: vi.fn().mockResolvedValue({ status: 'success', data: [] }),
+  loadStats: vi.fn().mockResolvedValue({ status: 'success', data: {} }),
+  loadTheme: vi.fn().mockResolvedValue({ status: 'success', data: 'dark' }),
   saveTheme: vi.fn().mockResolvedValue(undefined),
+  initializeDatabase: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe('ShapeSelector 4-Element Limit', () => {

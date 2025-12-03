@@ -30,7 +30,6 @@ export const PersistenceListener = () => {
     unlockedModifiers,
     isMapUnlocked,
     currentTheme,
-    hasLoadedPersistedState,
     totalLinesCleared,
     shapesUsed,
     hasPlacedFirstShape,
@@ -42,9 +41,6 @@ export const PersistenceListener = () => {
 
   // Effect for Game State (Score, Tiles, Shapes, Stats, Queue)
   useEffect(() => {
-    // Don't save if we haven't loaded yet (to avoid overwriting with empty state)
-    if (!hasLoadedPersistedState) return;
-
     // Don't save game state in hub mode (except maybe settings/modifiers which are handled separately)
     if (gameMode === 'hub') return;
 
@@ -79,23 +75,18 @@ export const PersistenceListener = () => {
     queueMode,
     queueHiddenShapes,
     queueSize,
-    queueColorProbabilities,
-    hasLoadedPersistedState
+    queueColorProbabilities
   ]);
 
   // Effect for Modifiers
   useEffect(() => {
-    if (!hasLoadedPersistedState) return;
-
     saveModifiers(unlockedModifiers).catch(error => {
       console.error('Failed to save modifiers via listener:', error);
     });
-  }, [unlockedModifiers, hasLoadedPersistedState]);
+  }, [unlockedModifiers]);
 
   // Effect for Settings (Map Unlock, Game Mode, Button Size)
   useEffect(() => {
-    if (!hasLoadedPersistedState) return;
-
     updateSettings({
       lastGameMode: gameMode,
       isMapUnlocked: isMapUnlocked,
@@ -103,16 +94,14 @@ export const PersistenceListener = () => {
     }).catch(error => {
       console.error('Failed to save settings via listener:', error);
     });
-  }, [gameMode, isMapUnlocked, buttonSizeMultiplier, hasLoadedPersistedState]);
+  }, [gameMode, isMapUnlocked, buttonSizeMultiplier]);
 
   // Effect for Theme
   useEffect(() => {
-    if (!hasLoadedPersistedState) return;
-
     saveTheme(currentTheme).catch(error => {
       console.error('Failed to save theme via listener:', error);
     });
-  }, [currentTheme, hasLoadedPersistedState]);
+  }, [currentTheme]);
 
   // Render nothing
   return null;

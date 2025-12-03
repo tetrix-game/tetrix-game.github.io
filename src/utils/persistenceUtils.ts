@@ -7,7 +7,8 @@ import type {
   MusicPersistenceData,
   SoundEffectsPersistenceData,
   ModifiersPersistenceData,
-  StatsPersistenceData
+  StatsPersistenceData,
+  LoadResult
 } from './types';
 import type { TileData, ColorName } from '../types';
 import { INITIAL_GAME_STATS } from '../types/stats';
@@ -31,22 +32,25 @@ function isIndexedDBAvailable(): boolean {
 }
 
 /**
- * Recreate database with proper schema
+ * Delete the entire database
+ * Used for hard resets when the database is corrupted
  */
-async function recreateDatabase(): Promise<IDBDatabase> {
-  const deleteRequest = indexedDB.deleteDatabase(DB_NAME);
-
+export function deleteDatabase(): Promise<void> {
   return new Promise((resolve, reject) => {
-    deleteRequest.onsuccess = () => {
-      // Small delay then retry
-      setTimeout(() => {
-        openDatabase().then(resolve).catch(reject);
-      }, 100);
+    const request = indexedDB.deleteDatabase(DB_NAME);
+
+    request.onsuccess = () => {
+      console.log('Database deleted successfully');
+      resolve();
     };
 
-    deleteRequest.onerror = () => {
-      console.error('Failed to delete corrupted database');
-      reject(new Error('Database schema mismatch and failed to recreate'));
+    request.onerror = () => {
+      console.error('Failed to delete database:', request.error);
+      reject(new Error('Failed to delete database'));
+    };
+
+    request.onblocked = () => {
+      console.warn('Database deletion blocked');
     };
   });
 }
@@ -61,14 +65,6 @@ function openDatabase(): Promise<IDBDatabase> {
     request.onerror = () => {
       const error = request.error;
       console.error('Failed to open IndexedDB:', error);
-
-      // Handle version errors by recreating the database
-      if (error && error.name === 'VersionError') {
-        console.warn('Database version mismatch detected. Recreating database...');
-        recreateDatabase().then(resolve).catch(reject);
-        return;
-      }
-
       reject(new Error(`Failed to open IndexedDB: ${error}`));
     };
 
@@ -91,15 +87,10 @@ function openDatabase(): Promise<IDBDatabase> {
       const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
 
       if (missingStores.length > 0) {
-        console.warn('Missing object stores:', missingStores, 'Recreating database...');
+        const errorMsg = `Missing object stores: ${missingStores.join(', ')}`;
+        console.error(errorMsg);
         db.close();
-
-        try {
-          const newDb = await recreateDatabase();
-          resolve(newDb);
-        } catch (error) {
-          reject(error);
-        }
+        reject(new Error(errorMsg));
         return;
       }
 
@@ -197,11 +188,11 @@ export async function saveGameState(gameData: GamePersistenceData): Promise<void
 /**
  * Load game state from IndexedDB
  */
-export async function loadGameState(): Promise<GamePersistenceData | null> {
+export async function loadGameState(): Promise<LoadResult<GamePersistenceData>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([GAME_STATE_STORE], 'readonly');
       const store = transaction.objectStore(GAME_STATE_STORE);
 
@@ -217,21 +208,21 @@ export async function loadGameState(): Promise<GamePersistenceData | null> {
             nextShapes: result.nextShapes || [],
             savedShape: result.savedShape || null,
           };
-          resolve(gameData);
+          resolve({ status: 'success', data: gameData });
         } else {
           // No saved state or invalid data
-          resolve(null);
+          resolve({ status: 'not_found' });
         }
       };
 
       request.onerror = () => {
         console.error('Failed to load game state:', request.error);
-        reject(new Error(`Failed to load game state: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load game state: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading game state:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -343,9 +334,11 @@ export async function saveMusicSettings(isMuted: boolean, volume: number = 100, 
     let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() };
     let existingDebugUnlocked = false;
     try {
-      const existingData = await loadGameSettings();
-      existingSoundEffects = existingData?.soundEffects || existingSoundEffects;
-      existingDebugUnlocked = existingData?.debugUnlocked || false;
+      const existingDataResult = await loadGameSettings();
+      if (existingDataResult.status === 'success') {
+        existingSoundEffects = existingDataResult.data.soundEffects || existingSoundEffects;
+        existingDebugUnlocked = existingDataResult.data.debugUnlocked || false;
+      }
     } catch {
       // Use defaults if loading fails
     }
@@ -390,9 +383,11 @@ export async function saveSoundEffectsSettings(isMuted: boolean, volume: number 
     let existingMusic: MusicPersistenceData = { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() };
     let existingDebugUnlocked = false;
     try {
-      const existingData = await loadGameSettings();
-      existingMusic = existingData?.music || existingMusic;
-      existingDebugUnlocked = existingData?.debugUnlocked || false;
+      const existingDataResult = await loadGameSettings();
+      if (existingDataResult.status === 'success') {
+        existingMusic = existingDataResult.data.music || existingMusic;
+        existingDebugUnlocked = existingDataResult.data.debugUnlocked || false;
+      }
     } catch {
       // Use defaults if loading fails
     }
@@ -469,9 +464,11 @@ export async function saveDebugSettings(unlocked: boolean): Promise<void> {
     let existingSoundEffects: SoundEffectsPersistenceData = { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() };
 
     try {
-      const existingData = await loadGameSettings();
-      existingMusic = existingData?.music || existingMusic;
-      existingSoundEffects = existingData?.soundEffects || existingSoundEffects;
+      const existingDataResult = await loadGameSettings();
+      if (existingDataResult.status === 'success') {
+        existingMusic = existingDataResult.data.music || existingMusic;
+        existingSoundEffects = existingDataResult.data.soundEffects || existingSoundEffects;
+      }
     } catch {
       // Use defaults if loading fails
     }
@@ -507,11 +504,11 @@ export async function saveDebugSettings(unlocked: boolean): Promise<void> {
 /**
  * Load debug settings from IndexedDB
  */
-export async function loadDebugSettings(): Promise<boolean> {
+export async function loadDebugSettings(): Promise<LoadResult<boolean>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([SETTINGS_STORE], 'readonly');
       const store = transaction.objectStore(SETTINGS_STORE);
 
@@ -519,28 +516,32 @@ export async function loadDebugSettings(): Promise<boolean> {
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(result?.debugUnlocked ?? false);
+        if (result && typeof result.debugUnlocked === 'boolean') {
+          resolve({ status: 'success', data: result.debugUnlocked });
+        } else {
+          resolve({ status: 'not_found' });
+        }
       };
 
       request.onerror = () => {
         console.error('Failed to load debug settings:', request.error);
-        reject(new Error(`Failed to load debug settings: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load debug settings: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading debug settings:', error);
-    return false;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 /**
  * Load score from IndexedDB
  */
-export async function loadScore(): Promise<number> {
+export async function loadScore(): Promise<LoadResult<number>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([SCORE_STORE], 'readonly');
       const store = transaction.objectStore(SCORE_STORE);
 
@@ -548,28 +549,32 @@ export async function loadScore(): Promise<number> {
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(result?.score ?? 0);
+        if (result && typeof result.score === 'number') {
+          resolve({ status: 'success', data: result.score });
+        } else {
+          resolve({ status: 'not_found' });
+        }
       };
 
       request.onerror = () => {
         console.error('Failed to load score:', request.error);
-        reject(new Error(`Failed to load score: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load score: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading score:', error);
-    return 0;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 /**
  * Load tiles from IndexedDB
  */
-export async function loadTiles(): Promise<TilesPersistenceData['tiles'] | null> {
+export async function loadTiles(): Promise<LoadResult<TilesPersistenceData['tiles']>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([TILES_STORE], 'readonly');
       const store = transaction.objectStore(TILES_STORE);
 
@@ -578,31 +583,31 @@ export async function loadTiles(): Promise<TilesPersistenceData['tiles'] | null>
       request.onsuccess = () => {
         const result = request.result;
         if (result?.tiles && Array.isArray(result.tiles)) {
-          resolve(result.tiles);
+          resolve({ status: 'success', data: result.tiles });
         } else {
-          resolve(null); // No tiles saved
+          resolve({ status: 'not_found' }); // No tiles saved
         }
       };
 
       request.onerror = () => {
         console.error('Failed to load tiles:', request.error);
-        reject(new Error(`Failed to load tiles: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load tiles: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading tiles:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 /**
  * Load shapes from IndexedDB
  */
-export async function loadShapes(): Promise<{ nextShapes: ShapesPersistenceData['nextShapes']; savedShape: ShapesPersistenceData['savedShape'] } | null> {
+export async function loadShapes(): Promise<LoadResult<{ nextShapes: ShapesPersistenceData['nextShapes']; savedShape: ShapesPersistenceData['savedShape'] }>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([SHAPES_STORE], 'readonly');
       const store = transaction.objectStore(SHAPES_STORE);
 
@@ -612,33 +617,36 @@ export async function loadShapes(): Promise<{ nextShapes: ShapesPersistenceData[
         const result = request.result;
         if (result) {
           resolve({
-            nextShapes: result.nextShapes || [],
-            savedShape: result.savedShape || null
+            status: 'success',
+            data: {
+              nextShapes: result.nextShapes || [],
+              savedShape: result.savedShape || null
+            }
           });
         } else {
-          resolve(null); // No shapes saved
+          resolve({ status: 'not_found' }); // No shapes saved
         }
       };
 
       request.onerror = () => {
         console.error('Failed to load shapes:', request.error);
-        reject(new Error(`Failed to load shapes: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load shapes: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading shapes:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 /**
  * Load music settings from IndexedDB
  */
-export async function loadMusicSettings(): Promise<{ isMuted: boolean; volume: number; isEnabled: boolean }> {
+export async function loadMusicSettings(): Promise<LoadResult<{ isMuted: boolean; volume: number; isEnabled: boolean }>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([SETTINGS_STORE], 'readonly');
       const store = transaction.objectStore(SETTINGS_STORE);
 
@@ -646,32 +654,36 @@ export async function loadMusicSettings(): Promise<{ isMuted: boolean; volume: n
 
       request.onsuccess = () => {
         const result = request.result;
-        // Provide backward compatibility with old data
-        const volume = result?.music?.volume ?? 100;
-        const isEnabled = result?.music?.isEnabled ?? !result?.music?.isMuted ?? true;
-        const isMuted = result?.music?.isMuted ?? false;
-        resolve({ isMuted, volume, isEnabled });
+        if (result) {
+          // Provide backward compatibility with old data
+          const volume = result?.music?.volume ?? 100;
+          const isEnabled = result?.music?.isEnabled ?? !result?.music?.isMuted ?? true;
+          const isMuted = result?.music?.isMuted ?? false;
+          resolve({ status: 'success', data: { isMuted, volume, isEnabled } });
+        } else {
+          resolve({ status: 'not_found' });
+        }
       };
 
       request.onerror = () => {
         console.error('Failed to load music settings:', request.error);
-        reject(new Error(`Failed to load music settings: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load music settings: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading music settings:', error);
-    return { isMuted: false, volume: 100, isEnabled: true };
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 /**
  * Load sound effects settings from IndexedDB
  */
-export async function loadSoundEffectsSettings(): Promise<{ isMuted: boolean; volume: number; isEnabled: boolean }> {
+export async function loadSoundEffectsSettings(): Promise<LoadResult<{ isMuted: boolean; volume: number; isEnabled: boolean }>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([SETTINGS_STORE], 'readonly');
       const store = transaction.objectStore(SETTINGS_STORE);
 
@@ -679,21 +691,25 @@ export async function loadSoundEffectsSettings(): Promise<{ isMuted: boolean; vo
 
       request.onsuccess = () => {
         const result = request.result;
-        // Provide backward compatibility with old data
-        const volume = result?.soundEffects?.volume ?? 100;
-        const isEnabled = result?.soundEffects?.isEnabled ?? !result?.soundEffects?.isMuted ?? true;
-        const isMuted = result?.soundEffects?.isMuted ?? false;
-        resolve({ isMuted, volume, isEnabled });
+        if (result) {
+          // Provide backward compatibility with old data
+          const volume = result?.soundEffects?.volume ?? 100;
+          const isEnabled = result?.soundEffects?.isEnabled ?? !result?.soundEffects?.isMuted ?? true;
+          const isMuted = result?.soundEffects?.isMuted ?? false;
+          resolve({ status: 'success', data: { isMuted, volume, isEnabled } });
+        } else {
+          resolve({ status: 'not_found' });
+        }
       };
 
       request.onerror = () => {
         console.error('Failed to load sound effects settings:', request.error);
-        reject(new Error(`Failed to load sound effects settings: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load sound effects settings: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading sound effects settings:', error);
-    return { isMuted: false, volume: 100, isEnabled: true };
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -715,11 +731,11 @@ function migrateStats(stats: any): StatsPersistenceData {
 /**
  * Load stats from IndexedDB
  */
-export async function loadStats(): Promise<StatsPersistenceData | null> {
+export async function loadStats(): Promise<LoadResult<StatsPersistenceData>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([STATS_STORE], 'readonly');
       const store = transaction.objectStore(STATS_STORE);
 
@@ -730,20 +746,20 @@ export async function loadStats(): Promise<StatsPersistenceData | null> {
         if (result) {
           // Migrate old stats to ensure new properties exist
           const migratedStats = migrateStats(result);
-          resolve(migratedStats);
+          resolve({ status: 'success', data: migratedStats });
         } else {
-          resolve(null); // No stats saved yet
+          resolve({ status: 'not_found' }); // No stats saved yet
         }
       };
 
       request.onerror = () => {
         console.error('Failed to load stats:', request.error);
-        reject(new Error(`Failed to load stats: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load stats: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading stats:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -782,11 +798,11 @@ export async function saveModifiers(unlockedModifiers: Set<number>): Promise<voi
 /**
  * Load unlocked modifiers from IndexedDB
  */
-export async function loadModifiers(): Promise<Set<number>> {
+export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([MODIFIERS_STORE], 'readonly');
       const store = transaction.objectStore(MODIFIERS_STORE);
 
@@ -795,31 +811,31 @@ export async function loadModifiers(): Promise<Set<number>> {
       request.onsuccess = () => {
         const result = request.result;
         if (result?.unlockedModifiers && Array.isArray(result.unlockedModifiers)) {
-          resolve(new Set(result.unlockedModifiers));
+          resolve({ status: 'success', data: new Set(result.unlockedModifiers) });
         } else {
-          resolve(new Set()); // No modifiers unlocked yet
+          resolve({ status: 'not_found' }); // No modifiers unlocked yet
         }
       };
 
       request.onerror = () => {
         console.error('Failed to load modifiers:', request.error);
-        reject(new Error(`Failed to load modifiers: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load modifiers: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading modifiers:', error);
-    return new Set(); // Return empty set on error
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 /**
  * Load complete game settings from IndexedDB (helper for saving functions)
  */
-async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
+async function loadGameSettings(): Promise<LoadResult<GameSettingsPersistenceData>> {
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([SETTINGS_STORE], 'readonly');
       const store = transaction.objectStore(SETTINGS_STORE);
 
@@ -827,17 +843,21 @@ async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(result || null);
+        if (result) {
+          resolve({ status: 'success', data: result });
+        } else {
+          resolve({ status: 'not_found' });
+        }
       };
 
       request.onerror = () => {
         console.error('Failed to load game settings:', request.error);
-        reject(new Error(`Failed to load game settings: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load game settings: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading game settings:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -847,7 +867,8 @@ async function loadGameSettings(): Promise<GameSettingsPersistenceData | null> {
 export async function saveTheme(theme: string): Promise<void> {
   try {
     const db = await initializeDatabase();
-    const settings = await loadGameSettings();
+    const settingsResult = await loadGameSettings();
+    const settings = settingsResult.status === 'success' ? settingsResult.data : null;
 
     const updatedSettings: GameSettingsPersistenceData = {
       ...settings,
@@ -881,13 +902,16 @@ export async function saveTheme(theme: string): Promise<void> {
 /**
  * Load theme preference from IndexedDB
  */
-export async function loadTheme(): Promise<string | null> {
+export async function loadTheme(): Promise<LoadResult<string>> {
   try {
-    const settings = await loadGameSettings();
-    return settings?.theme || null;
+    const settingsResult = await loadGameSettings();
+    if (settingsResult.status === 'success' && settingsResult.data.theme) {
+      return { status: 'success', data: settingsResult.data.theme };
+    }
+    return { status: 'not_found' };
   } catch (error) {
     console.error('Error loading theme:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -895,72 +919,91 @@ export async function loadTheme(): Promise<string | null> {
  * Load complete game state from granular stores (preferred method)
  * Falls back to legacy monolithic store if granular data is not available
  */
-export async function loadCompleteGameState(): Promise<GamePersistenceData | null> {
+export async function loadCompleteGameState(): Promise<LoadResult<GamePersistenceData>> {
   try {
     // Try to load from granular stores first
-    const [score, tilesData, shapes] = await Promise.all([
+    const [scoreResult, tilesResult, shapesResult] = await Promise.all([
       loadScore(),
       loadTiles(),
       loadShapes()
     ]);
 
+    // Check for errors
+    if (scoreResult.status === 'error') return { status: 'error', error: scoreResult.error };
+    if (tilesResult.status === 'error') return { status: 'error', error: tilesResult.error };
+    if (shapesResult.status === 'error') return { status: 'error', error: shapesResult.error };
+
     // Tiles are already in TileData format with position property
-    const tiles: GamePersistenceData['tiles'] = tilesData || [];
+    const tiles: GamePersistenceData['tiles'] = tilesResult.status === 'success' ? tilesResult.data : [];
+    const score = scoreResult.status === 'success' ? scoreResult.data : 0;
+    const shapes = shapesResult.status === 'success' ? shapesResult.data : null;
 
     // Only return granular state if we have tiles (indicating a real game in progress)
     if (tiles.length === 100) {
       console.log('Loaded game state from granular stores');
       return {
-        score,
-        tiles,
-        nextShapes: shapes?.nextShapes ?? [],
-        savedShape: shapes?.savedShape ?? null
+        status: 'success',
+        data: {
+          score,
+          tiles,
+          nextShapes: shapes?.nextShapes ?? [],
+          savedShape: shapes?.savedShape ?? null
+        }
       };
     }
 
     // Fallback to legacy monolithic store
     console.log('Granular stores empty, trying legacy store...');
-    const legacyData = await loadGameState();
-    if (legacyData?.tiles?.length === 100) {
-      console.log('Loaded game state from legacy store');
+    const legacyResult = await loadGameState();
+    
+    if (legacyResult.status === 'error') return legacyResult;
+    
+    if (legacyResult.status === 'success') {
+      const legacyData = legacyResult.data;
+      if (legacyData?.tiles?.length === 100) {
+        console.log('Loaded game state from legacy store');
 
-      // Migrate legacy data to granular stores for future use
-      // Convert old Tile[] format to TileData if needed
-      const tilesData: TileData[] = legacyData.tiles.map((tile: any) => {
-        if (tile.location) {
-          // Old format - convert
-          return {
-            position: `R${tile.location.row}C${tile.location.column}`,
-            isFilled: tile.block.isFilled,
-            color: tile.block.color,
-            backgroundColor: 'grey' as ColorName,
-          };
-        } else {
-          // Already TileData
-          return tile as TileData;
-        }
-      });
+        // Migrate legacy data to granular stores for future use
+        // Convert old Tile[] format to TileData if needed
+        const tilesData: TileData[] = legacyData.tiles.map((tile: any) => {
+          if (tile.location) {
+            // Old format - convert
+            return {
+              position: `R${tile.location.row}C${tile.location.column}`,
+              isFilled: tile.block.isFilled,
+              color: tile.block.color,
+              backgroundColor: 'grey' as ColorName,
+            };
+          } else {
+            // Already TileData
+            return tile as TileData;
+          }
+        });
 
-      safeBatchSave(
-        legacyData.score,
-        tilesData,
-        legacyData.nextShapes,
-        legacyData.savedShape
-      ).catch((error: Error) => {
-        console.error('Failed to migrate legacy data to granular stores:', error);
-      });
+        safeBatchSave(
+          legacyData.score,
+          tilesData,
+          legacyData.nextShapes,
+          legacyData.savedShape
+        ).catch((error: Error) => {
+          console.error('Failed to migrate legacy data to granular stores:', error);
+        });
 
-      return {
-        ...legacyData,
-        tiles: tilesData,
-      };
+        return {
+          status: 'success',
+          data: {
+            ...legacyData,
+            tiles: tilesData,
+          }
+        };
+      }
     }
 
     console.log('No saved game state found in either granular or legacy stores');
-    return null;
+    return { status: 'not_found' };
   } catch (error) {
     console.error('Error loading complete game state:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
@@ -1000,7 +1043,9 @@ export async function safeBatchSave(
       (async () => {
         try {
           // Load current shapes first to avoid overwriting
-          const currentShapes = await loadShapes();
+          const currentShapesResult = await loadShapes();
+          const currentShapes = currentShapesResult.status === 'success' ? currentShapesResult.data : null;
+          
           await saveShapes(
             nextShapes ?? currentShapes?.nextShapes ?? [],
             savedShape ?? currentShapes?.savedShape ?? null
@@ -1033,7 +1078,10 @@ export async function clearAllSavedData(): Promise<void> {
     // Load existing stats first so we can preserve all-time/best game records
     let existingStats: StatsPersistenceData | null = null;
     try {
-      existingStats = await loadStats();
+      const statsResult = await loadStats();
+      if (statsResult.status === 'success') {
+        existingStats = statsResult.data;
+      }
     } catch (e) {
       console.warn('Failed to load stats during clear:', e);
     }
@@ -1099,47 +1147,9 @@ export async function clearAllSavedData(): Promise<void> {
  */
 export async function clearAllDataAndReload(): Promise<void> {
   try {
-    // Clear IndexedDB completely
-    const db = await initializeDatabase();
-
-    await new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction([
-        GAME_STATE_STORE,
-        SCORE_STORE,
-        TILES_STORE,
-        SHAPES_STORE,
-        SETTINGS_STORE,
-        MODIFIERS_STORE,
-        STATS_STORE
-      ], 'readwrite');
-
-      // Clear ALL stores including settings
-      const gameStore = transaction.objectStore(GAME_STATE_STORE);
-      const scoreStore = transaction.objectStore(SCORE_STORE);
-      const tilesStore = transaction.objectStore(TILES_STORE);
-      const shapesStore = transaction.objectStore(SHAPES_STORE);
-      const settingsStore = transaction.objectStore(SETTINGS_STORE);
-      const modifiersStore = transaction.objectStore(MODIFIERS_STORE);
-      const statsStore = transaction.objectStore(STATS_STORE);
-
-      gameStore.delete('current');
-      scoreStore.delete('current');
-      tilesStore.delete('current');
-      shapesStore.delete('current');
-      settingsStore.delete('current');
-      modifiersStore.delete('current');
-      statsStore.delete('current');
-
-      transaction.oncomplete = () => {
-        console.log('All data (including settings) cleared successfully');
-        resolve();
-      };
-
-      transaction.onerror = () => {
-        console.error('Failed to clear all data:', transaction.error);
-        reject(new Error(`Failed to clear all data: ${transaction.error}`));
-      };
-    });
+    // Delete the entire database file
+    await deleteDatabase();
+    console.log('Database deleted successfully');
 
     // Clear localStorage as fallback/legacy storage
     try {
@@ -1187,14 +1197,14 @@ export async function clearAllDataAndReload(): Promise<void> {
 export async function hasSavedGameData(): Promise<boolean> {
   try {
     // Check granular stores first
-    const tiles = await loadTiles();
-    if (tiles?.length === 100) {
+    const tilesResult = await loadTiles();
+    if (tilesResult.status === 'success' && tilesResult.data.length === 100) {
       return true;
     }
 
     // Fallback to legacy store
-    const gameData = await loadGameState();
-    return gameData !== null && gameData.tiles.length > 0;
+    const gameDataResult = await loadGameState();
+    return gameDataResult.status === 'success' && gameDataResult.data.tiles.length > 0;
   } catch {
     return false;
   }
@@ -1244,21 +1254,21 @@ export async function saveCallToActionTimestamp(callKey: string, timestamp: numb
  * Load call-to-action timestamp from IndexedDB
  * Returns the timestamp when the call-to-action was last dismissed, or null if never dismissed
  */
-export async function loadCallToActionTimestamp(callKey: string): Promise<number | null> {
+export async function loadCallToActionTimestamp(callKey: string): Promise<LoadResult<number>> {
   if (!isIndexedDBAvailable()) {
     // Fallback to sessionStorage for testing/non-browser environments
     try {
       const value = sessionStorage.getItem(`${CALL_TO_ACTION_KEY_PREFIX}${callKey}`);
-      return value ? parseInt(value, 10) : null;
+      return value ? { status: 'success', data: parseInt(value, 10) } : { status: 'not_found' };
     } catch {
-      return null;
+      return { status: 'not_found' };
     }
   }
 
   try {
     const db = await initializeDatabase();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transaction = db.transaction([SETTINGS_STORE], 'readonly');
       const store = transaction.objectStore(SETTINGS_STORE);
 
@@ -1267,16 +1277,20 @@ export async function loadCallToActionTimestamp(callKey: string): Promise<number
 
       request.onsuccess = () => {
         const result = request.result;
-        resolve(typeof result === 'number' ? result : null);
+        if (typeof result === 'number') {
+          resolve({ status: 'success', data: result });
+        } else {
+          resolve({ status: 'not_found' });
+        }
       };
 
       request.onerror = () => {
         console.error('Failed to load call-to-action timestamp:', request.error);
-        reject(new Error(`Failed to load call-to-action timestamp: ${request.error}`));
+        resolve({ status: 'error', error: new Error(`Failed to load call-to-action timestamp: ${request.error}`) });
       };
     });
   } catch (error) {
     console.error('Error loading call-to-action timestamp:', error);
-    return null;
+    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }

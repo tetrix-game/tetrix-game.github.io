@@ -16,9 +16,14 @@ export function useDailyHistory() {
 
     const load = async () => {
       try {
-        const loadedHistory = await loadDailyHistory();
+        const loadedHistoryResult = await loadDailyHistory();
         if (isMounted) {
-          setHistory(loadedHistory);
+          if (loadedHistoryResult.status === 'success') {
+            setHistory(loadedHistoryResult.data);
+          } else {
+            // Not found or error, use empty history (default)
+            setHistory(createEmptyHistory());
+          }
         }
       } catch (error) {
         console.error('Failed to load daily history:', error);

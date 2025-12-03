@@ -1,30 +1,36 @@
 import { useReducer, useEffect, useState } from 'react';
 import { initialState, tetrixReducer } from './TetrixReducer';
 import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
-import { loadCompleteGameState, loadModifiers, loadTheme } from '../../utils/persistenceUtils';
+import { loadCompleteGameState, loadModifiers, loadTheme, initializeDatabase, clearAllDataAndReload } from '../../utils/persistenceUtils';
 import { loadViewGameState, loadSettings } from '../../utils/persistenceAdapter';
 import { ThemeName } from '../../types';
 
+type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
+
 export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [initState, setInitState] = useState<InitializationState>('BOOTING');
 
   // Load saved game state on startup
   useEffect(() => {
     const loadSavedData = async () => {
+      setInitState('LOADING');
       try {
-        const [gameData, unlockedModifiers, savedTheme, infiniteViewState, settings] = await Promise.all([
+        // Ensure DB is healthy before trying to load anything
+        await initializeDatabase();
+
+        const [gameDataResult, unlockedModifiersResult, savedThemeResult, infiniteViewState, settings] = await Promise.all([
           loadCompleteGameState().catch(err => {
             console.error('Error loading game state:', err);
-            return null;
+            return { status: 'error', error: err } as const;
           }),
           loadModifiers().catch(err => {
             console.error('Error loading modifiers:', err);
-            return new Set<number>();
+            return { status: 'error', error: err } as const;
           }),
           loadTheme().catch(err => {
             console.error('Error loading theme:', err);
-            return null;
+            return { status: 'error', error: err } as const;
           }),
           loadViewGameState('infinite').catch(err => {
             console.error('Error loading infinite view state:', err);
@@ -37,18 +43,20 @@ export default function TetrixProvider({ children }: { readonly children: React.
         ]);
 
         // Load theme first
-        if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'block-blast')) {
+        if (savedThemeResult.status === 'success' && (savedThemeResult.data === 'dark' || savedThemeResult.data === 'light' || savedThemeResult.data === 'block-blast')) {
           dispatch({
             type: 'SET_THEME',
-            value: { theme: savedTheme as ThemeName }
+            value: { theme: savedThemeResult.data as ThemeName }
           });
         }
 
         // Load modifiers
-        dispatch({
-          type: 'LOAD_MODIFIERS',
-          value: { unlockedModifiers }
-        });
+        if (unlockedModifiersResult.status === 'success') {
+          dispatch({
+            type: 'LOAD_MODIFIERS',
+            value: { unlockedModifiers: unlockedModifiersResult.data }
+          });
+        }
 
         // Restore last game mode if available
         if (settings?.lastGameMode && settings.lastGameMode !== 'hub') {
@@ -74,28 +82,29 @@ export default function TetrixProvider({ children }: { readonly children: React.
         }
 
         // Only load if we have valid tile data (100 tiles for 10x10 grid)
-        if (gameData?.tiles.length === 100) {
+        if (gameDataResult.status === 'success' && gameDataResult.data.tiles.length === 100) {
           dispatch({
             type: 'LOAD_GAME_STATE',
             value: { 
-              gameData,
+              gameData: gameDataResult.data,
               stats: infiniteViewState?.stats // Include stats from infinite mode if available
             },
           });
         }
+        
+        // Signal that initialization is complete
+        dispatch({ type: 'INITIALIZATION_COMPLETE' });
+        setInitState('READY');
       } catch (error) {
         console.error('Failed to load saved game state:', error);
-      } finally {
-        // Always complete initialization, even if loading fails
-        dispatch({ type: 'INITIALIZATION_COMPLETE' });
-        setIsInitialized(true);
+        setInitState('FAILURE');
       }
     };
 
     loadSavedData();
   }, []);
 
-  if (!isInitialized) {
+  if (initState === 'BOOTING' || initState === 'LOADING') {
     return (
       <div style={{
         display: 'flex',
@@ -107,6 +116,54 @@ export default function TetrixProvider({ children }: { readonly children: React.
         fontSize: '18px'
       }}>
         Loading...
+      </div>
+    );
+  }
+
+  if (initState === 'FAILURE') {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: 'rgb(25, 25, 25)',
+        color: 'rgb(255, 100, 100)',
+        fontSize: '18px',
+        gap: '20px'
+      }}>
+        <div>Failed to load game data. The database may be corrupted.</div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '10px 20px',
+              fontSize: '16px',
+              cursor: 'pointer',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              borderRadius: '4px'
+            }}
+          >
+            Retry
+          </button>
+          <button 
+            onClick={() => clearAllDataAndReload()}
+            style={{
+              padding: '10px 20px',
+              fontSize: '16px',
+              cursor: 'pointer',
+              background: 'rgba(255, 50, 50, 0.2)',
+              border: '1px solid rgba(255, 50, 50, 0.4)',
+              color: 'white',
+              borderRadius: '4px'
+            }}
+          >
+            Reset Data
+          </button>
+        </div>
       </div>
     );
   }

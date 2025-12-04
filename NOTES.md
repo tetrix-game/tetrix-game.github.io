@@ -4,6 +4,7 @@
 - Architecture
     - Bulletproof loading
     - Bulletproof PWA download
+    - Less logs
 - Juice
     - 5m: The heartbeat isn't loud enough on phones
     - Better clearance animations

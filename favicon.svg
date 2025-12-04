@@ -1,22 +1,76 @@
-<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    <!-- Gradients for bright gem colors -->
+    <linearGradient id="gemRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF5252;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B33939;stop-opacity:1" />
     </linearGradient>
+    <linearGradient id="gemOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB142;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#CC8E35;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gemGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#33D9B2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#218C74;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gemBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34ACE0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#227093;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gemPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#706FD3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#474787;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Facet overlay pattern -->
+    <symbol id="gemFacets" viewBox="0 0 100 100">
+      <!-- Top Light -->
+      <polygon points="0,0 100,0 80,20 20,20" fill="white" opacity="0.4"/>
+      <!-- Left Light -->
+      <polygon points="0,0 20,20 20,80 0,100" fill="white" opacity="0.2"/>
+      <!-- Right Shadow -->
+      <polygon points="100,0 100,100 80,80 80,20" fill="black" opacity="0.2"/>
+      <!-- Bottom Shadow -->
+      <polygon points="0,100 100,100 80,80 20,80" fill="black" opacity="0.4"/>
+      <!-- Center Face -->
+      <rect x="20" y="20" width="60" height="60" fill="white" opacity="0.1"/>
+    </symbol>
   </defs>
   
-  <!-- Background -->
-  <rect width="32" height="32" fill="url(#bg)" rx="4"/>
-  
-  <!-- Simplified T-piece -->
-  <!-- Top bar -->
-  <rect x="8" y="12" width="4" height="4" fill="#4fd1c7"/>
-  <rect x="12" y="12" width="4" height="4" fill="#4fd1c7"/>
-  <rect x="16" y="12" width="4" height="4" fill="#4fd1c7"/>
-  <rect x="20" y="12" width="4" height="4" fill="#4fd1c7"/>
-  
-  <!-- Vertical part -->
-  <rect x="14" y="16" width="4" height="4" fill="#4fd1c7"/>
-  <rect x="14" y="20" width="4" height="4" fill="#4fd1c7"/>
+  <!-- 
+    Grid Layout: 3x3
+    Cell Size: 170px
+    Total Size: 510px
+    Margin: 1px
+  -->
+
+  <!-- Top Left: Red -->
+  <g transform="translate(1, 1) scale(1.7)">
+    <rect width="100" height="100" fill="url(#gemRed)" />
+    <use href="#gemFacets" />
+  </g>
+
+  <!-- Top Center: Orange -->
+  <g transform="translate(171, 1) scale(1.7)">
+    <rect width="100" height="100" fill="url(#gemOrange)" />
+    <use href="#gemFacets" />
+  </g>
+
+  <!-- Top Right: Green -->
+  <g transform="translate(341, 1) scale(1.7)">
+    <rect width="100" height="100" fill="url(#gemGreen)" />
+    <use href="#gemFacets" />
+  </g>
+
+  <!-- Middle Center: Blue -->
+  <g transform="translate(171, 171) scale(1.7)">
+    <rect width="100" height="100" fill="url(#gemBlue)" />
+    <use href="#gemFacets" />
+  </g>
+
+  <!-- Bottom Center: Purple -->
+  <g transform="translate(171, 341) scale(1.7)">
+    <rect width="100" height="100" fill="url(#gemPurple)" />
+    <use href="#gemFacets" />
+  </g>
 </svg>

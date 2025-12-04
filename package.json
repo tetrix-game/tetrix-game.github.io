@@ -6,8 +6,9 @@
   "scripts": {
     "start": "vite --host",
     "build": "tsc -b && vite build",
-    "publish": "npx vite build && gh-pages -d dist",
+    "publish": "npm run generate-icons && npx vite build && gh-pages -d dist",
     "lint": "eslint .",
+    "generate-icons": "node generate-icons.js",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -39,6 +40,7 @@
     "gh-pages": "^6.3.0",
     "globals": "^15.14.0",
     "jsdom": "^27.1.0",
+    "sharp": "^0.34.5",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",

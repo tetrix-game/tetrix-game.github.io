@@ -16,7 +16,6 @@ const BackgroundMusic: React.FC = () => {
   // List of available tracks (using useMemo to prevent recreation on each render)
   const tracks = React.useMemo(() => [
     '/sound/bgm/Jazz2_KEY_C_in_C.mp3',
-    '/sound/bgm/Jazz3_KEY_Ab_in_C.mp3',
     '/sound/bgm/Jazz4_KEY_C_in_C.mp3',
   ], []);
 

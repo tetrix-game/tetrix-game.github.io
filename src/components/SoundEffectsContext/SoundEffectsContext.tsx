@@ -68,7 +68,6 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
           const arrayBuffer = await response.arrayBuffer();
           const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
           audioBuffersRef.current.set(soundName as SoundEffect, audioBuffer);
-          console.log(`Loaded sound: ${soundName}`);
         } catch (error) {
           console.error(`Failed to load sound ${soundName}:`, error);
         }

@@ -1,5 +1,8 @@
-# M.A.K.E.R Protocol Instructions
+For every task, make a list of TODO's, each with validation steps for each TODO, and check them off as you complete them.
 
-Maximal Agentic Decomposition
-First to K votes on sensical next step Error correction
-Red flagging
+Validations should always check:
+  - Render efficiency,
+  - Lint,
+  - Typescript errors,
+  - Build errors,
+  - Browser console errors.

@@ -1,29 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import Tile from '../Tile/Tile';
 import BlockVisual from '../BlockVisual';
-import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import type { Tile as TileType, Block, Location } from '../../utils/types';
+import type { Block, Location, ColorName, TileAnimation, BlockTheme, GameMode } from '../../utils/types';
 import './TetrixTile.css';
 
 type TetrixTileProps = {
-  tile: TileType;
+  // Flattened Tile properties
+  backgroundColor: ColorName;
+  block: Block;
+  activeAnimations: TileAnimation[];
+  
   location: Location;
   isHovered?: boolean;
   hoveredBlock?: Block;
   onClick?: () => void;
   size?: number;
+  
+  // Context replacements
+  isValidPlacement: boolean;
+  blockTheme: BlockTheme;
+  showBlockIcons: boolean;
+  gameMode: GameMode;
 }
 
-const TetrixTile = ({ tile, location, isHovered = false, hoveredBlock, onClick, size }: TetrixTileProps) => {
-  const { dragState, tiles, blockTheme, showBlockIcons, gameMode } = useTetrixStateContext();
+const TetrixTile = ({ 
+  backgroundColor,
+  block,
+  activeAnimations,
+  location,
+  isHovered = false, 
+  hoveredBlock, 
+  onClick, 
+  size,
+  isValidPlacement,
+  blockTheme,
+  showBlockIcons,
+  gameMode
+}: TetrixTileProps) => {
   const [, setTick] = useState(0);
 
   // Force re-render on animation frame to track animation timing
   useEffect(() => {
-    const tileKey = tile.position;
-    const tileData = tiles.get(tileKey);
-
-    if (!tileData?.activeAnimations || tileData.activeAnimations.length === 0) {
+    if (!activeAnimations || activeAnimations.length === 0) {
       return;
     }
 
@@ -35,12 +53,7 @@ const TetrixTile = ({ tile, location, isHovered = false, hoveredBlock, onClick, 
     rafId = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(rafId);
-  }, [tiles, tile.position]);
-
-  // Get active animations for this tile
-  const tileKey = tile.position;
-  const tileData = tiles.get(tileKey);
-  const activeAnimations = tileData?.activeAnimations || [];
+  }, [activeAnimations]);
 
   // Filter to only currently-playing animations
   const currentTime = performance.now();
@@ -54,19 +67,19 @@ const TetrixTile = ({ tile, location, isHovered = false, hoveredBlock, onClick, 
   // Calculate shadow opacity: 70% for valid placement, 40% for invalid
   let shadowOpacity = 0;
   if (showShadow) {
-    shadowOpacity = dragState.isValidPlacement ? 0.7 : 0.4;
+    shadowOpacity = isValidPlacement ? 0.7 : 0.4;
   }
 
   return (
     <Tile
       row={location.row}
       col={location.column}
-      backgroundColor={tile.backgroundColor}
+      backgroundColor={backgroundColor}
       onClick={onClick}
       className="tetrix-tile"
     >
       <BlockVisual 
-        block={tile.block} 
+        block={block} 
         size={size} 
         theme={blockTheme} 
         showIcon={gameMode === 'daily' || showBlockIcons}

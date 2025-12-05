@@ -1,11 +1,14 @@
 import './Grid.css'
 import TetrixTile from '../TetrixTile/TetrixTile';
-import type { Tile } from '../../utils/types';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useRef, useEffect, useMemo } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
 import { GRID_SIZE } from '../../utils/gridConstants';
+import type { TileAnimation } from '../../utils/types';
+
+const EMPTY_BLOCK = { isFilled: false, color: 'grey' as const };
+const EMPTY_ANIMATIONS: TileAnimation[] = [];
 
 interface GridProps {
   width?: number; // Grid width in tiles (default: GRID_SIZE)
@@ -14,7 +17,7 @@ interface GridProps {
 }
 
 export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps) {
-  const { tiles, dragState, gameMode } = useTetrixStateContext();
+  const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const { gridSize: hookGridSize, gridGap, gridCellSize: hookGridCellSize } = useGameSizing();
@@ -55,12 +58,12 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
   }, [dragState.selectedShape, dispatch, isDebugMode]);
 
   // Create a map of hovered block positions for quick lookup
-  const hoveredBlockMap = new Map(
+  const hoveredBlockMap = useMemo(() => new Map(
     dragState.hoveredBlockPositions.map(pos => [
       `${pos.location.row},${pos.location.column}`,
       pos.block
     ])
-  );
+  ), [dragState.hoveredBlockPositions]);
 
   // Generate all potential tile positions in the grid
   const allPositions = useMemo(() => {
@@ -97,9 +100,8 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
           }
 
           // For empty spaces, create default tile
-          const defaultBlock = { isFilled: false, color: 'grey' as const };
           const backgroundColor = tileData?.backgroundColor || 'grey';
-          const block = tileData ? tileData.block : defaultBlock;
+          const block = tileData ? tileData.block : EMPTY_BLOCK;
 
           // Parse position to location
           const match = position.match(/R(\d+)C(\d+)/);
@@ -110,12 +112,7 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
           const row = parseInt(match[1]);
           const column = parseInt(match[2]);
 
-          const tile: Tile = {
-            position,
-            backgroundColor,
-            block,
-            activeAnimations: tileData?.activeAnimations || []
-          };
+          const activeAnimations = tileData?.activeAnimations || EMPTY_ANIMATIONS;
 
           const posKey = `${row},${column}`;
           const hoveredBlock = hoveredBlockMap.get(posKey);
@@ -124,12 +121,18 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
           return (
             <TetrixTile
               key={position}
-              tile={tile}
+              backgroundColor={backgroundColor}
+              block={block}
+              activeAnimations={activeAnimations}
               location={{ row, column }}
               isHovered={isHovered}
               hoveredBlock={hoveredBlock}
               onClick={isDebugMode ? () => handleDebugClick({ row, column }) : undefined}
               size={gridCellSize}
+              isValidPlacement={dragState.isValidPlacement}
+              blockTheme={blockTheme}
+              showBlockIcons={showBlockIcons}
+              gameMode={gameMode}
             />
           )
         })

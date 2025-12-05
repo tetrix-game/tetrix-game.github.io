@@ -9,7 +9,7 @@ import {
   loadViewGameState, 
   loadSettings 
 } from '../../utils/persistence';
-import { ThemeName } from '../../types';
+import { ThemeName, BlockTheme } from '../../types';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
 
@@ -53,6 +53,22 @@ export default function TetrixProvider({ children }: { readonly children: React.
           dispatch({
             type: 'SET_THEME',
             value: { theme: savedThemeResult as ThemeName }
+          });
+        }
+
+        // Load block theme
+        if (settingsData?.blockTheme) {
+          dispatch({
+            type: 'SET_BLOCK_THEME',
+            value: { theme: settingsData.blockTheme as BlockTheme }
+          });
+        }
+
+        // Load show block icons setting
+        if (settingsData?.showBlockIcons !== undefined) {
+          dispatch({
+            type: 'SET_SHOW_BLOCK_ICONS',
+            value: { show: settingsData.showBlockIcons }
           });
         }
 

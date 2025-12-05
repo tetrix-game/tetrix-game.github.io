@@ -24,7 +24,7 @@ import { createEmptyHistory, addCompletionRecord } from './dailyStreakUtils';
 import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from './checksumUtils';
 
 // Toggle this to enable/disable granular persistence logging
-const DEBUG_PERSISTENCE_CHECKSUMS = true;
+const DEBUG_PERSISTENCE_CHECKSUMS = false;
 
 /**
  * Get the store name for a specific game mode
@@ -279,6 +279,13 @@ export async function saveTheme(theme: string): Promise<void> {
   await updateSettings({ theme });
 }
 
+/**
+ * Save block theme preference
+ */
+export async function saveBlockTheme(blockTheme: string): Promise<void> {
+  await updateSettings({ blockTheme });
+}
+
 // ============================================================================
 // STATS ARE NOW MODE-SPECIFIC (stored in ViewGameState)
 // ============================================================================
@@ -298,7 +305,6 @@ export async function saveModifiers(unlockedModifiers: Set<number>): Promise<voi
     lastUpdated: Date.now(),
   };
   await crud.write(STORES.MODIFIERS, 'current', data);
-  console.log('Modifiers saved:', data.unlockedModifiers);
 }
 
 /**
@@ -355,8 +361,6 @@ export async function recordDailyChallengeCompletion(
   
   const updatedHistory = addCompletionRecord(currentHistory, record);
   await saveDailyHistory(updatedHistory);
-  console.log(`Daily challenge completed for ${record.date}: ${record.score} points, ${record.stars} stars`);
-  console.log(`Current streak: ${updatedHistory.currentStreak} days`);
   return updatedHistory;
 }
 
@@ -368,14 +372,11 @@ export async function recordDailyChallengeCompletion(
  * Migrate legacy data to new view-separated format
  */
 export async function migrateLegacyData(): Promise<void> {
-  console.log('Checking for legacy data to migrate...');
-
   try {
     // 1. Check if we already have new data. If so, DO NOT migrate.
     // This prevents overwriting new game progress with old legacy data on reload.
     const hasNewData = await hasViewGameState('infinite');
     if (hasNewData) {
-      console.log('New game data exists. Skipping migration.');
       return;
     }
 
@@ -388,11 +389,8 @@ export async function migrateLegacyData(): Promise<void> {
     }>(STORES.LEGACY_GAME_STATE, 'current');
 
     if (!legacyGameState) {
-      console.log('No legacy data found');
       return;
     }
-
-    console.log('Found legacy data, migrating to infinite mode...');
 
     // Validate legacy data structure before processing
     if (!Array.isArray(legacyGameState.tiles)) {
@@ -430,8 +428,6 @@ export async function migrateLegacyData(): Promise<void> {
 
     // We do NOT delete the legacy data here, just in case something goes wrong.
     // The 'hasNewData' check at the top protects us from re-migration.
-
-    console.log('Legacy data migrated successfully');
   } catch (error) {
     console.error('Failed to migrate legacy data:', error);
   }
@@ -441,8 +437,6 @@ export async function migrateLegacyData(): Promise<void> {
  * Clear all game data for all modes (preserves settings)
  */
 export async function clearAllGameData(): Promise<void> {
-  console.log('Clearing all game data...');
-
   // Clear all game state stores (stats are now part of each mode's state)
   await Promise.all([
     crud.clear(STORES.INFINITE_STATE),
@@ -453,16 +447,12 @@ export async function clearAllGameData(): Promise<void> {
 
   // Note: Stats are now per-mode in ViewGameState, not in a shared store
   // Each mode's stats will be reset when that mode's state is cleared
-
-  console.log('All game data cleared (settings preserved)');
 }
 
 /**
  * Clear ALL data including settings
  */
 export async function clearAllDataAndReload(): Promise<void> {
-  console.log('Clearing all data and reloading...');
-
   try {
     // Clear all stores
     await Promise.all(

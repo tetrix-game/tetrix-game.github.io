@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ColorName } from '../../types';
 import { useColorPicker } from './useColorPicker';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual/BlockVisual';
 import './ColorPicker.css';
 
@@ -107,6 +108,7 @@ const DEFAULT_COLORS: Record<ColorName, {
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ isOpen, onClose }) => {
   const { colorOverrides, setColorOverride, resetColorOverrides, resetColorOverride } = useColorPicker();
+  const { blockTheme } = useTetrixStateContext();
   const [selectedColor, setSelectedColor] = useState<ColorName | null>(null);
   const [autoAdjust, setAutoAdjust] = useState(false);
 
@@ -183,7 +185,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ isOpen, onClose }) => {
                 onClick={() => setSelectedColor(colorName)}
               >
                 <div className="color-preview">
-                  <BlockVisual block={{ color: colorName, isFilled: true }} size={40} />
+                  <BlockVisual block={{ color: colorName, isFilled: true }} size={40} theme={blockTheme} />
                 </div>
                 <div className="color-info">
                   <span className="color-name">{colorName.charAt(0).toUpperCase() + colorName.slice(1)}</span>
@@ -209,7 +211,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ isOpen, onClose }) => {
               <h3>{selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)} Color</h3>
               
               <div className="color-editor-preview">
-                <BlockVisual block={{ color: selectedColor, isFilled: true }} size={80} />
+                <BlockVisual block={{ color: selectedColor, isFilled: true }} size={80} theme={blockTheme} />
               </div>
 
               <div className="auto-adjust-container">

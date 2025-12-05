@@ -95,6 +95,8 @@ export const initialGameState = {
   insufficientFundsError: null,
   buttonSizeMultiplier: 1.0,
   currentTheme: 'dark' as const,
+  blockTheme: 'gem' as const,
+  showBlockIcons: true,
   initialDailyState: null,
 };
 
@@ -307,6 +309,10 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         unlockedModifiers: state.unlockedModifiers,
         // Preserve map unlock status
         isMapUnlocked: state.isMapUnlocked,
+        // Preserve theme settings
+        currentTheme: state.currentTheme,
+        blockTheme: state.blockTheme,
+        showBlockIcons: state.showBlockIcons,
         // Ensure stats are closed on reset
         isStatsOpen: false,
       };
@@ -339,6 +345,24 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         currentTheme: theme,
+      };
+    }
+
+    case "SET_BLOCK_THEME": {
+      const { theme } = action.value;
+      // Persistence handled by listener
+      return {
+        ...state,
+        blockTheme: theme,
+      };
+    }
+
+    case "SET_SHOW_BLOCK_ICONS": {
+      const { show } = action.value;
+      // Persistence handled by listener
+      return {
+        ...state,
+        showBlockIcons: show,
       };
     }
 
@@ -431,6 +455,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         unlockedModifiers: state.unlockedModifiers,
         isMapUnlocked: state.isMapUnlocked,
         currentTheme: state.currentTheme,
+        blockTheme: state.blockTheme,
+        showBlockIcons: state.showBlockIcons,
 
         // Ensure UI is ready
         hasLoadedPersistedState: true,
@@ -472,6 +498,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         unlockedModifiers: state.unlockedModifiers,
         isMapUnlocked: state.isMapUnlocked,
         currentTheme: state.currentTheme,
+        blockTheme: state.blockTheme,
+        showBlockIcons: state.showBlockIcons,
         initialDailyState: state.initialDailyState, // Keep the initial state for future restarts
 
         // Ensure UI is ready

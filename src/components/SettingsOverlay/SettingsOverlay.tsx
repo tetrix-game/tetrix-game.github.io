@@ -14,7 +14,7 @@ import { useDebugEditor } from '../DebugEditor';
 import { useGridEditor } from '../GridEditor';
 import { generateShapesWithProbabilities } from '../../utils/shapes';
 import ColorPicker from '../ColorPicker';
-import { THEMES, ThemeName } from '../../types';
+import { THEMES, ThemeName, BLOCK_THEMES, BlockTheme } from '../../types';
 import {
   clearAllSavedData,
   clearAllDataAndReload,
@@ -46,6 +46,58 @@ const ThemeSelector: React.FC = () => {
             {theme.displayName}
           </button>
         ))}
+      </div>
+    </div>
+  );
+};
+
+const BlockThemeSelector: React.FC = () => {
+  const { blockTheme } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
+
+  const handleThemeChange = (theme: BlockTheme) => {
+    dispatch({ type: 'SET_BLOCK_THEME', value: { theme } });
+  };
+
+  return (
+    <div className="menu-item theme-selector">
+      <span className="menu-label">Block Style</span>
+      <div className="theme-buttons">
+        {(Object.keys(BLOCK_THEMES) as BlockTheme[]).map((themeKey) => (
+          <button
+            key={themeKey}
+            className={`theme-button ${blockTheme === themeKey ? 'active' : ''}`}
+            onClick={() => handleThemeChange(themeKey)}
+            title={BLOCK_THEMES[themeKey]}
+          >
+            {BLOCK_THEMES[themeKey]}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const BlockIconToggle: React.FC = () => {
+  const { showBlockIcons } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
+
+  return (
+    <div className="menu-item theme-selector">
+      <span className="menu-label">Block Icons</span>
+      <div className="theme-buttons">
+        <button
+          className={`theme-button ${showBlockIcons ? 'active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_SHOW_BLOCK_ICONS', value: { show: true } })}
+        >
+          On
+        </button>
+        <button
+          className={`theme-button ${!showBlockIcons ? 'active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_SHOW_BLOCK_ICONS', value: { show: false } })}
+        >
+          Off
+        </button>
       </div>
     </div>
   );
@@ -345,6 +397,8 @@ const SettingsOverlay: React.FC = () => {
             </div>
 
             <ThemeSelector />
+            <BlockThemeSelector />
+            <BlockIconToggle />
 
             <div className="menu-item">
               <button

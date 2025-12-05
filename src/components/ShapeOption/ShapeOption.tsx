@@ -21,7 +21,10 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
     removingShapeIndex,
     shapeRemovalAnimationState,
     shapeOptionBounds,
-    score
+    score,
+    blockTheme,
+    showBlockIcons,
+    gameMode
   } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
@@ -190,7 +193,11 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
       } as React.CSSProperties}
       onPointerDown={handlePointerDown}
     >
-      <ShapeDisplay shape={displayShape} />
+      <ShapeDisplay 
+        shape={displayShape} 
+        theme={blockTheme} 
+        showIcon={gameMode === 'daily' || showBlockIcons}
+      />
     </div>
   )
 }

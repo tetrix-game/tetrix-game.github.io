@@ -1,5 +1,6 @@
 import './ShapeDisplay.css';
 import type { Shape } from '../../utils/types';
+import type { BlockTheme } from '../../types';
 import BlockVisual from '../BlockVisual';
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { getShapeBounds } from '../../utils/shapeUtils';
@@ -9,6 +10,8 @@ type ShapeDisplayProps = {
   cellGap?: number; // Gap between cells in pixels (default: 1)
   containerPadding?: number; // Padding around the grid in pixels (default: 4)
   className?: string; // Additional CSS classes
+  theme?: BlockTheme;
+  showIcon?: boolean;
 };
 
 /**
@@ -23,7 +26,9 @@ const ShapeDisplay = ({
   shape,
   cellGap = 2,
   containerPadding = 4,
-  className = ''
+  className = '',
+  theme,
+  showIcon = true
 }: ShapeDisplayProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(0);
@@ -102,7 +107,7 @@ const ShapeDisplay = ({
             key={`${rowIndex}-${colIndex}`}
             className="shape-display-tile"
           >
-            <BlockVisual block={block} size={cellSize} />
+            <BlockVisual block={block} size={cellSize} theme={theme} showIcon={showIcon} />
           </div>
         ))
       ))}

@@ -15,7 +15,7 @@ type TetrixTileProps = {
 }
 
 const TetrixTile = ({ tile, location, isHovered = false, hoveredBlock, onClick, size }: TetrixTileProps) => {
-  const { dragState, tiles } = useTetrixStateContext();
+  const { dragState, tiles, blockTheme, showBlockIcons, gameMode } = useTetrixStateContext();
   const [, setTick] = useState(0);
 
   // Force re-render on animation frame to track animation timing
@@ -65,7 +65,12 @@ const TetrixTile = ({ tile, location, isHovered = false, hoveredBlock, onClick, 
       onClick={onClick}
       className="tetrix-tile"
     >
-      <BlockVisual block={tile.block} size={size} />
+      <BlockVisual 
+        block={tile.block} 
+        size={size} 
+        theme={blockTheme} 
+        showIcon={gameMode === 'daily' || showBlockIcons}
+      />
 
       {showShadow && (
         <div

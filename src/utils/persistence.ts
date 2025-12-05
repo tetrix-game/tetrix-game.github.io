@@ -37,6 +37,7 @@ import {
   saveSoundEffectsSettings,
   saveDebugSettings,
   saveTheme,
+  saveBlockTheme,
   saveModifiers,
   loadModifiers,
   clearAllGameData,
@@ -72,6 +73,7 @@ export {
   saveSoundEffectsSettings,
   saveDebugSettings,
   saveTheme,
+  saveBlockTheme,
   
   // Stats are now mode-specific (part of ViewGameState)
   // Use saveViewGameState/loadViewGameState or saveGameForMode/loadGameForMode
@@ -334,6 +336,15 @@ export async function loadTheme(): Promise<string | null> {
   const result = await loadSettings();
   const settings = result.status === 'success' ? result.data : null;
   return settings?.theme ?? null;
+}
+
+/**
+ * Convenience function: Load block theme preference
+ */
+export async function loadBlockTheme(): Promise<string | null> {
+  const result = await loadSettings();
+  const settings = result.status === 'success' ? result.data : null;
+  return settings?.blockTheme ?? null;
 }
 
 /**

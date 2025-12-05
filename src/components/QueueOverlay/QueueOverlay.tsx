@@ -2,6 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import type { Shape } from '../../types';
 import ShapeDisplay from '../ShapeDisplay';
+import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import './QueueOverlay.css';
 
 interface QueueOverlayProps {
@@ -19,6 +20,8 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
   hiddenShapes,
   onClose,
 }) => {
+  const { blockTheme, showBlockIcons, gameMode } = useTetrixStateContext();
+
   // Close on Escape key
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -66,7 +69,11 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
               {hiddenShapes.map((shape, index) => (
                 <div key={`hidden-shape-${index}`} className="queue-overlay-shape">
                   <div className="queue-overlay-shape-label">#{index + 4}</div>
-                  <ShapeDisplay shape={shape} />
+                  <ShapeDisplay 
+                    shape={shape} 
+                    theme={blockTheme} 
+                    showIcon={gameMode === 'daily' || showBlockIcons}
+                  />
                 </div>
               ))}
             </div>

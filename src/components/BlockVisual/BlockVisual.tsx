@@ -1,13 +1,17 @@
 import { Block } from "../../utils/types";
 import ShapeIcon from "../ShapeIcon";
+import { BlockSvg } from "./BlockSvg";
+import { BlockTheme } from "../../types";
 import './BlockVisual.css';
 
 type BlockVisualProps = {
   readonly block: Block;
   readonly size?: number;
+  readonly theme?: BlockTheme;
+  readonly showIcon?: boolean;
 };
 
-export default function BlockVisual({ block, size }: BlockVisualProps): JSX.Element {
+export default function BlockVisual({ block, size, theme = 'gem', showIcon = true }: BlockVisualProps): JSX.Element {
   // Don't render anything if the block is not filled
   if (!block.isFilled) {
     return <></>;
@@ -23,10 +27,15 @@ export default function BlockVisual({ block, size }: BlockVisualProps): JSX.Elem
   const iconSize = size !== undefined ? size * 0.6 : 24;
 
   return (
-    <div className={`block-visual block-color-${block.color}`} style={style}>
-      <div className="block-icon-container">
-        <ShapeIcon color={block.color} size={iconSize} opacity={1.0} useBorderLeftColor={true} />
+    <div className="block-visual" style={style}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+        <BlockSvg color={block.color} theme={theme} />
       </div>
+      {showIcon && (
+        <div className="block-icon-container" style={{ position: 'relative', zIndex: 1 }}>
+          <ShapeIcon color={block.color} size={iconSize} opacity={1.0} useBorderLeftColor={true} />
+        </div>
+      )}
     </div>
   )
 }

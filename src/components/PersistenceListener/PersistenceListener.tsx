@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { safeBatchSave, saveModifiers, saveTheme } from '../../utils/persistence';
+import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme } from '../../utils/persistence';
 import { updateSettings } from '../../utils/persistenceAdapter';
 import { tilesToArray } from '../../types';
 
@@ -31,6 +31,8 @@ export const PersistenceListener = () => {
     unlockedModifiers,
     isMapUnlocked,
     currentTheme,
+    blockTheme,
+    showBlockIcons,
     totalLinesCleared,
     shapesUsed,
     hasPlacedFirstShape,
@@ -88,16 +90,17 @@ export const PersistenceListener = () => {
     });
   }, [unlockedModifiers]);
 
-  // Effect for Settings (Map Unlock, Game Mode, Button Size)
+  // Effect for Settings (Map Unlock, Game Mode, Button Size, Show Block Icons)
   useEffect(() => {
     updateSettings({
       lastGameMode: gameMode,
       isMapUnlocked: isMapUnlocked,
-      buttonSizeMultiplier: buttonSizeMultiplier
+      buttonSizeMultiplier: buttonSizeMultiplier,
+      showBlockIcons: showBlockIcons
     }).catch(error => {
       console.error('Failed to save settings via listener:', error);
     });
-  }, [gameMode, isMapUnlocked, buttonSizeMultiplier]);
+  }, [gameMode, isMapUnlocked, buttonSizeMultiplier, showBlockIcons]);
 
   // Effect for Theme
   useEffect(() => {
@@ -105,6 +108,13 @@ export const PersistenceListener = () => {
       console.error('Failed to save theme via listener:', error);
     });
   }, [currentTheme]);
+
+  // Effect for Block Theme
+  useEffect(() => {
+    saveBlockTheme(blockTheme).catch(error => {
+      console.error('Failed to save block theme via listener:', error);
+    });
+  }, [blockTheme]);
 
   // Render nothing
   return null;

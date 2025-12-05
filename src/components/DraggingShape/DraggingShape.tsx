@@ -31,6 +31,9 @@ export default function DraggingShape() {
   const {
     dragState,
     mousePosition,
+    blockTheme,
+    showBlockIcons,
+    gameMode,
   } = useTetrixStateContext();
 
   const dispatch = useTetrixDispatchContext();
@@ -316,7 +319,12 @@ export default function DraggingShape() {
                 } as React.CSSProperties}
               >
                 {block.isFilled && (
-                  <BlockVisual block={block} size={isInvalid ? currentCellSize * 0.5 : currentCellSize} />
+                  <BlockVisual 
+                    block={block} 
+                    size={isInvalid ? currentCellSize * 0.5 : currentCellSize} 
+                    theme={blockTheme} 
+                    showIcon={gameMode === 'daily' || showBlockIcons}
+                  />
                 )}
                 {!block.isFilled && debugState.isEditorOpen && debugState.showGridDots && (
                   <div

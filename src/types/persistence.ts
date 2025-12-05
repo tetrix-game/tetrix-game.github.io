@@ -80,6 +80,8 @@ export type GameSettingsPersistenceData = {
   soundEffects: SoundEffectsPersistenceData;
   debugUnlocked?: boolean;
   theme?: string; // Theme name
+  blockTheme?: string; // Block theme name
+  showBlockIcons?: boolean; // Whether to show icons on blocks (optional in infinite, required in daily)
   lastGameMode?: import('./gameState').GameMode; // Remember active game mode
   isMapUnlocked?: boolean; // Map unlock status
   buttonSizeMultiplier?: number; // UI scaling: 0.5 to 1.5, default 1.0

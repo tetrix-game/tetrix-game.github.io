@@ -87,8 +87,9 @@ export type {
 export type {
   ThemeName,
   Theme,
+  BlockTheme,
 } from './theme';
-export { THEMES } from './theme';
+export { THEMES, BLOCK_THEMES } from './theme';
 
 // Shape queue types
 export type {

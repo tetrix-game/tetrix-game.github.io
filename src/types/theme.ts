@@ -4,6 +4,14 @@
 
 export type ThemeName = 'dark' | 'light' | 'block-blast';
 
+export type BlockTheme = 'gem' | 'simple' | 'pixel';
+
+export const BLOCK_THEMES: Record<BlockTheme, string> = {
+  gem: 'Gem',
+  simple: 'Simple',
+  pixel: 'Pixel',
+};
+
 export type Theme = {
   name: ThemeName;
   displayName: string;

@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import type { ColorName } from '../../utils/types';
 import ShapeIcon from '../ShapeIcon';
+import { TileSvg } from './TileSvg';
 import './Tile.css';
 
 export interface TileProps {
@@ -28,18 +29,11 @@ export const Tile: React.FC<TileProps> = ({
   className = '',
   style = {},
 }) => {
-  // Determine tile variant (dark vs light) - only if no custom background color
-  const dark = (row + col) % 2 === 0;
   const hasCustomBackground = backgroundColor && backgroundColor !== 'grey';
-
-  const tileClass = `tile-base ${hasCustomBackground
-      ? `tile-base-custom color-bg-${backgroundColor}`
-      : (dark ? 'tile-base-dark' : 'tile-base-light')
-    } ${className}`;
 
   return (
     <div
-      className={tileClass}
+      className={`tile-base ${className}`}
       style={{
         gridColumn: col,
         gridRow: row,
@@ -50,6 +44,10 @@ export const Tile: React.FC<TileProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseDown={onMouseDown}
     >
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+        <TileSvg color={backgroundColor} />
+      </div>
+
       {hasCustomBackground && backgroundColor && (
         <div className="tile-icon-background">
           <ShapeIcon color={backgroundColor} size={20} opacity={0.3} useBorderLeftColor={true} />

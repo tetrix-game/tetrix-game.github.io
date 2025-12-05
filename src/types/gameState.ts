@@ -8,7 +8,7 @@ import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOpti
 import type { ScoreData } from './scoring';
 import type { GamePersistenceData } from './persistence';
 import type { StatsPersistenceData } from './stats';
-import type { ThemeName } from './theme';
+import type { ThemeName, BlockTheme } from './theme';
 import type { QueueMode, ColorProbability } from './shapeQueue';
 
 // Game state types - simplified for level-based play
@@ -86,6 +86,8 @@ export type TetrixReducerState = {
 
   // Theme
   currentTheme: ThemeName; // Current theme selection
+  blockTheme: BlockTheme; // Current block theme selection
+  showBlockIcons: boolean; // Whether to show icons on blocks
 
   // Daily Challenge State
   initialDailyState: {
@@ -336,6 +338,16 @@ type SetThemeAction = {
   value: { theme: ThemeName };
 };
 
+type SetBlockThemeAction = {
+  type: 'SET_BLOCK_THEME';
+  value: { theme: BlockTheme };
+};
+
+type SetShowBlockIconsAction = {
+  type: 'SET_SHOW_BLOCK_ICONS';
+  value: { show: boolean };
+};
+
 type SetButtonSizeMultiplierAction = {
   type: 'SET_BUTTON_SIZE_MULTIPLIER';
   value: { multiplier: number };
@@ -431,6 +443,8 @@ export type TetrixAction =
   | CloseStatsAction
   | InitializationCompleteAction
   | SetThemeAction
+  | SetBlockThemeAction
+  | SetShowBlockIconsAction
   | SetButtonSizeMultiplierAction
   | SetQueueModeAction
   | UpdateColorProbabilitiesAction

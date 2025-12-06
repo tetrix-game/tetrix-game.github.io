@@ -1,4 +1,26 @@
-import React, { createContext, useContext, useRef, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useRef, useState, useEffect, useCallback, ReactNode } from 'react';
+
+export function deepFreeze<T>(obj: T): T {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+
+  if (Object.isFrozen(obj)) {
+    return obj;
+  }
+
+  const propNames = Object.getOwnPropertyNames(obj);
+
+  for (const name of propNames) {
+    // @ts-ignore
+    const value = obj[name];
+    if (value && typeof value === 'object') {
+      deepFreeze(value);
+    }
+  }
+
+  return Object.freeze(obj);
+}
 
 export type Listener = () => void;
 
@@ -17,7 +39,7 @@ export function createSubscriptionStore<State, Action>(
 
   function Provider({ children, initialState: propInitialState }: { children: ReactNode, initialState?: State }) {
     // Allow overriding initial state via props, useful for testing or hydration
-    const stateRef = useRef(propInitialState !== undefined ? propInitialState : initialState);
+    const stateRef = useRef(deepFreeze(propInitialState !== undefined ? propInitialState : initialState));
     const listenersRef = useRef(new Set<Listener>());
 
     const getState = useCallback(() => stateRef.current, []);
@@ -32,7 +54,7 @@ export function createSubscriptionStore<State, Action>(
     const dispatch = useCallback((action: Action) => {
       const newState = reducer(stateRef.current, action);
       if (newState !== stateRef.current) {
-        stateRef.current = newState;
+        stateRef.current = deepFreeze(newState);
         listenersRef.current.forEach((listener) => listener());
       }
     }, []);

@@ -32,7 +32,7 @@ export type DebugEditorAction =
 
 const TOOL_ORDER: DebugTool[] = ['add-block', 'fill-row', 'fill-column', 'remove', 'clear-all'];
 const COLOR_ORDER: ColorName[] = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
-const SHAPE_ORDER: ShapeType[] = ['I', 'O', 'T', 'S', 'Z', 'J' | 'L'];
+const SHAPE_ORDER: ShapeType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 
 const initialState: DebugEditorState = {
   isEditorOpen: false,

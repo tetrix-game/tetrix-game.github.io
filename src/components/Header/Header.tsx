@@ -9,9 +9,9 @@ import './Header.css';
 const Header: React.FC = () => {
   // We don't need music control here anymore as BackgroundMusic handles it internally via context
   // But we need to call useMusicControl to ensure we are inside the provider (though we are)
-  useMusicControl(state => ({}));
+  useMusicControl(state => state.isEnabled);
   
-  const { gameMode } = useTetrixStateContext(state => ({ gameMode: state.gameMode }));
+  const gameMode = useTetrixStateContext(state => state.gameMode);
   const { navigateToHub } = useGameNavigation();
 
   return (

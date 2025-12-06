@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ColorName } from '../../types';
-import { useColorPicker } from './useColorPicker';
+import { useColorPickerStore, useColorPickerDispatch, ColorOverrides } from './ColorPickerContext';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import BlockVisual from '../BlockVisual/BlockVisual';
 import './ColorPicker.css';
@@ -107,7 +107,21 @@ const DEFAULT_COLORS: Record<ColorName, {
 };
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ isOpen, onClose }) => {
-  const { colorOverrides, setColorOverride, resetColorOverrides, resetColorOverride } = useColorPicker(state => ({ colorOverrides: state.colorOverrides }));
+  const colorOverrides = useColorPickerStore(state => state.colorOverrides);
+  const dispatch = useColorPickerDispatch();
+
+  const setColorOverride = (color: ColorName, property: keyof ColorOverrides, value: string) => {
+    dispatch({ type: 'SET_OVERRIDE', color, property, value });
+  };
+
+  const resetColorOverrides = () => {
+    dispatch({ type: 'RESET_ALL' });
+  };
+
+  const resetColorOverride = (color: ColorName) => {
+    dispatch({ type: 'RESET_ONE', color });
+  };
+
   const { blockTheme } = useTetrixStateContext(state => ({ blockTheme: state.blockTheme }));
   const [selectedColor, setSelectedColor] = useState<ColorName | null>(null);
   const [autoAdjust, setAutoAdjust] = useState(false);

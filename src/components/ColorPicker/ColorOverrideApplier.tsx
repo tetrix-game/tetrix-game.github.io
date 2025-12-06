@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { useColorPicker } from './useColorPicker';
+import { useColorPickerStore } from './ColorPickerContext';
 import { ColorName } from '../../types';
 
 const ColorOverrideApplier: React.FC = () => {
-  const { colorOverrides } = useColorPicker(state => ({ colorOverrides: state.colorOverrides }));
+  const colorOverrides = useColorPickerStore(state => state.colorOverrides);
 
   useEffect(() => {
     const root = document.documentElement;

@@ -1,6 +1,5 @@
-import { useReducer, useEffect, useState } from 'react';
-import { initialState, tetrixReducer } from './TetrixReducer';
-import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
+import { useEffect, useState } from 'react';
+import { TetrixStoreProvider, useTetrixDispatchContext } from './TetrixContext';
 import { 
   loadModifiers, 
   loadTheme, 
@@ -13,8 +12,8 @@ import { ThemeName, BlockTheme } from '../../types';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
 
-export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(tetrixReducer, initialState);
+function DataLoader({ children }: { readonly children: React.ReactNode }) {
+  const dispatch = useTetrixDispatchContext();
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
 
   // Load saved game state on startup
@@ -124,7 +123,7 @@ export default function TetrixProvider({ children }: { readonly children: React.
     };
 
     loadSavedData();
-  }, []);
+  }, [dispatch]);
 
   if (initState === 'BOOTING' || initState === 'LOADING') {
     return (
@@ -190,11 +189,15 @@ export default function TetrixProvider({ children }: { readonly children: React.
     );
   }
 
+  return <>{children}</>;
+}
+
+export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   return (
-    <TetrixStateContext.Provider value={state}>
-      <TetrixDispatchContext.Provider value={dispatch}>
+    <TetrixStoreProvider>
+      <DataLoader>
         {children}
-      </TetrixDispatchContext.Provider>
-    </TetrixStateContext.Provider>
-  )
+      </DataLoader>
+    </TetrixStoreProvider>
+  );
 }

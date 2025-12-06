@@ -10,7 +10,10 @@ interface ModifiersOverlayProps {
 }
 
 const ModifiersOverlay: React.FC<ModifiersOverlayProps> = ({ isOpen, onClose }) => {
-  const { currentLevel, unlockedModifiers } = useTetrixStateContext();
+  const { currentLevel, unlockedModifiers } = useTetrixStateContext(state => ({
+    currentLevel: state.currentLevel,
+    unlockedModifiers: state.unlockedModifiers
+  }));
 
   if (!isOpen) return null;
 

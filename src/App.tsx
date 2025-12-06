@@ -18,9 +18,17 @@ import { GRID_SIZE } from './utils/gridConstants';
 import './App.css';
 
 const App = () => {
-  const { gameState, gameMode, dragState, gridTileSize, gridBounds, tiles, currentTheme } = useTetrixStateContext();
+  const { gameState, gameMode, dragState, gridTileSize, gridBounds, tiles, currentTheme } = useTetrixStateContext(state => ({
+    gameState: state.gameState,
+    gameMode: state.gameMode,
+    dragState: state.dragState,
+    gridTileSize: state.gridTileSize,
+    gridBounds: state.gridBounds,
+    tiles: state.tiles,
+    currentTheme: state.currentTheme
+  }));
   const dispatch = useTetrixDispatchContext();
-  const { playSound } = useSoundEffects();
+  const { playSound } = useSoundEffects(state => ({ playSound: state.playSound }));
   const gridRef = useRef<HTMLElement | null>(null);
 
   // Global mouse/pointer tracking for DraggingShape

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
+import { useContext } from 'react';
+import { createSubscriptionStore } from '../../utils/subscriptionStore';
 import type { ColorName } from '../../types';
 
 export type GridEditorTool = 'paint' | 'erase' | 'none';
@@ -12,7 +13,7 @@ export type GridLayout = {
   tileBackgrounds: Map<string, ColorName>; // Map of tile keys to their background colors
 };
 
-type GridEditorState = {
+export type GridEditorState = {
   isEditorOpen: boolean;
   currentTool: GridEditorTool;
   selectedColor: ColorName | 'eraser';
@@ -23,29 +24,24 @@ type GridEditorState = {
   lastActiveSection: SectionType;
 };
 
-type GridEditorContextValue = {
-  state: GridEditorState;
-  openEditor: () => void;
-  closeEditor: () => void;
-  setTool: (tool: GridEditorTool) => void;
-  setColor: (color: ColorName | 'eraser') => void;
-  setLastActiveSection: (section: SectionType) => void;
-  cycleColor: (direction: 'forward' | 'backward') => void;
-  cycleActiveSection: (direction: 'forward' | 'backward') => void;
-  setGridWidth: (width: number) => void;
-  setGridHeight: (height: number) => void;
-  adjustGridWidth: (delta: number) => void;
-  adjustGridHeight: (delta: number) => void;
-  addTile: (key: string) => void;
-  removeTile: (key: string) => void;
-  clearAllTiles: () => void;
-  exportGridLayout: () => GridLayout;
-  importGridLayout: (layout: GridLayout) => void;
-  hideInstructions: () => void;
-  toggleGridDots: () => void;
-};
-
-const GridEditorContext = createContext<GridEditorContextValue | null>(null);
+export type GridEditorAction =
+  | { type: 'OPEN_EDITOR' }
+  | { type: 'CLOSE_EDITOR' }
+  | { type: 'HIDE_INSTRUCTIONS' }
+  | { type: 'TOGGLE_GRID_DOTS' }
+  | { type: 'SET_TOOL'; tool: GridEditorTool }
+  | { type: 'SET_COLOR'; color: ColorName | 'eraser' }
+  | { type: 'SET_LAST_ACTIVE_SECTION'; section: SectionType }
+  | { type: 'CYCLE_COLOR'; direction: 'forward' | 'backward' }
+  | { type: 'CYCLE_ACTIVE_SECTION'; direction: 'forward' | 'backward' }
+  | { type: 'SET_GRID_WIDTH'; width: number }
+  | { type: 'SET_GRID_HEIGHT'; height: number }
+  | { type: 'ADJUST_GRID_WIDTH'; delta: number }
+  | { type: 'ADJUST_GRID_HEIGHT'; delta: number }
+  | { type: 'ADD_TILE'; key: string }
+  | { type: 'REMOVE_TILE'; key: string }
+  | { type: 'CLEAR_ALL_TILES' }
+  | { type: 'IMPORT_GRID_LAYOUT'; layout: GridLayout };
 
 // Default color order includes eraser at the end
 const COLOR_ORDER: Array<ColorName | 'eraser'> = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'eraser'];
@@ -73,304 +69,256 @@ function createDefaultGridLayout(): GridLayout {
   };
 }
 
-export function GridEditorProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const [state, setState] = useState<GridEditorState>({
-    isEditorOpen: false,
-    currentTool: 'none',
-    selectedColor: 'blue',
-    gridLayout: createDefaultGridLayout(),
-    showInstructions: true,
-    hasShownInstructions: false,
-    showGridDots: true,
-    lastActiveSection: 'brush',
-  });
+const initialState: GridEditorState = {
+  isEditorOpen: false,
+  currentTool: 'none',
+  selectedColor: 'blue',
+  gridLayout: createDefaultGridLayout(),
+  showInstructions: true,
+  hasShownInstructions: false,
+  showGridDots: true,
+  lastActiveSection: 'brush',
+};
 
-  const openEditor = () => {
-    setState(prev => ({
-      ...prev,
-      isEditorOpen: true,
-      currentTool: 'paint',
-      showInstructions: !prev.hasShownInstructions,
-      hasShownInstructions: true,
-    }));
-  };
-
-  const closeEditor = () => {
-    setState(prev => ({
-      ...prev,
-      isEditorOpen: false,
-      currentTool: 'none',
-    }));
-  };
-
-  const hideInstructions = () => {
-    setState(prev => ({
-      ...prev,
-      showInstructions: false,
-    }));
-  };
-
-  const toggleGridDots = () => {
-    setState(prev => ({
-      ...prev,
-      showGridDots: !prev.showGridDots,
-    }));
-  };
-
-  const setTool = (tool: GridEditorTool) => {
-    setState(prev => ({ ...prev, currentTool: tool }));
-  };
-
-  const setColor = (color: ColorName | 'eraser') => {
-    setState(prev => ({ 
-      ...prev, 
-      selectedColor: color,
-      currentTool: color === 'eraser' ? 'erase' : 'paint'
-    }));
-  };
-
-  const setLastActiveSection = (section: SectionType) => {
-    setState(prev => ({ ...prev, lastActiveSection: section }));
-  };
-
-  const cycleColor = (direction: 'forward' | 'backward') => {
-    setState(prev => {
-      const currentIndex = COLOR_ORDER.indexOf(prev.selectedColor);
+const reducer = (state: GridEditorState, action: GridEditorAction): GridEditorState => {
+  switch (action.type) {
+    case 'OPEN_EDITOR':
+      return {
+        ...state,
+        isEditorOpen: true,
+        currentTool: 'paint',
+        showInstructions: !state.hasShownInstructions,
+        hasShownInstructions: true,
+      };
+    case 'CLOSE_EDITOR':
+      return {
+        ...state,
+        isEditorOpen: false,
+        currentTool: 'none',
+      };
+    case 'HIDE_INSTRUCTIONS':
+      return {
+        ...state,
+        showInstructions: false,
+      };
+    case 'TOGGLE_GRID_DOTS':
+      return {
+        ...state,
+        showGridDots: !state.showGridDots,
+      };
+    case 'SET_TOOL':
+      return { ...state, currentTool: action.tool };
+    case 'SET_COLOR':
+      return { 
+        ...state, 
+        selectedColor: action.color,
+        currentTool: action.color === 'eraser' ? 'erase' : 'paint'
+      };
+    case 'SET_LAST_ACTIVE_SECTION':
+      return { ...state, lastActiveSection: action.section };
+    case 'CYCLE_COLOR': {
+      const currentIndex = COLOR_ORDER.indexOf(state.selectedColor);
       let newIndex: number;
-
-      if (direction === 'forward') {
+      if (action.direction === 'forward') {
         newIndex = (currentIndex + 1) % COLOR_ORDER.length;
       } else {
         newIndex = (currentIndex - 1 + COLOR_ORDER.length) % COLOR_ORDER.length;
       }
-
       const newColor = COLOR_ORDER[newIndex];
       return { 
-        ...prev, 
+        ...state, 
         selectedColor: newColor,
         currentTool: newColor === 'eraser' ? 'erase' : 'paint'
       };
-    });
-  };
-
-  const setGridWidth = (width: number) => {
-    const clampedWidth = Math.max(2, Math.min(20, width));
-    setState(prev => {
+    }
+    case 'SET_GRID_WIDTH': {
+      const clampedWidth = Math.max(2, Math.min(20, action.width));
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
-      // Keep existing tiles that fit within new dimensions
-      prev.gridLayout.tiles.forEach(key => {
+      state.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const col = parseInt(match[2], 10);
           if (col <= clampedWidth) {
             newTiles.add(key);
-            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            const bg = state.gridLayout.tileBackgrounds.get(key);
             if (bg) {
               newTileBackgrounds.set(key, bg);
             }
           }
         }
       });
-      
       return {
-        ...prev,
+        ...state,
         gridLayout: {
-          ...prev.gridLayout,
+          ...state.gridLayout,
           width: clampedWidth,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
         }
       };
-    });
-  };
-
-  const setGridHeight = (height: number) => {
-    const clampedHeight = Math.max(2, Math.min(20, height));
-    setState(prev => {
+    }
+    case 'SET_GRID_HEIGHT': {
+      const clampedHeight = Math.max(2, Math.min(20, action.height));
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
-      // Keep existing tiles that fit within new dimensions
-      prev.gridLayout.tiles.forEach(key => {
+      state.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const row = parseInt(match[1], 10);
           if (row <= clampedHeight) {
             newTiles.add(key);
-            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            const bg = state.gridLayout.tileBackgrounds.get(key);
             if (bg) {
               newTileBackgrounds.set(key, bg);
             }
           }
         }
       });
-      
       return {
-        ...prev,
+        ...state,
         gridLayout: {
-          ...prev.gridLayout,
+          ...state.gridLayout,
           height: clampedHeight,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
         }
       };
-    });
-  };
-
-  const adjustGridWidth = (delta: number) => {
-    setState(prev => {
-      const newWidth = Math.max(2, Math.min(20, prev.gridLayout.width + delta));
-      if (newWidth === prev.gridLayout.width) return prev;
+    }
+    case 'ADJUST_GRID_WIDTH': {
+      const newWidth = Math.max(2, Math.min(20, state.gridLayout.width + action.delta));
+      if (newWidth === state.gridLayout.width) return state;
       
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
-      prev.gridLayout.tiles.forEach(key => {
+      state.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const col = parseInt(match[2], 10);
           if (col <= newWidth) {
             newTiles.add(key);
-            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            const bg = state.gridLayout.tileBackgrounds.get(key);
             if (bg) {
               newTileBackgrounds.set(key, bg);
             }
           }
         }
       });
-      
       return {
-        ...prev,
+        ...state,
         gridLayout: {
-          ...prev.gridLayout,
+          ...state.gridLayout,
           width: newWidth,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
         }
       };
-    });
-  };
-
-  const adjustGridHeight = (delta: number) => {
-    setState(prev => {
-      const newHeight = Math.max(2, Math.min(20, prev.gridLayout.height + delta));
-      if (newHeight === prev.gridLayout.height) return prev;
+    }
+    case 'ADJUST_GRID_HEIGHT': {
+      const newHeight = Math.max(2, Math.min(20, state.gridLayout.height + action.delta));
+      if (newHeight === state.gridLayout.height) return state;
       
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
-      prev.gridLayout.tiles.forEach(key => {
+      state.gridLayout.tiles.forEach(key => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const row = parseInt(match[1], 10);
           if (row <= newHeight) {
             newTiles.add(key);
-            const bg = prev.gridLayout.tileBackgrounds.get(key);
+            const bg = state.gridLayout.tileBackgrounds.get(key);
             if (bg) {
               newTileBackgrounds.set(key, bg);
             }
           }
         }
       });
-      
       return {
-        ...prev,
+        ...state,
         gridLayout: {
-          ...prev.gridLayout,
+          ...state.gridLayout,
           height: newHeight,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
         }
       };
-    });
-  };
-
-  const addTile = (key: string) => {
-    setState(prev => {
-      const newTiles = new Set(prev.gridLayout.tiles);
-      newTiles.add(key);
-      const newTileBackgrounds = new Map(prev.gridLayout.tileBackgrounds);
-      // Set tile background color if a color is selected (not eraser)
-      if (prev.selectedColor !== 'eraser') {
-        newTileBackgrounds.set(key, prev.selectedColor);
+    }
+    case 'ADD_TILE': {
+      const newTiles = new Set(state.gridLayout.tiles);
+      newTiles.add(action.key);
+      const newTileBackgrounds = new Map(state.gridLayout.tileBackgrounds);
+      if (state.selectedColor !== 'eraser') {
+        newTileBackgrounds.set(action.key, state.selectedColor);
       }
       return {
-        ...prev,
+        ...state,
         gridLayout: {
-          ...prev.gridLayout,
+          ...state.gridLayout,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
         }
       };
-    });
-  };
-
-  const removeTile = (key: string) => {
-    setState(prev => {
-      const newTiles = new Set(prev.gridLayout.tiles);
-      newTiles.delete(key);
-      const newTileBackgrounds = new Map(prev.gridLayout.tileBackgrounds);
-      newTileBackgrounds.delete(key);
+    }
+    case 'REMOVE_TILE': {
+      const newTiles = new Set(state.gridLayout.tiles);
+      newTiles.delete(action.key);
+      const newTileBackgrounds = new Map(state.gridLayout.tileBackgrounds);
+      newTileBackgrounds.delete(action.key);
       return {
-        ...prev,
+        ...state,
         gridLayout: {
-          ...prev.gridLayout,
+          ...state.gridLayout,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
         }
       };
-    });
-  };
-
-  const clearAllTiles = () => {
-    setState(prev => ({
-      ...prev,
-      gridLayout: {
-        ...prev.gridLayout,
-        tiles: new Set(),
-        tileBackgrounds: new Map(),
-      }
-    }));
-  };
-
-  const importGridLayout = (layout: GridLayout) => {
-    setState(prev => ({
-      ...prev,
-      gridLayout: {
-        width: Math.max(2, Math.min(20, layout.width)),
-        height: Math.max(2, Math.min(20, layout.height)),
-        tiles: new Set(layout.tiles),
-        tileBackgrounds: new Map(layout.tileBackgrounds),
-      }
-    }));
-  };
-
-  const cycleActiveSection = useCallback((direction: 'forward' | 'backward') => {
-    const delta = direction === 'forward' ? 1 : -1;
-    setState(prev => {
-      switch (prev.lastActiveSection) {
+    }
+    case 'CLEAR_ALL_TILES':
+      return {
+        ...state,
+        gridLayout: {
+          ...state.gridLayout,
+          tiles: new Set(),
+          tileBackgrounds: new Map(),
+        }
+      };
+    case 'IMPORT_GRID_LAYOUT':
+      return {
+        ...state,
+        gridLayout: {
+          width: Math.max(2, Math.min(20, action.layout.width)),
+          height: Math.max(2, Math.min(20, action.layout.height)),
+          tiles: new Set(action.layout.tiles),
+          tileBackgrounds: new Map(action.layout.tileBackgrounds),
+        }
+      };
+    case 'CYCLE_ACTIVE_SECTION': {
+      const delta = action.direction === 'forward' ? 1 : -1;
+      switch (state.lastActiveSection) {
         case 'rows': {
-          const newHeight = Math.max(2, Math.min(20, prev.gridLayout.height + delta));
-          if (newHeight === prev.gridLayout.height) return prev;
+          // Reuse logic from ADJUST_GRID_HEIGHT
+          const newHeight = Math.max(2, Math.min(20, state.gridLayout.height + delta));
+          if (newHeight === state.gridLayout.height) return state;
           
           const newTiles = new Set<string>();
           const newTileBackgrounds = new Map<string, ColorName>();
-          prev.gridLayout.tiles.forEach(key => {
+          state.gridLayout.tiles.forEach(key => {
             const match = key.match(/R(\d+)C(\d+)/);
             if (match) {
               const row = parseInt(match[1], 10);
               if (row <= newHeight) {
                 newTiles.add(key);
-                const bg = prev.gridLayout.tileBackgrounds.get(key);
+                const bg = state.gridLayout.tileBackgrounds.get(key);
                 if (bg) {
                   newTileBackgrounds.set(key, bg);
                 }
               }
             }
           });
-          
           return {
-            ...prev,
+            ...state,
             gridLayout: {
-              ...prev.gridLayout,
+              ...state.gridLayout,
               height: newHeight,
               tiles: newTiles,
               tileBackgrounds: newTileBackgrounds,
@@ -378,29 +326,29 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           };
         }
         case 'columns': {
-          const newWidth = Math.max(2, Math.min(20, prev.gridLayout.width + delta));
-          if (newWidth === prev.gridLayout.width) return prev;
+          // Reuse logic from ADJUST_GRID_WIDTH
+          const newWidth = Math.max(2, Math.min(20, state.gridLayout.width + delta));
+          if (newWidth === state.gridLayout.width) return state;
           
           const newTiles = new Set<string>();
           const newTileBackgrounds = new Map<string, ColorName>();
-          prev.gridLayout.tiles.forEach(key => {
+          state.gridLayout.tiles.forEach(key => {
             const match = key.match(/R(\d+)C(\d+)/);
             if (match) {
               const col = parseInt(match[2], 10);
               if (col <= newWidth) {
                 newTiles.add(key);
-                const bg = prev.gridLayout.tileBackgrounds.get(key);
+                const bg = state.gridLayout.tileBackgrounds.get(key);
                 if (bg) {
                   newTileBackgrounds.set(key, bg);
                 }
               }
             }
           });
-          
           return {
-            ...prev,
+            ...state,
             gridLayout: {
-              ...prev.gridLayout,
+              ...state.gridLayout,
               width: newWidth,
               tiles: newTiles,
               tileBackgrounds: newTileBackgrounds,
@@ -408,62 +356,70 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           };
         }
         case 'brush': {
-          const newColorIndex = (COLOR_ORDER.indexOf(prev.selectedColor) + delta + COLOR_ORDER.length) % COLOR_ORDER.length;
+          // Reuse logic from CYCLE_COLOR
+          const newColorIndex = (COLOR_ORDER.indexOf(state.selectedColor) + delta + COLOR_ORDER.length) % COLOR_ORDER.length;
           const newColor = COLOR_ORDER[newColorIndex];
           return { 
-            ...prev, 
+            ...state, 
             selectedColor: newColor,
             currentTool: newColor === 'eraser' ? 'erase' : 'paint'
           };
         }
         default:
-          return prev;
+          return state;
       }
-    });
-  }, []);
+    }
+    default:
+      return state;
+  }
+};
 
-  const exportGridLayoutFn = useCallback((): GridLayout => {
+export const {
+  Provider: GridEditorProvider,
+  useStore: useGridEditorStore,
+  useDispatch: useGridEditorDispatch,
+  StoreContext: GridEditorContext
+} = createSubscriptionStore(reducer, initialState, 'GridEditor');
+
+export function useGridEditor<Selected>(selector: (state: GridEditorState) => Selected) {
+  const selected = useGridEditorStore(selector);
+  const dispatch = useGridEditorDispatch();
+  const store = useContext(GridEditorContext);
+
+  if (!store) {
+    throw new Error('useGridEditor must be used within a GridEditorProvider');
+  }
+
+  const exportGridLayout = () => {
+    const state = store.getState();
     return {
       width: state.gridLayout.width,
       height: state.gridLayout.height,
       tiles: new Set(state.gridLayout.tiles),
       tileBackgrounds: new Map(state.gridLayout.tileBackgrounds),
     };
-  }, [state.gridLayout]);
+  };
 
-  const value: GridEditorContextValue = useMemo(() => ({
-    state,
-    openEditor,
-    closeEditor,
-    setTool,
-    setColor,
-    setLastActiveSection,
-    cycleColor,
-    cycleActiveSection,
-    setGridWidth,
-    setGridHeight,
-    adjustGridWidth,
-    adjustGridHeight,
-    addTile,
-    removeTile,
-    clearAllTiles,
-    exportGridLayout: exportGridLayoutFn,
-    importGridLayout,
-    hideInstructions,
-    toggleGridDots,
-  }), [state, exportGridLayoutFn, cycleActiveSection]);
-
-  return (
-    <GridEditorContext.Provider value={value}>
-      {children}
-    </GridEditorContext.Provider>
-  );
+  return {
+    state: selected,
+    openEditor: () => dispatch({ type: 'OPEN_EDITOR' }),
+    closeEditor: () => dispatch({ type: 'CLOSE_EDITOR' }),
+    setTool: (tool: GridEditorTool) => dispatch({ type: 'SET_TOOL', tool }),
+    setColor: (color: ColorName | 'eraser') => dispatch({ type: 'SET_COLOR', color }),
+    setLastActiveSection: (section: SectionType) => dispatch({ type: 'SET_LAST_ACTIVE_SECTION', section }),
+    cycleColor: (direction: 'forward' | 'backward') => dispatch({ type: 'CYCLE_COLOR', direction }),
+    cycleActiveSection: (direction: 'forward' | 'backward') => dispatch({ type: 'CYCLE_ACTIVE_SECTION', direction }),
+    setGridWidth: (width: number) => dispatch({ type: 'SET_GRID_WIDTH', width }),
+    setGridHeight: (height: number) => dispatch({ type: 'SET_GRID_HEIGHT', height }),
+    adjustGridWidth: (delta: number) => dispatch({ type: 'ADJUST_GRID_WIDTH', delta }),
+    adjustGridHeight: (delta: number) => dispatch({ type: 'ADJUST_GRID_HEIGHT', delta }),
+    addTile: (key: string) => dispatch({ type: 'ADD_TILE', key }),
+    removeTile: (key: string) => dispatch({ type: 'REMOVE_TILE', key }),
+    clearAllTiles: () => dispatch({ type: 'CLEAR_ALL_TILES' }),
+    exportGridLayout,
+    importGridLayout: (layout: GridLayout) => dispatch({ type: 'IMPORT_GRID_LAYOUT', layout }),
+    hideInstructions: () => dispatch({ type: 'HIDE_INSTRUCTIONS' }),
+    toggleGridDots: () => dispatch({ type: 'TOGGLE_GRID_DOTS' }),
+  };
 }
 
-export function useGridEditor() {
-  const context = useContext(GridEditorContext);
-  if (!context) {
-    throw new Error('useGridEditor must be used within a GridEditorProvider');
-  }
-  return context;
-}

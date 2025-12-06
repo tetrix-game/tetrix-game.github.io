@@ -34,14 +34,23 @@ export default function DraggingShape() {
     blockTheme,
     showBlockIcons,
     gameMode,
-  } = useTetrixStateContext();
+  } = useTetrixStateContext(state => ({
+    dragState: state.dragState,
+    mousePosition: state.mousePosition,
+    blockTheme: state.blockTheme,
+    showBlockIcons: state.showBlockIcons,
+    gameMode: state.gameMode,
+  }));
 
   const dispatch = useTetrixDispatchContext();
-  const { playSound } = useSoundEffects();
+  const { playSound } = useSoundEffects(state => ({ playSound: state.playSound }));
   const [pickupProgress, setPickupProgress] = useState(0);
   const [placingProgress, setPlacingProgress] = useState(0);
   const [returningProgress, setReturningProgress] = useState(0);
-  const { state: debugState } = useDebugEditor();
+  const { state: debugState } = useDebugEditor(state => ({
+    isEditorOpen: state.isEditorOpen,
+    showGridDots: state.showGridDots,
+  }));
 
   // Get dynamic sizing from hook
   const { gridSize, gridGap } = useGameSizing();

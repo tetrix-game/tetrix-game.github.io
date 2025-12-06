@@ -3,7 +3,7 @@ import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/Tetri
 import './LocationButton.css';
 
 const LocationButton = () => {
-  const { gameState } = useTetrixStateContext();
+  const { gameState } = useTetrixStateContext(state => ({ gameState: state.gameState }));
   const dispatch = useTetrixDispatchContext();
 
   const handleClick = (e: React.MouseEvent) => {

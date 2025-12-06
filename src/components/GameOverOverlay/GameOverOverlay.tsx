@@ -3,7 +3,7 @@ import './GameOverOverlay.css';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 
 const GameOverOverlay: React.FC = () => {
-  const { gameMode } = useTetrixStateContext();
+  const { gameMode } = useTetrixStateContext(state => ({ gameMode: state.gameMode }));
   const dispatch = useTetrixDispatchContext();
 
   const handleRestart = () => {

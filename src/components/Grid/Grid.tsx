@@ -17,8 +17,14 @@ interface GridProps {
 }
 
 export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps) {
-  const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = useTetrixStateContext();
+  const tiles = useTetrixStateContext(state => state.tiles);
+  const dragState = useTetrixStateContext(state => state.dragState);
+  const gameMode = useTetrixStateContext(state => state.gameMode);
+  const blockTheme = useTetrixStateContext(state => state.blockTheme);
+  const showBlockIcons = useTetrixStateContext(state => state.showBlockIcons);
+
   const dispatch = useTetrixDispatchContext();
+
   const gridRef = useRef<HTMLDivElement>(null);
   const { gridSize: hookGridSize, gridGap, gridCellSize: hookGridCellSize } = useGameSizing();
   const { isDebugMode, handleDebugClick } = useDebugGridInteractions();

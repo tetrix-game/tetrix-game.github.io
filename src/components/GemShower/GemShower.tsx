@@ -13,7 +13,10 @@ interface GemData {
 }
 
 const GemShower: React.FC = () => {
-  const { score, gemIconPosition } = useTetrixStateContext();
+  const { score, gemIconPosition } = useTetrixStateContext(state => ({
+    score: state.score,
+    gemIconPosition: state.gemIconPosition
+  }));
   const [gems, setGems] = useState<GemData[]>([]);
   const lastScoreRef = useRef<number | null>(null);
 

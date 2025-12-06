@@ -4,7 +4,7 @@ import EditorGridTile from './EditorGridTile';
 import '../Grid/Grid.css'; // Reuse grid styles
 
 const EditorGrid: React.FC = () => {
-  const { state, addTile, removeTile } = useGridEditor();
+  const { state, addTile, removeTile } = useGridEditor(state => state);
   const { gridLayout, selectedColor, showGridDots } = state;
   const gridRef = useRef<HTMLDivElement>(null);
 

@@ -6,7 +6,12 @@ import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/Tetri
 
 const ShapeQueue = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { queueMode, queueHiddenShapes, isQueueOverlayOpen, nextShapes } = useTetrixStateContext();
+  const { nextShapes, queueMode, queueHiddenShapes, isQueueOverlayOpen } = useTetrixStateContext(state => ({
+    nextShapes: state.nextShapes,
+    queueMode: state.queueMode,
+    queueHiddenShapes: state.queueHiddenShapes,
+    isQueueOverlayOpen: state.isQueueOverlayOpen
+  }));
 
   // Handle queue indicator click
   const handleQueueIndicatorClick = () => {

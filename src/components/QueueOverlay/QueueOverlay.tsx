@@ -20,7 +20,11 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
   hiddenShapes,
   onClose,
 }) => {
-  const { blockTheme, showBlockIcons, gameMode } = useTetrixStateContext();
+  const { blockTheme, showBlockIcons, gameMode } = useTetrixStateContext(state => ({
+    blockTheme: state.blockTheme,
+    showBlockIcons: state.showBlockIcons,
+    gameMode: state.gameMode
+  }));
 
   // Close on Escape key
   React.useEffect(() => {

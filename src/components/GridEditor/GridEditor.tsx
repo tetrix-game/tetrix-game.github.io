@@ -21,7 +21,7 @@ const GridEditor: React.FC = () => {
     exportGridLayout,
     hideInstructions,
     toggleGridDots,
-  } = useGridEditor();
+  } = useGridEditor(state => state);
 
   // Navigation state
   const [focusedSection, setFocusedSection] = useState<SectionId>('brush');

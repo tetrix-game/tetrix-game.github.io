@@ -1,7 +1,7 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import { createSubscriptionStore } from '../../utils/subscriptionStore';
 import { ColorName } from '../../types';
 
-interface ColorOverrides {
+export interface ColorOverrides {
   background: string;
   borderTop: string;
   borderLeft: string;
@@ -9,49 +9,50 @@ interface ColorOverrides {
   borderRight: string;
 }
 
-type ColorOverridesMap = Partial<Record<ColorName, Partial<ColorOverrides>>>;
+export type ColorOverridesMap = Partial<Record<ColorName, Partial<ColorOverrides>>>;
 
-interface ColorPickerContextType {
+export interface ColorPickerState {
   colorOverrides: ColorOverridesMap;
-  setColorOverride: (color: ColorName, property: keyof ColorOverrides, value: string) => void;
-  resetColorOverrides: () => void;
-  resetColorOverride: (color: ColorName) => void;
 }
 
-export const ColorPickerContext = createContext<ColorPickerContextType | undefined>(undefined);
+export type ColorPickerAction =
+  | { type: 'SET_OVERRIDE'; color: ColorName; property: keyof ColorOverrides; value: string }
+  | { type: 'RESET_ALL' }
+  | { type: 'RESET_ONE'; color: ColorName };
 
-interface ColorPickerProviderProps {
-  children: ReactNode;
-}
-
-export const ColorPickerProvider: React.FC<ColorPickerProviderProps> = ({ children }) => {
-  const [colorOverrides, setColorOverrides] = useState<ColorOverridesMap>({});
-
-  const setColorOverride = (color: ColorName, property: keyof ColorOverrides, value: string) => {
-    setColorOverrides(prev => ({
-      ...prev,
-      [color]: {
-        ...prev[color],
-        [property]: value
-      }
-    }));
-  };
-
-  const resetColorOverrides = () => {
-    setColorOverrides({});
-  };
-
-  const resetColorOverride = (color: ColorName) => {
-    setColorOverrides(prev => {
-      const newOverrides = { ...prev };
-      delete newOverrides[color];
-      return newOverrides;
-    });
-  };
-
-  return (
-    <ColorPickerContext.Provider value={{ colorOverrides, setColorOverride, resetColorOverrides, resetColorOverride }}>
-      {children}
-    </ColorPickerContext.Provider>
-  );
+const initialState: ColorPickerState = {
+  colorOverrides: {}
 };
+
+const reducer = (state: ColorPickerState, action: ColorPickerAction): ColorPickerState => {
+  switch (action.type) {
+    case 'SET_OVERRIDE':
+      return {
+        ...state,
+        colorOverrides: {
+          ...state.colorOverrides,
+          [action.color]: {
+            ...state.colorOverrides[action.color],
+            [action.property]: action.value
+          }
+        }
+      };
+    case 'RESET_ALL':
+      return { ...state, colorOverrides: {} };
+    case 'RESET_ONE': {
+      const newOverrides = { ...state.colorOverrides };
+      delete newOverrides[action.color];
+      return { ...state, colorOverrides: newOverrides };
+    }
+    default:
+      return state;
+  }
+};
+
+export const {
+  Provider: ColorPickerProvider,
+  useStore: useColorPickerStore,
+  useDispatch: useColorPickerDispatch,
+  StoreContext: ColorPickerContext
+} = createSubscriptionStore(reducer, initialState, 'ColorPicker');
+

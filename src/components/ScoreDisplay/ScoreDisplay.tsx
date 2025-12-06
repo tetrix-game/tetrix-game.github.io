@@ -9,7 +9,12 @@ import '../../styles/feedback.css';
 import './ScoreDisplay.css';
 
 const ScoreDisplay: React.FC = () => {
-  const { score, gameState, isStatsOpen, insufficientFundsError } = useTetrixStateContext();
+  const { score, gameState, isStatsOpen, insufficientFundsError } = useTetrixStateContext(state => ({
+    score: state.score,
+    gameState: state.gameState,
+    isStatsOpen: state.isStatsOpen,
+    insufficientFundsError: state.insufficientFundsError
+  }));
   const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
 

@@ -18,7 +18,12 @@ const getShapeId = (shape: object): string => {
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes, removingShapeIndex, shapeRemovalAnimationState, queueMode } = useTetrixStateContext();
+  const { nextShapes, removingShapeIndex, shapeRemovalAnimationState, queueMode } = useTetrixStateContext(state => ({
+    nextShapes: state.nextShapes,
+    removingShapeIndex: state.removingShapeIndex,
+    shapeRemovalAnimationState: state.shapeRemovalAnimationState,
+    queueMode: state.queueMode
+  }));
 
   // Create initial shapes - start with 3 shapes (can be changed via debug menu)
   const initialShapes = useMemo(() => {

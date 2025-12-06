@@ -4,7 +4,7 @@ import { GridEditorProvider, useGridEditor } from '../components/GridEditor/Grid
 
 describe('Grid Editor Paint Functionality', () => {
   it('should add tiles individually when painting', () => {
-    const { result } = renderHook(() => useGridEditor(), {
+    const { result } = renderHook(() => useGridEditor(state => state), {
       wrapper: GridEditorProvider,
     });
 
@@ -44,7 +44,7 @@ describe('Grid Editor Paint Functionality', () => {
   });
 
   it('should remove tiles individually when erasing', () => {
-    const { result } = renderHook(() => useGridEditor(), {
+    const { result } = renderHook(() => useGridEditor(state => state), {
       wrapper: GridEditorProvider,
     });
 
@@ -76,7 +76,7 @@ describe('Grid Editor Paint Functionality', () => {
   });
 
   it('should change tool when selecting eraser', () => {
-    const { result } = renderHook(() => useGridEditor(), {
+    const { result } = renderHook(() => useGridEditor(state => state), {
       wrapper: GridEditorProvider,
     });
 
@@ -97,7 +97,7 @@ describe('Grid Editor Paint Functionality', () => {
   });
 
   it('should not add duplicate tiles when painting same tile multiple times', () => {
-    const { result } = renderHook(() => useGridEditor(), {
+    const { result } = renderHook(() => useGridEditor(state => state), {
       wrapper: GridEditorProvider,
     });
 

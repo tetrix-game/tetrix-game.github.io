@@ -21,8 +21,8 @@ import { loadGameForMode } from '../utils/persistence';
  */
 export const useGameNavigation = () => {
   const dispatch = useTetrixDispatchContext();
-  const { gameMode } = useTetrixStateContext();
-  const { triggerAutoplay } = useMusicControl();
+  const { gameMode } = useTetrixStateContext(state => ({ gameMode: state.gameMode }));
+  const { triggerAutoplay } = useMusicControl(state => ({ triggerAutoplay: state.triggerAutoplay }));
 
   const navigateToMode = useCallback(async (mode: GameMode) => {
     // If switching to infinite mode, we need to ensure we load the correct state

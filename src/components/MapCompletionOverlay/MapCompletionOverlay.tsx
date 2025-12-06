@@ -17,7 +17,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
   missedTiles,
 }) => {
   const dispatch = useTetrixDispatchContext();
-  const { gameMode } = useTetrixStateContext();
+  const { gameMode } = useTetrixStateContext(state => ({ gameMode: state.gameMode }));
 
   const isSuccess = stars > 0;
 

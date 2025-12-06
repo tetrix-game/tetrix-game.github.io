@@ -3,7 +3,7 @@ import { useColorPicker } from './useColorPicker';
 import { ColorName } from '../../types';
 
 const ColorOverrideApplier: React.FC = () => {
-  const { colorOverrides } = useColorPicker();
+  const { colorOverrides } = useColorPicker(state => ({ colorOverrides: state.colorOverrides }));
 
   useEffect(() => {
     const root = document.documentElement;

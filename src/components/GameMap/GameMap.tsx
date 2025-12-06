@@ -3,7 +3,7 @@ import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/Tetri
 import './GameMap.css';
 
 const GameMap: React.FC = () => {
-  const { currentLevel } = useTetrixStateContext();
+  const { currentLevel } = useTetrixStateContext(state => ({ currentLevel: state.currentLevel }));
   const dispatch = useTetrixDispatchContext();
   const [inputLevel, setInputLevel] = useState(currentLevel.toString());
 

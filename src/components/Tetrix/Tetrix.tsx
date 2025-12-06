@@ -7,7 +7,12 @@ import MapCompletionOverlay from '../MapCompletionOverlay';
 import { useTetrixStateContext } from './TetrixContext';
 
 const Tetrix: React.FC = () => {
-  const { gameState, gameMode, isStatsOpen, mapCompletionResult } = useTetrixStateContext();
+  const { gameState, gameMode, isStatsOpen, mapCompletionResult } = useTetrixStateContext(state => ({
+    gameState: state.gameState,
+    gameMode: state.gameMode,
+    isStatsOpen: state.isStatsOpen,
+    mapCompletionResult: state.mapCompletionResult
+  }));
 
   // Only render when in playing or gameover state
   if (gameState !== 'playing' && gameState !== 'gameover') {

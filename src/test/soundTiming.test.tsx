@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 import DraggingShape from '../components/DraggingShape';
-import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
+import { TetrixStoreContext } from '../components/Tetrix/TetrixContext';
 import { TetrixReducerState, DragPhase } from '../utils/types';
 import { INITIAL_GAME_STATS } from '../types/stats';
 import { DebugEditorProvider } from '../components/DebugEditor';
@@ -106,13 +106,17 @@ describe('Sound Timing in DraggingShape', () => {
   it('should trigger sound during animation placement at correct timing', async () => {
     const mockState = createMockState('placing');
 
+    const mockStore = {
+      getState: () => mockState,
+      subscribe: () => () => {},
+      dispatch: mockDispatch
+    };
+
     render(
       <DebugEditorProvider>
-        <TetrixStateContext.Provider value={mockState}>
-          <TetrixDispatchContext.Provider value={mockDispatch}>
+        <TetrixStoreContext.Provider value={mockStore}>
             <DraggingShape />
-          </TetrixDispatchContext.Provider>
-        </TetrixStateContext.Provider>
+        </TetrixStoreContext.Provider>
       </DebugEditorProvider>
     );
 
@@ -133,13 +137,17 @@ describe('Sound Timing in DraggingShape', () => {
   it('should not trigger sound when not in placing animation state', async () => {
     const mockState = createMockState('none');
 
+    const mockStore = {
+      getState: () => mockState,
+      subscribe: () => () => {},
+      dispatch: mockDispatch
+    };
+
     render(
       <DebugEditorProvider>
-        <TetrixStateContext.Provider value={mockState}>
-          <TetrixDispatchContext.Provider value={mockDispatch}>
+        <TetrixStoreContext.Provider value={mockStore}>
             <DraggingShape />
-          </TetrixDispatchContext.Provider>
-        </TetrixStateContext.Provider>
+        </TetrixStoreContext.Provider>
       </DebugEditorProvider>
     );
 
@@ -155,13 +163,17 @@ describe('Sound Timing in DraggingShape', () => {
   it('should complete placement animation after duration', async () => {
     const mockState = createMockState('placing');
 
+    const mockStore = {
+      getState: () => mockState,
+      subscribe: () => () => {},
+      dispatch: mockDispatch
+    };
+
     render(
       <DebugEditorProvider>
-        <TetrixStateContext.Provider value={mockState}>
-          <TetrixDispatchContext.Provider value={mockDispatch}>
+        <TetrixStoreContext.Provider value={mockStore}>
             <DraggingShape />
-          </TetrixDispatchContext.Provider>
-        </TetrixStateContext.Provider>
+        </TetrixStoreContext.Provider>
       </DebugEditorProvider>
     );
 

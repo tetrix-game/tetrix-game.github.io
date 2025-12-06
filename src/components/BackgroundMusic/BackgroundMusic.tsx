@@ -5,8 +5,13 @@ import './BackgroundMusic.css';
 
 const BackgroundMusic: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const { hasPlacedFirstShape } = useTetrixStateContext();
-  const { isEnabled, volume, shouldPlayMusic, triggerAutoplay } = useMusicControl();
+  const { hasPlacedFirstShape } = useTetrixStateContext(state => ({ hasPlacedFirstShape: state.hasPlacedFirstShape }));
+  const { isEnabled, volume, shouldPlayMusic, triggerAutoplay } = useMusicControl(state => ({
+    isEnabled: state.isEnabled,
+    volume: state.volume,
+    shouldPlayMusic: state.shouldPlayMusic,
+    triggerAutoplay: state.triggerAutoplay
+  }));
 
   // Track if we've already triggered autoplay from first shape
   const hasTriggeredFromShapeRef = useRef(false);

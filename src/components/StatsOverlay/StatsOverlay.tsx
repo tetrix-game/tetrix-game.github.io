@@ -81,7 +81,10 @@ const CATEGORY_LABELS: Record<StatCategory, string> = {
 const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
 
 const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
-  const { stats, gameState } = useTetrixStateContext();
+  const { stats, gameState } = useTetrixStateContext(state => ({
+    stats: state.stats,
+    gameState: state.gameState
+  }));
   const dispatch = useTetrixDispatchContext();
 
   const handleNewGame = () => {

@@ -6,7 +6,7 @@ import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import './GameControlsPanel.css';
 
 const GameControlsPanel: React.FC = () => {
-  const { buttonSizeMultiplier } = useTetrixStateContext();
+  const { buttonSizeMultiplier } = useTetrixStateContext(state => ({ buttonSizeMultiplier: state.buttonSizeMultiplier }));
   const { gameControlsButtonSize } = useGameSizing(buttonSizeMultiplier);
 
   return (

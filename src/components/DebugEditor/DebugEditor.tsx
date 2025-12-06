@@ -30,8 +30,8 @@ const DebugEditor: React.FC = () => {
     cycleActiveSection,
     hideInstructions, 
     toggleGridDots 
-  } = useDebugEditor();
-  const { tiles } = useTetrixStateContext();
+  } = useDebugEditor(state => state);
+  const { tiles } = useTetrixStateContext(state => ({ tiles: state.tiles }));
   const dispatch = useTetrixDispatchContext();
 
   // Dragging state

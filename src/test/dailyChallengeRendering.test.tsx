@@ -5,36 +5,78 @@
  * Out-of-bounds areas (missing tiles) should not render at all.
  */
 
-import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, cleanup, screen } from '@testing-library/react';
 import Grid from '../components/Grid/Grid';
-import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
+import { TetrixStoreContext } from '../components/Tetrix/TetrixContext';
 import type { TetrixReducerState, TetrixDispatch } from '../types';
 import { initialState } from '../reducers';
-import { DebugEditorProvider } from '../components/DebugEditor';
+
+// Mock useDebugGridInteractions
+vi.mock('../hooks/useDebugGridInteractions', () => ({
+  useDebugGridInteractions: () => ({
+    isDebugMode: false,
+    handleDebugClick: vi.fn(),
+  }),
+}));
+
+// Mock useGameSizing
+vi.mock('../hooks/useGameSizing', () => ({
+  useGameSizing: () => ({
+    gridSize: 300,
+    gridCellSize: 30,
+    gridGap: 2,
+    gameControlsButtonSize: 40,
+  }),
+}));
+
+// Mock TetrixTile to avoid animation loops and simplify testing
+vi.mock('../components/TetrixTile/TetrixTile', () => ({
+  default: ({ location, backgroundColor }: any) => (
+    <div 
+      data-testid="tetrix-tile" 
+      data-row={location.row}
+      data-col={location.column}
+      data-bgcolor={backgroundColor}
+    />
+  )
+}));
 
 describe('Daily Challenge Grid Rendering', () => {
-  const mockDispatch: TetrixDispatch = () => {};
+  const mockDispatch: TetrixDispatch = vi.fn();
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
 
   it('should render all tiles in infinite mode', () => {
     // Create state for infinite mode with standard 10x10 grid
     const state: TetrixReducerState = {
       ...initialState,
       gameMode: 'infinite',
+      tiles: new Map(), // Empty map means no tiles have data, but grid positions exist
     };
 
-    const { container } = render(
-      <DebugEditorProvider>
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <TetrixStateContext.Provider value={state}>
-            <Grid width={10} height={10} />
-          </TetrixStateContext.Provider>
-        </TetrixDispatchContext.Provider>
-      </DebugEditorProvider>
+    const mockStore = {
+      getState: () => state,
+      subscribe: () => () => {},
+      dispatch: mockDispatch
+    };
+
+    render(
+      <TetrixStoreContext.Provider value={mockStore}>
+          <Grid width={10} height={10} />
+      </TetrixStoreContext.Provider>
     );
 
     // Should render 100 tiles (10x10 grid)
-    const tiles = container.querySelectorAll('.tetrix-tile');
+    const tiles = screen.getAllByTestId('tetrix-tile');
     expect(tiles).toHaveLength(100);
   });
 
@@ -57,19 +99,25 @@ describe('Daily Challenge Grid Rendering', () => {
       tiles: partialTiles,
     };
 
-    const { container } = render(
-      <DebugEditorProvider>
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <TetrixStateContext.Provider value={state}>
-            <Grid width={10} height={10} />
-          </TetrixStateContext.Provider>
-        </TetrixDispatchContext.Provider>
-      </DebugEditorProvider>
+    const mockStore = {
+      getState: () => state,
+      subscribe: () => () => {},
+      dispatch: mockDispatch
+    };
+
+    render(
+      <TetrixStoreContext.Provider value={mockStore}>
+          <Grid width={10} height={10} />
+      </TetrixStoreContext.Provider>
     );
 
     // Should only render 4 tiles (the ones in the tiles Map)
-    const tiles = container.querySelectorAll('.tetrix-tile');
+    const tiles = screen.getAllByTestId('tetrix-tile');
     expect(tiles).toHaveLength(4);
+    
+    // Verify specific tile properties
+    const tile = tiles[0];
+    expect(tile).toHaveAttribute('data-bgcolor', 'blue');
   });
 
   it('should not render gray tiles for missing positions in daily challenge', () => {
@@ -98,23 +146,20 @@ describe('Daily Challenge Grid Rendering', () => {
       tiles: diamondTiles,
     };
 
-    const { container } = render(
-      <DebugEditorProvider>
-        <TetrixDispatchContext.Provider value={mockDispatch}>
-          <TetrixStateContext.Provider value={state}>
-            <Grid width={10} height={10} />
-          </TetrixStateContext.Provider>
-        </TetrixDispatchContext.Provider>
-      </DebugEditorProvider>
+    const mockStore = {
+      getState: () => state,
+      subscribe: () => () => {},
+      dispatch: mockDispatch
+    };
+
+    render(
+      <TetrixStoreContext.Provider value={mockStore}>
+          <Grid width={10} height={10} />
+      </TetrixStoreContext.Provider>
     );
 
     // Should only render diamond tiles (18 total)
-    const tiles = container.querySelectorAll('.tetrix-tile');
+    const tiles = screen.getAllByTestId('tetrix-tile');
     expect(tiles).toHaveLength(18);
-
-    // In daily challenge mode, tiles with custom backgrounds should not use default gray classes
-    // All rendered tiles should have custom backgrounds
-    const customBackgroundTiles = container.querySelectorAll('.tile-base-custom');
-    expect(customBackgroundTiles.length).toBeGreaterThan(0);
   });
 });

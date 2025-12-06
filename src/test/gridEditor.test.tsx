@@ -10,7 +10,7 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 
 describe('GridEditor - Basic Functionality', () => {
   it('should initialize with default 10x10 grid', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     expect(result.current.state.gridLayout.width).toBe(10);
     expect(result.current.state.gridLayout.height).toBe(10);
@@ -18,7 +18,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should open and close the editor', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     expect(result.current.state.isEditorOpen).toBe(false);
     
@@ -37,7 +37,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should adjust grid width within bounds', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     // Increase width
     act(() => {
@@ -59,7 +59,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should adjust grid height within bounds', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     // Increase height
     act(() => {
@@ -81,7 +81,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should remove tiles when shrinking grid', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     const initialTileCount = result.current.state.gridLayout.tiles.size;
     expect(initialTileCount).toBe(100); // 10x10
@@ -108,7 +108,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should add and remove individual tiles', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     const tileKey = 'R5C5';
     
@@ -126,7 +126,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should clear all tiles', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     expect(result.current.state.gridLayout.tiles.size).toBeGreaterThan(0);
     
@@ -138,7 +138,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should cycle through brush colors', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     const initialColor = result.current.state.selectedColor;
     expect(initialColor).toBe('blue');
@@ -162,7 +162,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should export and import grid layout', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     // Customize the grid
     act(() => {
@@ -200,7 +200,7 @@ describe('GridEditor - Basic Functionality', () => {
   });
 
   it('should create sparse layouts (circle example)', () => {
-    const { result } = renderHook(() => useGridEditor(), { wrapper });
+    const { result } = renderHook(() => useGridEditor(state => state), { wrapper });
     
     // Create a rough circle pattern by removing corner tiles
     act(() => {

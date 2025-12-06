@@ -55,6 +55,11 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         hasPlacedFirstShape: false,
         lastUpdated: Date.now(),
         stats: INITIAL_STATS_PERSISTENCE,
+        isGameOver: false,
+        queueColorProbabilities: undefined,
+        queueHiddenShapes: undefined,
+        queueMode: undefined,
+        queueSize: undefined,
       };
 
       await saveViewGameState('infinite', mockState);

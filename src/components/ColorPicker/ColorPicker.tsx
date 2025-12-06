@@ -107,8 +107,8 @@ const DEFAULT_COLORS: Record<ColorName, {
 };
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ isOpen, onClose }) => {
-  const { colorOverrides, setColorOverride, resetColorOverrides, resetColorOverride } = useColorPicker();
-  const { blockTheme } = useTetrixStateContext();
+  const { colorOverrides, setColorOverride, resetColorOverrides, resetColorOverride } = useColorPicker(state => ({ colorOverrides: state.colorOverrides }));
+  const { blockTheme } = useTetrixStateContext(state => ({ blockTheme: state.blockTheme }));
   const [selectedColor, setSelectedColor] = useState<ColorName | null>(null);
   const [autoAdjust, setAutoAdjust] = useState(false);
 

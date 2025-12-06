@@ -8,7 +8,11 @@ import type { Location } from '../utils/types';
  * Returns a click handler that can be attached to grid tiles
  */
 export function useDebugGridInteractions() {
-  const { state: editorState } = useDebugEditor();
+  const { state: editorState } = useDebugEditor(state => ({
+    isEditorOpen: state.isEditorOpen,
+    currentTool: state.currentTool,
+    selectedColor: state.selectedColor,
+  }));
   const dispatch = useTetrixDispatchContext();
 
   const handleDebugClick = useCallback((location: Location) => {

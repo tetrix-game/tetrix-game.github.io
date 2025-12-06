@@ -11,7 +11,11 @@ type PurchaseMenuProps = {
 
 const PurchaseMenu = ({ shapeIndex, isRotationMenuOpen }: PurchaseMenuProps) => {
   const dispatch = useTetrixDispatchContext();
-  const state = useTetrixStateContext();
+  const state = useTetrixStateContext(state => ({
+    buttonSizeMultiplier: state.buttonSizeMultiplier,
+    isTurningModeActive: state.isTurningModeActive,
+    isDoubleTurnModeActive: state.isDoubleTurnModeActive
+  }));
   const { gameControlsButtonSize } = useGameSizing(state.buttonSizeMultiplier);
 
   // Disable rotation buttons when any turning mode is active

@@ -13,7 +13,7 @@ interface NotificationData {
 }
 
 const ScoreNotification: React.FC = () => {
-  const { score } = useTetrixStateContext();
+  const { score } = useTetrixStateContext(state => ({ score: state.score }));
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const animationRef = useRef<number>();
   const lastScoreRef = useRef(score);

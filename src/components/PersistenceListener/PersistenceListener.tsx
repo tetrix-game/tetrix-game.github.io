@@ -15,7 +15,7 @@ import { tilesToArray } from '../../types';
  * - Saving happens here whenever relevant state changes
  */
 export const PersistenceListener = () => {
-  const state = useTetrixStateContext();
+  const state = useTetrixStateContext(state => state);
   const {
     gameState,
     gameMode,

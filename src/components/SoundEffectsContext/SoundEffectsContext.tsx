@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../utils/persistenceUtils';
 
 export type SoundEffect =
@@ -24,7 +24,7 @@ export function playSound(soundEffect: SoundEffect, startTime?: number): void {
   }
 }
 
-interface SoundEffectsContextValue {
+interface SoundEffectsState {
   playSound: (soundEffect: SoundEffect, startTime?: number) => void;
   setVolume: (volume: number) => void;
   setEnabled: (enabled: boolean) => void;
@@ -32,14 +32,32 @@ interface SoundEffectsContextValue {
   isEnabled: boolean;
 }
 
-const SoundEffectsContext = createContext<SoundEffectsContextValue | undefined>(undefined);
+interface SoundEffectsStore {
+  getState: () => SoundEffectsState;
+  subscribe: (listener: () => void) => () => void;
+}
+
+const SoundEffectsContext = createContext<SoundEffectsStore | undefined>(undefined);
 
 export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [volume, setVolumeState] = useState(100);
-  const [isEnabled, setIsEnabledState] = useState(true);
   const audioBuffersRef = useRef<Map<SoundEffect, AudioBuffer>>(new Map());
   const audioContextRef = useRef<AudioContext | null>(null);
   const hasUserInteractedRef = useRef(false);
+  
+  // State ref to hold the current state
+  const stateRef = useRef<SoundEffectsState>({
+    volume: 100,
+    isEnabled: true,
+    playSound: () => {},
+    setVolume: () => {},
+    setEnabled: () => {}
+  });
+  
+  const listenersRef = useRef(new Set<() => void>());
+
+  const notifyListeners = useCallback(() => {
+    listenersRef.current.forEach(listener => listener());
+  }, []);
 
   // Initialize AudioContext and load sounds
   useEffect(() => {
@@ -125,24 +143,6 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
   }, []);
 
-  // Load volume and enabled state from DB on mount
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const settings = await loadSoundEffectsSettings();
-        
-        setVolumeState(settings.volume);
-        setIsEnabledState(settings.isEnabled);
-      } catch (error) {
-        console.error('Unexpected error loading sound effects settings:', error);
-        setIsEnabledState(true);
-        setVolumeState(100);
-      }
-    };
-
-    loadSettings();
-  }, []);
-
   const playHeartbeat = useCallback((startTime: number) => {
     const ctx = audioContextRef.current;
     if (!ctx) return;
@@ -183,13 +183,15 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     osc2.stop(t2 + 0.25);
   }, []);
 
-  const playSound = useCallback((soundEffect: SoundEffect, scheduleTime?: number) => {
+  const playSoundImpl = useCallback((soundEffect: SoundEffect, scheduleTime?: number) => {
     // Don't play if user hasn't interacted yet
     if (!hasUserInteractedRef.current) {
       return;
     }
 
-    // Don't play if disabled or volume is 0 (synchronous state check - no async!)
+    const { isEnabled, volume } = stateRef.current;
+
+    // Don't play if disabled or volume is 0
     if (!isEnabled || volume === 0) {
       return;
     }
@@ -227,23 +229,17 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } else {
       console.warn(`Sound effect '${soundEffect}' not found or context not ready`);
     }
-  }, [isEnabled, volume, playHeartbeat]);
+  }, [playHeartbeat]);
 
-  // Register this playSound function at module level
-  // so reducer and other non-React code can benefit from fast playback
-  useEffect(() => {
-    modulePlaySound = playSound;
-    return () => {
-      modulePlaySound = null;
-    };
-  }, [playSound]);
-
-  const setVolume = useCallback((newVolume: number) => {
+  const setVolumeImpl = useCallback((newVolume: number) => {
     const clampedVolume = Math.max(0, Math.min(100, newVolume));
-    // Update React state immediately (synchronous)
-    setVolumeState(clampedVolume);
+    
+    // Update state
+    stateRef.current = { ...stateRef.current, volume: clampedVolume };
+    notifyListeners();
 
     // Save to DB in background (async, non-blocking)
+    const { isEnabled } = stateRef.current;
     saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch(error => {
       console.error('Failed to save sound effects volume:', error);
       // Fallback to localStorage
@@ -253,13 +249,15 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.error('Failed to save to localStorage:', e);
       }
     });
-  }, [isEnabled]);
+  }, [notifyListeners]);
 
-  const setEnabled = useCallback((enabled: boolean) => {
-    // Update React state immediately (synchronous)
-    setIsEnabledState(enabled);
+  const setEnabledImpl = useCallback((enabled: boolean) => {
+    // Update state
+    stateRef.current = { ...stateRef.current, isEnabled: enabled };
+    notifyListeners();
 
     // Save to DB in background (async, non-blocking)
+    const { volume } = stateRef.current;
     saveSoundEffectsSettings(!enabled, volume, enabled).catch(error => {
       console.error('Failed to save sound effects enabled state:', error);
       // Fallback to localStorage
@@ -269,27 +267,99 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.error('Failed to save to localStorage:', e);
       }
     });
-  }, [volume]);
+  }, [notifyListeners]);
 
-  const value: SoundEffectsContextValue = {
-    playSound,
-    setVolume,
-    setEnabled,
-    volume,
-    isEnabled,
-  };
+  // Initialize state methods
+  useEffect(() => {
+    stateRef.current = {
+      ...stateRef.current,
+      playSound: playSoundImpl,
+      setVolume: setVolumeImpl,
+      setEnabled: setEnabledImpl
+    };
+    notifyListeners();
+  }, [playSoundImpl, setVolumeImpl, setEnabledImpl, notifyListeners]);
+
+  // Load volume and enabled state from DB on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await loadSoundEffectsSettings();
+        stateRef.current = {
+          ...stateRef.current,
+          volume: settings.volume,
+          isEnabled: settings.isEnabled
+        };
+        notifyListeners();
+      } catch (error) {
+        console.error('Unexpected error loading sound effects settings:', error);
+        stateRef.current = {
+          ...stateRef.current,
+          volume: 100,
+          isEnabled: true
+        };
+        notifyListeners();
+      }
+    };
+
+    loadSettings();
+  }, [notifyListeners]);
+
+  // Register this playSound function at module level
+  useEffect(() => {
+    modulePlaySound = playSoundImpl;
+    return () => {
+      modulePlaySound = null;
+    };
+  }, [playSoundImpl]);
+
+  const store = useMemo(() => ({
+    getState: () => stateRef.current,
+    subscribe: (listener: () => void) => {
+      listenersRef.current.add(listener);
+      return () => {
+        listenersRef.current.delete(listener);
+      };
+    }
+  }), []);
 
   return (
-    <SoundEffectsContext.Provider value={value}>
+    <SoundEffectsContext.Provider value={store}>
       {children}
     </SoundEffectsContext.Provider>
   );
 };
 
-export const useSoundEffects = (): SoundEffectsContextValue => {
-  const context = useContext(SoundEffectsContext);
-  if (!context) {
+export function useSoundEffects<Selected>(selector: (state: SoundEffectsState) => Selected): Selected {
+  const store = useContext(SoundEffectsContext);
+  if (!store) {
     throw new Error('useSoundEffects must be used within a SoundEffectsProvider');
   }
-  return context;
-};
+  
+  if (typeof selector !== 'function') {
+      throw new Error('useSoundEffects must be called with a selector function.');
+  }
+
+  const { subscribe, getState } = store;
+  const [selectedSlice, setSelectedSlice] = useState(() => selector(getState()));
+
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const globalState = getState();
+      const newSlice = selector(globalState);
+
+      if (newSlice !== selectedSlice) {
+        setSelectedSlice(newSlice);
+      }
+    };
+
+    const unsubscribe = subscribe(checkForUpdates);
+    // Check immediately
+    checkForUpdates();
+    
+    return unsubscribe;
+  }, [selector, getState, selectedSlice, subscribe]);
+
+  return selectedSlice;
+}
+

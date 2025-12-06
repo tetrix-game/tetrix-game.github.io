@@ -25,7 +25,19 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
     blockTheme,
     showBlockIcons,
     gameMode
-  } = useTetrixStateContext();
+  } = useTetrixStateContext(state => ({
+    dragState: state.dragState,
+    isTurningModeActive: state.isTurningModeActive,
+    turningDirection: state.turningDirection,
+    isDoubleTurnModeActive: state.isDoubleTurnModeActive,
+    removingShapeIndex: state.removingShapeIndex,
+    shapeRemovalAnimationState: state.shapeRemovalAnimationState,
+    shapeOptionBounds: state.shapeOptionBounds,
+    score: state.score,
+    blockTheme: state.blockTheme,
+    showBlockIcons: state.showBlockIcons,
+    gameMode: state.gameMode
+  }));
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
 

@@ -1,21 +1,14 @@
-import { createContext, useContext } from "react";
-import { TetrixDispatch, TetrixReducerState } from "../../utils/types";
+import { createSubscriptionStore } from '../../utils/subscriptionStore';
+import { TetrixAction, TetrixReducerState } from "../../utils/types";
+import { initialState, tetrixReducer } from './TetrixReducer';
 
-export const TetrixStateContext = createContext<TetrixReducerState | null>(null); // null is the default value
-export const TetrixDispatchContext = createContext<TetrixDispatch | null>(null); // null is the default value
-
-export function useTetrixStateContext() {
-  const context = useContext(TetrixStateContext);
-  if (!context) {
-    throw new Error('useTetrixStateContext must be used within a TetrixStateProvider');
-  }
-  return context;
-}
-
-export function useTetrixDispatchContext() {
-  const context = useContext(TetrixDispatchContext);
-  if (!context) {
-    throw new Error('useTetrixDispatchContext must be used within a TetrixDispatchProvider');
-  }
-  return context;
-}
+export const { 
+  Provider: TetrixStoreProvider, 
+  useStore: useTetrixStateContext, 
+  useDispatch: useTetrixDispatchContext,
+  StoreContext: TetrixStoreContext
+} = createSubscriptionStore<TetrixReducerState, TetrixAction>(
+  tetrixReducer,
+  initialState,
+  'TetrixState'
+);

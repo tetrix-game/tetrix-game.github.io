@@ -3,12 +3,24 @@ import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/Tetri
 
 const PurchasesContainer = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const state = useTetrixStateContext();
+  const {
+    gameState,
+    isTurningModeActive,
+    turningDirection,
+    isDoubleTurnModeActive,
+    score
+  } = useTetrixStateContext(state => ({
+    gameState: state.gameState,
+    isTurningModeActive: state.isTurningModeActive,
+    turningDirection: state.turningDirection,
+    isDoubleTurnModeActive: state.isDoubleTurnModeActive,
+    score: state.score
+  }));
 
   const handleBuyTurnClockwise = () => {
-    if (state.gameState !== 'playing') return;
+    if (gameState !== 'playing') return;
 
-    if (state.isTurningModeActive && state.turningDirection === 'cw') {
+    if (isTurningModeActive && turningDirection === 'cw') {
       dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
     } else {
       dispatch({ type: 'ACTIVATE_TURNING_MODE', value: { direction: 'cw' } });
@@ -16,9 +28,9 @@ const PurchasesContainer = (): JSX.Element => {
   };
 
   const handleBuyTurnCounterClockwise = () => {
-    if (state.gameState !== 'playing') return;
+    if (gameState !== 'playing') return;
 
-    if (state.isTurningModeActive && state.turningDirection === 'ccw') {
+    if (isTurningModeActive && turningDirection === 'ccw') {
       dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
     } else {
       dispatch({ type: 'ACTIVATE_TURNING_MODE', value: { direction: 'ccw' } });
@@ -26,21 +38,21 @@ const PurchasesContainer = (): JSX.Element => {
   };
 
   const handleBuyDoubleTurn = () => {
-    if (state.gameState !== 'playing') return;
+    if (gameState !== 'playing') return;
 
-    if (state.isDoubleTurnModeActive) {
+    if (isDoubleTurnModeActive) {
       dispatch({ type: 'DEACTIVATE_DOUBLE_TURN_MODE' });
     } else {
       dispatch({ type: 'ACTIVATE_DOUBLE_TURN_MODE' });
     }
   };
 
-  const isClockwiseDisabled = (state.score < 2 && !state.isTurningModeActive) || state.gameState !== 'playing';
-  const isCounterClockwiseDisabled = (state.score < 2 && !state.isTurningModeActive) || state.gameState !== 'playing';
-  const isDoubleTurnDisabled = (state.score < 3 && !state.isDoubleTurnModeActive) || state.gameState !== 'playing';
-  const isClockwiseActive = state.isTurningModeActive && state.turningDirection === 'cw';
-  const isCounterClockwiseActive = state.isTurningModeActive && state.turningDirection === 'ccw';
-  const isDoubleTurnActive = state.isDoubleTurnModeActive;
+  const isClockwiseDisabled = (score < 2 && !isTurningModeActive) || gameState !== 'playing';
+  const isCounterClockwiseDisabled = (score < 2 && !isTurningModeActive) || gameState !== 'playing';
+  const isDoubleTurnDisabled = (score < 3 && !isDoubleTurnModeActive) || gameState !== 'playing';
+  const isClockwiseActive = isTurningModeActive && turningDirection === 'cw';
+  const isCounterClockwiseActive = isTurningModeActive && turningDirection === 'ccw';
+  const isDoubleTurnActive = isDoubleTurnModeActive;
 
   return (
     <div className="purchases-container">

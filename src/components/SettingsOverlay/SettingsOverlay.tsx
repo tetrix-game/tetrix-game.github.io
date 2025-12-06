@@ -8,7 +8,7 @@ import MusicOffIcon from '@mui/icons-material/MusicOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import { useMusicControl } from '../Header/MusicControlContext';
-import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
+import { useSoundEffects } from '../SoundEffectsContext';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useDebugEditor } from '../DebugEditor';
 import { useGridEditor } from '../GridEditor';
@@ -25,7 +25,7 @@ import InstallButton from '../InstallButton';
 import './SettingsOverlay.css';
 
 const ThemeSelector: React.FC = () => {
-  const { currentTheme } = useTetrixStateContext();
+  const { currentTheme } = useTetrixStateContext(state => ({ currentTheme: state.currentTheme }));
   const dispatch = useTetrixDispatchContext();
 
   const handleThemeChange = (theme: ThemeName) => {
@@ -52,7 +52,7 @@ const ThemeSelector: React.FC = () => {
 };
 
 const BlockThemeSelector: React.FC = () => {
-  const { blockTheme } = useTetrixStateContext();
+  const { blockTheme } = useTetrixStateContext(state => ({ blockTheme: state.blockTheme }));
   const dispatch = useTetrixDispatchContext();
 
   const handleThemeChange = (theme: BlockTheme) => {
@@ -79,7 +79,7 @@ const BlockThemeSelector: React.FC = () => {
 };
 
 const BlockIconToggle: React.FC = () => {
-  const { showBlockIcons } = useTetrixStateContext();
+  const { showBlockIcons } = useTetrixStateContext(state => ({ showBlockIcons: state.showBlockIcons }));
   const dispatch = useTetrixDispatchContext();
 
   return (
@@ -109,12 +109,27 @@ const SettingsOverlay: React.FC = () => {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled } = useMusicControl();
-  const { volume: soundVolume, setVolume: setSoundVolume, isEnabled: isSoundEnabled, toggleEnabled: toggleSoundEnabled } = useSoundEffectsControl();
-  const state = useTetrixStateContext();
+  const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled } = useMusicControl(state => ({
+    volume: state.volume,
+    setVolume: state.setVolume,
+    isEnabled: state.isEnabled,
+    toggleEnabled: state.toggleEnabled
+  }));
+  const { volume: soundVolume, setVolume: setSoundVolume, isEnabled: isSoundEnabled, setEnabled: setSoundEnabled } = useSoundEffects(state => ({
+    volume: state.volume,
+    setVolume: state.setVolume,
+    isEnabled: state.isEnabled,
+    setEnabled: state.setEnabled
+  }));
+  const toggleSoundEnabled = () => setSoundEnabled(!isSoundEnabled);
+  const state = useTetrixStateContext(state => ({
+    buttonSizeMultiplier: state.buttonSizeMultiplier,
+    queueMode: state.queueMode,
+    queueColorProbabilities: state.queueColorProbabilities
+  }));
   const dispatch = useTetrixDispatchContext();
-  const { openEditor } = useDebugEditor();
-  const { openEditor: openGridEditor } = useGridEditor();
+  const { openEditor } = useDebugEditor(() => null);
+  const { openEditor: openGridEditor } = useGridEditor(() => null);
   const [debugUnlocked, setDebugUnlocked] = useState(false);
   const [debugClickCount, setDebugClickCount] = useState(0);
 

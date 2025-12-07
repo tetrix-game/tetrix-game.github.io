@@ -320,7 +320,8 @@ export default function DraggingShape() {
               >
                 {block.isFilled && (
                   <BlockVisual 
-                    block={block} 
+                    isFilled={block.isFilled}
+                    color={block.color}
                     size={isInvalid ? currentCellSize * 0.5 : currentCellSize} 
                     theme={blockTheme} 
                     showIcon={gameMode === 'daily' || showBlockIcons}

@@ -42,7 +42,7 @@ const EditorGridTile: React.FC<EditorGridTileProps> = ({
       className="editor-grid-tile"
       style={{ cursor: 'pointer' }}
     >
-      <BlockVisual block={block} size={size} />
+      <BlockVisual isFilled={block.isFilled} color={block.color} size={size} />
 
       {editorColor && (
         <div className={`editor-grid-tile-overlay color-${editorColor}`} />

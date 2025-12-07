@@ -28,12 +28,13 @@ export const Tile: React.FC<TileProps> = ({
   children,
   className = '',
   style = {},
+  ...rest
 }) => {
   const hasCustomBackground = backgroundColor && backgroundColor !== 'grey';
 
   return (
     <div
-      className={`tile-base ${className}`}
+      className={`tile-base ${hasCustomBackground ? 'tile-base-custom' : ''} ${className}`}
       style={{
         gridColumn: col,
         gridRow: row,
@@ -43,6 +44,7 @@ export const Tile: React.FC<TileProps> = ({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseDown={onMouseDown}
+      {...rest}
     >
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
         <TileSvg color={backgroundColor} />

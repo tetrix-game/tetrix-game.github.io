@@ -185,7 +185,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ isOpen, onClose }) => {
                 onClick={() => setSelectedColor(colorName)}
               >
                 <div className="color-preview">
-                  <BlockVisual block={{ color: colorName, isFilled: true }} size={40} theme={blockTheme} />
+                  <BlockVisual isFilled={true} color={colorName} size={40} theme={blockTheme} />
                 </div>
                 <div className="color-info">
                   <span className="color-name">{colorName.charAt(0).toUpperCase() + colorName.slice(1)}</span>
@@ -211,7 +211,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ isOpen, onClose }) => {
               <h3>{selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)} Color</h3>
               
               <div className="color-editor-preview">
-                <BlockVisual block={{ color: selectedColor, isFilled: true }} size={80} theme={blockTheme} />
+                <BlockVisual isFilled={true} color={selectedColor} size={80} theme={blockTheme} />
               </div>
 
               <div className="auto-adjust-container">

@@ -107,7 +107,7 @@ const ShapeDisplay = ({
             key={`${rowIndex}-${colIndex}`}
             className="shape-display-tile"
           >
-            <BlockVisual block={block} size={cellSize} theme={theme} showIcon={showIcon} />
+            <BlockVisual isFilled={block.isFilled} color={block.color} size={cellSize} theme={theme} showIcon={showIcon} />
           </div>
         ))
       ))}

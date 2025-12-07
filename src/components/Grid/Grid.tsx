@@ -14,7 +14,7 @@ interface GridProps {
 }
 
 export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps) {
-  const { tiles, dragState, gameMode } = useTetrixStateContext();
+  const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const { gridSize: hookGridSize, gridGap, gridCellSize: hookGridCellSize } = useGameSizing();
@@ -54,6 +54,21 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
     };
   }, [dragState.selectedShape, dispatch, isDebugMode]);
 
+  // Handle debug click via event delegation
+  const handleGridClick = (e: React.MouseEvent) => {
+    if (!isDebugMode) return;
+    
+    const target = e.target as HTMLElement;
+    const tileElement = target.closest('.tetrix-tile');
+    if (tileElement) {
+      const row = parseInt(tileElement.getAttribute('data-row') || '0');
+      const col = parseInt(tileElement.getAttribute('data-col') || '0');
+      if (row && col) {
+        handleDebugClick({ row, column: col });
+      }
+    }
+  };
+
   // Create a map of hovered block positions for quick lookup
   const hoveredBlockMap = new Map(
     dragState.hoveredBlockPositions.map(pos => [
@@ -77,6 +92,7 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
     <div
       ref={gridRef}
       className={`grid ${dragState.selectedShape ? 'grid-dragging' : ''}`}
+      onClick={handleGridClick}
       style={
         {
           '--grid-gap': `${gridGap}px`,
@@ -110,25 +126,33 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
           const row = parseInt(match[1]);
           const column = parseInt(match[2]);
 
-          const tile: Tile = {
-            position,
-            backgroundColor,
-            block,
-            activeAnimations: tileData?.activeAnimations || []
-          };
+          const activeAnimations = tileData?.activeAnimations || [];
+          const animationsJson = JSON.stringify(activeAnimations);
 
           const posKey = `${row},${column}`;
           const hoveredBlock = hoveredBlockMap.get(posKey);
           const isHovered = hoveredBlock?.isFilled ?? false;
+          
+          const showShadow = isHovered && hoveredBlock;
+          let shadowOpacity = 0;
+          if (showShadow) {
+            shadowOpacity = dragState.isValidPlacement ? 0.7 : 0.4;
+          }
 
           return (
             <TetrixTile
               key={position}
-              tile={tile}
-              location={{ row, column }}
+              row={row}
+              col={column}
+              backgroundColor={backgroundColor}
+              blockIsFilled={block.isFilled}
+              blockColor={block.color}
               isHovered={isHovered}
-              hoveredBlock={hoveredBlock}
-              onClick={isDebugMode ? () => handleDebugClick({ row, column }) : undefined}
+              showShadow={!!showShadow}
+              shadowOpacity={shadowOpacity}
+              animationsJson={animationsJson}
+              theme={blockTheme}
+              showIcon={gameMode === 'daily' || showBlockIcons}
               size={gridCellSize}
             />
           )

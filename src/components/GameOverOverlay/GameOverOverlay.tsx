@@ -1,6 +1,7 @@
 import React from 'react';
 import './GameOverOverlay.css';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
+import Overlay from '../Overlay';
 
 const GameOverOverlay: React.FC = () => {
   const { gameMode } = useTetrixStateContext();
@@ -15,17 +16,19 @@ const GameOverOverlay: React.FC = () => {
   };
 
   return (
-    <div className="game-over-overlay">
-      <div className="game-over-content">
-        <h1 className="game-over-title">Game Over</h1>
-        <p className="game-over-subtitle">
-          Check your stats to see how you did!
-        </p>
-        <button className="new-game-button" onClick={handleRestart}>
-          {gameMode === 'daily' ? 'Restart Challenge' : 'Back to Menu'}
-        </button>
-      </div>
-    </div>
+    <Overlay 
+      className="game-over-overlay"
+      contentClassName="game-over-content"
+      ariaLabel="Game Over"
+    >
+      <h1 className="game-over-title">Game Over</h1>
+      <p className="game-over-subtitle">
+        Check your stats to see how you did!
+      </p>
+      <button className="new-game-button" onClick={handleRestart}>
+        {gameMode === 'daily' ? 'Restart Challenge' : 'Back to Menu'}
+      </button>
+    </Overlay>
   );
 };
 

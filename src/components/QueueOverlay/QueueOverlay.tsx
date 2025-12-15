@@ -1,8 +1,8 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 import type { Shape } from '../../types';
 import ShapeDisplay from '../ShapeDisplay';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
+import Overlay from '../Overlay';
 import './QueueOverlay.css';
 
 interface QueueOverlayProps {
@@ -22,66 +22,45 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
 }) => {
   const { blockTheme, showBlockIcons, gameMode } = useTetrixStateContext();
 
-  // Close on Escape key
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
-
-  // Handle clicking outside the content
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  return createPortal(
-    <div
+  return (
+    <Overlay
       className="queue-overlay-backdrop"
-      onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="queue-overlay-title"
+      contentClassName="queue-overlay-content"
+      onBackdropClick={onClose}
+      onEscapeKey={onClose}
+      usePortal={true}
+      ariaLabelledBy="queue-overlay-title"
     >
-      <div className="queue-overlay-content">
-        <div className="queue-overlay-header">
-          <h2 id="queue-overlay-title">Shape Queue</h2>
-          <button
-            className="queue-overlay-close"
-            onClick={onClose}
-            aria-label="Close queue overlay"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="queue-overlay-body">
-          {hiddenShapes.length === 0 ? (
-            <p className="queue-overlay-empty">No hidden shapes in queue</p>
-          ) : (
-            <div className="queue-overlay-shapes">
-              {hiddenShapes.map((shape, index) => (
-                <div key={`hidden-shape-${index}`} className="queue-overlay-shape">
-                  <div className="queue-overlay-shape-label">#{index + 4}</div>
-                  <ShapeDisplay 
-                    shape={shape} 
-                    theme={blockTheme} 
-                    showIcon={gameMode === 'daily' || showBlockIcons}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+      <div className="queue-overlay-header">
+        <h2 id="queue-overlay-title">Shape Queue</h2>
+        <button
+          className="queue-overlay-close"
+          onClick={onClose}
+          aria-label="Close queue overlay"
+        >
+          ✕
+        </button>
       </div>
-    </div>,
-    document.body
+
+      <div className="queue-overlay-body">
+        {hiddenShapes.length === 0 ? (
+          <p className="queue-overlay-empty">No hidden shapes in queue</p>
+        ) : (
+          <div className="queue-overlay-shapes">
+            {hiddenShapes.map((shape, index) => (
+              <div key={`hidden-shape-${index}`} className="queue-overlay-shape">
+                <div className="queue-overlay-shape-label">#{index + 4}</div>
+                <ShapeDisplay 
+                  shape={shape} 
+                  theme={blockTheme} 
+                  showIcon={gameMode === 'daily' || showBlockIcons}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </Overlay>
   );
 };
 

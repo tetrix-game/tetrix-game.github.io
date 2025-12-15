@@ -2,6 +2,7 @@ import React from 'react';
 import './MapCompletionOverlay.css';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import Grid from '../Grid';
+import Overlay from '../Overlay';
 
 interface MapCompletionOverlayProps {
   stars: number; // 0-3 stars (0 = failure)
@@ -40,15 +41,19 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
   };
 
   return (
-    <div className="map-completion-overlay">
-      <div className="map-completion-content">
+    <Overlay
+      className="map-completion-overlay"
+      contentClassName="map-completion-content"
+      ariaLabel={isSuccess ? 'Level Complete' : 'Level Failed'}
+    >
+      <div className="map-completion-scroll-area">
         <div className="completion-grid-preview">
           <Grid pixelSize={250} />
         </div>
         
         <div className="completion-details">
           <h1 className={`completion-title ${isSuccess ? 'success' : 'failure'}`}>
-            {isSuccess ? 'Level Complete!' : 'Level Failed'}
+            {stars === 3 ? 'Perfect!' : isSuccess ? 'Level Complete!' : 'Level Failed'}
           </h1>
           
           {isSuccess && (
@@ -64,22 +69,23 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
             </div>
           )}
           
-          <div className="completion-stats">
-            <div className="stat-row">
-              <span className="stat-label">Matched Tiles:</span>
-              <span className="stat-value">{matchedTiles} / {totalTiles}</span>
+          {stars !== 3 && (
+            <div className="completion-stats">
+              <div className="stat-row">
+                <span className="stat-label">Matched Tiles:</span>
+                <span className="stat-value">{matchedTiles} / {totalTiles}</span>
+              </div>
+              <div className="stat-row">
+                <span className="stat-label">Missed Tiles:</span>
+                <span className={`stat-value ${missedTiles === 0 ? 'perfect' : 'miss'}`}>
+                  {missedTiles}
+                </span>
+              </div>
             </div>
-            <div className="stat-row">
-              <span className="stat-label">Missed Tiles:</span>
-              <span className={`stat-value ${missedTiles === 0 ? 'perfect' : 'miss'}`}>
-                {missedTiles}
-              </span>
-            </div>
-          </div>
+          )}
           
-          {isSuccess && (
+          {isSuccess && stars !== 3 && (
             <div className="rating-description">
-              {stars === 3 && <p>Perfect! All tiles matched their target colors!</p>}
               {stars === 2 && <p>Great job! Only 1-2 tiles didn't match.</p>}
               {stars === 1 && <p>Good effort! 3-5 tiles need correction.</p>}
             </div>
@@ -93,16 +99,18 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
           )}
           
           <div className="completion-actions">
-            <button className="retry-button" onClick={handleRetry}>
-              Try Again
-            </button>
+            {stars !== 3 && (
+              <button className="retry-button" onClick={handleRetry}>
+                Try Again
+              </button>
+            )}
             <button className="continue-button" onClick={handleContinue}>
               {gameMode === 'daily' ? 'Back to Hub' : 'Continue'}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </Overlay>
   );
 };
 

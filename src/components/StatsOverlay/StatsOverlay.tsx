@@ -2,6 +2,7 @@ import React from 'react';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { StatCategory } from '../../types/stats';
 import { ColorName } from '../../types/core';
+import Overlay from '../Overlay';
 import './StatsOverlay.css';
 
 interface StatsOverlayProps {
@@ -161,46 +162,50 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="stats-overlay-backdrop" onClick={onClose}>
-      <div className="stats-overlay-content" onClick={e => e.stopPropagation()}>
-        <div className="stats-header">
-          <h2>Statistics</h2>
-          <button className="close-button" onClick={onClose}>×</button>
-        </div>
-        
-        <div className="stats-table-header">
-          <div className="header-label">Category</div>
-          <div className="header-value">All Time</div>
-          <div className="header-value">Best</div>
-          <div className="header-value">Current</div>
-        </div>
-
-        <div className="stats-scroll-container">
-          {CATEGORY_GROUPS.map((group, index) => {
-            const rows = group.categories.map(renderStatRow).filter(Boolean);
-            if (rows.length === 0) return null;
-
-            return (
-              <div key={group.title} className={`stats-group ${group.className || ''}`}>
-                {index > 0 && <div className={`group-divider ${group.className === 'stats-group-legendary' ? 'legendary-divider' : ''}`} />}
-                {/* <div className="group-title">{group.title}</div> */}
-                {rows}
-                {/* Add No-Turn Streak after the General group (first group) */}
-                {index === 0 && renderNoTurnStreak()}
-              </div>
-            );
-          })}
-        </div>
-
-        {gameState === 'gameover' && (
-          <div className="stats-footer">
-            <button className="new-game-button" onClick={handleNewGame}>
-              New Game
-            </button>
-          </div>
-        )}
+    <Overlay
+      className="stats-overlay-backdrop"
+      contentClassName="stats-overlay-content"
+      onBackdropClick={onClose}
+      onEscapeKey={onClose}
+      ariaLabel="Statistics"
+    >
+      <div className="stats-header">
+        <h2>Statistics</h2>
+        <button className="close-button" onClick={onClose}>×</button>
       </div>
-    </div>
+      
+      <div className="stats-table-header">
+        <div className="header-label">Category</div>
+        <div className="header-value">All Time</div>
+        <div className="header-value">Best</div>
+        <div className="header-value">Current</div>
+      </div>
+
+      <div className="stats-scroll-container">
+        {CATEGORY_GROUPS.map((group, index) => {
+          const rows = group.categories.map(renderStatRow).filter(Boolean);
+          if (rows.length === 0) return null;
+
+          return (
+            <div key={group.title} className={`stats-group ${group.className || ''}`}>
+              {index > 0 && <div className={`group-divider ${group.className === 'stats-group-legendary' ? 'legendary-divider' : ''}`} />}
+              {/* <div className="group-title">{group.title}</div> */}
+              {rows}
+              {/* Add No-Turn Streak after the General group (first group) */}
+              {index === 0 && renderNoTurnStreak()}
+            </div>
+          );
+        })}
+      </div>
+
+      {gameState === 'gameover' && (
+        <div className="stats-footer">
+          <button className="new-game-button" onClick={handleNewGame}>
+            New Game
+          </button>
+        </div>
+      )}
+    </Overlay>
   );
 };
 

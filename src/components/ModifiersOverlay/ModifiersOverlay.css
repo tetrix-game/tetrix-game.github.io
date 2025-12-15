@@ -1,16 +1,6 @@
-.modifiers-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ModifiersOverlay uses Overlay component - these styles extend it */
+.modifiers-overlay.overlay-backdrop {
   z-index: var(--z-modal);
-  backdrop-filter: blur(8px);
-  animation: fadeIn 0.3s ease-out;
 }
 
 .modifiers-modal {
@@ -20,12 +10,14 @@
   padding: 2rem;
   max-width: 800px;
   width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
   color: white;
   font-family: 'Courier New', monospace;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  animation: slideIn 0.3s ease-out;
+}
+
+.modifiers-modal .modifiers-content {
+  overflow-y: auto;
+  max-height: 60vh;
 }
 
 .modifiers-header {

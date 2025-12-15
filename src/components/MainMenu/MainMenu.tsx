@@ -3,6 +3,7 @@ import { useGameNavigation } from '../../hooks/useGameNavigation';
 import { useDailyChallengeLoader } from '../../hooks/useDailyChallengeLoader';
 import { useDailyHistory } from '../../hooks/useDailyHistory';
 import { hasCompletedToday } from '../../utils/dailyStreakUtils';
+import Overlay from '../Overlay';
 import InstallButton from '../InstallButton';
 import './MainMenu.css';
 
@@ -23,7 +24,12 @@ const MainMenu: React.FC = () => {
   const currentStreak = history.currentStreak;
 
   return (
-    <div className="hub-menu-overlay">
+    <Overlay 
+      className="hub-menu-overlay"
+      contentClassName="hub-menu-scroll-wrapper"
+      blur={false}
+      ariaLabel="Main Menu"
+    >
       <div className="hub-menu-container">
         <h1 className="hub-menu-title">Tetrix</h1>
 
@@ -73,7 +79,7 @@ const MainMenu: React.FC = () => {
           <InstallButton />
         </div>
       </div>
-    </div>
+    </Overlay>
   );
 };
 

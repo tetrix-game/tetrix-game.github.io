@@ -2,6 +2,7 @@ import React from 'react';
 import { GameModifier } from '../../utils/types';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import ModifierCard from '../ModifierCard';
+import Overlay from '../Overlay';
 import './ModifiersOverlay.css';
 
 interface ModifiersOverlayProps {
@@ -103,67 +104,51 @@ const ModifiersOverlay: React.FC<ModifiersOverlayProps> = ({ isOpen, onClose }) 
   const unlockedCount = allModifiers.filter(m => m.unlocked).length;
   const activeCount = allModifiers.filter(m => m.active).length;
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const handleOverlayKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
-  };
-
   return (
-    <div
+    <Overlay
       className="modifiers-overlay"
-      onClick={handleOverlayClick}
-      onKeyDown={handleOverlayKeyDown}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modifiers-title"
-      tabIndex={-1}
+      contentClassName="modifiers-modal"
+      onBackdropClick={onClose}
+      onEscapeKey={onClose}
+      ariaLabelledBy="modifiers-title"
     >
-      <div className="modifiers-modal">
-        <div className="modifiers-header">
-          <h2 id="modifiers-title">Game Modifiers</h2>
-          <button className="close-button" onClick={onClose} type="button">
-            ✕
-          </button>
+      <div className="modifiers-header">
+        <h2 id="modifiers-title">Game Modifiers</h2>
+        <button className="close-button" onClick={onClose} type="button">
+          ✕
+        </button>
+      </div>
+
+      <div className="modifiers-content">
+        <div className="modifiers-notice">
+          <p>
+            🎮 Game Modifiers ({unlockedCount} unlocked, {activeCount} active)
+            <br />
+            <small>Unlock modifiers by reaching levels that match prime numbers!</small>
+          </p>
         </div>
 
-        <div className="modifiers-content">
-          <div className="modifiers-notice">
-            <p>
-              🎮 Game Modifiers ({unlockedCount} unlocked, {activeCount} active)
-              <br />
-              <small>Unlock modifiers by reaching levels that match prime numbers!</small>
-            </p>
-          </div>
+        <div className="modifiers-grid">
+          {allModifiers.map((modifier) => (
+            <ModifierCard
+              key={modifier.id}
+              modifier={modifier}
+              onToggle={handleModifierToggle}
+              showUnlockHint={true}
+            />
+          ))}
+        </div>
 
-          <div className="modifiers-grid">
-            {allModifiers.map((modifier) => (
-              <ModifierCard
-                key={modifier.id}
-                modifier={modifier}
-                onToggle={handleModifierToggle}
-                showUnlockHint={true}
-              />
-            ))}
-          </div>
-
-          <div className="modifiers-footer">
-            <p>
-              {currentLevel < 2
-                ? "Reach level 2 to unlock your first modifier!"
-                : `Current level: ${currentLevel}. Next modifier unlocks depend on reaching prime number levels.`
-              }
-            </p>
-          </div>
+        <div className="modifiers-footer">
+          <p>
+            {currentLevel < 2
+              ? "Reach level 2 to unlock your first modifier!"
+              : `Current level: ${currentLevel}. Next modifier unlocks depend on reaching prime number levels.`
+            }
+          </p>
         </div>
       </div>
-    </div>
+    </Overlay>
   );
 };
 

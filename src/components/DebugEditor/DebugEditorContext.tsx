@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useMemo, type ReactNode } from 'react';
 import type { ColorName } from '../../utils/types';
 
-export type DebugTool = 'add-block' | 'fill-row' | 'fill-column' | 'remove' | 'clear-all' | 'none';
+export type DebugTool = 'add-block' | 'fill-row' | 'fill-column' | 'remove' | 'none';
 export type ShapeType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
 export type SectionType = 'tools' | 'color' | 'shapes' | null;
 
@@ -34,7 +34,7 @@ type DebugEditorContextValue = {
 
 const DebugEditorContext = createContext<DebugEditorContextValue | null>(null);
 
-const TOOL_ORDER: DebugTool[] = ['add-block', 'fill-row', 'fill-column', 'remove', 'clear-all'];
+const TOOL_ORDER: DebugTool[] = ['add-block', 'fill-row', 'fill-column', 'remove'];
 const COLOR_ORDER: ColorName[] = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 const SHAPE_ORDER: ShapeType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 
@@ -147,17 +147,23 @@ export function DebugEditorProvider({ children }: Readonly<{ children: ReactNode
     setState(prev => {
       switch (prev.lastActiveSection) {
         case 'tools':
-          return { ...prev, currentTool: TOOL_ORDER[
-            (TOOL_ORDER.indexOf(prev.currentTool) + (direction === 'forward' ? 1 : -1) + TOOL_ORDER.length) % TOOL_ORDER.length
-          ] };
+          return {
+            ...prev, currentTool: TOOL_ORDER[
+              (TOOL_ORDER.indexOf(prev.currentTool) + (direction === 'forward' ? 1 : -1) + TOOL_ORDER.length) % TOOL_ORDER.length
+            ]
+          };
         case 'color':
-          return { ...prev, selectedColor: COLOR_ORDER[
-            (COLOR_ORDER.indexOf(prev.selectedColor) + (direction === 'forward' ? 1 : -1) + COLOR_ORDER.length) % COLOR_ORDER.length
-          ] };
+          return {
+            ...prev, selectedColor: COLOR_ORDER[
+              (COLOR_ORDER.indexOf(prev.selectedColor) + (direction === 'forward' ? 1 : -1) + COLOR_ORDER.length) % COLOR_ORDER.length
+            ]
+          };
         case 'shapes':
-          return { ...prev, selectedShape: SHAPE_ORDER[
-            (SHAPE_ORDER.indexOf(prev.selectedShape) + (direction === 'forward' ? 1 : -1) + SHAPE_ORDER.length) % SHAPE_ORDER.length
-          ] };
+          return {
+            ...prev, selectedShape: SHAPE_ORDER[
+              (SHAPE_ORDER.indexOf(prev.selectedShape) + (direction === 'forward' ? 1 : -1) + SHAPE_ORDER.length) % SHAPE_ORDER.length
+            ]
+          };
         default:
           return prev;
       }

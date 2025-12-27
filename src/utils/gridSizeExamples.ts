@@ -6,7 +6,7 @@
  * sizes for different game modes and difficulty levels.
  */
 
-import { setGridSize, GRID_SIZE, GRID_ADDRESSES } from '../utils/gridConstants';
+import { setGridSize, GRID_SIZE, GRID_ADDRESSES } from './gridConstants';
 
 /**
  * Preset grid sizes for different game modes

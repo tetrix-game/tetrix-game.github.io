@@ -20,16 +20,16 @@ import './DebugEditor.css';
 const COLOR_OPTIONS: ColorName[] = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 
 const DebugEditor: React.FC = () => {
-  const { 
-    state, 
-    closeEditor, 
-    setTool, 
-    setColor, 
+  const {
+    state,
+    closeEditor,
+    setTool,
+    setColor,
     setShape,
     setLastActiveSection,
     cycleActiveSection,
-    hideInstructions, 
-    toggleGridDots 
+    hideInstructions,
+    toggleGridDots
   } = useDebugEditor();
   const { tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
@@ -42,7 +42,7 @@ const DebugEditor: React.FC = () => {
 
   // Focused section (which section button is highlighted)
   const [focusedSection, setFocusedSection] = useState<'tools' | 'color' | 'shapes' | 'view'>('tools');
-  
+
   // Navigation mode: 'menu' = navigating between sections, 'submenu' = changing options within section
   const [navMode, setNavMode] = useState<'menu' | 'submenu'>('menu');
 
@@ -67,7 +67,7 @@ const DebugEditor: React.FC = () => {
   // Mouse down - start dragging
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!paletteRef.current) return;
-    
+
     const rect = paletteRef.current.getBoundingClientRect();
     setDragOffset({
       x: e.clientX - rect.left,
@@ -107,7 +107,6 @@ const DebugEditor: React.FC = () => {
       case 'fill-row': return '━';
       case 'fill-column': return '┃';
       case 'remove': return '✕';
-      case 'clear-all': return '🗑';
       default: return '🛠';
     }
   }, [state.currentTool]);
@@ -164,11 +163,6 @@ const DebugEditor: React.FC = () => {
         dispatch({
           type: 'DEBUG_REMOVE_BLOCK',
           value: { location },
-        });
-        break;
-      case 'clear-all':
-        dispatch({
-          type: 'DEBUG_CLEAR_ALL',
         });
         break;
     }
@@ -229,12 +223,12 @@ const DebugEditor: React.FC = () => {
   const handleExportBoard = useCallback(() => {
     const challengeData = tilesMapToChallengeData(tiles);
     const jsonString = JSON.stringify(challengeData, null, 2);
-    
+
     // Always log to console
     console.log('✅ Board data exported!');
     console.log('Board data:', challengeData);
     console.log('JSON:', jsonString);
-    
+
     // Try to copy to clipboard with fallback
     const copyToClipboard = async () => {
       // Modern API (requires secure context)
@@ -247,7 +241,7 @@ const DebugEditor: React.FC = () => {
           console.warn('Clipboard API failed, trying fallback:', err);
         }
       }
-      
+
       // Fallback: Create a temporary textarea
       try {
         const textarea = document.createElement('textarea');
@@ -266,7 +260,7 @@ const DebugEditor: React.FC = () => {
         alert('Could not copy to clipboard, but data is logged to console!');
       }
     };
-    
+
     copyToClipboard();
   }, [tiles]);
 
@@ -279,7 +273,7 @@ const DebugEditor: React.FC = () => {
       const delta = direction === 'forward' ? 1 : -1;
       const nextIndex = (currentIndex + delta + sections.length) % sections.length;
       setFocusedSection(sections[nextIndex]);
-      
+
       // Track last active section
       if (sections[nextIndex] !== 'view') {
         setLastActiveSection(sections[nextIndex]);
@@ -351,7 +345,7 @@ const DebugEditor: React.FC = () => {
   // Tools and color sections register a global click listener to perform actions on the grid
   useEffect(() => {
     if (!state.isEditorOpen || navMode !== 'submenu') return;
-    
+
     // Only tools and color sections have global click behavior
     if (focusedSection !== 'tools' && focusedSection !== 'color') return;
 
@@ -406,13 +400,6 @@ const DebugEditor: React.FC = () => {
             title="Remove Block"
           >
             ✕
-          </button>
-          <button
-            className={`debug-tool-button ${state.currentTool === 'clear-all' ? 'active' : ''}`}
-            onClick={() => setTool('clear-all')}
-            title="Clear All"
-          >
-            🗑
           </button>
         </div>
       ),
@@ -527,8 +514,8 @@ const DebugEditor: React.FC = () => {
             <span className="debug-toggle-icon">⚏</span>
             <span className="debug-toggle-text">Grid Dots</span>
           </button>
-          <button 
-            className="debug-export-compact-button" 
+          <button
+            className="debug-export-compact-button"
             onClick={handleExportBoard}
           >
             📋 Export Board
@@ -591,7 +578,7 @@ const DebugEditor: React.FC = () => {
       )}
 
       {/* Compact draggable tool palette */}
-      <div 
+      <div
         ref={paletteRef}
         className={`debug-compact-palette ${isDragging ? 'dragging' : ''}`}
         style={{

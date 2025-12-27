@@ -1,13 +1,13 @@
 import { useReducer, useEffect, useState } from 'react';
 import { initialState, tetrixReducer } from './TetrixReducer';
 import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
-import { 
-  loadModifiers, 
-  loadTheme, 
-  initializePersistence, 
+import {
+  loadModifiers,
+  loadTheme,
+  initializePersistence,
   clearAllDataAndReload,
-  loadViewGameState, 
-  loadSettings 
+  loadViewGameState,
+  loadSettings
 } from '../../utils/persistence';
 import { ThemeName, BlockTheme } from '../../types';
 
@@ -104,16 +104,37 @@ export default function TetrixProvider({ children }: { readonly children: React.
         }
 
         // Load infinite view state
-        if (infiniteStateData && infiniteStateData.tiles.length === 100) {
-          dispatch({
-            type: 'LOAD_GAME_STATE',
-            value: { 
-              gameData: infiniteStateData,
-              stats: infiniteStateData.stats
-            },
-          });
+        // IMPORTANT: Do NOT check for tiles.length === 100 - this causes data loss!
+        // Valid saves may have different tile counts due to:
+        // - Grid size changes
+        // - Migration from older formats
+        // - Corrupted but partially recoverable data
+        // 
+        // Instead, check if there's any meaningful game progress to restore.
+        // The persistence layer already handles sanitization and defaults.
+        if (infiniteStateData) {
+          // Check if there's actual progress to load
+          // A valid save has either: filled tiles, score > 0, or shapes used
+          const hasProgress =
+            infiniteStateData.score > 0 ||
+            infiniteStateData.hasPlacedFirstShape ||
+            infiniteStateData.shapesUsed > 0 ||
+            infiniteStateData.tiles.some(t => t.isFilled);
+
+          // Always load if there's progress, regardless of tiles.length
+          // Even an empty or partial save should be loaded if it has progress
+          // This prevents losing user progress due to grid size mismatches
+          if (hasProgress || infiniteStateData.tiles.length > 0) {
+            dispatch({
+              type: 'LOAD_GAME_STATE',
+              value: {
+                gameData: infiniteStateData,
+                stats: infiniteStateData.stats
+              },
+            });
+          }
         }
-        
+
         // Signal that initialization is complete
         dispatch({ type: 'INITIALIZATION_COMPLETE' });
         setInitState('READY');
@@ -157,7 +178,7 @@ export default function TetrixProvider({ children }: { readonly children: React.
       }}>
         <div>Failed to load game data. The database may be corrupted.</div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             style={{
               padding: '10px 20px',
@@ -171,7 +192,7 @@ export default function TetrixProvider({ children }: { readonly children: React.
           >
             Retry
           </button>
-          <button 
+          <button
             onClick={() => clearAllDataAndReload()}
             style={{
               padding: '10px 20px',

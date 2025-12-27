@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type DebugTool = 'add-block' | 'fill-row' | 'fill-column' | 'remove' | 'clear-all';
+export type DebugTool = 'add-block' | 'fill-row' | 'fill-column' | 'remove';
 
 export interface MenuSectionProps {
   id: 'tools' | 'color' | 'shapes' | 'view';
@@ -9,10 +9,10 @@ export interface MenuSectionProps {
   isFocused: boolean;
   isExpanded: boolean;
   onClick: () => void;
-  
+
   // Optional color class for color button
   colorClass?: string;
-  
+
   // Render the expanded bubble content
   renderContent?: () => React.ReactNode;
 }

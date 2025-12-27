@@ -94,14 +94,22 @@ export async function loadViewGameState(
     ]) as [ViewGameState | null, ChecksumManifest | null];
 
     if (state) {
+      // Helper to sanitize numeric values (handles NaN, Infinity, non-numbers)
+      const sanitizeNumber = (val: unknown, fallback: number = 0): number => {
+        if (typeof val === 'number' && Number.isFinite(val)) {
+          return val;
+        }
+        return fallback;
+      };
+
       // Sanitize state to ensure all required fields exist (handles partial/corrupted data)
       const sanitizedState: ViewGameState = {
-        score: typeof state.score === 'number' ? state.score : 0,
+        score: sanitizeNumber(state.score, 0),
         tiles: Array.isArray(state.tiles) ? state.tiles : [],
         nextShapes: Array.isArray(state.nextShapes) ? state.nextShapes : [],
         savedShape: state.savedShape ?? null,
-        totalLinesCleared: typeof state.totalLinesCleared === 'number' ? state.totalLinesCleared : 0,
-        shapesUsed: typeof state.shapesUsed === 'number' ? state.shapesUsed : 0,
+        totalLinesCleared: sanitizeNumber(state.totalLinesCleared, 0),
+        shapesUsed: sanitizeNumber(state.shapesUsed, 0),
         hasPlacedFirstShape: typeof state.hasPlacedFirstShape === 'boolean' ? state.hasPlacedFirstShape : false,
         stats: state.stats ?? (await import('../types/stats')).INITIAL_STATS_PERSISTENCE,
         queueMode: state.queueMode,
@@ -109,7 +117,7 @@ export async function loadViewGameState(
         queueHiddenShapes: state.queueHiddenShapes,
         queueSize: state.queueSize,
         isGameOver: typeof state.isGameOver === 'boolean' ? state.isGameOver : false,
-        lastUpdated: typeof state.lastUpdated === 'number' ? state.lastUpdated : Date.now(),
+        lastUpdated: sanitizeNumber(state.lastUpdated, Date.now()),
       };
 
       // Perform Strict Merkle Tree Verification

@@ -17,7 +17,6 @@ import ColorPicker from '../ColorPicker';
 import { THEMES, ThemeName, BLOCK_THEMES, BlockTheme } from '../../types';
 import {
   clearAllSavedData,
-  clearAllDataAndReload,
   loadDebugSettings,
   saveDebugSettings
 } from '../../utils/persistence';
@@ -183,23 +182,6 @@ const SettingsOverlay: React.FC = () => {
     }
   };
 
-  // Clear all data including settings - nuclear option
-  const handleClearAllData = () => {
-    const confirmed = globalThis.confirm(
-      '⚠️ WARNING: This will delete ALL data including your settings, clear the cache, and reload the app from the server.\n\n' +
-      'This is only needed if the app is in a bad state.\n\n' +
-      'Are you sure you want to continue?'
-    );
-
-    if (confirmed) {
-      clearAllDataAndReload().catch((error: Error) => {
-        console.error('Failed to clear all data:', error);
-        alert('Failed to clear data completely. Reloading anyway...');
-        globalThis.location.reload();
-      });
-    }
-  };
-
   // Test notification function for debugging - injects 1000 points
   const testNotification = (e: React.MouseEvent) => {
     // Capture the click position for gem emission
@@ -223,12 +205,12 @@ const SettingsOverlay: React.FC = () => {
   // Toggle finite queue mode and populate with 20 shapes if enabling
   const toggleFiniteMode = () => {
     const newMode = state.queueMode === 'infinite' ? 'finite' : 'infinite';
-    
+
     dispatch({
       type: 'SET_QUEUE_MODE',
       value: { mode: newMode }
     });
-    
+
     // If switching to finite mode, populate with 20 shapes
     if (newMode === 'finite') {
       const shapes = generateShapesWithProbabilities(20, state.queueColorProbabilities);
@@ -564,15 +546,6 @@ const SettingsOverlay: React.FC = () => {
                     title="Open the Level Map overlay (dev only)"
                   >
                     Open Level Map
-                  </button>
-                </div>
-                <div className="menu-item submenu-item">
-                  <button
-                    className="debug-action-button danger"
-                    onClick={handleClearAllData}
-                    title="⚠️ Nuclear option: Clear ALL data including settings and reload fresh from server"
-                  >
-                    Clear All Data
                   </button>
                 </div>
               </div>

@@ -304,10 +304,6 @@ type DebugAddBlockAction = {
   value: { location: Location; color: ColorName };
 };
 
-type DebugClearAllAction = {
-  type: 'DEBUG_CLEAR_ALL';
-};
-
 type DebugReplaceFirstShapeAction = {
   type: 'DEBUG_REPLACE_FIRST_SHAPE';
   value: { shape: Shape };
@@ -435,7 +431,6 @@ export type TetrixAction =
   | DebugFillColumnAction
   | DebugRemoveBlockAction
   | DebugAddBlockAction
-  | DebugClearAllAction
   | DebugReplaceFirstShapeAction
   | DebugIncrementStatsAction
   | CleanupAnimationsAction

@@ -58,61 +58,10 @@ describe('Debug Tools', () => {
     });
   });
 
-  describe('DEBUG_CLEAR_ALL', () => {
-    it('should remove all blocks from the grid', () => {
-      // Add several blocks
-      let state = initialState;
-      for (let row = 1; row <= 5; row++) {
-        for (let column = 1; column <= 5; column++) {
-          state = tetrixReducer(state, {
-            type: 'DEBUG_ADD_BLOCK',
-            value: { location: { row, column }, color: 'purple' },
-          });
-        }
-      }
-
-      // Verify blocks were added
-      const filledTilesBefore = countFilledTiles(state.tiles);
-      expect(filledTilesBefore).toBe(25);
-
-      // Clear all blocks
-      const clearedState = tetrixReducer(state, {
-        type: 'DEBUG_CLEAR_ALL',
-      });
-
-      // Verify all blocks are removed
-      const filledTilesAfter = countFilledTiles(clearedState.tiles);
-      expect(filledTilesAfter).toBe(0);
-    });
-
-    it('should work on empty grid without issues', () => {
-      // Get initial filled count
-      const filledTilesBefore = countFilledTiles(initialState.tiles);
-
-      // Clear all (should clear any filled tiles)
-      const clearedState = tetrixReducer(initialState, {
-        type: 'DEBUG_CLEAR_ALL',
-      });
-
-      // Verify grid is now empty
-      const filledTilesAfter = countFilledTiles(clearedState.tiles);
-      expect(filledTilesAfter).toBe(0);
-      // If there were filled tiles before, verify they're now cleared
-      if (filledTilesBefore > 0) {
-        expect(filledTilesAfter).toBeLessThan(filledTilesBefore);
-      }
-    });
-  });
-
   describe('Integration with existing debug tools', () => {
-    it('should work with other debug tools', () => {
-      // Start with a fresh state for this test
-      const freshState = tetrixReducer(initialState, {
-        type: 'DEBUG_CLEAR_ALL',
-      });
-
+    it('should work with multiple debug tools', () => {
       // Add a few blocks
-      let state = tetrixReducer(freshState, {
+      let state = tetrixReducer(initialState, {
         type: 'DEBUG_ADD_BLOCK',
         value: { location: { row: 5, column: 5 }, color: 'blue' },
       });
@@ -127,23 +76,24 @@ describe('Debug Tools', () => {
       const filledAfterFill = countFilledTiles(state.tiles);
       expect(filledAfterFill).toBe(10); // 1 from add + 9 from fill row
 
-      // Clear all
+      // Remove a block
       state = tetrixReducer(state, {
-        type: 'DEBUG_CLEAR_ALL',
+        type: 'DEBUG_REMOVE_BLOCK',
+        value: { location: { row: 5, column: 5 } },
       });
 
-      // Verify everything is cleared
-      const filledAfterClear = countFilledTiles(state.tiles);
-      expect(filledAfterClear).toBe(0);
+      // Verify block was removed
+      const filledAfterRemove = countFilledTiles(state.tiles);
+      expect(filledAfterRemove).toBe(9);
 
-      // Add blocks again after clear
+      // Add blocks again
       state = tetrixReducer(state, {
         type: 'DEBUG_ADD_BLOCK',
         value: { location: { row: 1, column: 1 }, color: 'yellow' },
       });
 
       const filledFinal = countFilledTiles(state.tiles);
-      expect(filledFinal).toBe(1);
+      expect(filledFinal).toBe(10);
     });
   });
 });

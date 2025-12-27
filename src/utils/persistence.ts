@@ -251,8 +251,19 @@ export async function safeBatchSave(
       if (data.queueSize !== undefined) updated.queueSize = data.queueSize;
       if (data.isGameOver !== undefined) updated.isGameOver = data.isGameOver;
       
+      // IMPORTANT: Also update tiles, shapes, and stats if provided
+      // These were previously missing, causing data loss!
       if (data.tiles !== undefined) {
         updated.tiles = data.tiles;
+      }
+      if (data.nextShapes !== undefined) {
+        updated.nextShapes = data.nextShapes;
+      }
+      if (data.savedShape !== undefined) {
+        updated.savedShape = data.savedShape;
+      }
+      if (data.stats !== undefined) {
+        updated.stats = data.stats;
       }
       
       promises.push(

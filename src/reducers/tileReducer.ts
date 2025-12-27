@@ -360,30 +360,6 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "DEBUG_CLEAR_ALL": {
-      const newTiles = new Map<string, Tile>();
-
-      for (let row = 1; row <= 10; row++) {
-        for (let column = 1; column <= 10; column++) {
-          const position = makeTileKey(row, column);
-          const tile: Tile = {
-            position,
-            backgroundColor: 'grey',
-            block: { isFilled: false, color: 'grey' },
-            activeAnimations: []
-          };
-          newTiles.set(position, tile);
-        }
-      }
-
-      // Persistence handled by listener
-
-      return {
-        ...state,
-        tiles: newTiles,
-      };
-    }
-
     case "GENERATE_SUPER_COMBO_PATTERN": {
       // Generate a 4x4 super combo pattern for testing
       // Pattern: rows 4-7 are completely filled except for diagonal empty spaces

@@ -54,12 +54,6 @@ export function useDebugGridInteractions() {
         });
         break;
 
-      case 'clear-all':
-        dispatch({
-          type: 'DEBUG_CLEAR_ALL',
-        });
-        break;
-
       default:
         break;
     }

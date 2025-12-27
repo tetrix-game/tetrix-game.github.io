@@ -8,7 +8,7 @@
   bottom: 0;
   background-color: black;
   pointer-events: none;
-  border-radius: 3px;
+  border-radius: var(--tile-border-radius);
   opacity: var(--shadow-opacity, 0);
 }
 
@@ -20,7 +20,7 @@
   right: 5px;
   bottom: 5px;
   border: 5px solid var(--animation-color, var(--theme-animation-color, rgba(100, 100, 100, 0.8)));
-  border-radius: 2px;
+  border-radius: var(--tile-border-radius);
   pointer-events: none;
   z-index: 10;
 }

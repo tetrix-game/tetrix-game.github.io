@@ -1,5 +1,5 @@
 .tile-base {
-  border-radius: 5px;
+  border-radius: var(--tile-border-radius);
   position: relative;
   z-index: var(--z-board);
   transition: background-color 0.2s ease;

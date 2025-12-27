@@ -6,6 +6,11 @@
 }
 
 :root {
+    /* Tile Corner Radius - controls all tile/block corner radii */
+    --tile-border-radius: 5px;
+    /* SVG block radius in viewbox units (100x100 viewbox, so 15 = 15%) */
+    --block-svg-radius: 15;
+    
     /* Z-Index Layer System */
     --z-background: 0;
     

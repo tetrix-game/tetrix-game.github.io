@@ -22,11 +22,11 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
 
   // Use provided pixelSize or fall back to responsive hook size
   const gridSize = pixelSize ?? hookGridSize;
-  
+
   // Calculate cell size if pixelSize is provided, otherwise use hook value
   // Note: This assumes square cells. If width != height, this logic might need adjustment
   // but for now we assume square grid or at least square cells.
-  const gridCellSize = pixelSize 
+  const gridCellSize = pixelSize
     ? (pixelSize - (gridGap * (Math.max(width, height) - 1))) / Math.max(width, height)
     : hookGridCellSize;
 
@@ -57,7 +57,7 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
   // Handle debug click via event delegation
   const handleGridClick = (e: React.MouseEvent) => {
     if (!isDebugMode) return;
-    
+
     const target = e.target as HTMLElement;
     const tileElement = target.closest('.tetrix-tile');
     if (tileElement) {
@@ -126,13 +126,15 @@ export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize 
           const row = parseInt(match[1]);
           const column = parseInt(match[2]);
 
-          const activeAnimations = tileData?.activeAnimations || [];
-          const animationsJson = JSON.stringify(activeAnimations);
+          const activeAnimations = tileData?.activeAnimations;
+          const animationsJson = activeAnimations && activeAnimations.length > 0
+            ? JSON.stringify(activeAnimations)
+            : '[]';
 
           const posKey = `${row},${column}`;
           const hoveredBlock = hoveredBlockMap.get(posKey);
           const isHovered = hoveredBlock?.isFilled ?? false;
-          
+
           const showShadow = isHovered && hoveredBlock;
           let shadowOpacity = 0;
           if (showShadow) {

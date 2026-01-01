@@ -3,8 +3,27 @@ import { useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useMusicControl } from '../Header/MusicControlContext';
 import './BackgroundMusic.css';
 
+// Per-track volume multipliers to normalize loudness across all BGM tracks
+// Based on measured mean_volume levels - quieter tracks get higher multipliers
+// Target: normalize all tracks to sound like they're at -16 dB mean
+const TRACK_VOLUME_MULTIPLIERS: Record<string, number> = {
+  '/sound/bgm/Jazz2_KEY_C_in_C.mp3': 1.3,           // -18.0 dB mean (quieter)
+  '/sound/bgm/Jazz4_KEY_C_in_C.mp3': 1.3,           // -18.2 dB mean (quieter)
+  '/sound/bgm/daytime-smooth-jazz-2025-2-458721.mp3': 0.9, // -14.6 dB mean (louder)
+  '/sound/bgm/smooth-jazz-2025-1-458715.mp3': 1.0,  // -16.1 dB mean
+  '/sound/bgm/smooth-jazz-2025-2-458713.mp3': 1.0,  // -15.9 dB mean
+  '/sound/bgm/smooth-jazz-2025-3-458714.mp3': 0.95, // -15.4 dB mean
+  '/sound/bgm/smooth-jazz-2025-4-458717.mp3': 0.95, // -15.6 dB mean
+  '/sound/bgm/smooth-jazz-2025-5-458716.mp3': 1.0,  // -16.3 dB mean
+  '/sound/bgm/smooth-jazz-2025-6-458712.mp3': 1.0,  // -16.6 dB mean
+};
+
+// Base volume scale (0-1) - pleasant background music level
+const BASE_BGM_VOLUME = 0.5;
+
 const BackgroundMusic: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const currentTrackRef = useRef<string>('');
   const { hasPlacedFirstShape } = useTetrixStateContext();
   const { isEnabled, volume, shouldPlayMusic, triggerAutoplay } = useMusicControl();
 
@@ -17,6 +36,13 @@ const BackgroundMusic: React.FC = () => {
   const tracks = React.useMemo(() => [
     '/sound/bgm/Jazz2_KEY_C_in_C.mp3',
     '/sound/bgm/Jazz4_KEY_C_in_C.mp3',
+    '/sound/bgm/daytime-smooth-jazz-2025-2-458721.mp3',
+    '/sound/bgm/smooth-jazz-2025-1-458715.mp3',
+    '/sound/bgm/smooth-jazz-2025-2-458713.mp3',
+    '/sound/bgm/smooth-jazz-2025-3-458714.mp3',
+    '/sound/bgm/smooth-jazz-2025-4-458717.mp3',
+    '/sound/bgm/smooth-jazz-2025-5-458716.mp3',
+    '/sound/bgm/smooth-jazz-2025-6-458712.mp3',
   ], []);
 
   // Trigger background music 1 second after first shape placement
@@ -38,7 +64,8 @@ const BackgroundMusic: React.FC = () => {
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
-      audio.volume = (volume / 100) * 0.3; // Scale to 0-0.3 range
+      const trackMultiplier = TRACK_VOLUME_MULTIPLIERS[currentTrackRef.current] ?? 1.0;
+      audio.volume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
     }
   }, [volume]);
 
@@ -85,9 +112,12 @@ const BackgroundMusic: React.FC = () => {
     // Function to play a random track
     const playRandomTrack = async () => {
       if (shouldPlayMusic && isEnabled && volume > 0) {
-        audio.src = getRandomTrack();
+        const track = getRandomTrack();
+        currentTrackRef.current = track;
+        audio.src = track;
         audio.loop = false;
-        audio.volume = (volume / 100) * 0.3;
+        const trackMultiplier = TRACK_VOLUME_MULTIPLIERS[track] ?? 1.0;
+        audio.volume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
 
         try {
           await audio.play();

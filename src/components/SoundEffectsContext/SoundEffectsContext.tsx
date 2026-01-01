@@ -147,7 +147,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const loadSettings = async () => {
       try {
         const settings = await loadSoundEffectsSettings();
-        
+
         setVolumeState(settings.volume);
         setIsEnabledState(settings.isEnabled);
       } catch (error) {

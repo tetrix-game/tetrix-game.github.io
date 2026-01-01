@@ -27,7 +27,7 @@ const MainMenu: React.FC = () => {
   const currentStreak = history.currentStreak;
 
   return (
-    <Overlay 
+    <Overlay
       className="hub-menu-overlay"
       contentClassName="hub-menu-scroll-wrapper"
       blur={false}
@@ -78,7 +78,7 @@ const MainMenu: React.FC = () => {
           </button>
 
           {/* Grandpa Mode Toggle - Reduces Z and S shape frequency */}
-          <div 
+          <div
             className="grandpa-mode-toggle"
             onClick={(e) => e.stopPropagation()}
           >

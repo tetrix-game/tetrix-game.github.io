@@ -69,6 +69,27 @@
   height: 32px;
 }
 
+/* Audio unlock toast indicator */
+.audio-unlock-toast {
+  position: fixed;
+  top: calc(10vh + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-overlay, 1000);
+  animation: toast-slide-in 0.3s ease-out;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
 /* Responsive design improvements */
 @media (max-width: 768px) {
   .header {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { loadMusicSettings, saveMusicSettings } from '../../utils/persistenceUtils';
 
 export interface MusicControlContextType {
@@ -8,6 +8,10 @@ export interface MusicControlContextType {
   toggleEnabled: () => void;
   shouldPlayMusic: boolean;
   triggerAutoplay: () => void;
+  /** Whether the browser has allowed audio playback (user has interacted with document) */
+  isAudioUnlocked: boolean;
+  /** Whether audio is waiting for user interaction to play */
+  isWaitingForInteraction: boolean;
 }
 
 export const MusicControlContext = createContext<MusicControlContextType | null>(null);
@@ -25,13 +29,37 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isEnabled, setIsEnabled] = useState(true);
   const [shouldPlayMusic, setShouldPlayMusic] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
+  const hasUserInteractedRef = useRef(false);
+
+  // Detect user interaction to unlock audio
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      if (!hasUserInteractedRef.current) {
+        hasUserInteractedRef.current = true;
+        setIsAudioUnlocked(true);
+      }
+    };
+
+    // Listen for any user interaction
+    const events = ['click', 'touchstart', 'keydown', 'pointerdown'];
+    events.forEach(event => {
+      document.addEventListener(event, handleUserInteraction, { once: true, passive: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserInteraction);
+      });
+    };
+  }, []);
 
   // Load music settings from IndexedDB on mount
   useEffect(() => {
     const loadSettings = async () => {
       try {
         const settings = await loadMusicSettings();
-        
+
         setVolumeState(settings.volume);
         setIsEnabled(settings.isEnabled);
       } catch (error) {
@@ -81,13 +109,18 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setShouldPlayMusic(true);
   }, []);
 
+  // Audio is "waiting" if music should play, is enabled, has volume, but audio isn't unlocked yet
+  const isWaitingForInteraction = shouldPlayMusic && isEnabled && volume > 0 && !isAudioUnlocked;
+
   const value = {
     volume: isLoading ? 100 : volume,
     setVolume,
     isEnabled: !isLoading && isEnabled,
     toggleEnabled,
     shouldPlayMusic,
-    triggerAutoplay
+    triggerAutoplay,
+    isAudioUnlocked,
+    isWaitingForInteraction
   };
 
   return (

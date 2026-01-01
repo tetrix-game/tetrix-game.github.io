@@ -2,6 +2,7 @@ import { useMemo, useCallback } from 'react';
 import SettingsOverlay from '../SettingsOverlay';
 import BackgroundMusic from '../BackgroundMusic';
 import ScoreDisplay from '../ScoreDisplay';
+import AudioUnlockIndicator from '../AudioUnlockIndicator';
 import { useMusicControl } from './MusicControlContext';
 import { SoundEffectsControlContext } from './SoundEffectsControlContext';
 import { useSoundEffects } from '../SoundEffectsContext';
@@ -12,10 +13,9 @@ import './Header.css';
 const Header: React.FC = () => {
   // Use the main sound effects context
   const { volume, setVolume, isEnabled, setEnabled } = useSoundEffects();
-  // We don't need music control here anymore as BackgroundMusic handles it internally via context
-  // But we need to call useMusicControl to ensure we are inside the provider (though we are)
-  useMusicControl();
-  
+  // Get music control for the audio unlock indicator
+  const { isWaitingForInteraction } = useMusicControl();
+
   const { gameMode } = useTetrixStateContext();
   const { navigateToHub } = useGameNavigation();
 
@@ -30,19 +30,25 @@ const Header: React.FC = () => {
     isEnabled,
     toggleEnabled: toggleSoundEffectsEnabled
   }), [volume, setVolume, isEnabled, toggleSoundEffectsEnabled]);
-  
+
   return (
     <SoundEffectsControlContext.Provider value={soundEffectsContextValue}>
       <div className="header">
         <BackgroundMusic />
+        {/* Show audio unlock indicator when browser policy blocks autoplay */}
+        {isWaitingForInteraction && (gameMode === 'infinite' || gameMode === 'daily') && (
+          <div className="audio-unlock-toast">
+            <AudioUnlockIndicator />
+          </div>
+        )}
         {(gameMode === 'infinite' || gameMode === 'daily') ? (
-          <button 
-            className="back-button" 
+          <button
+            className="back-button"
             onClick={navigateToHub}
             title="Back to Main Menu"
           >
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
         ) : (

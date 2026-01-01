@@ -108,7 +108,7 @@ const SettingsOverlay: React.FC = () => {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled } = useMusicControl();
+  const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled, isWaitingForInteraction } = useMusicControl();
   const { volume: soundVolume, setVolume: setSoundVolume, isEnabled: isSoundEnabled, toggleEnabled: toggleSoundEnabled } = useSoundEffectsControl();
   const state = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
@@ -299,6 +299,11 @@ const SettingsOverlay: React.FC = () => {
                   )}
                 </IconButton>
                 <span className="menu-label">Music</span>
+                {isWaitingForInteraction && (
+                  <span className="audio-waiting-badge" title="Click anywhere to enable audio playback">
+                    Tap to unlock
+                  </span>
+                )}
               </div>
               <Slider
                 value={musicVolume}

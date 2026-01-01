@@ -102,6 +102,32 @@ const BlockIconToggle: React.FC = () => {
   );
 };
 
+const GrandpaModeToggle: React.FC = () => {
+  const { grandpaMode } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
+
+  return (
+    <div className="menu-item theme-selector">
+      <span className="menu-label">Grandpa Mode</span>
+      <div className="theme-buttons">
+        <button
+          className={`theme-button ${grandpaMode ? 'active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_GRANDPA_MODE', value: { enabled: true } })}
+          title="Reduces Z and S piece frequency to 1/4"
+        >
+          On
+        </button>
+        <button
+          className={`theme-button ${!grandpaMode ? 'active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_GRANDPA_MODE', value: { enabled: false } })}
+        >
+          Off
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const SettingsOverlay: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
@@ -386,6 +412,7 @@ const SettingsOverlay: React.FC = () => {
             <ThemeSelector />
             <BlockThemeSelector />
             <BlockIconToggle />
+            <GrandpaModeToggle />
 
             <div className="menu-item">
               <button

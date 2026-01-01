@@ -2,6 +2,7 @@ import React from 'react';
 import { useGameNavigation } from '../../hooks/useGameNavigation';
 import { useDailyChallengeLoader } from '../../hooks/useDailyChallengeLoader';
 import { useDailyHistory } from '../../hooks/useDailyHistory';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { hasCompletedToday } from '../../utils/dailyStreakUtils';
 import Overlay from '../Overlay';
 import InstallButton from '../InstallButton';
@@ -11,6 +12,8 @@ const MainMenu: React.FC = () => {
   const { navigateToMode } = useGameNavigation();
   const { loadDailyChallenge, isLoading, error } = useDailyChallengeLoader();
   const { history, isLoading: isHistoryLoading } = useDailyHistory();
+  const { grandpaMode } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
 
   const handleDailyClick = async () => {
     await loadDailyChallenge();
@@ -73,6 +76,23 @@ const MainMenu: React.FC = () => {
             <div className="spoke-title">Infinite Play</div>
             <div className="spoke-description">Play endlessly</div>
           </button>
+
+          {/* Grandpa Mode Toggle - Reduces Z and S shape frequency */}
+          <div 
+            className="grandpa-mode-toggle"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={grandpaMode}
+                onChange={(e) => dispatch({ type: 'SET_GRANDPA_MODE', value: { enabled: e.target.checked } })}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+            <span className="toggle-label">Grandpa Mode</span>
+            <span className="toggle-description">Fewer Z & S shapes</span>
+          </div>
         </div>
 
         <div className="hub-menu-footer">

@@ -94,6 +94,9 @@ export type TetrixReducerState = {
     tiles: TilesSet;
     shapes: Shape[];
   } | null;
+
+  // Grandpa Mode - reduces Z and S shape frequency to 1/4
+  grandpaMode: boolean;
 };
 
 type SelectShapeAction = {
@@ -388,6 +391,11 @@ type ClearMapCompletionAction = {
   type: 'CLEAR_MAP_COMPLETION';
 };
 
+type SetGrandpaModeAction = {
+  type: 'SET_GRANDPA_MODE';
+  value: { enabled: boolean };
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -448,6 +456,7 @@ export type TetrixAction =
   | StartDailyChallengeAction
   | RestartDailyChallengeAction
   | CheckMapCompletionAction
-  | ClearMapCompletionAction;
+  | ClearMapCompletionAction
+  | SetGrandpaModeAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

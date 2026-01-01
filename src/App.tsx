@@ -1,7 +1,6 @@
 import Header from './components/Header';
 import Tetrix from './components/Tetrix';
 import GameMap from './components/GameMap';
-import MainMenu from './components/MainMenu';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
 import DebugEditor from './components/DebugEditor';
 import GridEditor from './components/GridEditor';
@@ -278,25 +277,15 @@ const App = () => {
       <PersistenceListener />
       <ColorOverrideApplier />
 
-      {/* Show main menu if in hub mode */}
-      {gameMode === 'hub' && (
-        <MainMenu />
-      )}
-
-      {/* Show game UI when not in hub mode */}
-      {gameMode !== 'hub' && (
-        <>
-          <Header />
-          <div className="game-container">
-            {gameState === 'playing' || gameState === 'gameover' ? (
-              <Tetrix />
-            ) : (
-              <GameMap />
-            )}
-          </div>
-          <FullScreenFloatingActionButton />
-        </>
-      )}
+      <Header />
+      <div className="game-container">
+        {gameState === 'playing' || gameState === 'gameover' ? (
+          <Tetrix />
+        ) : (
+          <GameMap />
+        )}
+      </div>
+      <FullScreenFloatingActionButton />
 
       <DebugEditor />
       <GridEditor />

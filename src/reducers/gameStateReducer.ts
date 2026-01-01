@@ -41,7 +41,7 @@ const makeTiles = () => {
 
 export const initialGameState = {
   gameState: 'playing' as const,
-  gameMode: 'hub' as const,
+  gameMode: 'infinite' as const,
   currentLevel: 0,
   isMapUnlocked: false,
   mapCompletionResult: null,
@@ -98,6 +98,7 @@ export const initialGameState = {
   blockTheme: 'gem' as const,
   showBlockIcons: true,
   initialDailyState: null,
+  grandpaMode: false,
 };
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
@@ -374,6 +375,15 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         buttonSizeMultiplier: clampedMultiplier,
+      };
+    }
+
+    case "SET_GRANDPA_MODE": {
+      const { enabled } = action.value;
+      // Persistence handled by listener
+      return {
+        ...state,
+        grandpaMode: enabled,
       };
     }
 

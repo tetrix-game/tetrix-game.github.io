@@ -62,6 +62,7 @@ export {
   selectColorByProbability,
   generateRandomShapeWithProbabilities,
   generateShapesWithProbabilities,
+  generateRandomShapeWithGrandpaMode,
 } from './shapeGenerationWithProbabilities';
 
 // Re-export pattern detection functions

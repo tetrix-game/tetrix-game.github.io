@@ -85,6 +85,7 @@ export type GameSettingsPersistenceData = {
   lastGameMode?: import('./gameState').GameMode; // Remember active game mode
   isMapUnlocked?: boolean; // Map unlock status
   buttonSizeMultiplier?: number; // UI scaling: 0.5 to 1.5, default 1.0
+  grandpaMode?: boolean; // Reduce Z and S shape frequency to 1/4 normal rate
   lastUpdated: number;
 };
 

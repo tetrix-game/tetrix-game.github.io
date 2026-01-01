@@ -4,7 +4,7 @@
  */
 
 import type { TetrixReducerState, TetrixAction, Tile } from '../types';
-import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithProbabilities } from '../utils/shapes';
+import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithGrandpaMode } from '../utils/shapes';
 // safeBatchSave removed - persistence handled by PersistenceListener
 import { cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
 import { updateStats, incrementNoTurnStreak } from '../utils/statsUtils';
@@ -112,7 +112,8 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           newShape = generateSuperShape();
         } else {
           // Generate shape using color probabilities (infinite mode only)
-          newShape = generateRandomShapeWithProbabilities(state.queueColorProbabilities);
+          // Apply grandpa mode to reduce Z and S shape frequency
+          newShape = generateRandomShapeWithGrandpaMode(state.queueColorProbabilities, state.grandpaMode);
         }
 
         updatedNextShapes.push(newShape);

@@ -36,7 +36,8 @@ export const PersistenceListener = () => {
     totalLinesCleared,
     shapesUsed,
     hasPlacedFirstShape,
-    buttonSizeMultiplier
+    buttonSizeMultiplier,
+    grandpaMode
   } = state;
 
   // Track previous values to avoid unnecessary saves if we want to optimize further,
@@ -90,17 +91,18 @@ export const PersistenceListener = () => {
     });
   }, [unlockedModifiers]);
 
-  // Effect for Settings (Map Unlock, Game Mode, Button Size, Show Block Icons)
+  // Effect for Settings (Map Unlock, Game Mode, Button Size, Show Block Icons, Grandpa Mode)
   useEffect(() => {
     updateSettings({
       lastGameMode: gameMode,
       isMapUnlocked: isMapUnlocked,
       buttonSizeMultiplier: buttonSizeMultiplier,
-      showBlockIcons: showBlockIcons
+      showBlockIcons: showBlockIcons,
+      grandpaMode: grandpaMode
     }).catch(error => {
       console.error('Failed to save settings via listener:', error);
     });
-  }, [gameMode, isMapUnlocked, buttonSizeMultiplier, showBlockIcons]);
+  }, [gameMode, isMapUnlocked, buttonSizeMultiplier, showBlockIcons, grandpaMode]);
 
   // Effect for Theme
   useEffect(() => {

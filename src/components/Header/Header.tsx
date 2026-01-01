@@ -7,7 +7,6 @@ import { useMusicControl } from './MusicControlContext';
 import { SoundEffectsControlContext } from './SoundEffectsControlContext';
 import { useSoundEffects } from '../SoundEffectsContext';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { useGameNavigation } from '../../hooks/useGameNavigation';
 import './Header.css';
 
 const Header: React.FC = () => {
@@ -17,7 +16,6 @@ const Header: React.FC = () => {
   const { isWaitingForInteraction } = useMusicControl();
 
   const { gameMode } = useTetrixStateContext();
-  const { navigateToHub } = useGameNavigation();
 
   const toggleSoundEffectsEnabled = useCallback(() => {
     // Toggle and let context handle persistence
@@ -41,19 +39,7 @@ const Header: React.FC = () => {
             <AudioUnlockIndicator />
           </div>
         )}
-        {(gameMode === 'infinite' || gameMode === 'daily') ? (
-          <button
-            className="back-button"
-            onClick={navigateToHub}
-            title="Back to Main Menu"
-          >
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-          </button>
-        ) : (
-          <div />
-        )}
+        <div />
         <div className="header-center">
           <ScoreDisplay />
         </div>

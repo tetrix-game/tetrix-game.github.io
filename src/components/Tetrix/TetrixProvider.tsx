@@ -103,6 +103,14 @@ export default function TetrixProvider({ children }: { readonly children: React.
           });
         }
 
+        // Restore grandpa mode setting
+        if (settingsData?.grandpaMode !== undefined) {
+          dispatch({
+            type: 'SET_GRANDPA_MODE',
+            value: { enabled: settingsData.grandpaMode }
+          });
+        }
+
         // Load infinite view state
         // IMPORTANT: Do NOT check for tiles.length === 100 - this causes data loss!
         // Valid saves may have different tile counts due to:

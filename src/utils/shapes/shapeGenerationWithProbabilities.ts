@@ -154,3 +154,127 @@ export function generateShapesWithProbabilities(
   }
   return shapes;
 }
+
+/**
+ * Shape type enum for weighted selection
+ */
+type ShapeType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
+
+/**
+ * Generate a random shape with specified color probabilities and optional grandpa mode
+ * In grandpa mode, Z and S shapes occur at 1/4 their normal frequency
+ * @param colorProbabilities Array of colors and their weights
+ * @param grandpaMode If true, reduce Z and S shape frequency to 1/4
+ * @returns Random shape with color selected by probability
+ */
+export function generateRandomShapeWithGrandpaMode(
+  colorProbabilities: ColorProbability[],
+  grandpaMode: boolean = false
+): Shape {
+  const color = selectColorByProbability(colorProbabilities);
+  
+  const _ = () => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
+  const X = () => ({ color, isFilled: true });
+
+  // Shape types with their weights (normal = 1, grandpa mode reduces Z/S to 0.25)
+  const shapeWeights: Array<{ type: ShapeType; weight: number }> = [
+    { type: 'I', weight: 1 },
+    { type: 'O', weight: 1 },
+    { type: 'T', weight: 1 },
+    { type: 'S', weight: grandpaMode ? 0.25 : 1 },
+    { type: 'Z', weight: grandpaMode ? 0.25 : 1 },
+    { type: 'J', weight: 1 },
+    { type: 'L', weight: 1 },
+  ];
+
+  // Select shape type based on weights
+  const totalWeight = shapeWeights.reduce((sum, s) => sum + s.weight, 0);
+  const random = Math.random() * totalWeight;
+  let cumulativeWeight = 0;
+  let selectedType: ShapeType = 'I';
+  
+  for (const { type, weight } of shapeWeights) {
+    cumulativeWeight += weight;
+    if (random < cumulativeWeight) {
+      selectedType = type;
+      break;
+    }
+  }
+
+  // Map shape type to template
+  const shapeTemplates: Record<ShapeType, { template: Shape; rotations: number }> = {
+    'I': {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), _(), _(), _()],
+        [X(), X(), X(), X()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 2
+    },
+    'O': {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), X(), X(), _()],
+        [_(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 1
+    },
+    'T': {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), X(), _(), _()],
+        [X(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 4
+    },
+    'S': {
+      template: [
+        [_(), _(), _(), _()],
+        [_(), X(), X(), _()],
+        [X(), X(), _(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 2
+    },
+    'Z': {
+      template: [
+        [_(), _(), _(), _()],
+        [X(), X(), _(), _()],
+        [_(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 2
+    },
+    'J': {
+      template: [
+        [_(), _(), _(), _()],
+        [X(), _(), _(), _()],
+        [X(), X(), X(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 4
+    },
+    'L': {
+      template: [
+        [_(), _(), _(), _()],
+        [X(), X(), X(), _()],
+        [X(), _(), _(), _()],
+        [_(), _(), _(), _()],
+      ],
+      rotations: 4
+    }
+  };
+
+  const { template, rotations } = shapeTemplates[selectedType];
+  const numRotations = Math.floor(Math.random() * rotations);
+  let shape = cloneShape(template);
+
+  for (let i = 0; i < numRotations; i++) {
+    shape = rotateShape(shape);
+  }
+
+  return shape;
+}

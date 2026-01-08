@@ -8,9 +8,11 @@ import DraggingShape from './components/DraggingShape';
 import ToastOverlay from './components/ToastOverlay';
 import ColorOverrideApplier from './components/ColorPicker/ColorOverrideApplier';
 import { PersistenceListener } from './components/PersistenceListener/PersistenceListener';
+import UpdateNotification from './components/UpdateNotification';
 import { useTetrixStateContext, useTetrixDispatchContext } from './components/Tetrix/TetrixContext';
 import { useSoundEffects } from './components/SoundEffectsContext';
-import { useEffect, useRef } from 'react';
+import { usePWAUpdate } from './hooks/usePWAUpdate';
+import { useEffect, useRef, useState } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from './utils/colorUtils';
 import { GRID_SIZE } from './utils/gridConstants';
@@ -21,6 +23,26 @@ const App = () => {
   const dispatch = useTetrixDispatchContext();
   const { playSound } = useSoundEffects();
   const gridRef = useRef<HTMLElement | null>(null);
+
+  // PWA update management
+  const { needRefresh, updateServiceWorker } = usePWAUpdate();
+  const [showUpdateNotification, setShowUpdateNotification] = useState(false);
+
+  // Show update notification when update is available
+  useEffect(() => {
+    if (needRefresh) {
+      setShowUpdateNotification(true);
+    }
+  }, [needRefresh]);
+
+  const handleUpdate = async () => {
+    setShowUpdateNotification(false);
+    await updateServiceWorker(true); // This will reload the page
+  };
+
+  const handleDismissUpdate = () => {
+    setShowUpdateNotification(false);
+  };
 
   // Global mouse/pointer tracking for DraggingShape
   useEffect(() => {
@@ -291,6 +313,13 @@ const App = () => {
       <GridEditor />
       <DraggingShape />
       <ToastOverlay />
+
+      {showUpdateNotification && (
+        <UpdateNotification
+          onUpdate={handleUpdate}
+          onDismiss={handleDismissUpdate}
+        />
+      )}
     </div>
   );
 };

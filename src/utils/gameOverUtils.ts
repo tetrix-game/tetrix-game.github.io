@@ -4,10 +4,9 @@ import { rotateShape } from './shapes/shapeTransforms';
 
 /**
  * Check if the game is over (no valid moves left)
- * 
+ *
  * @param tiles - The current state of the grid
  * @param shapes - The list of available shapes in the queue
- * @param score - The current player score (used to determine if rotation is possible)
  * @param openRotationMenus - The state of rotation menus for each shape
  * @param gameMode - The current game mode (optional, defaults to 'infinite')
  * @returns true if no shape can be placed anywhere on the grid
@@ -15,7 +14,6 @@ import { rotateShape } from './shapes/shapeTransforms';
 export function checkGameOver(
   tiles: TilesSet,
   shapes: Shape[],
-  score: number,
   openRotationMenus: boolean[],
   gameMode: GameMode = 'infinite'
 ): boolean {
@@ -27,10 +25,10 @@ export function checkGameOver(
   // For each available shape
   for (let i = 0; i < shapes.length; i++) {
     const shape = shapes[i];
-    const isRotationUnlocked = openRotationMenus[i] || score > 0;
+    const isRotationUnlocked = openRotationMenus[i];
 
     // Determine how many rotations we can check
-    // If rotation is unlocked (either already open or can afford it), check all 4
+    // If rotation menu is already open for this shape, check all 4 rotations
     // Otherwise, only check the current orientation (1 rotation)
     const rotationsToCheck = isRotationUnlocked ? 4 : 1;
 

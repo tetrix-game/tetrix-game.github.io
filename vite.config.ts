@@ -7,7 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: false,
+      },
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Tetrix - Free Relaxing Puzzle Game',

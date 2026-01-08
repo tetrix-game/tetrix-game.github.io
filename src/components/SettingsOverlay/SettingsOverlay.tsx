@@ -16,11 +16,11 @@ import { generateShapesWithProbabilities } from '../../utils/shapes';
 import ColorPicker from '../ColorPicker';
 import { THEMES, ThemeName, BLOCK_THEMES, BlockTheme } from '../../types';
 import {
-  clearGameBoard,
   loadDebugSettings,
   saveDebugSettings
 } from '../../utils/persistence';
 import InstallButton from '../InstallButton';
+import { APP_VERSION } from '../../version';
 import './SettingsOverlay.css';
 
 const ThemeSelector: React.FC = () => {
@@ -194,18 +194,9 @@ const SettingsOverlay: React.FC = () => {
     setIsDebugOpen(!isDebugOpen);
   };
 
-  // New game function - clears board and score but preserves stats and settings
-  const handleNewGame = async () => {
-    try {
-      await clearGameBoard();
-      dispatch({ type: 'RESET_GAME' });
-      // Refresh the page to fully reset game state
-      globalThis.location.reload();
-    } catch (error) {
-      console.error('Failed to reset game:', error);
-      // Still reset the game state even if clearing storage fails
-      dispatch({ type: 'RESET_GAME' });
-    }
+  // New game function - resets game state while preserving stats and settings
+  const handleNewGame = () => {
+    dispatch({ type: 'RESET_GAME' });
   };
 
   // Test notification function for debugging - injects 1000 points
@@ -436,6 +427,10 @@ const SettingsOverlay: React.FC = () => {
 
             <div className="menu-item">
               <InstallButton />
+            </div>
+
+            <div className="menu-item version-display">
+              <span className="menu-label version-label">Version {APP_VERSION}</span>
             </div>
 
             <div className="menu-item debug-submenu">

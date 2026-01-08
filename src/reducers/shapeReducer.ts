@@ -213,7 +213,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
         const queueDepleted = updatedNextShapes.length === 0 && state.queueHiddenShapes.length === 0;
         
         // Check if no moves are possible with remaining shapes
-        const noMovesPossible = checkGameOver(state.tiles, updatedNextShapes, state.score, newOpenRotationMenus, state.gameMode);
+        const noMovesPossible = checkGameOver(state.tiles, updatedNextShapes, newOpenRotationMenus, state.gameMode);
 
         if ((queueDepleted || noMovesPossible) && state.targetTiles) {
           // Check map completion and show overlay
@@ -230,7 +230,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
         }
       } else if (state.gameMode === 'infinite') {
         // In infinite mode, check if any remaining shapes can be placed
-        isGameOver = checkGameOver(state.tiles, updatedNextShapes, state.score, newOpenRotationMenus, state.gameMode);
+        isGameOver = checkGameOver(state.tiles, updatedNextShapes, newOpenRotationMenus, state.gameMode);
         if (isGameOver) {
           newGameState = 'gameover';
         }

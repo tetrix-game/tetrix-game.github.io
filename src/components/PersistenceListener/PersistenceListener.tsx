@@ -29,7 +29,7 @@ export const PersistenceListener = () => {
     queueSize,
     queueColorProbabilities,
     unlockedModifiers,
-    isMapUnlocked,
+    
     currentTheme,
     blockTheme,
     showBlockIcons,
@@ -49,12 +49,12 @@ export const PersistenceListener = () => {
     if (gameMode === 'hub') return;
 
     // Save game state
-    safeBatchSave(gameMode, {
+    safeBatchSave({
       score,
       tiles: tilesToArray(tiles),
       nextShapes,
       savedShape,
-      stats: gameMode === 'infinite' ? stats : undefined,
+      stats,
       totalLinesCleared,
       shapesUsed,
       hasPlacedFirstShape,
@@ -69,7 +69,6 @@ export const PersistenceListener = () => {
   }, [
     gameMode,
     gameState,
-    score,
     score,
     tiles,
     nextShapes,
@@ -91,18 +90,16 @@ export const PersistenceListener = () => {
     });
   }, [unlockedModifiers]);
 
-  // Effect for Settings (Map Unlock, Game Mode, Button Size, Show Block Icons, Grandpa Mode)
+  // Effect for Settings (Button Size, Show Block Icons, Grandpa Mode)
   useEffect(() => {
     updateSettings({
-      lastGameMode: gameMode,
-      isMapUnlocked: isMapUnlocked,
       buttonSizeMultiplier: buttonSizeMultiplier,
       showBlockIcons: showBlockIcons,
       grandpaMode: grandpaMode
     }).catch(error => {
       console.error('Failed to save settings via listener:', error);
     });
-  }, [gameMode, isMapUnlocked, buttonSizeMultiplier, showBlockIcons, grandpaMode]);
+  }, [buttonSizeMultiplier, showBlockIcons, grandpaMode]);
 
   // Effect for Theme
   useEffect(() => {

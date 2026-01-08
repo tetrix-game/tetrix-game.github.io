@@ -1,39 +1,28 @@
 /**
  * IndexedDB CRUD Access Pattern
- * 
+ *
  * Provides a clean, type-safe interface for reading and writing data to IndexedDB.
- * Ensures data separation between different game views/modes.
- * 
+ *
  * Design principles:
- * - Each game mode has its own isolated data store
- * - Shared data (settings, stats) are separated from game state
+ * - Single game state store for the infinite mode
+ * - Global settings separated from game state
  * - Type-safe operations with proper error handling
  * - Supports both keyed (single record) and indexed (multiple records) access
  */
 
 const DB_NAME = 'TetrixGameDB';
-const DB_VERSION = 8; // Incremented to ensure checksums store is created
+const DB_VERSION = 9; // Simplified to single game mode
 
-// Store names organized by data type
+// Store names
 export const STORES = {
-  // Game state stores (per mode)
-  INFINITE_STATE: 'infiniteState',
-  DAILY_STATE: 'dailyState',
-  TUTORIAL_STATE: 'tutorialState',
+  // Game state
+  GAME_STATE: 'gameState',
 
-  // Shared stores (cross-mode)
+  // Global stores
   SETTINGS: 'settings',
-  STATS: 'stats',
   MODIFIERS: 'modifiers',
-  DAILY_HISTORY: 'dailyHistory', // Daily challenge completion history and streaks
 
-  // Legacy stores (for migration)
-  LEGACY_GAME_STATE: 'gameState',
-  LEGACY_SCORE: 'score',
-  LEGACY_TILES: 'tiles',
-  LEGACY_SHAPES: 'shapes',
-
-  // Checksum store (Shadow Manifest)
+  // Data integrity
   CHECKSUMS: 'checksums',
 } as const;
 
@@ -79,27 +68,8 @@ async function openDatabase(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      // Create game state stores (one per mode)
-      for (const storeName of [STORES.INFINITE_STATE, STORES.DAILY_STATE, STORES.TUTORIAL_STATE]) {
-        if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName);
-        }
-      }
-
-      // Create shared stores
-      for (const storeName of [STORES.SETTINGS, STORES.STATS, STORES.MODIFIERS, STORES.DAILY_HISTORY, STORES.CHECKSUMS]) {
-        if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName);
-        }
-      }
-
-      // Create legacy stores for backward compatibility
-      for (const storeName of [
-        STORES.LEGACY_GAME_STATE,
-        STORES.LEGACY_SCORE,
-        STORES.LEGACY_TILES,
-        STORES.LEGACY_SHAPES
-      ]) {
+      // Create all required stores
+      for (const storeName of Object.values(STORES)) {
         if (!db.objectStoreNames.contains(storeName)) {
           db.createObjectStore(storeName);
         }

@@ -12,7 +12,7 @@ interface StatsOverlayProps {
 const CATEGORY_GROUPS: { title: string; categories: StatCategory[]; className?: string }[] = [
   {
     title: "General",
-    categories: ['shapesPlaced', 'linesCleared'],
+    categories: ['shapesPlaced', 'linesCleared', 'coloredLinesCleared'],
     className: "stats-group-general"
   },
   {
@@ -58,6 +58,7 @@ const CATEGORY_GROUPS: { title: string; categories: StatCategory[]; className?: 
 const CATEGORY_LABELS: Record<StatCategory, string> = {
   shapesPlaced: "Shapes Placed",
   linesCleared: "Lines Cleared",
+  coloredLinesCleared: "Colored Lines Cleared",
   rowsCleared: "Rows Cleared",
   doubleRows: "2R",
   tripleRows: "3R",

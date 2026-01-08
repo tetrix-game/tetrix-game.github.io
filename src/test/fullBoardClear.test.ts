@@ -226,6 +226,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         allTime: {
           shapesPlaced: { total: 0, colors: {} },
           linesCleared: { total: 0, colors: {} },
+          coloredLinesCleared: { total: 0, colors: {} },
           rowsCleared: { total: 0, colors: {} },
           doubleRows: { total: 0, colors: {} },
           tripleRows: { total: 0, colors: {} },
@@ -249,6 +250,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         highScore: {
           shapesPlaced: { total: 0, colors: {} },
           linesCleared: { total: 0, colors: {} },
+          coloredLinesCleared: { total: 0, colors: {} },
           rowsCleared: { total: 0, colors: {} },
           doubleRows: { total: 0, colors: {} },
           tripleRows: { total: 0, colors: {} },
@@ -272,6 +274,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         current: {
           shapesPlaced: { total: 0, colors: {} },
           linesCleared: { total: 0, colors: {} },
+          coloredLinesCleared: { total: 0, colors: {} },
           rowsCleared: { total: 0, colors: {} },
           doubleRows: { total: 0, colors: {} },
           tripleRows: { total: 0, colors: {} },

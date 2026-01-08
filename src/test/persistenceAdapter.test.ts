@@ -4,18 +4,18 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
-  saveViewGameState,
-  loadViewGameState,
-  clearViewGameState,
-  hasViewGameState,
+  saveGameState,
+  loadGameState,
+  clearGameBoard,
+  hasGameState,
   saveSettings,
   loadSettings,
   saveModifiers,
   loadModifiers,
-  getSavedGameModes,
+  clearAllGameData,
 } from '../utils/persistenceAdapter';
 import { closeDatabase } from '../utils/indexedDBCrud';
-import type { ViewGameState, LoadResult } from '../types';
+import type { GameState, LoadResult } from '../types';
 import { INITIAL_STATS_PERSISTENCE } from '../types/stats';
 
 function expectSuccess<T>(result: LoadResult<T>): T {
@@ -35,7 +35,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
     const modes = ['infinite', 'daily', 'tutorial'] as const;
     for (const mode of modes) {
       try {
-        await clearViewGameState(mode);
+        await clearGameBoard(mode);
       } catch {
         // Ignore errors
       }
@@ -45,7 +45,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
 
   describe('View-Specific Game State', () => {
     it('should save and load view game state correctly', async () => {
-      const mockState: ViewGameState = {
+      const mockState: GameState = {
         score: 100,
         tiles: [{ position: 'R1C1', isFilled: true, color: 'red', backgroundColor: 'grey' }],
         nextShapes: [],
@@ -63,14 +63,14 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         isGameOver: false,
       };
 
-      await saveViewGameState('infinite', mockState);
-      const loadedState = await loadViewGameState('infinite');
+      await saveGameState('infinite', mockState);
+      const loadedState = await loadGameState('infinite');
 
       expect(expectSuccess(loadedState)).toEqual(mockState);
     });
 
     it('should save and load game state for daily mode', async () => {
-      const state: ViewGameState = {
+      const state: GameState = {
         score: 500,
         tiles: [],
         nextShapes: [],
@@ -82,15 +82,15 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      await saveViewGameState('daily', state);
-      const loaded = await loadViewGameState('daily');
+      await saveGameState('daily', state);
+      const loaded = await loadGameState('daily');
 
       const data = expectSuccess(loaded);
       expect(data.score).toBe(500);
     });
 
     it('should keep different modes isolated', async () => {
-      const infiniteState: ViewGameState = {
+      const infiniteState: GameState = {
         score: 1000,
         tiles: [],
         nextShapes: [],
@@ -102,7 +102,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      const dailyState: ViewGameState = {
+      const dailyState: GameState = {
         score: 500,
         tiles: [],
         nextShapes: [],
@@ -114,11 +114,11 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      await saveViewGameState('infinite', infiniteState);
-      await saveViewGameState('daily', dailyState);
+      await saveGameState('infinite', infiniteState);
+      await saveGameState('daily', dailyState);
 
-      const loadedInfinite = expectSuccess(await loadViewGameState('infinite'));
-      const loadedDaily = expectSuccess(await loadViewGameState('daily'));
+      const loadedInfinite = expectSuccess(await loadGameState('infinite'));
+      const loadedDaily = expectSuccess(await loadGameState('daily'));
 
       expect(loadedInfinite.score).toBe(1000);
       expect(loadedInfinite.totalLinesCleared).toBe(10);
@@ -127,7 +127,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
     });
 
     it('should clear specific mode without affecting others', async () => {
-      const state: ViewGameState = {
+      const state: GameState = {
         score: 1000,
         tiles: [],
         nextShapes: [],
@@ -139,20 +139,20 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      await saveViewGameState('infinite', state);
-      await saveViewGameState('daily', state);
+      await saveGameState('infinite', state);
+      await saveGameState('daily', state);
 
-      await clearViewGameState('infinite');
+      await clearGameBoard('infinite');
 
-      const infiniteExists = await hasViewGameState('infinite');
-      const dailyExists = await hasViewGameState('daily');
+      const infiniteExists = await hasGameState('infinite');
+      const dailyExists = await hasGameState('daily');
 
       expect(infiniteExists).toBe(false);
       expect(dailyExists).toBe(true);
     });
 
     it('should detect existing game states', async () => {
-      const state: ViewGameState = {
+      const state: GameState = {
         score: 100,
         tiles: [],
         nextShapes: [],
@@ -164,15 +164,15 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      expect(await hasViewGameState('infinite')).toBe(false);
+      expect(await hasGameState('infinite')).toBe(false);
 
-      await saveViewGameState('infinite', state);
+      await saveGameState('infinite', state);
 
-      expect(await hasViewGameState('infinite')).toBe(true);
+      expect(await hasGameState('infinite')).toBe(true);
     });
 
     it('should list all modes with saved data', async () => {
-      const state: ViewGameState = {
+      const state: GameState = {
         score: 100,
         tiles: [],
         nextShapes: [],
@@ -184,10 +184,10 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      await saveViewGameState('infinite', state);
-      await saveViewGameState('tutorial', state);
+      await saveGameState('infinite', state);
+      await saveGameState('tutorial', state);
 
-      const saved = await getSavedGameModes();
+      const saved = await // getSavedGameModes removed - single mode only();
 
       expect(saved).toHaveLength(2);
       expect(saved).toContain('infinite');
@@ -243,7 +243,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         lastUpdated: Date.now(),
       };
 
-      const gameState: ViewGameState = {
+      const gameState: GameState = {
         score: 1000,
         tiles: [],
         nextShapes: [],
@@ -256,8 +256,8 @@ describe('Persistence Adapter - View-Aware Operations', () => {
       };
 
       await saveSettings(settings);
-      await saveViewGameState('infinite', gameState);
-      await clearViewGameState('infinite');
+      await saveGameState('infinite', gameState);
+      await clearGameBoard('infinite');
 
       const loadedSettings = expectSuccess(await loadSettings());
       expect(loadedSettings.music.volume).toBe(50);
@@ -291,7 +291,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
 
   describe('Data Separation Guarantees', () => {
     it('should not leak data between infinite and daily modes', async () => {
-      const infiniteState: ViewGameState = {
+      const infiniteState: GameState = {
         score: 1000,
         tiles: [{ position: 'R1C1', isFilled: true, color: 'red', backgroundColor: 'grey' }],
         nextShapes: [],
@@ -303,7 +303,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      const dailyState: ViewGameState = {
+      const dailyState: GameState = {
         score: 500,
         tiles: [{ position: 'R2C2', isFilled: true, color: 'blue', backgroundColor: 'grey' }],
         nextShapes: [],
@@ -315,11 +315,11 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      await saveViewGameState('infinite', infiniteState);
-      await saveViewGameState('daily', dailyState);
+      await saveGameState('infinite', infiniteState);
+      await saveGameState('daily', dailyState);
 
-      const loadedInfinite = expectSuccess(await loadViewGameState('infinite'));
-      const loadedDaily = expectSuccess(await loadViewGameState('daily'));
+      const loadedInfinite = expectSuccess(await loadGameState('infinite'));
+      const loadedDaily = expectSuccess(await loadGameState('daily'));
 
       // Verify complete isolation
       expect(loadedInfinite.tiles[0].position).toBe('R1C1');
@@ -329,7 +329,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
     });
 
     it('should allow concurrent updates to different modes', async () => {
-      const state1: ViewGameState = {
+      const state1: GameState = {
         score: 100,
         tiles: [],
         nextShapes: [],
@@ -341,7 +341,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      const state2: ViewGameState = {
+      const state2: GameState = {
         score: 200,
         tiles: [],
         nextShapes: [],
@@ -353,7 +353,7 @@ describe('Persistence Adapter - View-Aware Operations', () => {
         stats: INITIAL_STATS_PERSISTENCE,
       };
 
-      const state3: ViewGameState = {
+      const state3: GameState = {
         score: 300,
         tiles: [],
         nextShapes: [],
@@ -367,16 +367,16 @@ describe('Persistence Adapter - View-Aware Operations', () => {
 
       // Save all modes simultaneously
       await Promise.all([
-        saveViewGameState('infinite', state1),
-        saveViewGameState('daily', state2),
-        saveViewGameState('tutorial', state3),
+        saveGameState('infinite', state1),
+        saveGameState('daily', state2),
+        saveGameState('tutorial', state3),
       ]);
 
       // Verify all saved correctly
       const [result1, result2, result3] = await Promise.all([
-        loadViewGameState('infinite'),
-        loadViewGameState('daily'),
-        loadViewGameState('tutorial'),
+        loadGameState('infinite'),
+        loadGameState('daily'),
+        loadGameState('tutorial'),
       ]);
 
       const loaded1 = expectSuccess(result1);

@@ -27,14 +27,14 @@ describe('IndexedDB CRUD Operations', () => {
     it('should write and read data', async () => {
       const testData = { name: 'Test', value: 42 };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'test-key', testData);
-      const result = await crud.read(crud.STORES.INFINITE_STATE, 'test-key');
+      await crud.write(crud.STORES.GAME_STATE, 'test-key', testData);
+      const result = await crud.read(crud.STORES.GAME_STATE, 'test-key');
       
       expect(result).toEqual(testData);
     });
 
     it('should return null for non-existent keys', async () => {
-      const result = await crud.read(crud.STORES.INFINITE_STATE, 'non-existent');
+      const result = await crud.read(crud.STORES.GAME_STATE, 'non-existent');
       expect(result).toBeNull();
     });
 
@@ -42,30 +42,30 @@ describe('IndexedDB CRUD Operations', () => {
       const initialData = { count: 1 };
       const updatedData = { count: 2 };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'counter', initialData);
-      await crud.write(crud.STORES.INFINITE_STATE, 'counter', updatedData);
+      await crud.write(crud.STORES.GAME_STATE, 'counter', initialData);
+      await crud.write(crud.STORES.GAME_STATE, 'counter', updatedData);
       
-      const result = await crud.read(crud.STORES.INFINITE_STATE, 'counter');
+      const result = await crud.read(crud.STORES.GAME_STATE, 'counter');
       expect(result).toEqual(updatedData);
     });
 
     it('should delete data', async () => {
       const testData = { value: 'test' };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'to-delete', testData);
-      await crud.remove(crud.STORES.INFINITE_STATE, 'to-delete');
+      await crud.write(crud.STORES.GAME_STATE, 'to-delete', testData);
+      await crud.remove(crud.STORES.GAME_STATE, 'to-delete');
       
-      const result = await crud.read(crud.STORES.INFINITE_STATE, 'to-delete');
+      const result = await crud.read(crud.STORES.GAME_STATE, 'to-delete');
       expect(result).toBeNull();
     });
 
     it('should check if key exists', async () => {
       const testData = { exists: true };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'exists-test', testData);
+      await crud.write(crud.STORES.GAME_STATE, 'exists-test', testData);
       
-      const exists = await crud.exists(crud.STORES.INFINITE_STATE, 'exists-test');
-      const notExists = await crud.exists(crud.STORES.INFINITE_STATE, 'not-exists');
+      const exists = await crud.exists(crud.STORES.GAME_STATE, 'exists-test');
+      const notExists = await crud.exists(crud.STORES.GAME_STATE, 'not-exists');
       
       expect(exists).toBe(true);
       expect(notExists).toBe(false);
@@ -78,13 +78,13 @@ describe('IndexedDB CRUD Operations', () => {
       const dailyData = { mode: 'daily', score: 200 };
       const tutorialData = { mode: 'tutorial', score: 50 };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'current', infiniteData);
-      await crud.write(crud.STORES.DAILY_STATE, 'current', dailyData);
-      await crud.write(crud.STORES.TUTORIAL_STATE, 'current', tutorialData);
+      await crud.write(crud.STORES.GAME_STATE, 'current', infiniteData);
+      await crud.write(crud.STORES.GAME_STATE, 'current', dailyData);
+      await crud.write(crud.STORES.GAME_STATE, 'current', tutorialData);
       
-      const infiniteResult = await crud.read(crud.STORES.INFINITE_STATE, 'current');
-      const dailyResult = await crud.read(crud.STORES.DAILY_STATE, 'current');
-      const tutorialResult = await crud.read(crud.STORES.TUTORIAL_STATE, 'current');
+      const infiniteResult = await crud.read(crud.STORES.GAME_STATE, 'current');
+      const dailyResult = await crud.read(crud.STORES.GAME_STATE, 'current');
+      const tutorialResult = await crud.read(crud.STORES.GAME_STATE, 'current');
       
       expect(infiniteResult).toEqual(infiniteData);
       expect(dailyResult).toEqual(dailyData);
@@ -95,10 +95,10 @@ describe('IndexedDB CRUD Operations', () => {
       const gameData = { score: 100 };
       const settingsData = { music: { isMuted: false } };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'current', gameData);
+      await crud.write(crud.STORES.GAME_STATE, 'current', gameData);
       await crud.write(crud.STORES.SETTINGS, 'current', settingsData);
       
-      const game = await crud.read(crud.STORES.INFINITE_STATE, 'current');
+      const game = await crud.read(crud.STORES.GAME_STATE, 'current');
       const settings = await crud.read(crud.STORES.SETTINGS, 'current');
       
       expect(game).toEqual(gameData);
@@ -109,15 +109,15 @@ describe('IndexedDB CRUD Operations', () => {
   describe('Batch Operations', () => {
     it('should write multiple records in a batch', async () => {
       const operations = [
-        { storeName: crud.STORES.INFINITE_STATE, key: 'key1', data: { value: 1 } },
-        { storeName: crud.STORES.INFINITE_STATE, key: 'key2', data: { value: 2 } },
+        { storeName: crud.STORES.GAME_STATE, key: 'key1', data: { value: 1 } },
+        { storeName: crud.STORES.GAME_STATE, key: 'key2', data: { value: 2 } },
         { storeName: crud.STORES.SETTINGS, key: 'setting1', data: { enabled: true } },
       ];
       
       await crud.batchWrite(operations);
       
-      const result1 = await crud.read(crud.STORES.INFINITE_STATE, 'key1');
-      const result2 = await crud.read(crud.STORES.INFINITE_STATE, 'key2');
+      const result1 = await crud.read(crud.STORES.GAME_STATE, 'key1');
+      const result2 = await crud.read(crud.STORES.GAME_STATE, 'key2');
       const result3 = await crud.read(crud.STORES.SETTINGS, 'setting1');
       
       expect(result1).toEqual({ value: 1 });
@@ -126,13 +126,13 @@ describe('IndexedDB CRUD Operations', () => {
     });
 
     it('should read multiple records in a batch', async () => {
-      await crud.write(crud.STORES.INFINITE_STATE, 'key1', { value: 1 });
-      await crud.write(crud.STORES.INFINITE_STATE, 'key2', { value: 2 });
+      await crud.write(crud.STORES.GAME_STATE, 'key1', { value: 1 });
+      await crud.write(crud.STORES.GAME_STATE, 'key2', { value: 2 });
       await crud.write(crud.STORES.SETTINGS, 'key3', { value: 3 });
       
       const operations = [
-        { storeName: crud.STORES.INFINITE_STATE, key: 'key1' },
-        { storeName: crud.STORES.INFINITE_STATE, key: 'key2' },
+        { storeName: crud.STORES.GAME_STATE, key: 'key1' },
+        { storeName: crud.STORES.GAME_STATE, key: 'key2' },
         { storeName: crud.STORES.SETTINGS, key: 'key3' },
       ];
       
@@ -146,11 +146,11 @@ describe('IndexedDB CRUD Operations', () => {
     });
 
     it('should handle batch reads with missing keys', async () => {
-      await crud.write(crud.STORES.INFINITE_STATE, 'exists', { value: 1 });
+      await crud.write(crud.STORES.GAME_STATE, 'exists', { value: 1 });
       
       const operations = [
-        { storeName: crud.STORES.INFINITE_STATE, key: 'exists' },
-        { storeName: crud.STORES.INFINITE_STATE, key: 'missing' },
+        { storeName: crud.STORES.GAME_STATE, key: 'exists' },
+        { storeName: crud.STORES.GAME_STATE, key: 'missing' },
       ];
       
       const results = await crud.batchRead(operations);
@@ -164,11 +164,11 @@ describe('IndexedDB CRUD Operations', () => {
 
   describe('List Operations', () => {
     it('should list all keys in a store', async () => {
-      await crud.write(crud.STORES.INFINITE_STATE, 'key1', { value: 1 });
-      await crud.write(crud.STORES.INFINITE_STATE, 'key2', { value: 2 });
-      await crud.write(crud.STORES.INFINITE_STATE, 'key3', { value: 3 });
+      await crud.write(crud.STORES.GAME_STATE, 'key1', { value: 1 });
+      await crud.write(crud.STORES.GAME_STATE, 'key2', { value: 2 });
+      await crud.write(crud.STORES.GAME_STATE, 'key3', { value: 3 });
       
-      const keys = await crud.listKeys(crud.STORES.INFINITE_STATE);
+      const keys = await crud.listKeys(crud.STORES.GAME_STATE);
       
       expect(keys).toHaveLength(3);
       expect(keys).toContain('key1');
@@ -177,10 +177,10 @@ describe('IndexedDB CRUD Operations', () => {
     });
 
     it('should read all values in a store', async () => {
-      await crud.write(crud.STORES.INFINITE_STATE, 'key1', { value: 1 });
-      await crud.write(crud.STORES.INFINITE_STATE, 'key2', { value: 2 });
+      await crud.write(crud.STORES.GAME_STATE, 'key1', { value: 1 });
+      await crud.write(crud.STORES.GAME_STATE, 'key2', { value: 2 });
       
-      const values = await crud.readAll(crud.STORES.INFINITE_STATE);
+      const values = await crud.readAll(crud.STORES.GAME_STATE);
       
       expect(values).toHaveLength(2);
       expect(values).toContainEqual({ value: 1 });
@@ -188,8 +188,8 @@ describe('IndexedDB CRUD Operations', () => {
     });
 
     it('should return empty array for empty store', async () => {
-      const keys = await crud.listKeys(crud.STORES.INFINITE_STATE);
-      const values = await crud.readAll(crud.STORES.INFINITE_STATE);
+      const keys = await crud.listKeys(crud.STORES.GAME_STATE);
+      const values = await crud.readAll(crud.STORES.GAME_STATE);
       
       expect(keys).toEqual([]);
       expect(values).toEqual([]);
@@ -198,22 +198,22 @@ describe('IndexedDB CRUD Operations', () => {
 
   describe('Clear Operations', () => {
     it('should clear all data in a store', async () => {
-      await crud.write(crud.STORES.INFINITE_STATE, 'key1', { value: 1 });
-      await crud.write(crud.STORES.INFINITE_STATE, 'key2', { value: 2 });
+      await crud.write(crud.STORES.GAME_STATE, 'key1', { value: 1 });
+      await crud.write(crud.STORES.GAME_STATE, 'key2', { value: 2 });
       
-      await crud.clear(crud.STORES.INFINITE_STATE);
+      await crud.clear(crud.STORES.GAME_STATE);
       
-      const keys = await crud.listKeys(crud.STORES.INFINITE_STATE);
+      const keys = await crud.listKeys(crud.STORES.GAME_STATE);
       expect(keys).toEqual([]);
     });
 
     it('should only clear the specified store', async () => {
-      await crud.write(crud.STORES.INFINITE_STATE, 'key1', { value: 1 });
+      await crud.write(crud.STORES.GAME_STATE, 'key1', { value: 1 });
       await crud.write(crud.STORES.SETTINGS, 'key2', { value: 2 });
       
-      await crud.clear(crud.STORES.INFINITE_STATE);
+      await crud.clear(crud.STORES.GAME_STATE);
       
-      const infiniteKeys = await crud.listKeys(crud.STORES.INFINITE_STATE);
+      const infiniteKeys = await crud.listKeys(crud.STORES.GAME_STATE);
       const settingsKeys = await crud.listKeys(crud.STORES.SETTINGS);
       
       expect(infiniteKeys).toEqual([]);
@@ -237,8 +237,8 @@ describe('IndexedDB CRUD Operations', () => {
         },
       };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'complex', complexData);
-      const result = await crud.read(crud.STORES.INFINITE_STATE, 'complex');
+      await crud.write(crud.STORES.GAME_STATE, 'complex', complexData);
+      const result = await crud.read(crud.STORES.GAME_STATE, 'complex');
       
       expect(result).toEqual(complexData);
     });
@@ -252,8 +252,8 @@ describe('IndexedDB CRUD Operations', () => {
         ],
       };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'arrays', arrayData);
-      const result = await crud.read(crud.STORES.INFINITE_STATE, 'arrays');
+      await crud.write(crud.STORES.GAME_STATE, 'arrays', arrayData);
+      const result = await crud.read(crud.STORES.GAME_STATE, 'arrays');
       
       expect(result).toEqual(arrayData);
     });
@@ -265,8 +265,8 @@ describe('IndexedDB CRUD Operations', () => {
         hasValue: 'value',
       };
       
-      await crud.write(crud.STORES.INFINITE_STATE, 'nulls', data);
-      const result = await crud.read(crud.STORES.INFINITE_STATE, 'nulls');
+      await crud.write(crud.STORES.GAME_STATE, 'nulls', data);
+      const result = await crud.read(crud.STORES.GAME_STATE, 'nulls');
       
       expect(result).toHaveProperty('nullValue', null);
       expect(result).toHaveProperty('hasValue', 'value');

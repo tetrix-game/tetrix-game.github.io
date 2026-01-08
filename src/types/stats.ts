@@ -4,6 +4,7 @@ import type { ColorName } from './core';
 export type StatCategory =
   | 'shapesPlaced'
   | 'linesCleared'
+  | 'coloredLinesCleared'
   | 'rowsCleared'
   | 'doubleRows'
   | 'tripleRows'
@@ -58,6 +59,7 @@ export const INITIAL_STAT_VALUE: StatValue = {
 export const INITIAL_GAME_STATS: GameStats = {
   shapesPlaced: { ...INITIAL_STAT_VALUE },
   linesCleared: { ...INITIAL_STAT_VALUE },
+  coloredLinesCleared: { ...INITIAL_STAT_VALUE },
   rowsCleared: { ...INITIAL_STAT_VALUE },
   doubleRows: { ...INITIAL_STAT_VALUE },
   tripleRows: { ...INITIAL_STAT_VALUE },

@@ -3,7 +3,6 @@ import { useGameNavigation } from '../../hooks/useGameNavigation';
 import { useDailyChallengeLoader } from '../../hooks/useDailyChallengeLoader';
 import { useDailyHistory } from '../../hooks/useDailyHistory';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import { hasCompletedToday } from '../../utils/dailyStreakUtils';
 import Overlay from '../Overlay';
 import InstallButton from '../InstallButton';
 import './MainMenu.css';
@@ -23,7 +22,7 @@ const MainMenu: React.FC = () => {
     // So we don't need to call navigateToMode('daily') manually if the loader dispatches that action.
   };
 
-  const completedToday = hasCompletedToday(history);
+  const completedToday = false; // Daily challenges removed
   const currentStreak = history.currentStreak;
 
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import { clearAllSavedData } from '../../utils/persistenceUtils';
+import { clearGameBoard } from '../../utils/persistence';
 import './GameControls.css';
 
 const GameControls: React.FC = () => {
@@ -8,9 +8,9 @@ const GameControls: React.FC = () => {
 
   const handleNewGame = async () => {
     try {
-      await clearAllSavedData();
+      await clearGameBoard(); // Clear board & score, but preserve stats
       dispatch({ type: 'RESET_GAME' });
-      // Refresh the page to fully reset state (music, etc.)
+      // Refresh the page to fully reset state (shapes, etc.)
       globalThis.location.reload();
     } catch (error) {
       console.error('Failed to reset game:', error);

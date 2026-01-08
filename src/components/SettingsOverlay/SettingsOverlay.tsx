@@ -16,7 +16,7 @@ import { generateShapesWithProbabilities } from '../../utils/shapes';
 import ColorPicker from '../ColorPicker';
 import { THEMES, ThemeName, BLOCK_THEMES, BlockTheme } from '../../types';
 import {
-  clearAllSavedData,
+  clearGameBoard,
   loadDebugSettings,
   saveDebugSettings
 } from '../../utils/persistence';
@@ -194,10 +194,10 @@ const SettingsOverlay: React.FC = () => {
     setIsDebugOpen(!isDebugOpen);
   };
 
-  // New game function - clears game data but preserves settings
+  // New game function - clears board and score but preserves stats and settings
   const handleNewGame = async () => {
     try {
-      await clearAllSavedData();
+      await clearGameBoard();
       dispatch({ type: 'RESET_GAME' });
       // Refresh the page to fully reset game state
       globalThis.location.reload();

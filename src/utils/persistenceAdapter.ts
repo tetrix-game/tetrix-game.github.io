@@ -1,97 +1,55 @@
 /**
- * View-Aware Persistence Adapter
- * 
- * Provides high-level persistence functions that use the CRUD pattern
- * and automatically route data to the correct store based on game mode.
- * 
- * This layer sits between the CRUD utilities and the application,
- * translating game mode context into the appropriate store operations.
+ * Persistence Adapter
+ *
+ * Provides high-level persistence functions for game state and settings.
+ * Uses the CRUD pattern for IndexedDB operations.
  */
 
 import * as crud from './indexedDBCrud';
 import {
-  type GameModeContext,
-  type ViewGameState,
+  type SavedGameState,
   type GameSettingsPersistenceData,
   type ModifiersPersistenceData,
-  type DailyChallengeHistory,
-  type DailyChallengeRecord,
-  type Shape,
   type LoadResult,
 } from '../types';
 import { STORES } from './indexedDBCrud';
-import { createEmptyHistory, addCompletionRecord } from './dailyStreakUtils';
 import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from './checksumUtils';
 
-// Toggle this to enable/disable granular persistence logging
+// Toggle this to enable/disable persistence logging
 const DEBUG_PERSISTENCE_CHECKSUMS = false;
 
-/**
- * Get the store name for a specific game mode
- */
-function getGameStateStore(gameMode: GameModeContext): crud.StoreName {
-  switch (gameMode) {
-    case 'infinite':
-      return STORES.INFINITE_STATE;
-    case 'daily':
-      return STORES.DAILY_STATE;
-    case 'tutorial':
-      return STORES.TUTORIAL_STATE;
-    default:
-      throw new Error(`Unknown game mode: ${gameMode}`);
-  }
-}
-
 // ============================================================================
-// VIEW-SPECIFIC GAME STATE (per mode)
+// GAME STATE
 // ============================================================================
 
-
 /**
- * Save complete game state for a specific mode
+ * Save complete game state
  */
-export async function saveViewGameState(
-  gameMode: GameModeContext,
-  state: ViewGameState
-): Promise<void> {
+export async function saveGameState(state: SavedGameState): Promise<void> {
   // Generate the Shadow Manifest (Merkle Tree)
   const manifest = generateChecksumManifest(state);
-  
-  // Remove legacy checksum if present to keep data clean
-  const stateToSave = { ...state };
-  if ('checksum' in stateToSave) {
-    delete (stateToSave as any).checksum;
-  }
 
-  const store = getGameStateStore(gameMode);
-  
   // Atomic-like write: Save Data AND Manifest
-  // Ideally this would be a single transaction, but our crud wrapper separates them.
-  // We write data first, then manifest.
-  
   await crud.batchWrite([
-    { storeName: store, key: 'current', data: stateToSave },
-    { storeName: STORES.CHECKSUMS, key: `${gameMode}_manifest`, data: manifest }
+    { storeName: STORES.GAME_STATE, key: 'current', data: state },
+    { storeName: STORES.CHECKSUMS, key: 'game_manifest', data: manifest }
   ]);
 
   if (DEBUG_PERSISTENCE_CHECKSUMS) {
-    console.log(`[Persistence] Saved ${gameMode} state with Root Hash: ${manifest.root.hash}`);
+    console.log(`[Persistence] Saved game state with Root Hash: ${manifest.root.hash}`);
   }
 }
 
 /**
- * Load complete game state for a specific mode
+ * Load complete game state
  */
-export async function loadViewGameState(
-  gameMode: GameModeContext
-): Promise<LoadResult<ViewGameState>> {
-  const store = getGameStateStore(gameMode);
+export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
   try {
     // Load Data and Manifest in parallel using a single transaction for consistency
     const [state, manifest] = await crud.batchRead([
-      { storeName: store, key: 'current' },
-      { storeName: STORES.CHECKSUMS, key: `${gameMode}_manifest` }
-    ]) as [ViewGameState | null, ChecksumManifest | null];
+      { storeName: STORES.GAME_STATE, key: 'current' },
+      { storeName: STORES.CHECKSUMS, key: 'game_manifest' }
+    ]) as [GameState | null, ChecksumManifest | null];
 
     if (state) {
       // Helper to sanitize numeric values (handles NaN, Infinity, non-numbers)
@@ -103,7 +61,7 @@ export async function loadViewGameState(
       };
 
       // Sanitize state to ensure all required fields exist (handles partial/corrupted data)
-      const sanitizedState: ViewGameState = {
+      const sanitizedState: SavedGameState = {
         score: sanitizeNumber(state.score, 0),
         tiles: Array.isArray(state.tiles) ? state.tiles : [],
         nextShapes: Array.isArray(state.nextShapes) ? state.nextShapes : [],
@@ -123,76 +81,101 @@ export async function loadViewGameState(
       // Perform Strict Merkle Tree Verification
       if (manifest) {
         const result = verifyChecksumManifest(sanitizedState, manifest);
-        
+
         if (!result.isValid) {
-          console.error(`%c[Persistence] CRITICAL DATA CORRUPTION in ${gameMode}!`, 'color: red; font-weight: bold; font-size: 14px;');
+          console.error('%c[Persistence] CRITICAL DATA CORRUPTION!', 'color: red; font-weight: bold; font-size: 14px;');
           console.error(`%cRoot Hash Mismatch! Expected: ${manifest.root.hash}`, 'color: red;');
           console.group('%cCorruption Triage Report', 'color: orange;');
           result.mismatches.forEach(mismatch => {
             console.error(`❌ Validation Failed at Node: ${mismatch}`);
           });
           console.groupEnd();
-          
+
           // We DO NOT fix it. We report it.
           // The app will still load the data (to prevent crash), but the console is screaming.
         } else if (DEBUG_PERSISTENCE_CHECKSUMS) {
-          console.log(`%c[Persistence] Integrity Verified for ${gameMode}. Root: ${manifest.root.hash}`, 'color: green;');
+          console.log(`%c[Persistence] Integrity Verified. Root: ${manifest.root.hash}`, 'color: green;');
         }
       } else {
-        console.warn(`[Persistence] No checksum manifest found for ${gameMode}. This might be a legacy save.`);
+        console.warn('[Persistence] No checksum manifest found. This might be a legacy save.');
       }
 
       return { status: 'success', data: sanitizedState };
     }
-    
+
     if (DEBUG_PERSISTENCE_CHECKSUMS) {
-      console.warn(`[Persistence] No saved state found for ${gameMode}`);
+      console.warn('[Persistence] No saved state found');
     }
     return { status: 'not_found' };
   } catch (error) {
-    console.error(`Failed to load game state for ${gameMode}:`, error);
+    console.error('Failed to load game state:', error);
     return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
 
 /**
- * Clear game state for a specific mode
+ * Clear game state (board + score), but preserve stats
  */
-export async function clearViewGameState(gameMode: GameModeContext): Promise<void> {
-  const store = getGameStateStore(gameMode);
-  await crud.clear(store);
-  
-  // Also clear the checksum manifest
-  await crud.remove(STORES.CHECKSUMS, `${gameMode}_manifest`);
-  
+export async function clearGameBoard(): Promise<void> {
+  const currentResult = await loadGameState();
+
+  if (currentResult.status === 'success') {
+    const current = currentResult.data;
+
+    // Reset board and score, but keep stats
+    const resetState: SavedGameState = {
+      ...current,
+      score: 0,
+      tiles: [],
+      nextShapes: [],
+      savedShape: null,
+      totalLinesCleared: 0,
+      shapesUsed: 0,
+      hasPlacedFirstShape: false,
+      isGameOver: false,
+      lastUpdated: Date.now(),
+      // stats: preserved from current
+    };
+
+    await saveGameState(resetState);
+  }
+
   if (DEBUG_PERSISTENCE_CHECKSUMS) {
-    console.log(`[Persistence] Cleared state for ${gameMode}`);
+    console.log('[Persistence] Cleared game board (stats preserved)');
   }
 }
 
 /**
- * Save partial game state update (only specified fields)
+ * Update partial game state (only specified fields)
  */
-export async function updateViewGameState(
-  gameMode: GameModeContext,
-  updates: Partial<ViewGameState>
-): Promise<void> {
-  const store = getGameStateStore(gameMode);
-  const current = await crud.read<ViewGameState>(store, 'current');
+export async function updateGameState(updates: Partial<SavedGameState>): Promise<void> {
+  const current = await crud.read<SavedGameState>(STORES.GAME_STATE, 'current');
 
   if (!current) {
-    throw new Error(`Cannot update non-existent game state for ${gameMode}`);
+    throw new Error('Cannot update non-existent game state');
   }
 
-  const updated: ViewGameState = {
+  const updated: SavedGameState = {
     ...current,
     ...updates,
     lastUpdated: Date.now(),
   };
 
   // Use the main save function to ensure checksums are updated correctly
-  await saveViewGameState(gameMode, updated);
+  await saveGameState(updated);
 }
+
+/**
+ * Check if game state exists
+ */
+export async function hasGameState(): Promise<boolean> {
+  const state = await crud.read<SavedGameState>(STORES.GAME_STATE, 'current');
+  return !!state;
+}
+
+// ============================================================================
+// SETTINGS (Global)
+// ============================================================================
 
 /**
  * Save game settings
@@ -256,6 +239,19 @@ export async function saveMusicSettings(
 }
 
 /**
+ * Load music settings
+ */
+export async function loadMusicSettings(): Promise<LoadResult<{ isMuted: boolean; volume: number; isEnabled: boolean }>> {
+  const result = await loadSettings();
+  if (result.status === 'success') {
+    return { status: 'success', data: result.data.music };
+  }
+  return result.status === 'not_found'
+    ? { status: 'not_found' }
+    : { status: 'error', error: result.error };
+}
+
+/**
  * Save sound effects settings specifically
  */
 export async function saveSoundEffectsSettings(
@@ -274,10 +270,36 @@ export async function saveSoundEffectsSettings(
 }
 
 /**
+ * Load sound effects settings
+ */
+export async function loadSoundEffectsSettings(): Promise<LoadResult<{ isMuted: boolean; volume: number; isEnabled: boolean }>> {
+  const result = await loadSettings();
+  if (result.status === 'success') {
+    return { status: 'success', data: result.data.soundEffects };
+  }
+  return result.status === 'not_found'
+    ? { status: 'not_found' }
+    : { status: 'error', error: result.error };
+}
+
+/**
  * Save debug unlock status
  */
 export async function saveDebugSettings(unlocked: boolean): Promise<void> {
   await updateSettings({ debugUnlocked: unlocked });
+}
+
+/**
+ * Load debug settings
+ */
+export async function loadDebugSettings(): Promise<LoadResult<boolean>> {
+  const result = await loadSettings();
+  if (result.status === 'success') {
+    return { status: 'success', data: result.data.debugUnlocked || false };
+  }
+  return result.status === 'not_found'
+    ? { status: 'not_found' }
+    : { status: 'error', error: result.error };
 }
 
 /**
@@ -288,20 +310,36 @@ export async function saveTheme(theme: string): Promise<void> {
 }
 
 /**
+ * Load theme
+ */
+export async function loadTheme(): Promise<LoadResult<string>> {
+  const result = await loadSettings();
+  if (result.status === 'success' && result.data.theme) {
+    return { status: 'success', data: result.data.theme };
+  }
+  return { status: 'not_found' };
+}
+
+/**
  * Save block theme preference
  */
 export async function saveBlockTheme(blockTheme: string): Promise<void> {
   await updateSettings({ blockTheme });
 }
 
-// ============================================================================
-// STATS ARE NOW MODE-SPECIFIC (stored in ViewGameState)
-// ============================================================================
-// Stats are saved/loaded as part of each mode's ViewGameState
-// Use saveViewGameState() / loadViewGameState() to manage stats per mode
+/**
+ * Load block theme
+ */
+export async function loadBlockTheme(): Promise<LoadResult<string>> {
+  const result = await loadSettings();
+  if (result.status === 'success' && result.data.blockTheme) {
+    return { status: 'success', data: result.data.blockTheme };
+  }
+  return { status: 'not_found' };
+}
 
 // ============================================================================
-// SHARED MODIFIERS (cross-mode)
+// MODIFIERS (cross-game)
 // ============================================================================
 
 /**
@@ -332,129 +370,18 @@ export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
 }
 
 // ============================================================================
-// DAILY CHALLENGE HISTORY & STREAKS
+// CLEANUP
 // ============================================================================
 
 /**
- * Load daily challenge history
- */
-export async function loadDailyHistory(): Promise<LoadResult<DailyChallengeHistory>> {
-  try {
-    const data = await crud.read<DailyChallengeHistory>(STORES.DAILY_HISTORY, 'current');
-    if (data) {
-      return { status: 'success', data };
-    }
-    return { status: 'not_found' };
-  } catch (error) {
-    console.error('Failed to load daily history:', error);
-    return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
-  }
-}
-
-/**
- * Save daily challenge history
- */
-export async function saveDailyHistory(history: DailyChallengeHistory): Promise<void> {
-  await crud.write(STORES.DAILY_HISTORY, 'current', history);
-}
-
-/**
- * Record a daily challenge completion
- */
-export async function recordDailyChallengeCompletion(
-  record: DailyChallengeRecord
-): Promise<DailyChallengeHistory> {
-  const historyResult = await loadDailyHistory();
-  const currentHistory = historyResult.status === 'success' ? historyResult.data : createEmptyHistory();
-  
-  const updatedHistory = addCompletionRecord(currentHistory, record);
-  await saveDailyHistory(updatedHistory);
-  return updatedHistory;
-}
-
-// ============================================================================
-// MIGRATION & CLEANUP
-// ============================================================================
-
-/**
- * Migrate legacy data to new view-separated format
- */
-export async function migrateLegacyData(): Promise<void> {
-  try {
-    // 1. Check if we already have new data. If so, DO NOT migrate.
-    // This prevents overwriting new game progress with old legacy data on reload.
-    const hasNewData = await hasViewGameState('infinite');
-    if (hasNewData) {
-      return;
-    }
-
-    // Check if we have legacy data
-    const legacyGameState = await crud.read<{
-      score: number;
-      tiles: any[]; // Use any[] to bypass strict type checks for legacy data
-      nextShapes: Shape[];
-      savedShape: Shape | null;
-    }>(STORES.LEGACY_GAME_STATE, 'current');
-
-    if (!legacyGameState) {
-      return;
-    }
-
-    // Validate legacy data structure before processing
-    if (!Array.isArray(legacyGameState.tiles)) {
-      console.error('Legacy data corrupted: tiles is not an array');
-      return;
-    }
-
-    // Convert tiles from old array format to new TileData format
-    const tilesData = legacyGameState.tiles
-      .filter((tile: any) => tile && tile.location && tile.block) // Filter out malformed tiles
-      .map((tile: any) => ({
-        position: `R${tile.location.row}C${tile.location.column}`,
-        backgroundColor: tile.tileBackgroundColor || 'transparent',
-        isFilled: !!tile.block.isFilled,
-        color: tile.block.color || 'transparent',
-        activeAnimations: [],
-      }));
-
-    // Create new view state
-    const viewState: ViewGameState = {
-      score: typeof legacyGameState.score === 'number' ? legacyGameState.score : 0,
-      tiles: tilesData,
-      nextShapes: Array.isArray(legacyGameState.nextShapes) ? legacyGameState.nextShapes : [],
-      savedShape: legacyGameState.savedShape || null,
-      totalLinesCleared: 0,
-      shapesUsed: 0,
-      hasPlacedFirstShape: Array.isArray(legacyGameState.nextShapes) && legacyGameState.nextShapes.length < 3, // Infer if started
-      stats: (await import('../types/stats')).INITIAL_STATS_PERSISTENCE,
-      lastUpdated: Date.now(),
-      isGameOver: false,
-    };
-
-    // Save to infinite mode store
-    await saveViewGameState('infinite', viewState);
-
-    // We do NOT delete the legacy data here, just in case something goes wrong.
-    // The 'hasNewData' check at the top protects us from re-migration.
-  } catch (error) {
-    console.error('Failed to migrate legacy data:', error);
-  }
-}
-
-/**
- * Clear all game data for all modes (preserves settings)
+ * Clear all game data (preserves settings)
  */
 export async function clearAllGameData(): Promise<void> {
-  // Clear all game state stores (stats are now part of each mode's state)
   await Promise.all([
-    crud.clear(STORES.INFINITE_STATE),
-    crud.clear(STORES.DAILY_STATE),
-    crud.clear(STORES.TUTORIAL_STATE),
+    crud.clear(STORES.GAME_STATE),
     crud.clear(STORES.MODIFIERS),
+    crud.clear(STORES.CHECKSUMS),
   ]);
-
-  // Note: Stats are now per-mode in ViewGameState, not in a shared store
-  // Each mode's stats will be reset when that mode's state is cleared
 }
 
 /**
@@ -494,32 +421,6 @@ export async function clearAllDataAndReload(): Promise<void> {
  */
 export async function initializePersistence(): Promise<void> {
   await crud.initDB();
-  await migrateLegacyData();
-}
-
-/**
- * Check if a game mode has saved state
- */
-export async function hasViewGameState(gameMode: GameModeContext): Promise<boolean> {
-  const store = getGameStateStore(gameMode);
-  const state = await crud.read<ViewGameState>(store, 'current');
-  return !!state;
-}
-
-/**
- * Get all game modes that have saved state
- */
-export async function getSavedGameModes(): Promise<GameModeContext[]> {
-  const modes: GameModeContext[] = ['infinite', 'daily', 'tutorial'];
-  const saved: GameModeContext[] = [];
-
-  for (const mode of modes) {
-    if (await hasViewGameState(mode)) {
-      saved.push(mode);
-    }
-  }
-
-  return saved;
 }
 
 // ============================================================================
@@ -530,7 +431,6 @@ export async function getSavedGameModes(): Promise<GameModeContext[]> {
  * Save call-to-action timestamp
  */
 export async function saveCallToActionTimestamp(callKey: string, timestamp: number): Promise<void> {
-  // We store these in the settings store with a prefix
   const key = `cta-${callKey}`;
   await crud.write(STORES.SETTINGS, key, timestamp);
 }

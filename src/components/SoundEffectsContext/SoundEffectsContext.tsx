@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../utils/persistenceUtils';
+import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../utils/persistence';
 
 export type SoundEffect =
   | 'click_into_place'

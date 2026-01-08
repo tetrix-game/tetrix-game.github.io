@@ -6,7 +6,6 @@ import type { Shape, Location, TilesSet, ColorName } from './core';
 import type { DragState } from './drag';
 import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOptionBounds } from './animation';
 import type { ScoreData } from './scoring';
-import type { GamePersistenceData } from './persistence';
 import type { StatsPersistenceData } from './stats';
 import type { ThemeName, BlockTheme } from './theme';
 import type { QueueMode, ColorProbability } from './shapeQueue';
@@ -182,8 +181,8 @@ type AddScoreAction = {
 type LoadGameStateAction = {
   type: 'LOAD_GAME_STATE';
   value: {
-    gameData: GamePersistenceData;
-    stats?: import('./stats').StatsPersistenceData; // Optional stats for infinite mode
+    gameData: import('./persistence').SavedGameState;
+    stats?: import('./stats').StatsPersistenceData; // Optional stats
   };
 };
 

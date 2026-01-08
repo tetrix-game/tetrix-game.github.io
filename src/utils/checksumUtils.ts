@@ -1,4 +1,4 @@
-import { ViewGameState } from '../types';
+import { SavedGameState } from '../types';
 
 /**
  * Represents a node in the Merkle Tree.
@@ -75,10 +75,10 @@ function hashBranch(children: Record<string, ChecksumNode>): string {
 }
 
 /**
- * Generates the Merkle Tree for the ViewGameState.
+ * Generates the Merkle Tree for the SavedGameState.
  * This defines the "Strict Hierarchy".
  */
-export function generateChecksumManifest(state: ViewGameState): ChecksumManifest {
+export function generateChecksumManifest(state: SavedGameState): ChecksumManifest {
   // 1. Generate Leaf Nodes
   const scoreNode: ChecksumNode = { hash: hashLeaf(state.score) };
   const tilesNode: ChecksumNode = { hash: hashLeaf(state.tiles) };
@@ -126,7 +126,7 @@ export function generateChecksumManifest(state: ViewGameState): ChecksumManifest
  * Verifies the data against the manifest.
  * Reconstructs the tree from data and compares it to the manifest.
  */
-export function verifyChecksumManifest(data: ViewGameState, manifest: ChecksumManifest): VerificationResult {
+export function verifyChecksumManifest(data: SavedGameState, manifest: ChecksumManifest): VerificationResult {
   const mismatches: string[] = [];
 
   // 1. Re-generate the tree from the loaded data

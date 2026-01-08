@@ -1,6 +1,5 @@
 import './Grid.css'
 import TetrixTile from '../TetrixTile/TetrixTile';
-import type { Tile } from '../../utils/types';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useRef, useEffect, useMemo } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';

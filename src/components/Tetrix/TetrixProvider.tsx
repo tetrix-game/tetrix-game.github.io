@@ -6,8 +6,8 @@ import {
   loadTheme,
   initializePersistence,
   clearAllDataAndReload,
-  loadViewGameState,
-  loadSettings
+  loadGameState,
+  loadSettingsData
 } from '../../utils/persistence';
 import { ThemeName, BlockTheme } from '../../types';
 
@@ -25,27 +25,26 @@ export default function TetrixProvider({ children }: { readonly children: React.
         // Ensure DB is healthy before trying to load anything
         await initializePersistence();
 
-        const [unlockedModifiersResult, savedThemeResult, infiniteViewState, settings] = await Promise.all([
-          loadModifiers().catch(err => {
+        const [unlockedModifiersResult, savedThemeResult, gameStateData, settings] = await Promise.all([
+          loadModifiers().catch((err: Error) => {
             console.error('Error loading modifiers:', err);
             return { status: 'error', error: err } as const;
           }),
-          loadTheme().catch(err => {
+          loadTheme().catch((err: Error) => {
             console.error('Error loading theme:', err);
-            return { status: 'error', error: err } as const;
-          }),
-          loadViewGameState('infinite').catch(err => {
-            console.error('Error loading infinite view state:', err);
             return null;
           }),
-          loadSettings().catch(err => {
+          loadGameState().catch((err: Error) => {
+            console.error('Error loading game state:', err);
+            return null;
+          }),
+          loadSettingsData().catch((err: Error) => {
             console.error('Error loading settings:', err);
-            return null;
+            return { status: 'error', error: err } as const;
           })
         ]);
 
         // Extract data from LoadResults
-        const infiniteStateData = infiniteViewState?.status === 'success' ? infiniteViewState.data : null;
         const settingsData = settings?.status === 'success' ? settings.data : null;
 
         // Load theme first
@@ -80,21 +79,6 @@ export default function TetrixProvider({ children }: { readonly children: React.
           });
         }
 
-        // Restore last game mode if available
-        if (settingsData?.lastGameMode && settingsData.lastGameMode !== 'hub') {
-          dispatch({
-            type: 'SET_GAME_MODE',
-            value: { mode: settingsData.lastGameMode }
-          });
-        }
-
-        // Restore map unlock status
-        if (settingsData?.isMapUnlocked) {
-          dispatch({
-            type: 'UNLOCK_MAP'
-          });
-        }
-
         // Restore button size multiplier
         if (settingsData?.buttonSizeMultiplier !== undefined) {
           dispatch({
@@ -111,33 +95,33 @@ export default function TetrixProvider({ children }: { readonly children: React.
           });
         }
 
-        // Load infinite view state
+        // Load game state
         // IMPORTANT: Do NOT check for tiles.length === 100 - this causes data loss!
         // Valid saves may have different tile counts due to:
         // - Grid size changes
         // - Migration from older formats
         // - Corrupted but partially recoverable data
-        // 
+        //
         // Instead, check if there's any meaningful game progress to restore.
         // The persistence layer already handles sanitization and defaults.
-        if (infiniteStateData) {
+        if (gameStateData) {
           // Check if there's actual progress to load
           // A valid save has either: filled tiles, score > 0, or shapes used
           const hasProgress =
-            infiniteStateData.score > 0 ||
-            infiniteStateData.hasPlacedFirstShape ||
-            infiniteStateData.shapesUsed > 0 ||
-            infiniteStateData.tiles.some(t => t.isFilled);
+            gameStateData.score > 0 ||
+            gameStateData.hasPlacedFirstShape ||
+            gameStateData.shapesUsed > 0 ||
+            gameStateData.tiles.some((t: any) => t.isFilled);
 
           // Always load if there's progress, regardless of tiles.length
           // Even an empty or partial save should be loaded if it has progress
           // This prevents losing user progress due to grid size mismatches
-          if (hasProgress || infiniteStateData.tiles.length > 0) {
+          if (hasProgress || gameStateData.tiles.length > 0) {
             dispatch({
               type: 'LOAD_GAME_STATE',
               value: {
-                gameData: infiniteStateData,
-                stats: infiniteStateData.stats
+                gameData: gameStateData,
+                stats: gameStateData.stats
               },
             });
           }

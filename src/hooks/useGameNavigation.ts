@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../components/Tetrix/TetrixContext';
 import { useMusicControl } from '../components/Header/MusicControlContext';
 import { GameMode } from '../types/gameState';
-import { loadGameForMode } from '../utils/persistence';
+import { loadGameState } from '../utils/persistence';
 
 /**
  * Centralized navigation hook for game mode transitions.
@@ -26,14 +26,14 @@ export const useGameNavigation = () => {
 
   const navigateToMode = useCallback(async (mode: GameMode) => {
     // If switching to infinite mode, we need to ensure we load the correct state
-    // or reset if no state exists. This prevents Daily Challenge state from leaking.
+    // or reset if no state exists.
     if (mode === 'infinite') {
       try {
-        const savedGame = await loadGameForMode('infinite');
+        const savedGame = await loadGameState();
         if (savedGame && !savedGame.isGameOver) {
           dispatch({
             type: 'LOAD_GAME_STATE',
-            value: { gameData: savedGame }
+            value: { gameData: savedGame, stats: savedGame.stats }
           });
         } else {
           // If no saved game, reset to fresh state
@@ -41,7 +41,7 @@ export const useGameNavigation = () => {
           dispatch({ type: 'RESET_GAME' });
         }
       } catch (error) {
-        console.error('Failed to load infinite game state:', error);
+        console.error('Failed to load game state:', error);
         // Fallback to reset on error
         dispatch({ type: 'RESET_GAME' });
       }

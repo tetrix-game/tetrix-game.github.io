@@ -1,45 +1,28 @@
 /**
  * Hook to load and display daily challenge history
+ * DEPRECATED: Daily challenges removed in single-mode refactor
  */
 
-import { useState, useEffect } from 'react';
-import { loadDailyHistory } from '../utils/persistenceAdapter';
-import type { DailyChallengeHistory } from '../types/persistence';
-import { createEmptyHistory } from '../utils/dailyStreakUtils';
+import { useState } from 'react';
+
+// Stub types for daily challenges (removed)
+type DailyChallengeHistory = {
+  records: [];
+  currentStreak: 0;
+  longestStreak: 0;
+  lastPlayedDate: null;
+  lastUpdated: number;
+};
 
 export function useDailyHistory() {
-  const [history, setHistory] = useState<DailyChallengeHistory>(createEmptyHistory());
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const load = async () => {
-      try {
-        const loadedHistoryResult = await loadDailyHistory();
-        if (isMounted) {
-          if (loadedHistoryResult.status === 'success') {
-            setHistory(loadedHistoryResult.data);
-          } else {
-            // Not found or error, use empty history (default)
-            setHistory(createEmptyHistory());
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load daily history:', error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const [history] = useState<DailyChallengeHistory>({
+    records: [],
+    currentStreak: 0,
+    longestStreak: 0,
+    lastPlayedDate: null,
+    lastUpdated: Date.now()
+  });
+  const [isLoading] = useState(false);
 
   return { history, isLoading };
 }

@@ -1,4 +1,4 @@
-import { loadSoundEffectsSettings } from './persistenceUtils';
+import { loadSoundEffectsSettings } from './persistence';
 
 // Sound Effects Utility
 // Handles playing various game sound effects

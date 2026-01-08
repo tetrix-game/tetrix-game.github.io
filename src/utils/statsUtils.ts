@@ -61,13 +61,22 @@ export function updateStats(
   if (totalLines > 0) {
     incrementStat('linesCleared', undefined, totalLines);
     // Track colors for lines cleared? User said "All of the stats for cleared elements should be tracked for every specific color too"
-    // But a line might not have a uniform color. 
+    // But a line might not have a uniform color.
     // The `clearedRows` object has a `color` property if it was uniform.
     clearedRows.forEach(row => {
       if (row.color) incrementStat('linesCleared', row.color);
     });
     clearedColumns.forEach(col => {
       if (col.color) incrementStat('linesCleared', col.color);
+    });
+  }
+
+  // 2b. Colored Lines Cleared (only lines with uniform color)
+  const coloredLines = [...clearedRows, ...clearedColumns].filter(line => line.color);
+  if (coloredLines.length > 0) {
+    incrementStat('coloredLinesCleared', undefined, coloredLines.length);
+    coloredLines.forEach(line => {
+      if (line.color) incrementStat('coloredLinesCleared', line.color);
     });
   }
 

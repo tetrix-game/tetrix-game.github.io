@@ -14,7 +14,7 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
 
       // Save updated score
       if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { score: newScore })
+        safeBatchSave({ score: newScore })
           .catch((error: Error) => {
             console.error('Failed to save score:', error);
           });
@@ -61,7 +61,7 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
 
       // Save updated score
       if (state.gameMode !== 'hub') {
-        safeBatchSave(state.gameMode, { score: newScore })
+        safeBatchSave({ score: newScore })
           .catch((error: Error) => {
             console.error('Failed to save score:', error);
           });

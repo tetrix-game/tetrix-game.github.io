@@ -92,6 +92,8 @@
   padding: 24px;
   animation: slideDown 0.3s ease;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 8px;

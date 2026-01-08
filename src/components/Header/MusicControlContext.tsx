@@ -60,7 +60,12 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
       try {
         const settings = await loadMusicSettings();
 
-        setVolumeState(settings.volume);
+        // Validate volume is a finite number, default to 100 if invalid
+        const validVolume = Number.isFinite(settings.volume) && settings.volume >= 0 && settings.volume <= 100
+          ? settings.volume
+          : 100;
+
+        setVolumeState(validVolume);
         setIsEnabled(settings.isEnabled);
       } catch (error) {
         console.error('Unexpected error loading music settings:', error);

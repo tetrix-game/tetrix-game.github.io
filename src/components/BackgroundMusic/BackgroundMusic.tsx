@@ -65,7 +65,9 @@ const BackgroundMusic: React.FC = () => {
     const audio = audioRef.current;
     if (audio) {
       const trackMultiplier = TRACK_VOLUME_MULTIPLIERS[currentTrackRef.current] ?? 1.0;
-      audio.volume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
+      const calculatedVolume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
+      // Ensure volume is a valid finite number between 0 and 1
+      audio.volume = Number.isFinite(calculatedVolume) ? Math.max(0, Math.min(1, calculatedVolume)) : 0;
     }
   }, [volume]);
 
@@ -117,7 +119,9 @@ const BackgroundMusic: React.FC = () => {
         audio.src = track;
         audio.loop = false;
         const trackMultiplier = TRACK_VOLUME_MULTIPLIERS[track] ?? 1.0;
-        audio.volume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
+        const calculatedVolume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
+        // Ensure volume is a valid finite number between 0 and 1
+        audio.volume = Number.isFinite(calculatedVolume) ? Math.max(0, Math.min(1, calculatedVolume)) : 0;
 
         try {
           await audio.play();

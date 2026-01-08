@@ -148,7 +148,12 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       try {
         const settings = await loadSoundEffectsSettings();
 
-        setVolumeState(settings.volume);
+        // Validate volume is a finite number, default to 100 if invalid
+        const validVolume = Number.isFinite(settings.volume) && settings.volume >= 0 && settings.volume <= 100
+          ? settings.volume
+          : 100;
+
+        setVolumeState(validVolume);
         setIsEnabledState(settings.isEnabled);
       } catch (error) {
         console.error('Unexpected error loading sound effects settings:', error);
@@ -233,7 +238,9 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       // Apply per-sound volume normalization
       const soundMultiplier = SOUND_VOLUME_MULTIPLIERS[soundEffect] ?? 1.0;
       const gainNode = ctx.createGain();
-      gainNode.gain.value = (volume / 100) * BASE_SOUND_EFFECTS_VOLUME * soundMultiplier;
+      const calculatedGain = (volume / 100) * BASE_SOUND_EFFECTS_VOLUME * soundMultiplier;
+      // Ensure gain is a valid finite number between 0 and 1
+      gainNode.gain.value = Number.isFinite(calculatedGain) ? Math.max(0, Math.min(1, calculatedGain)) : 0;
 
       source.connect(gainNode);
       gainNode.connect(ctx.destination);

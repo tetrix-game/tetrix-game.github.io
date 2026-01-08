@@ -166,9 +166,18 @@ export default function TetrixProvider({ children }: { readonly children: React.
         backgroundColor: 'rgb(25, 25, 25)',
         color: 'rgb(255, 100, 100)',
         fontSize: '18px',
-        gap: '20px'
+        gap: '20px',
+        padding: '20px',
+        textAlign: 'center'
       }}>
         <div>Failed to load game data. The database may be corrupted.</div>
+        <div style={{
+          color: 'rgb(200, 200, 200)',
+          fontSize: '14px',
+          maxWidth: '500px'
+        }}>
+          Your long-term statistics will be preserved if you reset.
+        </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             onClick={() => window.location.reload()}
@@ -195,8 +204,9 @@ export default function TetrixProvider({ children }: { readonly children: React.
               color: 'white',
               borderRadius: '4px'
             }}
+            title="Clears all data but preserves your long-term statistics"
           >
-            Reset Data
+            Reset Data (Keep Stats)
           </button>
         </div>
       </div>

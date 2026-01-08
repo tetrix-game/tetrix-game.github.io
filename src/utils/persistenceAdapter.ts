@@ -385,11 +385,39 @@ export async function clearAllGameData(): Promise<void> {
 }
 
 /**
- * Clear ALL data including settings
+ * Clear ALL data including settings, but PRESERVE long-term statistics
+ *
+ * This function extracts all-time and high-score stats before clearing,
+ * then restores them after. This ensures user progress is never lost.
  */
 export async function clearAllDataAndReload(): Promise<void> {
   try {
-    // Clear all stores
+    // STEP 1: Extract and preserve long-term statistics
+    let preservedStats: {
+      allTime: any;
+      highScore: any;
+      noTurnStreak: { allTimeBest: number };
+    } | null = null;
+
+    try {
+      const gameStateResult = await loadGameState();
+      if (gameStateResult.status === 'success' && gameStateResult.data.stats) {
+        // Preserve only the long-term data: allTime, highScore, and allTimeBest streak
+        preservedStats = {
+          allTime: JSON.parse(JSON.stringify(gameStateResult.data.stats.allTime)),
+          highScore: JSON.parse(JSON.stringify(gameStateResult.data.stats.highScore)),
+          noTurnStreak: {
+            allTimeBest: gameStateResult.data.stats.noTurnStreak.allTimeBest
+          }
+        };
+        console.log('[Persistence] Preserved long-term stats before clearing data');
+      }
+    } catch (error) {
+      console.warn('[Persistence] Could not extract stats before clearing:', error);
+      // Continue with clearing even if stats extraction fails
+    }
+
+    // STEP 2: Clear all stores
     await Promise.all(
       Object.values(STORES).map(store => crud.clear(store))
     );
@@ -407,6 +435,45 @@ export async function clearAllDataAndReload(): Promise<void> {
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations();
       await Promise.all(registrations.map(reg => reg.unregister()));
+    }
+
+    // STEP 3: Restore preserved stats if they were successfully extracted
+    if (preservedStats) {
+      try {
+        const { INITIAL_STATS_PERSISTENCE } = await import('../types/stats');
+
+        const restoredStats = {
+          ...INITIAL_STATS_PERSISTENCE,
+          allTime: preservedStats.allTime,
+          highScore: preservedStats.highScore,
+          noTurnStreak: {
+            current: 0,
+            bestInGame: 0,
+            allTimeBest: preservedStats.noTurnStreak.allTimeBest
+          },
+          lastUpdated: Date.now()
+        };
+
+        // Save the restored stats to a fresh game state
+        const freshGameState: SavedGameState = {
+          score: 0,
+          tiles: [],
+          nextShapes: [],
+          savedShape: null,
+          totalLinesCleared: 0,
+          shapesUsed: 0,
+          hasPlacedFirstShape: false,
+          stats: restoredStats,
+          isGameOver: false,
+          lastUpdated: Date.now()
+        };
+
+        await saveGameState(freshGameState);
+        console.log('[Persistence] Successfully restored long-term stats after clearing');
+      } catch (error) {
+        console.error('[Persistence] Failed to restore stats after clearing:', error);
+        // Continue with reload even if restoration fails
+      }
     }
   } catch (error) {
     console.error('Error clearing data:', error);

@@ -26,12 +26,19 @@ const DEBUG_PERSISTENCE_CHECKSUMS = false;
  * Save complete game state
  */
 export async function saveGameState(state: SavedGameState): Promise<void> {
+  // CRITICAL: Strip isGameOver from persisted data.
+  // It's a derived state calculated on load, NOT persisted.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cleanedState = { ...state };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  delete (cleanedState as any).isGameOver;
+
   // Generate the Shadow Manifest (Merkle Tree)
-  const manifest = generateChecksumManifest(state);
+  const manifest = generateChecksumManifest(cleanedState);
 
   // Atomic-like write: Save Data AND Manifest
   await crud.batchWrite([
-    { storeName: STORES.GAME_STATE, key: 'current', data: state },
+    { storeName: STORES.GAME_STATE, key: 'current', data: cleanedState },
     { storeName: STORES.CHECKSUMS, key: 'game_manifest', data: manifest }
   ]);
 
@@ -49,7 +56,7 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
     const [state, manifest] = await crud.batchRead([
       { storeName: STORES.GAME_STATE, key: 'current' },
       { storeName: STORES.CHECKSUMS, key: 'game_manifest' }
-    ]) as [GameState | null, ChecksumManifest | null];
+    ]) as [SavedGameState | null, ChecksumManifest | null];
 
     if (state) {
       // Helper to sanitize numeric values (handles NaN, Infinity, non-numbers)
@@ -61,6 +68,7 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
       };
 
       // Sanitize state to ensure all required fields exist (handles partial/corrupted data)
+      // NOTE: isGameOver is NOT loaded - it's a derived state calculated on load
       const sanitizedState: SavedGameState = {
         score: sanitizeNumber(state.score, 0),
         tiles: Array.isArray(state.tiles) ? state.tiles : [],
@@ -74,7 +82,6 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
         queueColorProbabilities: state.queueColorProbabilities,
         queueHiddenShapes: state.queueHiddenShapes,
         queueSize: state.queueSize,
-        isGameOver: typeof state.isGameOver === 'boolean' ? state.isGameOver : false,
         lastUpdated: sanitizeNumber(state.lastUpdated, Date.now()),
       };
 
@@ -123,6 +130,7 @@ export async function clearGameBoard(): Promise<void> {
     const current = currentResult.data;
 
     // Reset board and score, but keep stats
+    // NOTE: isGameOver is not persisted - it's derived on load
     const resetState: SavedGameState = {
       ...current,
       score: 0,
@@ -132,7 +140,6 @@ export async function clearGameBoard(): Promise<void> {
       totalLinesCleared: 0,
       shapesUsed: 0,
       hasPlacedFirstShape: false,
-      isGameOver: false,
       lastUpdated: Date.now(),
       // stats: preserved from current
     };
@@ -160,6 +167,12 @@ export async function updateGameState(updates: Partial<SavedGameState>): Promise
     ...updates,
     lastUpdated: Date.now(),
   };
+
+  // CRITICAL: Strip isGameOver from persisted data.
+  // It's a derived state calculated on load, NOT persisted.
+  // This ensures any legacy data with isGameOver doesn't corrupt new saves.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  delete (updated as any).isGameOver;
 
   // Use the main save function to ensure checksums are updated correctly
   await saveGameState(updated);
@@ -464,7 +477,6 @@ export async function clearAllDataAndReload(): Promise<void> {
           shapesUsed: 0,
           hasPlacedFirstShape: false,
           stats: restoredStats,
-          isGameOver: false,
           lastUpdated: Date.now()
         };
 

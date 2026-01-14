@@ -86,7 +86,7 @@ export async function saveGameState(data: {
   queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  isGameOver?: boolean;
+  // NOTE: isGameOver is NOT persisted - it's a derived state
 }): Promise<void> {
   const gameState: SavedGameState = {
     score: data.score,
@@ -101,7 +101,6 @@ export async function saveGameState(data: {
     queueColorProbabilities: data.queueColorProbabilities,
     queueHiddenShapes: data.queueHiddenShapes,
     queueSize: data.queueSize,
-    isGameOver: data.isGameOver,
     lastUpdated: Date.now(),
   };
 
@@ -124,7 +123,8 @@ export async function loadGameState(): Promise<{
   queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  isGameOver?: boolean;
+  lastUpdated: number;
+  // NOTE: isGameOver is NOT returned - it's calculated on load
 } | null> {
   const result = await loadGameStateAdapter();
 
@@ -151,7 +151,7 @@ export async function safeBatchSave(data: {
   queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  isGameOver?: boolean;
+  // NOTE: isGameOver is NOT saved - it's a derived state
 }): Promise<void> {
   try {
     await updateGameStateAdapter(data);
@@ -170,7 +170,6 @@ export async function safeBatchSave(data: {
       queueColorProbabilities: data.queueColorProbabilities,
       queueHiddenShapes: data.queueHiddenShapes,
       queueSize: data.queueSize,
-      isGameOver: data.isGameOver,
     });
   }
 }

@@ -13,6 +13,7 @@ import { ColorName } from '../types/core';
 import { updateStats } from '../utils/statsUtils';
 import { GRID_ADDRESSES, makeTileKey } from '../utils/gridConstants';
 import { checkMapCompletion } from '../utils/mapCompletionUtils';
+import { checkGameOver } from '../utils/gameOverUtils';
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = () => {
@@ -270,14 +271,37 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // If we're loading a game with score or filled tiles, music should be playing
       const shouldPlayMusic = gameData.score > 0 || hasFilledTiles;
 
+      // DESIGN: isGameOver is NEVER persisted - it's a derived "domino" state.
+      // We always initialize in 'playing' state, then calculate game over
+      // based on actual board state after loading. This prevents false game overs.
+      const loadedNextShapes = gameData.nextShapes || state.nextShapes;
+      
+      // Initialize rotation menus for loaded shapes (all closed by default)
+      const loadedOpenRotationMenus = loadedNextShapes.map(() => false);
+      
+      // POST-LOAD GAME OVER CHECK:
+      // Calculate game over based on actual loaded state.
+      // Only check if there's actual game progress (prevents false positives on fresh state).
+      let actuallyGameOver = false;
+      
+      if (loadedNextShapes.length > 0 && (hasFilledTiles || gameData.score > 0 || gameData.hasPlacedFirstShape)) {
+        // Check if any moves are actually possible with the loaded state
+        actuallyGameOver = checkGameOver(tilesMap, loadedNextShapes, loadedOpenRotationMenus, state.gameMode);
+      } else if (loadedNextShapes.length === 0 && gameData.queueMode === 'finite') {
+        // Finite mode with no shapes left is game over
+        actuallyGameOver = true;
+      }
+      // If no shapes and no progress, this is a fresh/cleared state - NOT game over
+
       return {
         ...state,
         score: gameData.score,
         tiles: tilesMap,
-        nextShapes: gameData.nextShapes || state.nextShapes,
+        nextShapes: loadedNextShapes,
         savedShape: gameData.savedShape || state.savedShape,
         hasLoadedPersistedState: true,
         hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
+        openRotationMenus: loadedOpenRotationMenus,
         // Load stats if provided in action value (for infinite mode)
         stats: action.value.stats ? action.value.stats : state.stats,
         // Load queue configuration if available
@@ -285,7 +309,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         queueColorProbabilities: gameData.queueColorProbabilities ?? state.queueColorProbabilities,
         queueHiddenShapes: gameData.queueHiddenShapes ?? state.queueHiddenShapes,
         queueSize: gameData.queueSize ?? state.queueSize,
-        gameState: gameData.isGameOver ? 'gameover' : state.gameState,
+        // Use CALCULATED game over state, not persisted
+        gameState: actuallyGameOver ? 'gameover' : state.gameState,
       };
     }
 

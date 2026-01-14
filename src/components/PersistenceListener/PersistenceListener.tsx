@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme } from '../../utils/persistence';
+import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme, clearGameBoard } from '../../utils/persistence';
 import { updateSettings } from '../../utils/persistenceAdapter';
 import { tilesToArray } from '../../types';
 
@@ -42,13 +42,29 @@ export const PersistenceListener = () => {
 
   // Track previous values to avoid unnecessary saves if we want to optimize further,
   // but React's dependency array handles most of this.
+  const prevGameModeRef = useRef(gameMode);
 
   // Effect for Game State (Score, Tiles, Shapes, Stats, Queue)
   useEffect(() => {
-    // Don't save game state in hub mode (except maybe settings/modifiers which are handled separately)
+    const prevGameMode = prevGameModeRef.current;
+    prevGameModeRef.current = gameMode;
+
+    // If transitioning TO hub mode from a game mode, clear the persisted game board
+    // This ensures "Back to Menu" after game over clears the old board state
+    if (gameMode === 'hub' && prevGameMode !== 'hub') {
+      clearGameBoard().catch(error => {
+        console.error('Failed to clear game board on return to hub:', error);
+      });
+      return;
+    }
+
+    // Don't save game state while in hub mode
     if (gameMode === 'hub') return;
 
     // Save game state
+    // NOTE: We intentionally do NOT persist isGameOver.
+    // Game over is a derived state that should be recalculated on load
+    // to prevent false game overs from stale/corrupted data.
     safeBatchSave({
       score,
       tiles: tilesToArray(tiles),
@@ -62,7 +78,7 @@ export const PersistenceListener = () => {
       queueHiddenShapes,
       queueSize,
       queueColorProbabilities,
-      isGameOver: gameState === 'gameover'
+      // isGameOver is intentionally NOT persisted - see LOAD_GAME_STATE for recalculation
     }).catch(error => {
       console.error('Failed to save game state via listener:', error);
     });

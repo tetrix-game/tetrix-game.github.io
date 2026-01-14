@@ -30,7 +30,10 @@ export const useGameNavigation = () => {
     if (mode === 'infinite') {
       try {
         const savedGame = await loadGameState();
-        if (savedGame && !savedGame.isGameOver) {
+        // Always load saved game if it exists - LOAD_GAME_STATE will calculate
+        // whether it's actually game over based on current board state.
+        // We do NOT check isGameOver here because it's a derived state.
+        if (savedGame) {
           dispatch({
             type: 'LOAD_GAME_STATE',
             value: { gameData: savedGame, stats: savedGame.stats }

@@ -5,6 +5,8 @@
 import type { Shape, TileData } from './core';
 
 // Saved game state for persistence
+// NOTE: isGameOver is intentionally NOT persisted - it's a derived state
+// that gets recalculated on load based on actual board state.
 export type SavedGameState = {
   score: number;
   tiles: TileData[];
@@ -18,7 +20,7 @@ export type SavedGameState = {
   queueColorProbabilities?: import('./shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  isGameOver?: boolean;
+  // isGameOver is NOT persisted - see gameStateReducer.ts LOAD_GAME_STATE
   lastUpdated: number;
 };
 

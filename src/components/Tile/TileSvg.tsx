@@ -24,7 +24,7 @@ export const TileSvg: React.FC<TileSvgProps> = ({ color = 'grey', className }) =
         width="96" height="96"
         fill={fill}
         fillOpacity={opacity}
-        style={{ rx: 'var(--block-svg-radius)' }}
+        style={{ rx: 'var(--block-svg-radius)' } as React.CSSProperties}
       />
     </svg>
   );

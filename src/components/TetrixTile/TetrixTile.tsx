@@ -9,7 +9,7 @@ type TetrixTileProps = {
   col: number;
   backgroundColor: string;
   blockIsFilled: boolean;
-  blockColor: string;
+  blockColor: ColorName;
   isHovered: boolean;
   showShadow: boolean;
   shadowOpacity: number;
@@ -25,7 +25,7 @@ const TetrixTile = ({
   backgroundColor, 
   blockIsFilled, 
   blockColor, 
-  isHovered, 
+  isHovered: _isHovered, 
   showShadow, 
   shadowOpacity, 
   animationsJson, 
@@ -33,7 +33,7 @@ const TetrixTile = ({
   showIcon, 
   size 
 }: TetrixTileProps) => {
-  const [tick, setTick] = useState(0);
+  const [_tick, setTick] = useState(0);
 
   const activeAnimations = useMemo(() => {
     try {

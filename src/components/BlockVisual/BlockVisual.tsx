@@ -1,12 +1,12 @@
 import React from 'react';
 import ShapeIcon from "../ShapeIcon";
 import { BlockSvg } from "./BlockSvg";
-import { BlockTheme } from "../../types";
+import { BlockTheme, ColorName } from "../../types";
 import './BlockVisual.css';
 
 type BlockVisualProps = {
   readonly isFilled: boolean;
-  readonly color: string;
+  readonly color: ColorName;
   readonly size?: number;
   readonly theme?: BlockTheme;
   readonly showIcon?: boolean;

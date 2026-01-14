@@ -29,7 +29,7 @@ export const PersistenceListener = () => {
     queueSize,
     queueColorProbabilities,
     unlockedModifiers,
-    
+
     currentTheme,
     blockTheme,
     showBlockIcons,

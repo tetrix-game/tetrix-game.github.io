@@ -53,7 +53,7 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
         width={THEME_VIEWBOX_SIZE - 4}
         height={THEME_VIEWBOX_SIZE - 4}
         fill={bg}
-        style={{ rx: 'var(--block-svg-radius)' }}
+        style={{ rx: 'var(--block-svg-radius)' } as React.CSSProperties}
       />
     );
   };

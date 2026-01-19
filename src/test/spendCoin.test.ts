@@ -1,15 +1,26 @@
 import { expect, test, describe } from 'vitest';
 import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
 import { generateRandomShape } from '../utils/shapeUtils';
+import type { QueuedShape, Shape } from '../types';
+
+// Helper functions to create QueuedShapes for tests
+let testShapeIdCounter = 4000;
+const createQueuedShape = (shape: Shape): QueuedShape => ({
+  id: testShapeIdCounter++,
+  shape,
+});
+const createQueuedShapes = (shapes: Shape[]): QueuedShape[] =>
+  shapes.map(shape => createQueuedShape(shape));
 
 describe('Spend Coin Feature', () => {
   test('SPEND_COIN action reduces score and opens rotation menu', () => {
     // Create a test state with some score and shapes
-    const testShapes = [
+    const plainShapes = [
       generateRandomShape(),
       generateRandomShape(),
       generateRandomShape(),
     ];
+    const testShapes = createQueuedShapes(plainShapes);
 
     const state = {
       ...initialState,
@@ -35,7 +46,8 @@ describe('Spend Coin Feature', () => {
   });
 
   test('SPEND_COIN action fails when score is 0', () => {
-    const testShapes = [generateRandomShape()];
+    const plainShapes = [generateRandomShape()];
+    const testShapes = createQueuedShapes(plainShapes);
 
     const state = {
       ...initialState,
@@ -57,9 +69,12 @@ describe('Spend Coin Feature', () => {
   });
 
   test('SPEND_COIN action fails with invalid shape index', () => {
+    const plainShapes = [generateRandomShape()];
+    const testShapes = createQueuedShapes(plainShapes);
+    
     const state = {
       ...initialState,
-      nextShapes: [generateRandomShape()],
+      nextShapes: testShapes,
       score: 5,
       openRotationMenus: [false],
     };
@@ -94,6 +109,10 @@ describe('Spend Coin Feature', () => {
 
     // All rotation menus should be closed
     expect(newState.openRotationMenus).toEqual([false, false, false]);
-    expect(newState.nextShapes).toEqual(newShapes);
+    // SET_AVAILABLE_SHAPES wraps shapes with IDs
+    expect(newState.nextShapes.length).toBe(3);
+    expect(newState.nextShapes[0].shape).toEqual(newShapes[0]);
+    expect(newState.nextShapes[1].shape).toEqual(newShapes[1]);
+    expect(newState.nextShapes[2].shape).toEqual(newShapes[2]);
   });
 });

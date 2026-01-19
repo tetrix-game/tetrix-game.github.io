@@ -5,17 +5,6 @@ import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/Tetri
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
 
-// Use WeakMap to assign stable IDs to shapes
-const shapeIds = new WeakMap<object, string>();
-let idCounter = 0;
-
-const getShapeId = (shape: object): string => {
-  if (!shapeIds.has(shape)) {
-    shapeIds.set(shape, `shape-${++idCounter}`);
-  }
-  return shapeIds.get(shape)!;
-};
-
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const { nextShapes, removingShapeIndex, shapeRemovalAnimationState, queueMode } = useTetrixStateContext();
@@ -54,16 +43,18 @@ const ShapeSelector = (): JSX.Element => {
     <div className="shape-selector">
       <ShapeProducerViewport isLandscape={isLandscape}>
         {displayedShapes.length > 0 ? (
-          displayedShapes.map((shape, index) => {
+          displayedShapes.map((queuedShape, index) => {
             const isRemoving = removingShapeIndex === index && shapeRemovalAnimationState === 'removing';
+            // Use the unique ID from the QueuedShape as the React key
+            // This ensures proper animation when shapes slide in the queue
             return (
               <div
-                key={getShapeId(shape)}
+                key={queuedShape.id}
                 className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
                 data-landscape={isLandscape ? '1' : '0'}
               >
                 <ShapeOption
-                  shape={shape}
+                  shape={queuedShape.shape}
                   shapeIndex={index}
                 />
               </div>

@@ -14,6 +14,7 @@
 // Core types
 export type {
   Shape,
+  QueuedShape,
   Location,
   ColorName,
   Block,

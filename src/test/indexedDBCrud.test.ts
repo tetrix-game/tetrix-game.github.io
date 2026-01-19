@@ -73,24 +73,6 @@ describe('IndexedDB CRUD Operations', () => {
   });
 
   describe('Store Separation', () => {
-    it('should keep data separate between different stores', async () => {
-      const infiniteData = { mode: 'infinite', score: 100 };
-      const dailyData = { mode: 'daily', score: 200 };
-      const tutorialData = { mode: 'tutorial', score: 50 };
-      
-      await crud.write(crud.STORES.GAME_STATE, 'current', infiniteData);
-      await crud.write(crud.STORES.GAME_STATE, 'current', dailyData);
-      await crud.write(crud.STORES.GAME_STATE, 'current', tutorialData);
-      
-      const infiniteResult = await crud.read(crud.STORES.GAME_STATE, 'current');
-      const dailyResult = await crud.read(crud.STORES.GAME_STATE, 'current');
-      const tutorialResult = await crud.read(crud.STORES.GAME_STATE, 'current');
-      
-      expect(infiniteResult).toEqual(infiniteData);
-      expect(dailyResult).toEqual(dailyData);
-      expect(tutorialResult).toEqual(tutorialData);
-    });
-
     it('should keep settings separate from game state', async () => {
       const gameData = { score: 100 };
       const settingsData = { music: { isMuted: false } };

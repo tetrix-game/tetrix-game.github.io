@@ -3,7 +3,7 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import type { TetrixReducerState, TetrixAction, Tile } from '../types';
+import type { TetrixReducerState, TetrixAction, Tile, QueuedShape } from '../types';
 import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithGrandpaMode } from '../utils/shapes';
 // safeBatchSave removed - persistence handled by PersistenceListener
 import { cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
@@ -87,68 +87,82 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Persistence is now handled by PersistenceListener
       // No side effects in reducer!
 
-      // Emit gems for GemShower animation
-      // Start the removal animation but keep the shape in the array until animation completes
+      // Index of the shape being placed (will be removed from queue after animation)
       const removedIndex = state.dragState.selectedShapeIndex;
 
       // Check if super combo pattern exists after this placement
       const hasSuperComboPattern = detectSuperComboPattern(lineClearResult.tiles);
 
-      // Add a new shape immediately to create the 4th shape during removal animation
-      const updatedNextShapes = [...state.nextShapes];
+      // TWO-PHASE ANIMATION APPROACH:
+      // Phase 1 (COMPLETE_PLACEMENT): Keep placed shape in array, add new shape at end (4 total)
+      //   - Placed shape gets .removing class -> shrinks to 0
+      //   - Other shapes slide forward to fill the gap
+      //   - New shape (4th) slides into view from clipped position
+      // Phase 2 (COMPLETE_SHAPE_REMOVAL): Remove placed shape from array (back to 3)
+      
       const updatedHiddenShapes = [...state.queueHiddenShapes];
+      
+      // Keep all existing shapes (including the one being placed) for animation
+      const animatingShapes: QueuedShape[] = [...state.nextShapes];
+      const animatingRotationMenus = [...state.openRotationMenus];
+      const animatingAnimationStates = [...state.newShapeAnimationStates];
+      
+      // Track the next ID to use
+      let nextIdCounter = state.nextShapeIdCounter;
 
       // Only add shapes if: infinite mode OR (finite mode AND shapes remain in hidden queue)
       const shouldAddShape = state.queueMode === 'infinite' || updatedHiddenShapes.length > 0;
 
       if (shouldAddShape) {
-        let newShape;
+        let newShapeData;
 
         // In finite mode, pull from hidden shapes if available
         if (state.queueMode === 'finite' && updatedHiddenShapes.length > 0) {
-          newShape = updatedHiddenShapes.shift()!; // Take first shape from queue
+          newShapeData = updatedHiddenShapes.shift()!; // Take first shape from queue
         } else if (hasSuperComboPattern) {
           // Generate super shape if pattern detected
-          newShape = generateSuperShape();
+          newShapeData = generateSuperShape();
         } else {
           // Generate shape using color probabilities (infinite mode only)
           // Apply grandpa mode to reduce Z and S shape frequency
-          newShape = generateRandomShapeWithGrandpaMode(state.queueColorProbabilities, state.grandpaMode);
+          newShapeData = generateRandomShapeWithGrandpaMode(state.queueColorProbabilities, state.grandpaMode);
         }
 
-        updatedNextShapes.push(newShape);
-      }
+        // Wrap the new shape with a unique ID
+        const newQueuedShape: QueuedShape = {
+          id: nextIdCounter++,
+          shape: newShapeData,
+        };
 
-      // Extend rotation menu states for the new shape
-      const newOpenRotationMenus = [...state.openRotationMenus];
-      if (updatedNextShapes.length > newOpenRotationMenus.length) {
-        newOpenRotationMenus.push(false); // New shape starts with menu closed
+        // Add new shape at end (will be at position 4, clipped until animation slides it in)
+        animatingShapes.push(newQueuedShape);
+        animatingRotationMenus.push(false); // New shape starts with menu closed
+        animatingAnimationStates.push('none'); // New shape appears normally (slides in via CSS)
       }
+      
+      // For game over check, we need to check the POST-animation state (without the placed shape)
+      const shapesAfterRemoval = animatingShapes.filter((_, index) => index !== removedIndex);
+      const menusAfterRemoval = animatingRotationMenus.filter((_, index) => index !== removedIndex);
+      const plainShapes = shapesAfterRemoval.map(qs => qs.shape);
 
-      // Extend animation states for the new shape (no animation needed)
-      const newAnimationStates = [...state.newShapeAnimationStates];
-      if (updatedNextShapes.length > newAnimationStates.length) {
-        newAnimationStates.push('none'); // New shape appears normally
-      }
-
-      // Check for game over
+      // GAME OVER CHECK: Run on the FINAL state (correct 3 shapes after placement)
       // Infinite mode: Check if any shapes can be placed
       // Finite mode: Game over when queue is completely empty (no visible shapes and no hidden shapes)
       let isGameOver = false;
       if (state.gameMode === 'infinite') {
-        isGameOver = checkGameOver(lineClearResult.tiles, updatedNextShapes, newOpenRotationMenus, state.gameMode);
+        isGameOver = checkGameOver(lineClearResult.tiles, plainShapes, menusAfterRemoval, state.gameMode);
       } else if (state.queueMode === 'finite') {
         // In finite mode, check if queue is depleted
-        const queueDepleted = updatedNextShapes.length === 0 && updatedHiddenShapes.length === 0;
+        const queueDepleted = shapesAfterRemoval.length === 0 && updatedHiddenShapes.length === 0;
         
         // Check if no moves are possible with remaining shapes
-        const noMovesPossible = checkGameOver(lineClearResult.tiles, updatedNextShapes, newOpenRotationMenus, state.gameMode);
+        const noMovesPossible = checkGameOver(lineClearResult.tiles, plainShapes, menusAfterRemoval, state.gameMode);
         
         // If queue is depleted OR no moves possible, check map completion
         if ((queueDepleted || noMovesPossible) && state.targetTiles) {
           const completionResult = checkMapCompletion(lineClearResult.tiles, state.targetTiles);
           
-          // Always show completion overlay when queue is depleted (whether success or failure)
+          // For game over, skip animation and use final state directly
           return {
             ...state,
             gameState: 'gameover',
@@ -156,12 +170,13 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
             score: newScore,
             totalLinesCleared: newTotalLinesCleared,
             stats: newStats,
-            nextShapes: updatedNextShapes,
+            nextShapes: shapesAfterRemoval, // Use final state for game over
+            nextShapeIdCounter: nextIdCounter,
             queueHiddenShapes: updatedHiddenShapes,
-            shapesUsed: state.shapesUsed,
-            openRotationMenus: newOpenRotationMenus,
-            newShapeAnimationStates: newAnimationStates,
-            shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
+            shapesUsed: state.shapesUsed + 1,
+            openRotationMenus: menusAfterRemoval,
+            newShapeAnimationStates: animatingAnimationStates.filter((_, index) => index !== removedIndex),
+            shapeOptionBounds: new Array(shapesAfterRemoval.length).fill(null),
             mouseGridLocation: null,
             mapCompletionResult: {
               stars: completionResult.stars,
@@ -185,14 +200,16 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
               dragOffsets: null,
             },
             hasPlacedFirstShape: true,
-            removingShapeIndex: removedIndex,
-            shapeRemovalAnimationState: 'removing' as const,
+            removingShapeIndex: null,
+            shapeRemovalAnimationState: 'none' as const,
           };
         }
         
         isGameOver = queueDepleted || noMovesPossible;
       }
 
+      // For normal gameplay (not game over), use two-phase animation:
+      // Keep 4 shapes during animation, COMPLETE_SHAPE_REMOVAL will remove the placed shape
       const newState = {
         ...state,
         gameState: isGameOver ? 'gameover' : state.gameState,
@@ -200,12 +217,15 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         score: newScore,
         totalLinesCleared: newTotalLinesCleared,
         stats: newStats,
-        nextShapes: updatedNextShapes,
-        queueHiddenShapes: updatedHiddenShapes, // Update hidden shapes queue
-        shapesUsed: state.shapesUsed, // Don't increment until shape is fully removed
-        openRotationMenus: newOpenRotationMenus,
-        newShapeAnimationStates: newAnimationStates,
-        shapeOptionBounds: new Array(updatedNextShapes.length).fill(null),
+        // Keep all shapes including placed one (4 total) for animation
+        // COMPLETE_SHAPE_REMOVAL will remove the placed shape after animation
+        nextShapes: animatingShapes,
+        nextShapeIdCounter: nextIdCounter, // Update the ID counter
+        queueHiddenShapes: updatedHiddenShapes,
+        shapesUsed: state.shapesUsed + 1, // Increment immediately since shape is logically removed
+        openRotationMenus: animatingRotationMenus,
+        newShapeAnimationStates: animatingAnimationStates,
+        shapeOptionBounds: new Array(animatingShapes.length).fill(null),
         mouseGridLocation: null,
         dragState: {
           phase: 'none' as const,
@@ -223,7 +243,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           dragOffsets: null,
         },
         hasPlacedFirstShape: true, // Mark that first shape has been placed
-        // Start the removal animation
+        // Start the removal animation - placed shape shrinks, others slide forward
         removingShapeIndex: removedIndex,
         shapeRemovalAnimationState: 'removing' as const,
       };
@@ -428,27 +448,36 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // Remove the first shape and add the new shape to the end
       if (state.nextShapes.length === 0) {
-        // If there are no shapes, just add this one
-        const newShapes = [shape];
+        // If there are no shapes, just add this one as a QueuedShape
+        const newQueuedShape: QueuedShape = {
+          id: state.nextShapeIdCounter,
+          shape: shape,
+        };
         // Persistence handled by listener
 
         return {
           ...state,
-          nextShapes: newShapes,
+          nextShapes: [newQueuedShape],
+          nextShapeIdCounter: state.nextShapeIdCounter + 1,
           openRotationMenus: [false],
           shapeOptionBounds: [null],
           newShapeAnimationStates: ['none'],
         };
       }
 
-      // Remove first shape and add new shape to the end
-      const newShapes = [...state.nextShapes.slice(1), shape];
+      // Remove first shape and add new shape to the end as a QueuedShape
+      const newQueuedShape: QueuedShape = {
+        id: state.nextShapeIdCounter,
+        shape: shape,
+      };
+      const newShapes = [...state.nextShapes.slice(1), newQueuedShape];
 
       // Persistence handled by listener
 
       return {
         ...state,
         nextShapes: newShapes,
+        nextShapeIdCounter: state.nextShapeIdCounter + 1,
         openRotationMenus: [...state.openRotationMenus.slice(1), false],
         shapeOptionBounds: [...state.shapeOptionBounds.slice(1), null],
         newShapeAnimationStates: [...state.newShapeAnimationStates.slice(1), 'none'],

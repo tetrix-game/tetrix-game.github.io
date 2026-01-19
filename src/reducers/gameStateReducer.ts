@@ -5,7 +5,7 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import type { TetrixReducerState, TetrixAction, Tile } from '../types';
+import type { TetrixReducerState, TetrixAction, Tile, QueuedShape, Shape } from '../types';
 // Persistence imports removed - handled by PersistenceListener
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
 import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
@@ -51,6 +51,7 @@ export const initialGameState = {
   gridBounds: null,
   tiles: makeTiles(),
   nextShapes: [],
+  nextShapeIdCounter: 0, // Monotonically increasing counter for unique shape IDs
   savedShape: null,
   mouseGridLocation: null,
   dragState: {
@@ -274,10 +275,20 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // DESIGN: isGameOver is NEVER persisted - it's a derived "domino" state.
       // We always initialize in 'playing' state, then calculate game over
       // based on actual board state after loading. This prevents false game overs.
-      const loadedNextShapes = gameData.nextShapes || state.nextShapes;
+      
+      // Convert loaded plain shapes to QueuedShapes with unique IDs
+      const loadedPlainShapes: Shape[] = gameData.nextShapes || [];
+      let nextIdCounter = state.nextShapeIdCounter;
+      const loadedNextShapes: QueuedShape[] = loadedPlainShapes.map(shape => ({
+        id: nextIdCounter++,
+        shape,
+      }));
       
       // Initialize rotation menus for loaded shapes (all closed by default)
       const loadedOpenRotationMenus = loadedNextShapes.map(() => false);
+      
+      // Extract plain shapes for game over check
+      const plainShapesForCheck = loadedNextShapes.map(qs => qs.shape);
       
       // POST-LOAD GAME OVER CHECK:
       // Calculate game over based on actual loaded state.
@@ -286,7 +297,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       
       if (loadedNextShapes.length > 0 && (hasFilledTiles || gameData.score > 0 || gameData.hasPlacedFirstShape)) {
         // Check if any moves are actually possible with the loaded state
-        actuallyGameOver = checkGameOver(tilesMap, loadedNextShapes, loadedOpenRotationMenus, state.gameMode);
+        actuallyGameOver = checkGameOver(tilesMap, plainShapesForCheck, loadedOpenRotationMenus, state.gameMode);
       } else if (loadedNextShapes.length === 0 && gameData.queueMode === 'finite') {
         // Finite mode with no shapes left is game over
         actuallyGameOver = true;
@@ -298,6 +309,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         score: gameData.score,
         tiles: tilesMap,
         nextShapes: loadedNextShapes,
+        nextShapeIdCounter: nextIdCounter,
         savedShape: gameData.savedShape || state.savedShape,
         hasLoadedPersistedState: true,
         hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
@@ -470,13 +482,21 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         }
       }
 
+      // Convert plain shapes to QueuedShapes with unique IDs
+      let nextIdCounter = state.nextShapeIdCounter;
+      const visibleQueuedShapes: QueuedShape[] = shapes.slice(0, 3).map((shape: Shape) => ({
+        id: nextIdCounter++,
+        shape,
+      }));
+
       // Reset game state but keep stats/modifiers
       const newState = {
         ...initialGameState,
         gameMode: 'daily' as const,
         tiles: tiles, // Use the custom grid
-        nextShapes: shapes.slice(0, 3), // First 3 shapes visible
-        queueHiddenShapes: shapes.slice(3), // Rest in queue
+        nextShapes: visibleQueuedShapes, // First 3 shapes visible with unique IDs
+        nextShapeIdCounter: nextIdCounter,
+        queueHiddenShapes: shapes.slice(3), // Rest in queue (plain shapes)
         queueMode: 'finite' as const,
         queueSize: shapes.length,
         shapesUsed: 0,
@@ -514,12 +534,21 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         }
       }
 
+      // Convert plain shapes to QueuedShapes with unique IDs
+      // Use a fresh counter starting from current state to avoid ID collisions
+      let nextIdCounter = state.nextShapeIdCounter;
+      const visibleQueuedShapes: QueuedShape[] = shapes.slice(0, 3).map((shape: Shape) => ({
+        id: nextIdCounter++,
+        shape,
+      }));
+
       return {
         ...initialGameState,
         gameMode: 'daily' as const,
         tiles: tiles, // Use the custom grid
-        nextShapes: shapes.slice(0, 3), // First 3 shapes visible
-        queueHiddenShapes: shapes.slice(3), // Rest in queue
+        nextShapes: visibleQueuedShapes, // First 3 shapes visible with unique IDs
+        nextShapeIdCounter: nextIdCounter,
+        queueHiddenShapes: shapes.slice(3), // Rest in queue (plain shapes)
         queueMode: 'finite' as const,
         queueSize: shapes.length,
         shapesUsed: 0,

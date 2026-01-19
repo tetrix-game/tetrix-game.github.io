@@ -19,19 +19,19 @@ type TetrixTileProps = {
   size?: number;
 }
 
-const TetrixTile = ({ 
-  row, 
-  col, 
-  backgroundColor, 
-  blockIsFilled, 
-  blockColor, 
-  isHovered: _isHovered, 
-  showShadow, 
-  shadowOpacity, 
-  animationsJson, 
-  theme, 
-  showIcon, 
-  size 
+const TetrixTile = ({
+  row,
+  col,
+  backgroundColor,
+  blockIsFilled,
+  blockColor,
+  isHovered: _isHovered,
+  showShadow,
+  shadowOpacity,
+  animationsJson,
+  theme,
+  showIcon,
+  size
 }: TetrixTileProps) => {
   const [_tick, setTick] = useState(0);
 
@@ -74,11 +74,11 @@ const TetrixTile = ({
       // Pass data attributes for event delegation in parent
       {...{ 'data-row': row, 'data-col': col } as any}
     >
-      <BlockVisual 
+      <BlockVisual
         isFilled={blockIsFilled}
         color={blockColor}
-        size={size} 
-        theme={theme} 
+        size={size}
+        theme={theme}
         showIcon={showIcon}
       />
 

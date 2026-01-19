@@ -65,10 +65,12 @@ export const PersistenceListener = () => {
     // NOTE: We intentionally do NOT persist isGameOver.
     // Game over is a derived state that should be recalculated on load
     // to prevent false game overs from stale/corrupted data.
+    // Extract plain shapes from QueuedShape[] for persistence
+    const plainNextShapes = nextShapes.map(qs => qs.shape);
     safeBatchSave({
       score,
       tiles: tilesToArray(tiles),
-      nextShapes,
+      nextShapes: plainNextShapes,
       savedShape,
       stats,
       totalLinesCleared,

@@ -357,12 +357,12 @@ export class TutorialRuntimeValidator {
     }
 
     // Check if any shape can be placed anywhere
-    for (const shape of state.nextShapes) {
+    for (const queuedShape of state.nextShapes) {
       for (let row = 1; row <= 10; row++) {
         for (let col = 1; col <= 10; col++) {
           const location: Location = { row, column: col };
 
-          if (isValidPlacement(shape, location, state.tiles)) {
+          if (isValidPlacement(queuedShape.shape, location, state.tiles)) {
             return true; // Found at least one valid placement
           }
         }

@@ -12,14 +12,23 @@ import { describe, it, expect } from 'vitest';
 import { tetrixReducer, initialState } from '../reducers';
 import { generateRandomShape } from '../utils/shapes';
 import { incrementNoTurnStreak } from '../utils/statsUtils';
-import type { TetrixReducerState } from '../types';
+import type { TetrixReducerState, QueuedShape, Shape } from '../types';
+
+// Helper functions to create QueuedShapes for tests
+let testShapeIdCounter = 5000;
+const createQueuedShape = (shape: Shape): QueuedShape => ({
+  id: testShapeIdCounter++,
+  shape,
+});
+const createQueuedShapes = (shapes: Shape[]): QueuedShape[] =>
+  shapes.map(shape => createQueuedShape(shape));
 
 // Helper function to set up a state ready for shape placement
 function setupStateWithShape(shape: ReturnType<typeof generateRandomShape>, location: { row: number; column: number }) {
   return {
     ...initialState,
     gameMode: 'infinite' as const, // Must be infinite for stats to work
-    nextShapes: [shape],
+    nextShapes: createQueuedShapes([shape]),
     openRotationMenus: [false],
     dragState: {
       ...initialState.dragState,
@@ -68,7 +77,7 @@ describe('No-Turn Streak Tracking', () => {
     let state: TetrixReducerState = {
       ...initialState,
       gameMode: 'infinite' as const, // Must be infinite for stats to work
-      nextShapes: [shape],
+      nextShapes: createQueuedShapes([shape]),
       openRotationMenus: [false],
       shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }], // Add bounds for SELECT_SHAPE to work
       gridTileSize: 20,
@@ -134,7 +143,7 @@ describe('No-Turn Streak Tracking', () => {
       const shape = generateRandomShape();
       state = {
         ...state,
-        nextShapes: [shape],
+        nextShapes: createQueuedShapes([shape]),
         openRotationMenus: [false],
         shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
@@ -185,7 +194,7 @@ describe('No-Turn Streak Tracking', () => {
       const shape = generateRandomShape();
       state = {
         ...state,
-        nextShapes: [shape],
+        nextShapes: createQueuedShapes([shape]),
         openRotationMenus: [false],
         shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
@@ -223,7 +232,7 @@ describe('No-Turn Streak Tracking', () => {
     const shape = generateRandomShape();
     state = {
       ...state,
-      nextShapes: [shape],
+      nextShapes: createQueuedShapes([shape]),
       openRotationMenus: [false],
     };
 
@@ -252,7 +261,7 @@ describe('No-Turn Streak Tracking', () => {
       const shape = generateRandomShape();
       state = {
         ...state,
-        nextShapes: [shape],
+        nextShapes: createQueuedShapes([shape]),
         openRotationMenus: [false],
         shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
@@ -287,7 +296,7 @@ describe('No-Turn Streak Tracking', () => {
     // Break streak with rotation
     state = {
       ...state,
-      nextShapes: [generateRandomShape()],
+      nextShapes: createQueuedShapes([generateRandomShape()]),
       openRotationMenus: [false],
     };
     state = tetrixReducer(state, {
@@ -303,7 +312,7 @@ describe('No-Turn Streak Tracking', () => {
       const shape = generateRandomShape();
       state = {
         ...state,
-        nextShapes: [shape],
+        nextShapes: createQueuedShapes([shape]),
         openRotationMenus: [false],
         shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
@@ -360,7 +369,7 @@ describe('No-Turn Streak Tracking', () => {
       const shape = generateRandomShape();
       state = {
         ...state,
-        nextShapes: [shape],
+        nextShapes: createQueuedShapes([shape]),
         openRotationMenus: [false],
         shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
@@ -433,7 +442,7 @@ describe('No-Turn Streak Tracking', () => {
       const shape = generateRandomShape();
       state = {
         ...state,
-        nextShapes: [shape],
+        nextShapes: createQueuedShapes([shape]),
         openRotationMenus: [false],
         shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };
@@ -474,7 +483,7 @@ describe('No-Turn Streak Tracking', () => {
       state = {
         ...state,
         gameMode: 'infinite', // Ensure infinite mode for stats
-        nextShapes: [shape],
+        nextShapes: createQueuedShapes([shape]),
         openRotationMenus: [false],
         shapeOptionBounds: [{ left: 0, top: 0, width: 100, height: 100 }],
       };

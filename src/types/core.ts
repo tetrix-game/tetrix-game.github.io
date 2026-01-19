@@ -9,6 +9,13 @@
 // 3, 3 is the bottom right corner
 export type Shape = Block[][];
 
+// A queued shape wraps a Shape with a unique ID for React key stability
+// This enables proper queue animations where shapes slide in sequence
+export type QueuedShape = {
+  id: number; // Unique monotonically increasing ID for React key
+  shape: Shape;
+};
+
 export type Location = { row: number; column: number };
 
 export type ColorName = 'grey' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple';

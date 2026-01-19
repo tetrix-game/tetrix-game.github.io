@@ -2,7 +2,7 @@
  * Game state types - Reducer state, actions, and game modes
  */
 
-import type { Shape, Location, TilesSet, ColorName } from './core';
+import type { Shape, QueuedShape, Location, TilesSet, ColorName } from './core';
 import type { DragState } from './drag';
 import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOptionBounds } from './animation';
 import type { ScoreData } from './scoring';
@@ -34,7 +34,8 @@ export type TetrixReducerState = {
   targetTiles: Set<string> | null; // Tiles that should be filled for completion (from challenge data)
 
   tiles: TilesSet; // Keyed tile storage for O(1) lookup
-  nextShapes: Shape[];
+  nextShapes: QueuedShape[]; // Visible shapes in queue, with unique IDs for React keys
+  nextShapeIdCounter: number; // Monotonically increasing counter for unique shape IDs
   savedShape: Shape | null;
   mouseGridLocation: Location | null;
   mousePosition: { x: number; y: number }; // Never null - always has a position

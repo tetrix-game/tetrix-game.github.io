@@ -106,12 +106,15 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
 
     case "SELECT_SHAPE": {
       const { shapeIndex } = action.value;
-      const shape = state.nextShapes[shapeIndex];
+      const queuedShape = state.nextShapes[shapeIndex];
       const bounds = state.shapeOptionBounds[shapeIndex];
 
-      if (!shape || !bounds) {
+      if (!queuedShape || !bounds) {
         return state;
       }
+
+      // Extract the actual shape data from the QueuedShape wrapper
+      const shape = queuedShape.shape;
 
       // Calculate grid dimensions - match the Grid component's calculation
       const gridElement = document.querySelector('.grid');

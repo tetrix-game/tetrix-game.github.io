@@ -2,7 +2,7 @@
  * Game state types - Reducer state, actions, and game modes
  */
 
-import type { Shape, QueuedShape, Location, TilesSet, ColorName } from './core';
+import type { Shape, QueueItem, Location, TilesSet, ColorName } from './core';
 import type { DragState } from './drag';
 import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOptionBounds } from './animation';
 import type { ScoreData } from './scoring';
@@ -34,9 +34,12 @@ export type TetrixReducerState = {
   targetTiles: Set<string> | null; // Tiles that should be filled for completion (from challenge data)
 
   tiles: TilesSet; // Keyed tile storage for O(1) lookup
-  nextShapes: QueuedShape[]; // Visible shapes in queue, with unique IDs for React keys
+  nextShapes: QueueItem[]; // Visible items in queue (shapes + purchasable slots), with unique IDs for React keys
   nextShapeIdCounter: number; // Monotonically increasing counter for unique shape IDs
   savedShape: Shape | null;
+
+  // Shape slot progression
+  unlockedSlots: number; // Number of unlocked shape slots (1-4)
   mouseGridLocation: Location | null;
   mousePosition: { x: number; y: number }; // Never null - always has a position
   gemIconPosition: { x: number; y: number }; // Position of the score display gem icon
@@ -156,6 +159,11 @@ type ClearSelectionAction = {
 type SetAvailableShapesAction = {
   type: 'SET_AVAILABLE_SHAPES';
   value: { shapes: Shape[] };
+};
+
+type InitializeQueueAction = {
+  type: 'INITIALIZE_QUEUE';
+  value: { items: QueueItem[] };
 };
 
 type SetShapeOptionBoundsAction = {
@@ -396,6 +404,20 @@ type SetGrandpaModeAction = {
   value: { enabled: boolean };
 };
 
+type PurchaseShapeSlotAction = {
+  type: 'PURCHASE_SHAPE_SLOT';
+  value: { slotIndex: number }; // Index of the purchasable slot item in the queue
+};
+
+type StartSlotPurchaseRemovalAction = {
+  type: 'START_SLOT_PURCHASE_REMOVAL';
+  value: { slotIndex: number };
+};
+
+type CompleteSlotPurchaseRemovalAction = {
+  type: 'COMPLETE_SLOT_PURCHASE_REMOVAL';
+};
+
 // Tile clearing actions removed - animations now live directly in TileData
 
 export type TetrixAction =
@@ -457,6 +479,10 @@ export type TetrixAction =
   | RestartDailyChallengeAction
   | CheckMapCompletionAction
   | ClearMapCompletionAction
-  | SetGrandpaModeAction;
+  | SetGrandpaModeAction
+  | PurchaseShapeSlotAction
+  | StartSlotPurchaseRemovalAction
+  | CompleteSlotPurchaseRemovalAction
+  | InitializeQueueAction;
 
 export type TetrixDispatch = React.Dispatch<TetrixAction>;

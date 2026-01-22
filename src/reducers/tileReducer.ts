@@ -3,7 +3,7 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import type { TetrixReducerState, TetrixAction, Tile, QueuedShape } from '../types';
+import type { TetrixReducerState, TetrixAction, Tile, QueuedShape, QueueItem } from '../types';
 import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithGrandpaMode } from '../utils/shapes';
 // safeBatchSave removed - persistence handled by PersistenceListener
 import { cleanupExpiredAnimations } from '../utils/clearingAnimationUtils';
@@ -101,9 +101,9 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Phase 2 (COMPLETE_SHAPE_REMOVAL): Remove placed shape from array (back to 3)
       
       const updatedHiddenShapes = [...state.queueHiddenShapes];
-      
-      // Keep all existing shapes (including the one being placed) for animation
-      const animatingShapes: QueuedShape[] = [...state.nextShapes];
+
+      // Keep all existing items (including the one being placed) for animation
+      const animatingShapes: QueueItem[] = [...state.nextShapes];
       const animatingRotationMenus = [...state.openRotationMenus];
       const animatingAnimationStates = [...state.newShapeAnimationStates];
       
@@ -132,6 +132,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         const newQueuedShape: QueuedShape = {
           id: nextIdCounter++,
           shape: newShapeData,
+          type: 'shape',
         };
 
         // Add new shape at end (will be at position 4, clipped until animation slides it in)
@@ -143,7 +144,8 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // For game over check, we need to check the POST-animation state (without the placed shape)
       const shapesAfterRemoval = animatingShapes.filter((_, index) => index !== removedIndex);
       const menusAfterRemoval = animatingRotationMenus.filter((_, index) => index !== removedIndex);
-      const plainShapes = shapesAfterRemoval.map(qs => qs.shape);
+      // Extract only actual shapes (not purchasable slots) for game over check
+      const plainShapes = shapesAfterRemoval.filter(item => item.type === 'shape').map(item => (item as QueuedShape).shape);
 
       // GAME OVER CHECK: Run on the FINAL state (correct 3 shapes after placement)
       // Infinite mode: Check if any shapes can be placed
@@ -452,6 +454,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         const newQueuedShape: QueuedShape = {
           id: state.nextShapeIdCounter,
           shape: shape,
+          type: 'shape',
         };
         // Persistence handled by listener
 
@@ -469,6 +472,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const newQueuedShape: QueuedShape = {
         id: state.nextShapeIdCounter,
         shape: shape,
+        type: 'shape',
       };
       const newShapes = [...state.nextShapes.slice(1), newQueuedShape];
 

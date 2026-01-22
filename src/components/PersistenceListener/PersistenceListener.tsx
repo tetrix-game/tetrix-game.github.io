@@ -29,6 +29,7 @@ export const PersistenceListener = () => {
     queueSize,
     queueColorProbabilities,
     unlockedModifiers,
+    unlockedSlots,
 
     currentTheme,
     blockTheme,
@@ -65,12 +66,11 @@ export const PersistenceListener = () => {
     // NOTE: We intentionally do NOT persist isGameOver.
     // Game over is a derived state that should be recalculated on load
     // to prevent false game overs from stale/corrupted data.
-    // Extract plain shapes from QueuedShape[] for persistence
-    const plainNextShapes = nextShapes.map(qs => qs.shape);
+    // Save the FULL queue including purchasable slots - they are first-class queue items
     safeBatchSave({
       score,
       tiles: tilesToArray(tiles),
-      nextShapes: plainNextShapes,
+      nextQueue: nextShapes, // Save the full queue structure
       savedShape,
       stats,
       totalLinesCleared,
@@ -80,6 +80,7 @@ export const PersistenceListener = () => {
       queueHiddenShapes,
       queueSize,
       queueColorProbabilities,
+      unlockedSlots,
       // isGameOver is intentionally NOT persisted - see LOAD_GAME_STATE for recalculation
     }).catch(error => {
       console.error('Failed to save game state via listener:', error);
@@ -98,7 +99,8 @@ export const PersistenceListener = () => {
     queueMode,
     queueHiddenShapes,
     queueSize,
-    queueColorProbabilities
+    queueColorProbabilities,
+    unlockedSlots
   ]);
 
   // Effect for Modifiers

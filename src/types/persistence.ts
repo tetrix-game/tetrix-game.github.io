@@ -4,13 +4,19 @@
 
 import type { Shape, TileData } from './core';
 
+// Serialized queue item for persistence
+export type SerializedQueueItem =
+  | { type: 'shape'; shape: Shape }
+  | { type: 'purchasable-slot'; cost: number; slotNumber: number };
+
 // Saved game state for persistence
 // NOTE: isGameOver is intentionally NOT persisted - it's a derived state
 // that gets recalculated on load based on actual board state.
 export type SavedGameState = {
   score: number;
   tiles: TileData[];
-  nextShapes: Shape[];
+  nextShapes: Shape[]; // Legacy field for backwards compatibility
+  nextQueue?: SerializedQueueItem[]; // New field - full queue with shapes and purchasable slots
   savedShape: Shape | null;
   totalLinesCleared: number;
   shapesUsed: number;
@@ -20,6 +26,7 @@ export type SavedGameState = {
   queueColorProbabilities?: import('./shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
+  unlockedSlots?: number; // Number of unlocked shape slots (1-4)
   // isGameOver is NOT persisted - see gameStateReducer.ts LOAD_GAME_STATE
   lastUpdated: number;
 };

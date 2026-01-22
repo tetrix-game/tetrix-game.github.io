@@ -53,6 +53,7 @@ export const initialGameState = {
   nextShapes: [],
   nextShapeIdCounter: 0, // Monotonically increasing counter for unique shape IDs
   savedShape: null,
+  unlockedSlots: 1, // Start with 1 shape slot unlocked
   mouseGridLocation: null,
   dragState: {
     phase: 'none' as const,
@@ -275,30 +276,76 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // DESIGN: isGameOver is NEVER persisted - it's a derived "domino" state.
       // We always initialize in 'playing' state, then calculate game over
       // based on actual board state after loading. This prevents false game overs.
-      
-      // Convert loaded plain shapes to QueuedShapes with unique IDs
-      const loadedPlainShapes: Shape[] = gameData.nextShapes || [];
+
+      // Restore unlockedSlots from persistence (default to 1 if not present)
+      const restoredUnlockedSlots = gameData.unlockedSlots ?? 1;
+
       let nextIdCounter = state.nextShapeIdCounter;
-      const loadedNextShapes: QueuedShape[] = loadedPlainShapes.map(shape => ({
-        id: nextIdCounter++,
-        shape,
-      }));
-      
-      // Initialize rotation menus for loaded shapes (all closed by default)
-      const loadedOpenRotationMenus = loadedNextShapes.map(() => false);
-      
-      // Extract plain shapes for game over check
-      const plainShapesForCheck = loadedNextShapes.map(qs => qs.shape);
-      
+      const loadedQueue: import('../types/core').QueueItem[] = [];
+
+      // Check if we have the new nextQueue field (full queue with purchasable slots)
+      if (gameData.nextQueue && Array.isArray(gameData.nextQueue)) {
+        // NEW FORMAT: Load full queue directly from persistence
+        // Purchasable slots are first-class citizens and persisted
+        for (const item of gameData.nextQueue) {
+          if (item.type === 'shape') {
+            loadedQueue.push({
+              id: nextIdCounter++,
+              shape: item.shape,
+              type: 'shape',
+            });
+          } else if (item.type === 'purchasable-slot') {
+            loadedQueue.push({
+              id: nextIdCounter++,
+              type: 'purchasable-slot',
+              cost: item.cost,
+              slotNumber: item.slotNumber,
+            });
+          }
+        }
+      } else {
+        // LEGACY FORMAT: Old saves only had plain shapes, reconstruct queue
+        const loadedPlainShapes: Shape[] = gameData.nextShapes || [];
+
+        // Add loaded shapes as QueuedShapes
+        for (const shape of loadedPlainShapes) {
+          loadedQueue.push({
+            id: nextIdCounter++,
+            shape,
+            type: 'shape',
+          });
+        }
+
+        // Add purchasable slots for remaining slots (up to 4 total)
+        const slotCosts = [5000, 15000, 50000]; // Costs for slots 2, 3, 4
+        for (let i = restoredUnlockedSlots; i < 4; i++) {
+          const slotNumber = i + 1; // Slot numbers are 1-indexed
+          loadedQueue.push({
+            id: nextIdCounter++,
+            type: 'purchasable-slot',
+            cost: slotCosts[i - 1], // Get cost from array (0-indexed)
+            slotNumber
+          });
+        }
+      }
+
+      // Initialize rotation menus for all queue items (all closed by default)
+      const loadedOpenRotationMenus = loadedQueue.map(() => false);
+
+      // Extract plain shapes for game over check (filter out purchasable slots)
+      const plainShapesForCheck = loadedQueue
+        .filter((item): item is QueuedShape => item.type === 'shape')
+        .map(qs => qs.shape);
+
       // POST-LOAD GAME OVER CHECK:
       // Calculate game over based on actual loaded state.
       // Only check if there's actual game progress (prevents false positives on fresh state).
       let actuallyGameOver = false;
-      
-      if (loadedNextShapes.length > 0 && (hasFilledTiles || gameData.score > 0 || gameData.hasPlacedFirstShape)) {
+
+      if (plainShapesForCheck.length > 0 && (hasFilledTiles || gameData.score > 0 || gameData.hasPlacedFirstShape)) {
         // Check if any moves are actually possible with the loaded state
         actuallyGameOver = checkGameOver(tilesMap, plainShapesForCheck, loadedOpenRotationMenus, state.gameMode);
-      } else if (loadedNextShapes.length === 0 && gameData.queueMode === 'finite') {
+      } else if (plainShapesForCheck.length === 0 && gameData.queueMode === 'finite') {
         // Finite mode with no shapes left is game over
         actuallyGameOver = true;
       }
@@ -308,12 +355,13 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         ...state,
         score: gameData.score,
         tiles: tilesMap,
-        nextShapes: loadedNextShapes,
+        nextShapes: loadedQueue,
         nextShapeIdCounter: nextIdCounter,
         savedShape: gameData.savedShape || state.savedShape,
         hasLoadedPersistedState: true,
         hasPlacedFirstShape: shouldPlayMusic || state.hasPlacedFirstShape,
         openRotationMenus: loadedOpenRotationMenus,
+        unlockedSlots: restoredUnlockedSlots,
         // Load stats if provided in action value (for infinite mode)
         stats: action.value.stats ? action.value.stats : state.stats,
         // Load queue configuration if available
@@ -487,6 +535,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       const visibleQueuedShapes: QueuedShape[] = shapes.slice(0, 3).map((shape: Shape) => ({
         id: nextIdCounter++,
         shape,
+        type: 'shape',
       }));
 
       // Reset game state but keep stats/modifiers
@@ -540,6 +589,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       const visibleQueuedShapes: QueuedShape[] = shapes.slice(0, 3).map((shape: Shape) => ({
         id: nextIdCounter++,
         shape,
+        type: 'shape',
       }));
 
       return {

@@ -14,7 +14,19 @@ export type Shape = Block[][];
 export type QueuedShape = {
   id: number; // Unique monotonically increasing ID for React key
   shape: Shape;
+  type: 'shape';
 };
+
+// A purchasable slot that takes up space in the queue until purchased
+export type PurchasableSlot = {
+  id: number; // Unique monotonically increasing ID for React key
+  type: 'purchasable-slot';
+  cost: number; // Points required to purchase this slot
+  slotNumber: number; // Which slot this is (2, 3, or 4)
+};
+
+// Union type for items in the queue - can be either a shape or a purchasable slot
+export type QueueItem = QueuedShape | PurchasableSlot;
 
 export type Location = { row: number; column: number };
 

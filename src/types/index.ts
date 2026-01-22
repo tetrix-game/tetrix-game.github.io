@@ -15,6 +15,8 @@
 export type {
   Shape,
   QueuedShape,
+  PurchasableSlot,
+  QueueItem,
   Location,
   ColorName,
   Block,
@@ -51,6 +53,7 @@ export type {
 // Persistence types
 export type {
   SavedGameState,
+  SerializedQueueItem,
   MusicPersistenceData,
   SoundEffectsPersistenceData,
   GameSettingsPersistenceData,

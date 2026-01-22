@@ -8,10 +8,10 @@ type ShapeProducerViewportProps = {
 };
 
 /**
- * A layout container that strictly enforces a "viewport" of exactly 3 items.
+ * A layout container that strictly enforces a "viewport" of exactly 4 items.
  * It clips any overflow and enforces dimensions based on --game-controls-button-size.
  * This component is "dumb" and only handles layout/clipping.
- * 
+ *
  * It intentionally does NOT know about game state, drag and drop, or shape logic.
  * Its only job is to maintain the "Producer Illusion" by being a fixed window.
  */

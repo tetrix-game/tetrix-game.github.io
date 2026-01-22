@@ -1,24 +1,24 @@
-import Header from './components/Header';
-import Tetrix from './components/Tetrix';
-import FullScreenFloatingActionButton from './components/FullScreenButton';
+import { ColorPickerProvider } from './components/ColorPicker/index.ts';
+import { DebugEditorProvider } from './components/DebugEditor/index.ts';
 import DraggingShape from './components/DraggingShape';
-import ToastOverlay from './components/ToastOverlay';
+import ErrorBoundary from './components/ErrorBoundary/index.ts';
+import FullScreenFloatingActionButton from './components/FullScreenButton';
+import { GridEditorProvider } from './components/GridEditor/index.ts';
+import Header from './components/Header';
+import { MusicControlProvider } from './components/Header/MusicControlContext.tsx';
 import { PersistenceListener } from './components/PersistenceListener/PersistenceListener';
+import { SoundEffectsProvider } from './components/SoundEffectsContext/index.ts';
+import Tetrix from './components/Tetrix';
+import TetrixProvider from './components/Tetrix/TetrixProvider.tsx';
+import { ThemeProvider } from './components/ThemeProvider';
+import ToastOverlay from './components/ToastOverlay';
 import UpdateNotification from './components/UpdateNotification';
-import { useUpdateNotification } from './hooks/useUpdateNotification';
 import { usePointerTracking } from './hooks/usePointerTracking';
 import { useShapePlacement } from './hooks/useShapePlacement';
-import TetrixProvider from './components/Tetrix/TetrixProvider.tsx';
-import ErrorBoundary from './components/ErrorBoundary/index.ts';
-import { DebugEditorProvider } from './components/DebugEditor/index.ts';
-import { GridEditorProvider } from './components/GridEditor/index.ts';
-import { SoundEffectsProvider } from './components/SoundEffectsContext/index.ts';
-import { MusicControlProvider } from './components/Header/MusicControlContext.tsx';
-import { ColorPickerProvider } from './components/ColorPicker/index.ts';
-import { ThemeProvider } from './components/ThemeProvider';
-import './App.css';
-import { StrictMode } from 'react'
+import { useUpdateNotification } from './hooks/useUpdateNotification';
 
+import './App.css';
+import { StrictMode } from 'react';
 
 const AppContent = () => {
   // Custom hooks encapsulate all React hook logic

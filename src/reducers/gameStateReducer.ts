@@ -1,6 +1,6 @@
 /**
  * Game State Reducer - Handles game modes, levels, modifiers, and turning modes
- * Actions: SET_LEVEL, OPEN_MAP, CLOSE_MAP, UNLOCK_MAP, UNLOCK_MODIFIER, LOAD_MODIFIERS,
+ * Actions: SET_LEVEL, UNLOCK_MAP, UNLOCK_MODIFIER, LOAD_MODIFIERS,
  *          TRIGGER_BACKGROUND_MUSIC, ACTIVATE/DEACTIVATE_TURNING_MODE, ACTIVATE/DEACTIVATE_DOUBLE_TURN_MODE,
  *          LOAD_GAME_STATE, RESET_GAME
  */
@@ -120,20 +120,6 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...state,
         gameMode: mode,
-      };
-    }
-
-    case "OPEN_MAP": {
-      return {
-        ...state,
-        gameState: 'map',
-      };
-    }
-
-    case "CLOSE_MAP": {
-      return {
-        ...state,
-        gameState: 'playing',
       };
     }
 

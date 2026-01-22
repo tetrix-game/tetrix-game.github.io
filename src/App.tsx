@@ -1,6 +1,5 @@
 import Header from './components/Header';
 import Tetrix from './components/Tetrix';
-import GameMap from './components/GameMap';
 import FullScreenFloatingActionButton from './components/FullScreenButton';
 import DebugEditor from './components/DebugEditor';
 import GridEditor from './components/GridEditor';
@@ -16,10 +15,19 @@ import { useEffect, useRef, useState } from 'react';
 import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from './utils/shapeUtils';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from './utils/colorUtils';
 import { GRID_SIZE } from './utils/gridConstants';
+import TetrixProvider from './components/Tetrix/TetrixProvider.tsx';
+import ErrorBoundary from './components/ErrorBoundary/index.ts';
+import { DebugEditorProvider } from './components/DebugEditor/index.ts';
+import { GridEditorProvider } from './components/GridEditor/index.ts';
+import { SoundEffectsProvider } from './components/SoundEffectsContext/index.ts';
+import { MusicControlProvider } from './components/Header/MusicControlContext.tsx';
+import { ColorPickerProvider } from './components/ColorPicker/index.ts';
 import './App.css';
+import { StrictMode } from 'react'
 
-const App = () => {
-  const { gameState, gameMode, dragState, gridTileSize, gridBounds, tiles, currentTheme } = useTetrixStateContext();
+
+const AppContent = () => {
+  const { gameMode, dragState, gridTileSize, gridBounds, tiles, currentTheme } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { playSound } = useSoundEffects();
   const gridRef = useRef<HTMLElement | null>(null);
@@ -301,11 +309,7 @@ const App = () => {
 
       <Header />
       <div className="game-container">
-        {gameState === 'playing' || gameState === 'gameover' ? (
-          <Tetrix />
-        ) : (
-          <GameMap />
-        )}
+        <Tetrix />
       </div>
       <FullScreenFloatingActionButton />
 
@@ -321,6 +325,28 @@ const App = () => {
         />
       )}
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <StrictMode>
+      <ErrorBoundary>
+        <SoundEffectsProvider>
+          <MusicControlProvider>
+            <TetrixProvider>
+              <DebugEditorProvider>
+                <GridEditorProvider>
+                  <ColorPickerProvider>
+                    <AppContent />
+                  </ColorPickerProvider>
+                </GridEditorProvider>
+              </DebugEditorProvider>
+            </TetrixProvider>
+          </MusicControlProvider>
+        </SoundEffectsProvider>
+      </ErrorBoundary>
+    </StrictMode>
   );
 };
 

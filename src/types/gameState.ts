@@ -11,7 +11,7 @@ import type { ThemeName, BlockTheme } from './theme';
 import type { QueueMode, ColorProbability } from './shapeQueue';
 
 // Game state types - simplified for level-based play
-export type GameState = 'playing' | 'map' | 'gameover';
+export type GameState = 'playing' | 'gameover';
 
 // Game mode types - different play modes
 export type GameMode = 'hub' | 'infinite' | 'daily' | 'tutorial';
@@ -238,14 +238,6 @@ type SetGameModeAction = {
   value: { mode: GameMode };
 };
 
-type OpenMapAction = {
-  type: 'OPEN_MAP';
-};
-
-type CloseMapAction = {
-  type: 'CLOSE_MAP';
-};
-
 type UnlockMapAction = {
   type: 'UNLOCK_MAP';
 };
@@ -444,8 +436,6 @@ export type TetrixAction =
   | RemoveShapeOptionAction
   | SetLevelAction
   | SetGameModeAction
-  | OpenMapAction
-  | CloseMapAction
   | UnlockMapAction
   | UnlockModifierAction
   | LoadModifiersAction

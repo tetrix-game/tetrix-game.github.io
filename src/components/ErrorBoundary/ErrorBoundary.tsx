@@ -1,5 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
-import './RantErrorBoundary.css';
+import './ErrorBoundary.css';
 
 interface Props {
   children: ReactNode;
@@ -11,7 +11,7 @@ interface State {
   errorInfo: ErrorInfo | null;
 }
 
-class RantErrorBoundary extends Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
@@ -40,32 +40,46 @@ class RantErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="rant-error-boundary-container">
-          <div className="rant-error-boundary-content">
-            <h1 className="rant-error-boundary-title">
+        <div className="error-boundary-container">
+          <div className="error-boundary-content">
+            <h1 className="error-boundary-title">
               Application Error
             </h1>
 
-            <div className="rant-error-boundary-details">
-              <strong>Error Details:</strong><br />
+            <div className="error-boundary-details">
+              <strong>Error:</strong><br />
               {this.state.error?.message || 'Unknown error occurred'}
             </div>
 
-            <p className="rant-error-boundary-message">
+            {this.state.error?.stack && (
+              <div className="error-boundary-details">
+                <strong>Stack Trace:</strong>
+                <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px', marginTop: '8px' }}>
+                  {this.state.error.stack}
+                </pre>
+              </div>
+            )}
+
+            {this.state.errorInfo?.componentStack && (
+              <div className="error-boundary-details">
+                <strong>Component Stack:</strong>
+                <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px', marginTop: '8px' }}>
+                  {this.state.errorInfo.componentStack}
+                </pre>
+              </div>
+            )}
+
+            <p className="error-boundary-message">
               The application has encountered an error and cannot continue.
               Please refresh the page to restart the application.
             </p>
 
             <button
               onClick={() => globalThis.location.reload()}
-              className="rant-error-boundary-button"
+              className="error-boundary-button"
             >
               Refresh Page
             </button>
-
-            <div className="rant-error-boundary-footer">
-              If this problem persists, maybe try not clicking that button so much next time.
-            </div>
           </div>
         </div>
       );
@@ -75,4 +89,4 @@ class RantErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default RantErrorBoundary;
+export default ErrorBoundary;

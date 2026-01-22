@@ -563,18 +563,6 @@ const SettingsOverlay: React.FC = () => {
                     {state.queueMode === 'finite' ? '✓ Finite Queue (20)' : 'Infinite Queue'}
                   </button>
                 </div>
-                <div className="menu-item submenu-item">
-                  <button
-                    className="debug-action-button"
-                    onClick={() => {
-                      dispatch({ type: 'OPEN_MAP' });
-                      setIsOpen(false);
-                    }}
-                    title="Open the Level Map overlay (dev only)"
-                  >
-                    Open Level Map
-                  </button>
-                </div>
               </div>
             )}
           </div>

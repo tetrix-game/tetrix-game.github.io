@@ -51,7 +51,7 @@ export type StatsPersistenceData = {
   };
 };
 
-export const INITIAL_STAT_VALUE: StatValue = {
+const INITIAL_STAT_VALUE: StatValue = {
   total: 0,
   colors: {},
 };

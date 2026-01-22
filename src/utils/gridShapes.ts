@@ -25,7 +25,7 @@ export type GridShapeConfig = {
 /**
  * Current grid shape configuration
  */
-export let GRID_SHAPE_CONFIG: GridShapeConfig = {
+let GRID_SHAPE_CONFIG: GridShapeConfig = {
   shape: 'square',
   size: 10,
 };
@@ -170,34 +170,6 @@ export function setGridShape(config: Partial<GridShapeConfig>): void {
   }
 }
 
-/**
- * Get CSS grid template areas for shaped grids
- * This generates a grid-template-areas string for CSS Grid
- */
-export function getGridTemplateAreas(): string | null {
-  const { shape, size } = GRID_SHAPE_CONFIG;
-  
-  if (shape === 'square') {
-    return null; // Use default CSS grid
-  }
-  
-  // Generate grid template areas for non-square shapes
-  const rows: string[] = [];
-  
-  for (let row = 1; row <= size; row++) {
-    const rowCells: string[] = [];
-    for (let column = 1; column <= size; column++) {
-      if (isValidGridCoordinate(row, column)) {
-        rowCells.push(`r${row}c${column}`);
-      } else {
-        rowCells.push('.'); // Empty cell
-      }
-    }
-    rows.push(`"${rowCells.join(' ')}"`);
-  }
-  
-  return rows.join('\n');
-}
 
 /**
  * Get grid statistics for current shape

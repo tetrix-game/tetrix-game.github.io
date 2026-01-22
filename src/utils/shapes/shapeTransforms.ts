@@ -1,4 +1,4 @@
-import type { Shape, Block, ColorName } from '../types';
+import type { Shape, ColorName } from '../types';
 
 /**
  * Shape transformation functions - Rotation and cloning operations
@@ -27,18 +27,6 @@ export function rotateShape(shape: Shape): Shape {
  */
 export function cloneShape(shape: Shape): Shape {
   return shape.map(row => row.map(block => ({ ...block })));
-}
-
-/**
- * Create an empty shape (4x4 grid)
- */
-export function createEmptyShape(color: Block['color']): Shape {
-  return new Array(4).fill(null).map(() =>
-    new Array(4).fill(null).map(() => ({
-      color,
-      isFilled: false,
-    }))
-  );
 }
 
 /**

@@ -12,9 +12,6 @@
 // Re-export geometry functions
 export {
   getShapeBounds,
-  getShapeCenter,
-  getShapeAnchorBlock,
-  getFilledBlocksRelativeToCenter,
   getShapeGridPositions,
   getFilledBlocks,
   getShapeVisualOffset,
@@ -25,13 +22,10 @@ export {
 export {
   rotateShape,
   cloneShape,
-  createEmptyShape,
-  makeRandomColor,
 } from './shapeTransforms';
 
 // Re-export validation functions
 export {
-  makeTileKey,
   canPlaceShape,
   isValidPlacement,
   getInvalidBlocks,
@@ -59,7 +53,6 @@ export {
 
 // Re-export generation with probabilities
 export {
-  selectColorByProbability,
   generateRandomShapeWithProbabilities,
   generateShapesWithProbabilities,
   generateRandomShapeWithGrandpaMode,

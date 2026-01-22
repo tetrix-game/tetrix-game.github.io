@@ -27,7 +27,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
     if (gameMode === 'daily') {
       dispatch({ type: 'SET_GAME_MODE', value: { mode: 'hub' } });
     } else {
-      dispatch({ type: 'CLOSE_MAP' });
+      dispatch({ type: 'CLEAR_MAP_COMPLETION' });
     }
   };
 

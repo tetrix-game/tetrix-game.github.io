@@ -46,6 +46,3 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
   return newState;
 }
-
-// Re-export helper functions that are used by components
-export { makeTileKey, parseTileKey } from './tileReducer';

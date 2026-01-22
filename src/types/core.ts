@@ -58,13 +58,6 @@ export type Tile = {
   activeAnimations: TileAnimation[]; // Active animations running on this tile
 };
 
-// Helper to parse position string "R1C1" to {row: 1, column: 1}
-export function getTileLocation(position: string): Location {
-  const match = position.match(/R(\d+)C(\d+)/);
-  if (!match) throw new Error(`Invalid position format: ${position}`);
-  return { row: parseInt(match[1]), column: parseInt(match[2]) };
-}
-
 // Serialized tile data for persistence (same as Tile for now, but keeping separate for clarity if needed)
 export type TileData = {
   position: string;
@@ -88,16 +81,3 @@ export function tilesToArray(tiles: TilesSet): TileData[] {
   }));
 }
 
-// Helper to convert array to TilesSet for deserialization
-export function tilesFromArray(tilesArray: TileData[]): TilesSet {
-  const map = new Map<string, Tile>();
-  for (const data of tilesArray) {
-    map.set(data.position, {
-      position: data.position,
-      backgroundColor: data.backgroundColor || 'grey',
-      block: { isFilled: data.isFilled, color: data.color },
-      activeAnimations: data.activeAnimations || [],
-    });
-  }
-  return map;
-}

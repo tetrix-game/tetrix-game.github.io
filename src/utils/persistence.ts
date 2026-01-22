@@ -9,10 +9,7 @@ import {
   loadGameState as loadGameStateAdapter,
   updateGameState as updateGameStateAdapter,
   clearGameBoard,
-  hasGameState,
-  saveSettings,
   loadSettings as loadSettingsAdapter,
-  updateSettings,
   saveMusicSettings as saveMusicSettingsAdapter,
   loadMusicSettings as loadMusicSettingsAdapter,
   saveSoundEffectsSettings as saveSoundEffectsSettingsAdapter,
@@ -22,10 +19,8 @@ import {
   saveTheme as saveThemeAdapter,
   loadTheme as loadThemeAdapter,
   saveBlockTheme as saveBlockThemeAdapter,
-  loadBlockTheme as loadBlockThemeAdapter,
   saveModifiers,
   loadModifiers,
-  clearAllGameData,
   clearAllDataAndReload,
   initializePersistence,
   saveCallToActionTimestamp,
@@ -45,19 +40,13 @@ import type { StatsPersistenceData } from '../types/stats';
 // Re-export the main functions
 export {
   // Game state
-  hasGameState,
   clearGameBoard,
-
-  // Settings
-  saveSettings,
-  updateSettings,
 
   // Modifiers
   saveModifiers,
   loadModifiers,
 
   // Cleanup
-  clearAllGameData,
   clearAllDataAndReload,
 
   // Initialization
@@ -75,7 +64,7 @@ export {
 /**
  * Save complete game state
  */
-export async function saveGameState(data: {
+async function saveGameState(data: {
   score: number;
   tiles: TileData[];
   nextShapes?: Shape[]; // Legacy - for backwards compatibility
@@ -299,25 +288,10 @@ export async function saveTheme(theme: string): Promise<void> {
 }
 
 /**
- * Load block theme preference
- */
-export async function loadBlockTheme(): Promise<string | null> {
-  const result = await loadBlockThemeAdapter();
-  return result.status === 'success' ? result.data : null;
-}
-
-/**
  * Save block theme
  */
 export async function saveBlockTheme(blockTheme: string): Promise<void> {
   await saveBlockThemeAdapter(blockTheme);
-}
-
-/**
- * Check if any game data exists
- */
-export async function hasSavedGameData(): Promise<boolean> {
-  return await hasGameState();
 }
 
 /**

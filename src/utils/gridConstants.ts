@@ -7,7 +7,7 @@
  * - Challenge board data conversion utilities
  */
 
-import type { TileData, ColorName, TilesSet } from '../types';
+import type { ColorName, TilesSet } from '../types';
 
 // Grid configuration - mutable to allow runtime size changes
 export let GRID_SIZE = 10;
@@ -68,31 +68,6 @@ export function makeTileKey(row: number, column: number): string {
 }
 
 /**
- * Helper function to parse a tile key back to location (1-indexed)
- */
-export function parseTileKey(key: string): { row: number; column: number } {
-  const match = key.match(/R(\d+)C(\d+)/);
-  if (!match) throw new Error(`Invalid tile key: ${key}`);
-  return { row: parseInt(match[1], 10), column: parseInt(match[2], 10) };
-}
-
-/**
- * Validate that a tiles Map has all required keys
- */
-export function validateTilesMap(tiles: Map<string, TileData>): void {
-  const expectedSize = GRID_SIZE * GRID_SIZE;
-  if (tiles.size !== expectedSize) {
-    throw new Error(`Tiles map must have exactly ${expectedSize} entries, got ${tiles.size}`);
-  }
-
-  for (const key of GRID_ADDRESSES) {
-    if (!tiles.has(key)) {
-      throw new Error(`Missing required tile key: ${key}`);
-    }
-  }
-}
-
-/**
  * Challenge board data structure for serialization
  */
 export type ChallengeBoardData = {
@@ -128,33 +103,3 @@ export function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData 
   return { tiles };
 }
 
-/**
- * Convert challenge board data to tiles Map
- * Use this for loading challenge boards into the game
- */
-export function challengeDataToTilesMap(challengeData: ChallengeBoardData): Map<string, TileData> {
-  const tiles = new Map<string, TileData>();
-
-  // Initialize empty board using static addresses
-  for (const key of GRID_ADDRESSES) {
-    tiles.set(key, {
-      position: key,
-      isFilled: false,
-      color: 'grey',
-    });
-  }
-
-  // Apply challenge tiles with validation
-  challengeData.tiles.forEach(({ key, data }) => {
-    if (!GRID_ADDRESSES.includes(key)) {
-      throw new Error(`Invalid challenge tile key: ${key}. Must be in format R<1-10>C<1-10>`);
-    }
-    tiles.set(key, {
-      position: key,
-      isFilled: data.isFilled,
-      color: data.color,
-    });
-  });
-
-  return tiles;
-}

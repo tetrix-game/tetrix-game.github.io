@@ -14,7 +14,7 @@ export interface MusicControlContextType {
   isWaitingForInteraction: boolean;
 }
 
-export const MusicControlContext = createContext<MusicControlContextType | null>(null);
+const MusicControlContext = createContext<MusicControlContextType | null>(null);
 
 export const useMusicControl = () => {
   const context = useContext(MusicControlContext);

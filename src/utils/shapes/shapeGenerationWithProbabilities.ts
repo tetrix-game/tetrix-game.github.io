@@ -11,7 +11,7 @@ import { rotateShape, cloneShape } from './shapeTransforms';
  * @param probabilities Array of colors and their weights
  * @returns Selected color
  */
-export function selectColorByProbability(probabilities: ColorProbability[]): ColorName {
+function selectColorByProbability(probabilities: ColorProbability[]): ColorName {
   // Calculate total weight
   const totalWeight = probabilities.reduce((sum, p) => sum + p.weight, 0);
   

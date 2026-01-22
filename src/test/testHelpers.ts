@@ -19,20 +19,6 @@ export function countFilledTiles(tiles: TilesSet): number {
   return count;
 }
 
-// Helper to convert TilesSet to array for filtering
-export function tilesToArray(tiles: TilesSet) {
-  const result = [];
-  for (let row = 1; row <= GRID_SIZE; row++) {
-    for (let column = 1; column <= GRID_SIZE; column++) {
-      const tile = tiles.get(`R${row}C${column}`);
-      if (tile) {
-        result.push({ location: { row, column }, isFilled: tile.block.isFilled, color: tile.block.color });
-      }
-    }
-  }
-  return result;
-}
-
 // Helper to check if row is full
 export function isRowFull(tiles: TilesSet, row: number): boolean {
   for (let column = 1; column <= GRID_SIZE; column++) {
@@ -53,36 +39,6 @@ export function isColumnFull(tiles: TilesSet, column: number): boolean {
     }
   }
   return true;
-}
-
-// Helper to fill a specific tile in a TilesSet
-export function setTileData(
-  tiles: TilesSet,
-  row: number,
-  column: number,
-  isFilled: boolean,
-  color: ColorName
-): TilesSet {
-  const newTiles = new Map(tiles);
-  const position = `R${row}C${column}`;
-  const existingTile = newTiles.get(position);
-
-  if (existingTile) {
-    newTiles.set(position, {
-      ...existingTile,
-      block: { isFilled, color }
-    });
-  } else {
-    const tile: Tile = {
-      position,
-      backgroundColor: 'grey',
-      block: { isFilled, color },
-      activeAnimations: []
-    };
-    newTiles.set(position, tile);
-  }
-
-  return newTiles;
 }
 
 // Helper to create a TilesSet with specific filled positions

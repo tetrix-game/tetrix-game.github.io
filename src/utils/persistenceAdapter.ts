@@ -178,22 +178,14 @@ export async function updateGameState(updates: Partial<SavedGameState>): Promise
   await saveGameState(updated);
 }
 
-/**
- * Check if game state exists
- */
-export async function hasGameState(): Promise<boolean> {
-  const state = await crud.read<SavedGameState>(STORES.GAME_STATE, 'current');
-  return !!state;
-}
-
 // ============================================================================
 // SETTINGS (Global)
 // ============================================================================
 
 /**
- * Save game settings
+ * Save game settings (internal)
  */
-export async function saveSettings(settings: GameSettingsPersistenceData): Promise<void> {
+async function saveSettings(settings: GameSettingsPersistenceData): Promise<void> {
   await crud.write(STORES.SETTINGS, 'current', settings);
 }
 
@@ -340,17 +332,6 @@ export async function saveBlockTheme(blockTheme: string): Promise<void> {
   await updateSettings({ blockTheme });
 }
 
-/**
- * Load block theme
- */
-export async function loadBlockTheme(): Promise<LoadResult<string>> {
-  const result = await loadSettings();
-  if (result.status === 'success' && result.data.blockTheme) {
-    return { status: 'success', data: result.data.blockTheme };
-  }
-  return { status: 'not_found' };
-}
-
 // ============================================================================
 // MODIFIERS (cross-game)
 // ============================================================================
@@ -385,17 +366,6 @@ export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
 // ============================================================================
 // CLEANUP
 // ============================================================================
-
-/**
- * Clear all game data (preserves settings)
- */
-export async function clearAllGameData(): Promise<void> {
-  await Promise.all([
-    crud.clear(STORES.GAME_STATE),
-    crud.clear(STORES.MODIFIERS),
-    crud.clear(STORES.CHECKSUMS),
-  ]);
-}
 
 /**
  * Clear ALL data including settings, but PRESERVE long-term statistics

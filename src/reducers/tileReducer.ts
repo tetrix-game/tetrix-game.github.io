@@ -13,9 +13,6 @@ import { checkMapCompletion } from '../utils/mapCompletionUtils';
 import { makeTileKey } from '../utils/gridConstants';
 import { performLineClearing } from '../utils/lineClearingOrchestrator';
 
-// Re-export for backward compatibility
-export { makeTileKey, parseTileKey } from '../utils/gridConstants';
-
 export function tileReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
     case "COMPLETE_PLACEMENT": {

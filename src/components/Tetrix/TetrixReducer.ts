@@ -6,4 +6,4 @@
  */
 
 // Re-export everything from the new combined reducer
-export { tetrixReducer, initialState, makeTileKey, parseTileKey } from '../../reducers';
+export { tetrixReducer, initialState } from '../../reducers';

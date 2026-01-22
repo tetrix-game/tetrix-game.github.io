@@ -4,7 +4,7 @@ import ShapeIcon from '../ShapeIcon';
 import { TileSvg } from './TileSvg';
 import './Tile.css';
 
-export interface TileProps {
+interface TileProps {
   row: number;
   col: number;
   backgroundColor?: ColorName;
@@ -17,7 +17,7 @@ export interface TileProps {
   style?: React.CSSProperties;
 }
 
-export const Tile: React.FC<TileProps> = ({
+const Tile: React.FC<TileProps> = ({
   row,
   col,
   backgroundColor,

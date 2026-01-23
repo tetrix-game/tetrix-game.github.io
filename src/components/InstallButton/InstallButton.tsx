@@ -119,4 +119,4 @@ const InstallButton: React.FC = () => {
   );
 };
 
-export default InstallButton;
+export { InstallButton };

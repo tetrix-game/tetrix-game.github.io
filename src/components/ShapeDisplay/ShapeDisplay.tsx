@@ -1,7 +1,7 @@
 import './ShapeDisplay.css';
 import type { Shape } from '../../utils/types';
 import type { BlockTheme } from '../../types';
-import BlockVisual from '../BlockVisual';
+import { BlockVisual } from '../BlockVisual';
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { getShapeBounds } from '../../utils/shapeUtils';
 
@@ -115,4 +115,4 @@ const ShapeDisplay = ({
   );
 };
 
-export default ShapeDisplay;
+export { ShapeDisplay };

@@ -1,8 +1,8 @@
 import { useMemo, useCallback } from 'react';
-import SettingsOverlay from '../SettingsOverlay';
-import BackgroundMusic from '../BackgroundMusic';
-import ScoreDisplay from '../ScoreDisplay';
-import AudioUnlockIndicator from '../AudioUnlockIndicator';
+import { SettingsOverlay } from '../SettingsOverlay';
+import { BackgroundMusic } from '../BackgroundMusic';
+import { ScoreDisplay } from '../ScoreDisplay';
+import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { useMusicControl } from './MusicControlContext';
 import { SoundEffectsControlContext } from './SoundEffectsControlContext';
 import { useSoundEffects } from '../SoundEffectsContext';
@@ -49,4 +49,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+export { Header };

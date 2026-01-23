@@ -1,1 +1,1 @@
-export { default } from './ShapeIcon';
+export { ShapeIcon } from './ShapeIcon';

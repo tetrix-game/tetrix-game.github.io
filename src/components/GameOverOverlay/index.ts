@@ -1,1 +1,1 @@
-export { default } from './GameOverOverlay';
+export { GameOverOverlay } from './GameOverOverlay';

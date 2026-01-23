@@ -92,4 +92,4 @@ function FullScreenButton() {
   )
 }
 
-export default FullScreenButton;
+export { FullScreenButton };

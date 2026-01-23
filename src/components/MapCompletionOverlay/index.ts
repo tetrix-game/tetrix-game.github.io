@@ -1,1 +1,1 @@
-export { default } from './MapCompletionOverlay';
+export { MapCompletionOverlay } from './MapCompletionOverlay';

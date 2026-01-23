@@ -1,5 +1,5 @@
 import './Grid.css'
-import TetrixTile from '../TetrixTile/TetrixTile';
+import { TetrixTile } from '../TetrixTile/TetrixTile';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { useRef, useEffect, useMemo } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
@@ -12,7 +12,7 @@ interface GridProps {
   pixelSize?: number; // Optional override for grid size in pixels
 }
 
-export default function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps) {
+export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps) {
   const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);

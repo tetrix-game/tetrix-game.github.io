@@ -1,1 +1,1 @@
-export { default } from './BackgroundMusic';
+export { BackgroundMusic } from './BackgroundMusic';

@@ -1,1 +1,1 @@
-export { default } from './ShapeOption';
+export { ShapeOption } from './ShapeOption';

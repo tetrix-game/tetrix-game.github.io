@@ -13,7 +13,7 @@ import { ThemeName, BlockTheme } from '../../types';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
 
-export default function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
+export function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
 

@@ -1,1 +1,1 @@
-export { default } from './AudioUnlockIndicator';
+export { AudioUnlockIndicator } from './AudioUnlockIndicator';

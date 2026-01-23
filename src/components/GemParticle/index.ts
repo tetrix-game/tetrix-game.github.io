@@ -1,1 +1,1 @@
-export { default } from './GemParticle';
+export { GemParticle } from './GemParticle';

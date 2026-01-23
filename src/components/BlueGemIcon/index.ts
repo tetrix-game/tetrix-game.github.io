@@ -1,1 +1,1 @@
-export { default } from './BlueGemIcon';
+export { BlueGemIcon } from './BlueGemIcon';

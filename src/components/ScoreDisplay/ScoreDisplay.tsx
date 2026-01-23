@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { formatScore } from '../../utils/scoringUtils';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import BlueGemIcon from '../BlueGemIcon';
-import StatsOverlay from '../StatsOverlay/StatsOverlay';
+import { BlueGemIcon } from '../BlueGemIcon';
+import { StatsOverlay } from '../StatsOverlay/StatsOverlay';
 import { ErrorPointer } from '../Pointer';
 import { useVisualError } from '../../hooks/useVisualError';
 import '../../styles/feedback.css';
@@ -79,4 +79,4 @@ const ScoreDisplay: React.FC = () => {
   );
 };
 
-export default ScoreDisplay;
+export { ScoreDisplay };

@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Shape } from '../../types';
-import ShapeDisplay from '../ShapeDisplay';
+import { ShapeDisplay } from '../ShapeDisplay';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import Overlay from '../Overlay';
+import { Overlay } from '../Overlay';
 import './QueueOverlay.css';
 
 interface QueueOverlayProps {
@@ -64,4 +64,4 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
   );
 };
 
-export default QueueOverlay;
+export { QueueOverlay };

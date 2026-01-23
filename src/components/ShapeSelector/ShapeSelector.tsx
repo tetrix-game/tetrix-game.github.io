@@ -1,7 +1,7 @@
 import './ShapeSelector.css';
-import ShapeOption from '../ShapeOption'
-import PurchasableSlotOption from '../PurchasableSlotOption';
-import ShapeProducerViewport from '../ShapeProducerViewport';
+import { ShapeOption } from '../ShapeOption'
+import { PurchasableSlotOption } from '../PurchasableSlotOption';
+import { ShapeProducerViewport } from '../ShapeProducerViewport';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
 import { generateRandomShape } from '../../utils/shapeUtils';
@@ -116,4 +116,4 @@ const ShapeSelector = (): JSX.Element => {
   )
 }
 
-export default ShapeSelector;
+export { ShapeSelector };

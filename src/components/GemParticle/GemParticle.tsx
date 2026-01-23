@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import BlueGemIcon from '../BlueGemIcon';
+import { BlueGemIcon } from '../BlueGemIcon';
 import './GemParticle.css';
 
 interface GemParticleProps {
@@ -146,4 +146,4 @@ const GemParticle: React.FC<GemParticleProps> = ({
   );
 };
 
-export default GemParticle;
+export { GemParticle };

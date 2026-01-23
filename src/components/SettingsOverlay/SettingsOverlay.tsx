@@ -17,7 +17,7 @@ import {
   loadDebugSettings,
   saveDebugSettings
 } from '../../utils/persistence';
-import InstallButton from '../InstallButton';
+import { InstallButton } from '../InstallButton';
 import { APP_VERSION } from '../../version';
 import './SettingsOverlay.css';
 
@@ -545,4 +545,4 @@ const SettingsOverlay: React.FC = () => {
   );
 };
 
-export default SettingsOverlay;
+export { SettingsOverlay };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Tile from '../Tile/Tile';
-import BlockVisual from '../BlockVisual';
+import { Tile } from '../Tile/Tile';
+import { BlockVisual } from '../BlockVisual';
 import type { BlockTheme, ColorName } from '../../types';
 import './TetrixTile.css';
 
@@ -132,4 +132,5 @@ const TetrixTile = ({
   );
 };
 
-export default React.memo(TetrixTile);
+const MemoizedTetrixTile = React.memo(TetrixTile);
+export { MemoizedTetrixTile as TetrixTile };

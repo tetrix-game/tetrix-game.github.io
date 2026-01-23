@@ -1,8 +1,8 @@
 import React from 'react';
 import './MapCompletionOverlay.css';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import Grid from '../Grid';
-import Overlay from '../Overlay';
+import { Grid } from '../Grid';
+import { Overlay } from '../Overlay';
 
 interface MapCompletionOverlayProps {
   stars: number; // 0-3 stars (0 = failure)
@@ -114,4 +114,4 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
   );
 };
 
-export default MapCompletionOverlay;
+export { MapCompletionOverlay };

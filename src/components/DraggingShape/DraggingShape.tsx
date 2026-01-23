@@ -1,5 +1,5 @@
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import BlockVisual from '../BlockVisual';
+import { BlockVisual } from '../BlockVisual';
 import { useSoundEffects } from '../SoundEffectsContext';
 import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
@@ -26,7 +26,7 @@ import './DraggingShape.css';
  * - Grid: Uses a fixed tile grid.
  * - DraggingShape: Interpolates between these two states.
  */
-export default function DraggingShape() {
+export function DraggingShape() {
   const {
     dragState,
     mousePosition,

@@ -1,1 +1,1 @@
-export { default } from './DraggingShape';
+export { DraggingShape } from './DraggingShape';

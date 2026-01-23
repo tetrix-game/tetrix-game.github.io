@@ -36,4 +36,4 @@ const AudioUnlockIndicator: React.FC = () => {
     );
 };
 
-export default AudioUnlockIndicator;
+export { AudioUnlockIndicator };

@@ -1,1 +1,1 @@
-export { default } from './SettingsOverlay';
+export { SettingsOverlay } from './SettingsOverlay';

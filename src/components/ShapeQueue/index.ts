@@ -1,1 +1,1 @@
-export { default } from './ShapeQueue';
+export { ShapeQueue } from './ShapeQueue';

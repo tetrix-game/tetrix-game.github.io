@@ -166,4 +166,4 @@ const BackgroundMusic: React.FC = () => {
   );
 };
 
-export default BackgroundMusic;
+export { BackgroundMusic };

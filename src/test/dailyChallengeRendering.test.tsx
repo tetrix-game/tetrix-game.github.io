@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import Grid from '../components/Grid/Grid';
+import { Grid } from '../components/Grid/Grid';
 import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
 import type { TetrixReducerState, TetrixDispatch } from '../types';
 import { initialState } from '../reducers';

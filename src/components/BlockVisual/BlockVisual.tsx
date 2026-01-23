@@ -1,5 +1,5 @@
 import React from 'react';
-import ShapeIcon from "../ShapeIcon";
+import { ShapeIcon } from "../ShapeIcon";
 import { BlockSvg } from "./BlockSvg";
 import { BlockTheme, ColorName } from "../../types";
 import './BlockVisual.css';
@@ -48,4 +48,5 @@ function BlockVisual({ isFilled, color, size, theme = 'gem', showIcon = true }: 
   )
 }
 
-export default React.memo(BlockVisual);
+const MemoizedBlockVisual = React.memo(BlockVisual);
+export { MemoizedBlockVisual as BlockVisual };

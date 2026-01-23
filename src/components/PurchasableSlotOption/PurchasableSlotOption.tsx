@@ -95,4 +95,4 @@ const PurchasableSlotOption = ({ cost, slotNumber, slotIndex, id }: PurchasableS
   );
 };
 
-export default PurchasableSlotOption;
+export { PurchasableSlotOption };

@@ -1,1 +1,1 @@
-export { default } from './QueueOverlay';
+export { QueueOverlay } from './QueueOverlay';

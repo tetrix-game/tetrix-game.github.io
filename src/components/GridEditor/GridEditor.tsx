@@ -4,7 +4,7 @@ import { useGridEditor } from './GridEditorContext';
 import { NumberInputSubmenu } from './NumberInputSubmenu';
 import { ColorBrushSubmenu } from './ColorBrushSubmenu';
 import { solveDailyChallenge } from '../../utils/dailyChallengeSolver';
-import EditorGrid from './EditorGrid';
+import { EditorGrid } from './EditorGrid';
 import './GridEditor.css';
 
 type SectionId = 'rows' | 'columns' | 'brush' | 'actions';
@@ -328,4 +328,4 @@ const GridEditor: React.FC = () => {
   );
 };
 
-export default GridEditor;
+export { GridEditor };

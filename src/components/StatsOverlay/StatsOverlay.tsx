@@ -2,7 +2,7 @@ import React from 'react';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
 import { StatCategory } from '../../types/stats';
 import { ColorName } from '../../types/core';
-import Overlay from '../Overlay';
+import { Overlay } from '../Overlay';
 import './StatsOverlay.css';
 
 interface StatsOverlayProps {
@@ -210,4 +210,4 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
   );
 };
 
-export default StatsOverlay;
+export { StatsOverlay };

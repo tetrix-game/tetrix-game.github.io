@@ -1,1 +1,1 @@
-export { default } from './PurchasesContainer';
+export { PurchasesContainer } from './PurchasesContainer';

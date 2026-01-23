@@ -42,4 +42,4 @@ const ToastOverlay: React.FC = () => {
   );
 };
 
-export default ToastOverlay;
+export { ToastOverlay };

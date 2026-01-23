@@ -1,7 +1,7 @@
 import React from 'react';
 import './GameOverOverlay.css';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../Tetrix/TetrixContext';
-import Overlay from '../Overlay';
+import { Overlay } from '../Overlay';
 
 const GameOverOverlay: React.FC = () => {
   const { gameMode } = useTetrixStateContext();
@@ -32,4 +32,4 @@ const GameOverOverlay: React.FC = () => {
   );
 };
 
-export default GameOverOverlay;
+export { GameOverOverlay };

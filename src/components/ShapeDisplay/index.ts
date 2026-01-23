@@ -1,1 +1,1 @@
-export { default } from './ShapeDisplay';
+export { ShapeDisplay } from './ShapeDisplay';

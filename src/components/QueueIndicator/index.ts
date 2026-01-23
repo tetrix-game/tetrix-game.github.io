@@ -1,1 +1,1 @@
-export { default } from './QueueIndicator';
+export { QueueIndicator } from './QueueIndicator';

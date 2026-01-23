@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTetrixStateContext } from '../Tetrix/TetrixContext';
-import GemParticle from '../GemParticle';
+import { GemParticle } from '../GemParticle';
 import './GemShower.css';
 
 interface GemData {
@@ -130,4 +130,4 @@ const GemShower: React.FC = () => {
   );
 };
 
-export default GemShower;
+export { GemShower };

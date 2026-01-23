@@ -1,9 +1,9 @@
 import './Tetrix.css';
-import Grid from '../Grid';
-import GameControlsPanel from '../GameControlsPanel';
-import GemShower from '../GemShower';
-import GameOverOverlay from '../GameOverOverlay';
-import MapCompletionOverlay from '../MapCompletionOverlay';
+import { Grid } from '../Grid';
+import { GameControlsPanel } from '../GameControlsPanel';
+import { GemShower } from '../GemShower';
+import { GameOverOverlay } from '../GameOverOverlay';
+import { MapCompletionOverlay } from '../MapCompletionOverlay';
 import { useTetrixStateContext } from './TetrixContext';
 
 const Tetrix: React.FC = () => {
@@ -44,4 +44,4 @@ const Tetrix: React.FC = () => {
   )
 }
 
-export default Tetrix;
+export { Tetrix };

@@ -80,4 +80,4 @@ const PurchasesContainer = (): JSX.Element => {
   );
 };
 
-export default PurchasesContainer;
+export { PurchasesContainer };

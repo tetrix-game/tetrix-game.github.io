@@ -1,1 +1,1 @@
-export { default } from './BlockVisual';
+export { BlockVisual } from './BlockVisual';

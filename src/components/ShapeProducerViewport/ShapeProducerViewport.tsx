@@ -25,4 +25,4 @@ const ShapeProducerViewport = ({ children, isLandscape, className = '' }: ShapeP
   );
 };
 
-export default ShapeProducerViewport;
+export { ShapeProducerViewport };

@@ -1,7 +1,7 @@
 import './ShapeQueue.css';
-import ShapeSelector from '../ShapeSelector';
-import QueueIndicator from '../QueueIndicator';
-import QueueOverlay from '../QueueOverlay';
+import { ShapeSelector } from '../ShapeSelector';
+import { QueueIndicator } from '../QueueIndicator';
+import { QueueOverlay } from '../QueueOverlay';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 
 const ShapeQueue = (): JSX.Element => {
@@ -39,4 +39,4 @@ const ShapeQueue = (): JSX.Element => {
   );
 };
 
-export default ShapeQueue;
+export { ShapeQueue };

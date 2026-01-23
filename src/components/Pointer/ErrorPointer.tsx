@@ -1,5 +1,5 @@
 import React from 'react';
-import Pointer, { PointerProps } from './Pointer';
+import { Pointer, PointerProps } from './Pointer';
 import './ErrorPointer.css';
 
 export type ErrorPointerProps = Omit<PointerProps, 'children'> & {
@@ -30,4 +30,4 @@ const ErrorPointer: React.FC<ErrorPointerProps> = ({
   );
 };
 
-export default ErrorPointer;
+export { ErrorPointer };

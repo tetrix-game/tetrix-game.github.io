@@ -1,2 +1,2 @@
-export { default } from './Header';
+export { Header } from './Header';
 export { MusicControlProvider } from './MusicControlContext';

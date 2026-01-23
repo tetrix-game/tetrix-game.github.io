@@ -1,3 +1,1 @@
-import ShapeProducerViewport from './ShapeProducerViewport';
-
-export default ShapeProducerViewport;
+export { ShapeProducerViewport } from './ShapeProducerViewport';

@@ -1,1 +1,1 @@
-export { default } from './ShapeSelector';
+export { ShapeSelector } from './ShapeSelector';

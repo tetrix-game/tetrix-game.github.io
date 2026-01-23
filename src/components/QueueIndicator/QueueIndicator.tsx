@@ -41,4 +41,4 @@ const QueueIndicator: React.FC<QueueIndicatorProps> = ({
   );
 };
 
-export default QueueIndicator;
+export { QueueIndicator };

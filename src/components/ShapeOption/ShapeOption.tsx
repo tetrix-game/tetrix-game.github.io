@@ -1,6 +1,6 @@
 import './ShapeOption.css';
 import type { Shape } from '../../utils/types';
-import ShapeDisplay from '../ShapeDisplay';
+import { ShapeDisplay } from '../ShapeDisplay';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
 import React, { useRef, useEffect, useCallback } from 'react';
 import { ANIMATION_TIMING } from '../../utils/animationConstants';
@@ -202,4 +202,4 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
   )
 }
 
-export default ShapeOption;
+export { ShapeOption };

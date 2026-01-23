@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useGridEditor } from './GridEditorContext';
-import EditorGridTile from './EditorGridTile';
+import { EditorGridTile } from './EditorGridTile';
 import '../Grid/Grid.css'; // Reuse grid styles
 
 const EditorGrid: React.FC = () => {
@@ -148,4 +148,4 @@ const EditorGrid: React.FC = () => {
   );
 };
 
-export default EditorGrid;
+export { EditorGrid };

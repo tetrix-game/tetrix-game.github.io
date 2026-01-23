@@ -1,1 +1,1 @@
-export { default } from './GemShower';
+export { GemShower } from './GemShower';

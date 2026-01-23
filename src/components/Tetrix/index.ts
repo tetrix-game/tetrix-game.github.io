@@ -1,2 +1,2 @@
-export { default } from './Tetrix';
-export { default as TetrixProvider } from './TetrixProvider';
+export { Tetrix } from './Tetrix';
+export { TetrixProvider } from './TetrixProvider';

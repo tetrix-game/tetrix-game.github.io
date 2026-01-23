@@ -1,6 +1,6 @@
 import React from 'react';
-import Tile from '../Tile/Tile';
-import BlockVisual from '../BlockVisual';
+import { Tile } from '../Tile/Tile';
+import { BlockVisual } from '../BlockVisual';
 import type { Block, ColorName, Location } from '../../utils/types';
 import './EditorGridTile.css';
 
@@ -51,4 +51,6 @@ const EditorGridTile: React.FC<EditorGridTileProps> = ({
   );
 };
 
-export default React.memo(EditorGridTile);
+
+const MemoizedEditorGridTile = React.memo(EditorGridTile);
+export { MemoizedEditorGridTile as EditorGridTile };

@@ -104,4 +104,4 @@ const Pointer: React.FC<PointerProps> = ({
   );
 };
 
-export default Pointer;
+export { Pointer };

@@ -30,4 +30,4 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate, onDis
   );
 };
 
-export default UpdateNotification;
+export { UpdateNotification };

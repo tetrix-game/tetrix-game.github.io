@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateRandomShape } from '../utils/shapes/shapeGeneration';
-import { getFilledBlocks } from '../utils/shapes/shapeGeometry';
+import { generateRandomShape } from '../App/utils/shapes/shapeGeneration';
+import { getFilledBlocks } from '../App/utils/shapes/shapeGeometry';
 
 describe('Updated Shape Generation', () => {
   it('should only generate 4-block shapes (in 4x4 grid)', () => {

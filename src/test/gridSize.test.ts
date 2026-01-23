@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { GRID_SIZE, GRID_ADDRESSES, setGridSize, makeTileKey } from '../utils/gridConstants';
+import { GRID_SIZE, GRID_ADDRESSES, setGridSize, makeTileKey } from '../App/utils/gridConstants';
 import { createTilesWithFilled } from './testHelpers';
 
 describe('Dynamic Grid Size', () => {

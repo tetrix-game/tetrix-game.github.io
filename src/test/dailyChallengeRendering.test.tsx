@@ -8,9 +8,9 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { Grid } from '../Shared/Grid';
-import { TetrixStateContext, TetrixDispatchContext } from '../contexts/TetrixContext';
-import type { TetrixReducerState, TetrixDispatch } from '../types/gameState';
-import { initialState } from '../reducers';
+import { TetrixStateContext, TetrixDispatchContext } from '../App/contexts/TetrixContext';
+import type { TetrixReducerState, TetrixDispatch } from '../App/types/gameState';
+import { initialState } from '../App/reducers';
 
 describe('Daily Challenge Grid Rendering', () => {
   const mockDispatch: TetrixDispatch = () => {};

@@ -2,7 +2,7 @@ import './Tetrix.css';
 import { GameControlsPanel } from '../../GameControlsPanel';
 import { GameOverOverlay } from '../../GameOverOverlay';
 import { GemShower } from '../../GemShower';
-import { Grid } from '../../../Shared/Grid';
+import { Grid } from '../../../../Shared/Grid';
 import { MapCompletionOverlay } from '../../MapCompletionOverlay';
 import { useTetrixStateContext } from '../TetrixContext';
 

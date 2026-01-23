@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../contexts/TetrixContext';
 import { GRID_SIZE } from '../../utils/gridConstants';
 import { mousePositionToGridLocation } from '../../utils/shapes/shapeGeometry';
 import { isValidPlacement, getInvalidBlocks } from '../../utils/shapes/shapeValidation';

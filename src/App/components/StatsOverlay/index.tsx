@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { ColorName } from '../../../types/core';
-import { StatCategory } from '../../../types/stats';
-import { Overlay } from '../../../Shared/Overlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
+import { ColorName } from '../types/core';
+import { StatCategory } from '../types/stats';
+import { Overlay } from '../../../../Shared/Overlay';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../contexts/TetrixContext';
 import './StatsOverlay.css';
 
 interface StatsOverlayProps {

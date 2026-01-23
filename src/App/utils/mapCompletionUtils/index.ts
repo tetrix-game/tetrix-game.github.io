@@ -1,4 +1,4 @@
-import type { TilesSet } from '../../types/core';
+import type { TilesSet } from '../types/core';
 
 /**
  * Result of checking map completion

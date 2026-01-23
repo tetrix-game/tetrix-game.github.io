@@ -5,11 +5,11 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import type { Tile, QueuedShape, Shape, ColorName } from '../../types/core';
-import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
+import type { Tile, QueuedShape, Shape, ColorName } from '../types/core';
+import type { TetrixReducerState, TetrixAction } from '../types/gameState';
 // Persistence imports removed - handled by PersistenceListener
-import { DEFAULT_COLOR_PROBABILITIES } from '../../types/shapeQueue';
-import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../../types/stats';
+import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
+import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../types/stats';
 import { checkGameOver } from '../../utils/gameOverUtils';
 import { GRID_ADDRESSES, makeTileKey } from '../../utils/gridConstants';
 import { checkMapCompletion } from '../../utils/mapCompletionUtils';

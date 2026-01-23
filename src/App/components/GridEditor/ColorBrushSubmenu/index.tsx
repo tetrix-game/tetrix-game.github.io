@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { ColorName } from '../../../types/core';
+import type { ColorName } from '../types/core';
 import './ColorBrushSubmenu.css';
 
 interface ColorBrushSubmenuProps {

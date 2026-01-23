@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
-import { useTetrixDispatchContext } from '../../contexts/TetrixContext';
-import type { Location } from '../../types/core';
+import { useTetrixDispatchContext } from '../contexts/TetrixContext';
+import type { Location } from '../types/core';
 
 /**
  * Custom hook for handling debug grid interactions

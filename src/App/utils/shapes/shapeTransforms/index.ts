@@ -1,4 +1,4 @@
-import type { Shape, ColorName } from '../../../types/core';
+import type { Shape, ColorName } from '../types/core';
 
 /**
  * Shape transformation functions - Rotation and cloning operations

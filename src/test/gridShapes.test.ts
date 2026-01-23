@@ -15,7 +15,7 @@ import {
   createCrossShape,
   createPlusShape,
   type GridShapeConfig,
-} from '../utils/gridShapes';
+} from '../App/utils/gridShapes';
 
 describe('Grid Shapes', () => {
   describe('Diamond Shape', () => {

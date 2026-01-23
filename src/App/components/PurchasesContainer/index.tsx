@@ -1,5 +1,5 @@
 import './PurchasesContainer.css';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../../contexts/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../contexts/TetrixContext';
 
 const PurchasesContainer = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();

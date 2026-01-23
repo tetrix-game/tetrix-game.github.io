@@ -7,8 +7,8 @@ import {
   clearRows,
   clearColumns,
   clearFullLines
-} from '../utils/lineUtils';
-import type { TilesSet, ColorName } from '../types/core';
+} from '../App/utils/lineUtils';
+import type { TilesSet, ColorName } from '../App/types/core';
 import {
   createTilesWithFilled,
   getTileData,

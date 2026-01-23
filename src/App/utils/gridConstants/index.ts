@@ -7,7 +7,7 @@
  * - Challenge board data conversion utilities
  */
 
-import type { ColorName, TilesSet } from '../../types/core';
+import type { ColorName, TilesSet } from '../types/core';
 
 // Grid configuration - mutable to allow runtime size changes
 export let GRID_SIZE = 10;

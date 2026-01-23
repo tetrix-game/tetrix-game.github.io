@@ -1,12 +1,12 @@
 import './ShapeSelector.css';
 import { useEffect, useMemo } from 'react';
 
-import type { QueueItem, PurchasableSlot } from '../../../types/core';
-import { generateRandomShape } from '../../../utils/shapes/shapeGeneration';
+import type { QueueItem, PurchasableSlot } from '../types/core';
+import { generateRandomShape } from '../../utils/shapes/shapeGeneration';
 import { PurchasableSlotOption } from '../../PurchasableSlotOption';
 import { ShapeOption } from '../../ShapeOption';
 import { ShapeProducerViewport } from '../../ShapeProducerViewport';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../../contexts/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../contexts/TetrixContext';
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();

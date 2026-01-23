@@ -1,9 +1,9 @@
 import React from 'react';
 
 import './MapCompletionOverlay.css';
-import { Grid } from '../../../Shared/Grid';
-import { Overlay } from '../../../Shared/Overlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
+import { Grid } from '../../../../Shared/Grid';
+import { Overlay } from '../../../../Shared/Overlay';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../contexts/TetrixContext';
 
 interface MapCompletionOverlayProps {
   stars: number; // 0-3 stars (0 = failure)

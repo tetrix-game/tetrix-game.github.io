@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { initialState } from '../reducers';
-import type { TetrixReducerState } from '../types/gameState';
-import { generateRandomShapeWithProbabilities } from '../utils/shapes/shapeGenerationWithProbabilities';
-import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
+import { initialState } from '../App/reducers';
+import type { TetrixReducerState } from '../App/types/gameState';
+import { generateRandomShapeWithProbabilities } from '../App/utils/shapes/shapeGenerationWithProbabilities';
+import { DEFAULT_COLOR_PROBABILITIES } from '../App/types/shapeQueue';
 
 describe('Finite Queue Behavior', () => {
   it('should not add new shapes when hidden queue is empty in finite mode', () => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 
-import { GemParticle } from '../../../Shared/GemParticle';
-import { useTetrixStateContext } from '../../../contexts/TetrixContext';
+import { GemParticle } from '../../../../Shared/GemParticle';
+import { useTetrixStateContext } from '../contexts/TetrixContext';
 import './GemShower.css';
 
 interface GemData {

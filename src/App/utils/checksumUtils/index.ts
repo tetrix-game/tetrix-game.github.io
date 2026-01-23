@@ -1,4 +1,4 @@
-import type { SavedGameState } from '../../types/persistence';
+import type { SavedGameState } from '../types/persistence';
 
 /**
  * Represents a node in the Merkle Tree.

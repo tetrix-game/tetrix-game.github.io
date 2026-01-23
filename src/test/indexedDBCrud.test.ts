@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import * as crud from '../utils/indexedDBCrud';
+import * as crud from '../App/utils/indexedDBCrud';
 
 describe('IndexedDB CRUD Operations', () => {
   beforeEach(async () => {

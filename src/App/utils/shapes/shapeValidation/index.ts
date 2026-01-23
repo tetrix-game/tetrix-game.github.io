@@ -1,5 +1,5 @@
-import type { Shape, Location, TilesSet } from '../../../types/core';
-import type { GameMode } from '../../../types/gameState';
+import type { Shape, Location, TilesSet } from '../types/core';
+import type { GameMode } from '../types/gameState';
 import { GRID_SIZE } from '../../gridConstants';
 
 /**

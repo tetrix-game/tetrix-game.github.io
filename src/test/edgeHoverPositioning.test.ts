@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { mousePositionToGridLocation } from '../utils/shapes/shapeGeometry';
-import type { Shape, Block } from '../types/core';
+import { mousePositionToGridLocation } from '../App/utils/shapes/shapeGeometry';
+import type { Shape, Block } from '../App/types/core';
 
 describe('Edge Hover Positioning', () => {
   let mockGridElement: HTMLElement;

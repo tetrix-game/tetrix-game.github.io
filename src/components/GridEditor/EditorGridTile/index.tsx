@@ -1,7 +1,7 @@
 import React from 'react';
 
 import type { Block, ColorName, Location } from '../../../types/core';
-import { BlockVisual } from '../../BlockVisual';
+import { BlockVisual } from '../../../Shared/BlockVisual';
 import { Tile } from '../../Tile';
 import './EditorGridTile.css';
 

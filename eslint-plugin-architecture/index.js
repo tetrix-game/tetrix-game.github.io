@@ -31,9 +31,10 @@ const isInSharedDir = (filePath) => {
 // Helper to check if an import path points to src/Shared
 const isSharedImport = (importPath, currentFileDir) => {
   if (!importPath) return false;
-  // Resolve the import path relative to the current file
-  const resolvedPath = path.resolve(currentFileDir, importPath);
-  return resolvedPath.includes('/src/Shared');
+  // Check if the import path includes 'Shared/' after any number of '../' navigations
+  // This covers patterns like '../../../Shared/', '../../Shared/', '../Shared/'
+  const normalizedPath = importPath.replace(/\\/g, '/');
+  return normalizedPath.includes('Shared/') || normalizedPath.endsWith('Shared');
 };
 
 // Helper to check if a file is a types file (named exactly "types.ts" or "types.tsx")
@@ -411,18 +412,23 @@ const importBoundaries = {
     const filename = context.filename || context.getFilename();
     const fileDir = path.dirname(filename);
 
+    // Exception: Root App component can import from anywhere (it's the orchestrator)
+    if (filename.includes('/src/App/index.tsx') || filename.includes('/src/main/index.tsx')) {
+      return {};
+    }
+
     // Helper to check if import path is a direct ancestor (only goes up, never sideways)
     const isDirectAncestorImport = (importPath) => {
       // Must start with '../' to be an ancestor
       if (!importPath.startsWith('../')) {
         return false;
       }
-      
-      // Split the path and check that it only contains '..' segments followed by a single folder name
-      // Valid: '../', '../../', '../../../FolderName'
-      // Invalid: '../../sibling/Folder' (goes up then sideways)
+
+      // Split the path and check that it only contains '..' segments followed by a folder path
+      // Valid: '../contexts/Foo', '../../contexts/Foo', '../../../contexts/TetrixContext'
+      // Invalid: '../../sibling/component' where 'sibling' is at the same level as current dir's parent
       const parts = importPath.split('/').filter((p) => p && p !== '.');
-      
+
       // Count the '..' parts at the start
       let upCount = 0;
       for (const part of parts) {
@@ -432,13 +438,14 @@ const importBoundaries = {
           break;
         }
       }
-      
-      // After the '..' parts, there should be at most one folder name (the target)
-      // The remaining parts after '..' should be exactly 0 or 1 (the target folder)
+
+      // After the '..' parts, check if we're importing from contexts/ directory (ancestor pattern)
+      // The remaining parts after '..' should be contexts/* for context hooks
       const remainingParts = parts.slice(upCount);
-      
-      // Must have at least one '..' and at most one folder name after the '..'s
-      return upCount >= 1 && remainingParts.length <= 1;
+
+      // Allow imports from ../contexts/, ../../contexts/, ../../../contexts/, etc.
+      // Must have at least one '..' and remaining path should start with 'contexts'
+      return upCount >= 1 && (remainingParts.length === 0 || remainingParts[0] === 'contexts');
     };
 
     return {

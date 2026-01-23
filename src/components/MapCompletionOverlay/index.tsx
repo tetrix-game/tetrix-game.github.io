@@ -2,7 +2,7 @@ import React from 'react';
 
 import './MapCompletionOverlay.css';
 import { Grid } from '../../Grid';
-import { Overlay } from '../../Overlay';
+import { Overlay } from '../../../Shared/Overlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
 
 interface MapCompletionOverlayProps {

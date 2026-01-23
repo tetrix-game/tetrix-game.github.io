@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../../hooks/useGameSizing';
 import { ANIMATION_TIMING } from '../../../utils/animationConstants';
 import { getShapeBounds } from '../../../utils/shapes/shapeGeometry';
-import { BlockVisual } from '../../BlockVisual';
+import { BlockVisual } from '../../../Shared/BlockVisual';
 import { useSoundEffects } from '../../../contexts/SoundEffectsContext';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
 import './DraggingShape.css';

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { GridEditorProvider, useGridEditor } from '../components/GridEditor/GridEditorContext';
+import { GridEditorProvider, useGridEditor } from '../components/GridEditorContext';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 

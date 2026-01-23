@@ -1,18 +1,18 @@
 import { StrictMode } from 'react';
 
-import { DraggingShape } from '../components/DraggingShape/DraggingShape';
-import { ErrorBoundary } from '../components/ErrorBoundary/ErrorBoundary';
-import { FullScreenButton as FullScreenFloatingActionButton } from '../components/FullScreenButton/FullScreenButton';
+import { DraggingShape } from '../components/DraggingShape';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { FullScreenButton as FullScreenFloatingActionButton } from '../components/FullScreenButton';
 import { GridEditorProvider } from '../contexts/GridEditorContext';
-import { Header } from '../components/Header/Header';
+import { Header } from '../components/Header';
 import { MusicControlProvider } from '../contexts/MusicControlContext';
-import { PersistenceListener } from '../components/PersistenceListener/PersistenceListener';
+import { PersistenceListener } from '../components/PersistenceListener';
 import { SoundEffectsProvider } from '../contexts/SoundEffectsContext';
-import { Tetrix } from '../components/Tetrix/Tetrix';
+import { Tetrix } from '../components/Tetrix';
 import { TetrixProvider } from '../contexts/TetrixContext';
-import { ThemeProvider } from '../components/ThemeProvider/ThemeProvider';
-import { ToastOverlay } from '../components/ToastOverlay/ToastOverlay';
-import { UpdateNotification } from '../components/UpdateNotification/UpdateNotification';
+import { ThemeProvider } from '../components/ThemeProvider';
+import { ToastOverlay } from '../components/ToastOverlay';
+import { UpdateNotification } from '../components/UpdateNotification';
 import { usePointerTracking } from '../hooks/usePointerTracking';
 import { useShapePlacement } from '../hooks/useShapePlacement';
 import { useUpdateNotification } from '../hooks/useUpdateNotification';

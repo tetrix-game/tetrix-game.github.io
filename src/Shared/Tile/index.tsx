@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 
-import type { ColorName } from '../../../types/core';
-import { ShapeIcon } from '../../../Shared/ShapeIcon';
+import type { ColorName } from '../../types/core';
+import { ShapeIcon } from '../ShapeIcon';
 import { TileSvg } from './TileSvg';
 import './Tile.css';
 

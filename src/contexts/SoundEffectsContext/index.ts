@@ -1,2 +1,2 @@
-export { SoundEffectsProvider, playSound } from './SoundEffectsContext';
+export { SoundEffectsProvider, playSound, useSoundEffects } from './SoundEffectsContext';
 export type { SoundEffect } from './SoundEffectsContext';

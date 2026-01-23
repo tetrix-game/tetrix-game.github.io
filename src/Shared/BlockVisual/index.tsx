@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type { ColorName } from '../../../types/core';
-import type { BlockTheme } from '../../../types/theme';
-import { ShapeIcon } from '../../../Shared/ShapeIcon';
+import type { ColorName } from '../../types/core';
+import type { BlockTheme } from '../../types/theme';
+import { ShapeIcon } from '../ShapeIcon';
 import { BlockSvg } from './BlockSvg';
 import './BlockVisual.css';
 

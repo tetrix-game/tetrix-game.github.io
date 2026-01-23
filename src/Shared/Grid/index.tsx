@@ -1,11 +1,11 @@
 import './Grid.css';
 import { useRef, useEffect, useMemo } from 'react';
 
-import { useDebugGridInteractions } from '../../../hooks/useDebugGridInteractions';
-import { useGameSizing } from '../../../hooks/useGameSizing';
-import { GRID_SIZE } from '../../../utils/gridConstants';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
-import { TetrixTile } from '../../TetrixTile';
+import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
+import { useGameSizing } from '../../hooks/useGameSizing';
+import { GRID_SIZE } from '../../utils/gridConstants';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
+import { TetrixTile } from '../../components/TetrixTile';
 
 interface GridProps {
   width?: number; // Grid width in tiles (default: GRID_SIZE)

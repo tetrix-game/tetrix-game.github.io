@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 import { DraggingShape } from '../components/DraggingShape';
-import { TetrixStateContext, TetrixDispatchContext } from '../components/TetrixContext';
+import { TetrixStateContext, TetrixDispatchContext } from '../contexts/TetrixContext';
 import type { TetrixReducerState } from '../types/gameState';
 import type { DragPhase } from '../types/drag';
 import { INITIAL_GAME_STATS } from '../types/stats';

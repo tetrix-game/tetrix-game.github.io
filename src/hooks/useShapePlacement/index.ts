@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { useSoundEffects } from '../../components/SoundEffectsContext/SoundEffectsContext';
+import { useSoundEffects } from '../../contexts/SoundEffectsContext';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import { GRID_SIZE } from '../../utils/gridConstants';
 import { mousePositionToGridLocation } from '../../utils/shapes/shapeGeometry';

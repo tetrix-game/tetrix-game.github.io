@@ -1,10 +1,10 @@
 import './ShapeDisplay.css';
 import { useMemo, useRef, useEffect, useState } from 'react';
 
-import type { Shape } from '../../../types/core';
-import type { BlockTheme } from '../../../types/theme';
-import { getShapeBounds } from '../../../utils/shapes/shapeGeometry';
-import { BlockVisual } from '../../../Shared/BlockVisual';
+import type { Shape } from '../../types/core';
+import type { BlockTheme } from '../../types/theme';
+import { getShapeBounds } from '../../utils/shapes/shapeGeometry';
+import { BlockVisual } from '../BlockVisual';
 
 type ShapeDisplayProps = {
   shape: Shape;

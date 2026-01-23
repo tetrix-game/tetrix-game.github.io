@@ -3,7 +3,7 @@
  * Actions: ADD_SCORE, SHOW_COIN_DISPLAY, HIDE_COIN_DISPLAY, SPEND_COIN, UPDATE_GEM_ICON_POSITION
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types/gameState';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 import { safeBatchSave } from '../../utils/persistence';
 
 export function scoringReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {

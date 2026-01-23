@@ -2,10 +2,10 @@ import React, { useRef, useEffect } from 'react';
 
 import { useVisualError } from '../../hooks/useVisualError';
 import { formatScore } from '../../utils/scoringUtils';
-import { BlueGemIcon } from '../../../../Shared/BlueGemIcon';
-import { ErrorPointer } from '../../Pointer/ErrorPointer';
-import { StatsOverlay } from '../../StatsOverlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../contexts/TetrixContext';
+import { BlueGemIcon } from '../../../Shared/BlueGemIcon';
+import { ErrorPointer } from '../Pointer/ErrorPointer';
+import { StatsOverlay } from '../StatsOverlay';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import '../../../styles/feedback.css';
 import './ScoreDisplay.css';
 

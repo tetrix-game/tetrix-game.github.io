@@ -1,4 +1,4 @@
-import type { TilesSet, Tile } from '../types/core';
+import type { TilesSet, Tile } from '../../types/core';
 
 const GRID_SIZE = 10;
 

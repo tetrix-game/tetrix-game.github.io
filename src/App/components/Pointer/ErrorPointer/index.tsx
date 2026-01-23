@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Pointer, PointerProps } from '../Pointer';
+import { Pointer, PointerProps } from '../index';
 import './ErrorPointer.css';
 
 export type ErrorPointerProps = Omit<PointerProps, 'children'> & {

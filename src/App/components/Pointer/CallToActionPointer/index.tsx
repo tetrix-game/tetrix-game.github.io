@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../utils/persistence';
-import { Pointer, PointerProps } from '../Pointer';
+import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../../utils/persistence';
+import { Pointer, PointerProps } from '../index';
 import './CallToActionPointer.css';
 
 export type CallToActionPointerProps = Omit<PointerProps, 'children' | 'isVisible'> & {

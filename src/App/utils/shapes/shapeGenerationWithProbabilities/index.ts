@@ -1,5 +1,5 @@
-import type { Shape, ColorName } from '../types/core';
-import type { ColorProbability } from '../types/shapeQueue';
+import type { Shape, ColorName } from '../../../types/core';
+import type { ColorProbability } from '../../../types/shapeQueue';
 import { rotateShape, cloneShape } from '../shapeTransforms';
 
 /**

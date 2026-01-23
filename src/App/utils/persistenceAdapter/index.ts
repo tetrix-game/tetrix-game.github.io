@@ -10,7 +10,7 @@ import type {
   GameSettingsPersistenceData,
   ModifiersPersistenceData,
   LoadResult,
-} from '../types/persistence';
+} from '../../types/persistence';
 import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../checksumUtils';
 import * as crud from '../indexedDBCrud';
 import { STORES } from '../indexedDBCrud';

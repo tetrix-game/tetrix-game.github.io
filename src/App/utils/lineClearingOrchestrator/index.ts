@@ -10,8 +10,8 @@
  * - Detecting full board clears
  */
 
-import { playSound } from '../contexts/SoundEffectsContext';
-import type { TilesSet } from '../types/core';
+import { playSound } from '../../contexts/SoundEffectsContext';
+import type { TilesSet } from '../../types/core';
 import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../lineUtils';
 import { calculateScore } from '../scoringUtils';

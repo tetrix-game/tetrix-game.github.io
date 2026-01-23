@@ -3,8 +3,8 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import type { Tile, QueuedShape, QueueItem } from '../types/core';
-import type { TetrixReducerState, TetrixAction } from '../types/gameState';
+import type { Tile, QueuedShape, QueueItem } from '../../types/core';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // safeBatchSave removed - persistence handled by PersistenceListener
 import { cleanupExpiredAnimations } from '../../utils/clearingAnimationUtils';
 import { checkGameOver } from '../../utils/gameOverUtils';

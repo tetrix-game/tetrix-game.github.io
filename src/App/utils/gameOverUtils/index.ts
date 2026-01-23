@@ -1,5 +1,5 @@
-import type { Shape, TilesSet } from '../types/core';
-import type { GameMode } from '../types/gameState';
+import type { Shape, TilesSet } from '../../types/core';
+import type { GameMode } from '../../types/gameState';
 import { rotateShape } from '../shapes/shapeTransforms';
 import { isValidPlacement } from '../shapes/shapeValidation';
 

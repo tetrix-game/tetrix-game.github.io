@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
-import { useMusicControl } from '../../Header/MusicControlContext';
-import { useTetrixStateContext } from '../contexts/TetrixContext';
+import { useMusicControl } from '../../contexts/MusicControlContext';
+import { useTetrixStateContext } from '../../contexts/TetrixContext';
 import './BackgroundMusic.css';
 
 // Per-track volume multipliers to normalize loudness across all BGM tracks

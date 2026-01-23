@@ -4,7 +4,7 @@
  *          RETURN_SHAPE_TO_SELECTOR, COMPLETE_RETURN, CLEAR_SELECTION
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types/gameState';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 import { ANIMATION_TIMING } from '../../utils/animationConstants';
 import { getShapeGridPositions, getShapeVisualOffset } from '../../utils/shapes/shapeGeometry';
 

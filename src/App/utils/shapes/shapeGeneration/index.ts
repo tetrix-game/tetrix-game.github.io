@@ -1,4 +1,4 @@
-import type { Shape, Block, ColorName } from '../types/core';
+import type { Shape, Block, ColorName } from '../../../types/core';
 import { rotateShape, cloneShape, makeRandomColor } from '../shapeTransforms';
 
 /**

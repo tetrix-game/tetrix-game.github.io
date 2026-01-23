@@ -1,4 +1,4 @@
-import type { Shape, TilesSet, ColorName } from '../types/core';
+import type { Shape, TilesSet, ColorName } from '../../types/core';
 import {
   generateIPiece, generateOPiece, generateTPiece, generateSPiece, generateZPiece, generateJPiece, generateLPiece,
   generate3x3Piece, generate3x2Piece, generate5x1Piece, generate3x1Piece, generate2x1Piece, generate1x1Piece, generateEvenLPiece,

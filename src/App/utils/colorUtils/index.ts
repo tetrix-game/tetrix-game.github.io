@@ -2,7 +2,7 @@
  * Color utilities for block color management and luminosity adjustments
  */
 
-import type { ColorName } from '../types/core';
+import type { ColorName } from '../../types/core';
 
 /**
  * Converts RGB string to HSL values

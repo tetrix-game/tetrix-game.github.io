@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useMusicControl } from '../../Header/MusicControlContext';
+import { useMusicControl } from '../../contexts/MusicControlContext';
 import './AudioUnlockIndicator.css';
 
 /**

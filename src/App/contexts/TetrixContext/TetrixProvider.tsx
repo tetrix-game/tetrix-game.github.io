@@ -1,6 +1,6 @@
 import { useReducer, useEffect, useState } from 'react';
 
-import type { ThemeName, BlockTheme } from '../types/theme';
+import type { ThemeName, BlockTheme } from '../../types/theme';
 import {
   loadModifiers,
   loadTheme,

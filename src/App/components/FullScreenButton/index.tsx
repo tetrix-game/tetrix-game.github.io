@@ -1,7 +1,7 @@
 import './FullScreenButton.css';
 import { useEffect, useState, useRef } from 'react';
 
-import { CallToActionPointer } from '../../Pointer/CallToActionPointer';
+import { CallToActionPointer } from '../Pointer/CallToActionPointer';
 
 function FullScreenButton() {
   const [isFullScreen, setIsFullScreen] = useState(false);

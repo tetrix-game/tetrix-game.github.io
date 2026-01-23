@@ -1,4 +1,4 @@
-import type { Shape, Block, Location } from '../types/core';
+import type { Shape, Block, Location } from '../../../types/core';
 
 /**
  * Shape geometry functions - Calculate bounds, centers, and anchor points

@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState, useRef, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
-import { MenuSection } from '../MenuSection';
+import { MenuSection } from './MenuSection';
 import './ScrollableMenu.css';
 
 export interface MenuSectionConfig<T extends string = string> {

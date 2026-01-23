@@ -1,4 +1,4 @@
-import type { ColorName } from '../../types/core';
+import type { ColorName } from '../../App/types/core';
 import './ShapeIcon.css';
 
 type ShapeIconProps = {

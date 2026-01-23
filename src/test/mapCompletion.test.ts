@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { checkMapCompletion, createTargetTilesSet } from '../utils/mapCompletionUtils';
-import { TilesSet, Tile } from '../types';
+import type { TilesSet, Tile } from '../types/core';
 
 describe('Map Completion Utils', () => {
   const createTile = (

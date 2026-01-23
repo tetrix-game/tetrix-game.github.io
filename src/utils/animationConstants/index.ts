@@ -2,7 +2,7 @@
  * Animation timing constants
  * Centralized source of truth for animation durations to ensure synchronization
  * between React components (visuals) and Reducers (state logic).
- * 
+ *
  * Currently slowed down to 2000ms for debugging purposes.
  */
 export const ANIMATION_TIMING = {

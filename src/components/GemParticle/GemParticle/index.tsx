@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { BlueGemIcon } from '../../BlueGemIcon';
+
+import { BlueGemIcon } from '../../BlueGemIcon/BlueGemIcon';
 import './GemParticle.css';
 
 interface GemParticleProps {
@@ -17,7 +18,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
   onComplete,
   delay = 0,
   size = 40,
-  attractTo
+  attractTo,
 }) => {
   const [currentPosition, setCurrentPosition] = useState(startPosition);
   const [opacity, setOpacity] = useState(0); // Start transparent for smooth fade-in
@@ -30,7 +31,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
     velocity,
     onComplete,
     delay,
-    attractTo
+    attractTo,
   });
 
   // Animation constants
@@ -53,7 +54,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
     const startDelay = setTimeout(() => {
       startTimeRef.current = performance.now();
       let lastFrameTime = performance.now();
-      let currentPos = { ...initialStart };
+      const currentPos = { ...initialStart };
 
       const animate = (currentTime: number) => {
         if (!startTimeRef.current) return;

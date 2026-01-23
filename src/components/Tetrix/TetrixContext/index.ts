@@ -1,5 +1,6 @@
-import { createContext, useContext } from "react";
-import { TetrixDispatch, TetrixReducerState } from "../../../utils/types";
+import { createContext, useContext } from 'react';
+
+import type { TetrixDispatch, TetrixReducerState } from '../../../types/gameState';
 
 export const TetrixStateContext = createContext<TetrixReducerState | null>(null); // null is the default value
 export const TetrixDispatchContext = createContext<TetrixDispatch | null>(null); // null is the default value

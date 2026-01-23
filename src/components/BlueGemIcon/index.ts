@@ -1,1 +1,0 @@
-export { BlueGemIcon } from './BlueGemIcon';

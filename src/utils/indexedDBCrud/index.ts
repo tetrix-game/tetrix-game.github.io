@@ -56,7 +56,7 @@ async function openDatabase(): Promise<IDBDatabase> {
 
       // Verify required stores exist
       const requiredStores = Object.values(STORES);
-      const missingStores = requiredStores.filter(store => !db.objectStoreNames.contains(store));
+      const missingStores = requiredStores.filter((store) => !db.objectStoreNames.contains(store));
 
       if (missingStores.length > 0) {
         console.warn('Missing stores:', missingStores, '- Database may need upgrade');
@@ -102,7 +102,7 @@ async function getDatabase(): Promise<IDBDatabase> {
 export async function write<T>(
   storeName: StoreName,
   key: IDBValidKey,
-  data: T
+  data: T,
 ): Promise<void> {
   const db = await getDatabase();
 
@@ -141,7 +141,7 @@ export async function write<T>(
  */
 export async function read<T>(
   storeName: StoreName,
-  key: IDBValidKey
+  key: IDBValidKey,
 ): Promise<T | null> {
   const db = await getDatabase();
 
@@ -173,7 +173,7 @@ export async function read<T>(
  */
 export async function remove(
   storeName: StoreName,
-  key: IDBValidKey
+  key: IDBValidKey,
 ): Promise<void> {
   const db = await getDatabase();
 
@@ -293,7 +293,7 @@ export async function batchWrite(
     storeName: StoreName;
     key: IDBValidKey;
     data: unknown;
-  }>
+  }>,
 ): Promise<void> {
   if (operations.length === 0) {
     return;
@@ -302,7 +302,7 @@ export async function batchWrite(
   const db = await getDatabase();
 
   // Group operations by store for efficient transactions
-  const storeNames = [...new Set(operations.map(op => op.storeName))];
+  const storeNames = [...new Set(operations.map((op) => op.storeName))];
 
   return new Promise((resolve, reject) => {
     try {
@@ -338,14 +338,14 @@ export async function batchRead<T>(
   operations: Array<{
     storeName: StoreName;
     key: IDBValidKey;
-  }>
+  }>,
 ): Promise<(T | null)[]> {
   if (operations.length === 0) {
     return [];
   }
 
   const db = await getDatabase();
-  const storeNames = [...new Set(operations.map(op => op.storeName))];
+  const storeNames = [...new Set(operations.map((op) => op.storeName))];
 
   return new Promise((resolve, reject) => {
     try {
@@ -387,7 +387,7 @@ export async function batchRead<T>(
  */
 export async function exists(
   storeName: StoreName,
-  key: IDBValidKey
+  key: IDBValidKey,
 ): Promise<boolean> {
   const db = await getDatabase();
 

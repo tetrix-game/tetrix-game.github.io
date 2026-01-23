@@ -1,24 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { QRCodeSVG } from 'qrcode.react';
-import IconButton from '@mui/material/IconButton';
-import Slider from '@mui/material/Slider';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import MusicOffIcon from '@mui/icons-material/MusicOff';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import { useMusicControl } from '../../Header/MusicControlContext';
-import { useSoundEffectsControl } from '../../Header/SoundEffectsControlContext';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
-import { useGridEditor } from '../../GridEditor';
-import { generateShapesWithProbabilities } from '../../../utils/shapes';
-import { THEMES, ThemeName, BLOCK_THEMES, BlockTheme } from '../../../types';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import IconButton from '@mui/material/IconButton';
+import Slider from '@mui/material/Slider';
+import { QRCodeSVG } from 'qrcode.react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+
+import { THEMES, BLOCK_THEMES } from '../../../types/theme';
+import type { ThemeName, BlockTheme } from '../../../types/theme';
 import {
   loadDebugSettings,
-  saveDebugSettings
+  saveDebugSettings,
 } from '../../../utils/persistence';
-import { InstallButton } from '../../InstallButton';
+import { generateShapesWithProbabilities } from '../../../utils/shapes/shapeGenerationWithProbabilities';
 import { APP_VERSION } from '../../../version';
+import { useGridEditor } from '../../GridEditor/GridEditorContext';
+import { useMusicControl } from '../../Header/MusicControlContext';
+import { useSoundEffectsControl } from '../../Header/SoundEffectsControlContext';
+import { InstallButton } from '../../InstallButton/InstallButton';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import './SettingsOverlay.css';
 
 const ThemeSelector: React.FC = () => {
@@ -174,10 +176,10 @@ const SettingsOverlay: React.FC = () => {
           scoreData: {
             rowsCleared: 0,
             columnsCleared: 0,
-            pointsEarned: 20
+            pointsEarned: 20,
           },
-          mousePosition: { x: e.clientX, y: e.clientY }
-        }
+          mousePosition: { x: e.clientX, y: e.clientY },
+        },
       });
     }
   };
@@ -208,10 +210,10 @@ const SettingsOverlay: React.FC = () => {
         scoreData: {
           rowsCleared: 0,
           columnsCleared: 0,
-          pointsEarned: 1000
+          pointsEarned: 1000,
         },
-        mousePosition: clickPosition
-      }
+        mousePosition: clickPosition,
+      },
     });
   };
 
@@ -221,7 +223,7 @@ const SettingsOverlay: React.FC = () => {
 
     dispatch({
       type: 'SET_QUEUE_MODE',
-      value: { mode: newMode }
+      value: { mode: newMode },
     });
 
     // If switching to finite mode, populate with 20 shapes
@@ -229,7 +231,7 @@ const SettingsOverlay: React.FC = () => {
       const shapes = generateShapesWithProbabilities(20, state.queueColorProbabilities);
       dispatch({
         type: 'POPULATE_FINITE_QUEUE',
-        value: { shapes }
+        value: { shapes },
       });
     }
   };
@@ -301,8 +303,8 @@ const SettingsOverlay: React.FC = () => {
                     color: '#ffffff',
                     padding: '4px',
                     '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                    }
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    },
                   }}
                 >
                   {!isMusicEnabled || musicVolume === 0 ? (
@@ -332,16 +334,16 @@ const SettingsOverlay: React.FC = () => {
                     width: 16,
                     height: 16,
                     '&:hover, &.Mui-focusVisible': {
-                      boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)'
-                    }
+                      boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)',
+                    },
                   },
                   '& .MuiSlider-track': {
-                    height: 4
+                    height: 4,
                   },
                   '& .MuiSlider-rail': {
                     height: 4,
-                    opacity: 0.3
-                  }
+                    opacity: 0.3,
+                  },
                 }}
               />
             </div>
@@ -356,8 +358,8 @@ const SettingsOverlay: React.FC = () => {
                     color: '#ffffff',
                     padding: '4px',
                     '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                    }
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    },
                   }}
                 >
                   {!isSoundEnabled || soundVolume === 0 ? (
@@ -382,16 +384,16 @@ const SettingsOverlay: React.FC = () => {
                     width: 16,
                     height: 16,
                     '&:hover, &.Mui-focusVisible': {
-                      boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)'
-                    }
+                      boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)',
+                    },
                   },
                   '& .MuiSlider-track': {
-                    height: 4
+                    height: 4,
                   },
                   '& .MuiSlider-rail': {
                     height: 4,
-                    opacity: 0.3
-                  }
+                    opacity: 0.3,
+                  },
                 }}
               />
             </div>
@@ -473,7 +475,7 @@ const SettingsOverlay: React.FC = () => {
                     marks={[
                       { value: 0.5, label: '50%' },
                       { value: 1.0, label: '100%' },
-                      { value: 1.5, label: '150%' }
+                      { value: 1.5, label: '150%' },
                     ]}
                     sx={{
                       color: '#4fc3f7',
@@ -483,25 +485,25 @@ const SettingsOverlay: React.FC = () => {
                         width: 16,
                         height: 16,
                         '&:hover, &.Mui-focusVisible': {
-                          boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)'
-                        }
+                          boxShadow: '0 0 0 8px rgba(79, 195, 247, 0.16)',
+                        },
                       },
                       '& .MuiSlider-track': {
-                        height: 4
+                        height: 4,
                       },
                       '& .MuiSlider-rail': {
                         height: 4,
-                        opacity: 0.3
+                        opacity: 0.3,
                       },
                       '& .MuiSlider-mark': {
                         height: 8,
                         width: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)'
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
                       },
                       '& .MuiSlider-markLabel': {
                         fontSize: '10px',
-                        color: 'rgba(255, 255, 255, 0.7)'
-                      }
+                        color: 'rgba(255, 255, 255, 0.7)',
+                      },
                     }}
                   />
                 </div>
@@ -539,7 +541,7 @@ const SettingsOverlay: React.FC = () => {
             )}
           </div>
         </div>,
-        document.body
+        document.body,
       )}
     </div>
   );

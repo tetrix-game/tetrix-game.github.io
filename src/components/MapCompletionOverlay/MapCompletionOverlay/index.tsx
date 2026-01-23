@@ -1,8 +1,9 @@
 import React from 'react';
+
 import './MapCompletionOverlay.css';
+import { Grid } from '../../Grid/Grid';
+import { Overlay } from '../../Overlay/Overlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
-import { Grid } from '../../Grid';
-import { Overlay } from '../../Overlay';
 
 interface MapCompletionOverlayProps {
   stars: number; // 0-3 stars (0 = failure)
@@ -50,12 +51,12 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
         <div className="completion-grid-preview">
           <Grid pixelSize={250} />
         </div>
-        
+
         <div className="completion-details">
           <h1 className={`completion-title ${isSuccess ? 'success' : 'failure'}`}>
             {stars === 3 ? 'Perfect!' : isSuccess ? 'Level Complete!' : 'Level Failed'}
           </h1>
-          
+
           {isSuccess && (
             <div className="star-rating">
               {[1, 2, 3].map((star) => (
@@ -68,7 +69,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
               ))}
             </div>
           )}
-          
+
           {stars !== 3 && (
             <div className="completion-stats">
               <div className="stat-row">
@@ -83,21 +84,21 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
               </div>
             </div>
           )}
-          
+
           {isSuccess && stars !== 3 && (
             <div className="rating-description">
               {stars === 2 && <p>Great job! Only 1-2 tiles didn't match.</p>}
               {stars === 1 && <p>Good effort! 3-5 tiles need correction.</p>}
             </div>
           )}
-          
+
           {!isSuccess && (
             <div className="failure-message">
               <p>Too many tiles didn't match their target colors.</p>
               <p>Try again to achieve a better result!</p>
             </div>
           )}
-          
+
           <div className="completion-actions">
             {stars !== 3 && (
               <button className="retry-button" onClick={handleRetry}>

@@ -2,13 +2,13 @@
  * Game state types - Reducer state, actions, and game modes
  */
 
+import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOptionBounds } from '../animation';
 import type { Shape, QueueItem, Location, TilesSet, ColorName } from '../core';
 import type { DragState } from '../drag';
-import type { ShapeRemovalAnimationState, ShapeCreationAnimationState, ShapeOptionBounds } from '../animation';
 import type { ScoreData } from '../scoring';
+import type { QueueMode, ColorProbability } from '../shapeQueue';
 import type { StatsPersistenceData } from '../stats';
 import type { ThemeName, BlockTheme } from '../theme';
-import type { QueueMode, ColorProbability } from '../shapeQueue';
 
 // Game state types - simplified for level-based play
 export type GameState = 'playing' | 'gameover';
@@ -412,8 +412,7 @@ type CompleteSlotPurchaseRemovalAction = {
 
 // Tile clearing actions removed - animations now live directly in TileData
 
-export type TetrixAction =
-  | SelectShapeAction
+export type TetrixAction = | SelectShapeAction
   | StartDragAction
   | UpdateMouseLocationAction
   | PlaceShapeAction

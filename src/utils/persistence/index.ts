@@ -4,6 +4,9 @@
  * Provides easy-to-use functions for common persistence operations.
  */
 
+import type { Shape, TileData, QueueItem } from '../../types/core';
+import type { SavedGameState, LoadResult, SerializedQueueItem } from '../../types/persistence';
+import type { StatsPersistenceData } from '../../types/stats';
 import {
   saveGameState as saveGameStateAdapter,
   loadGameState as loadGameStateAdapter,
@@ -26,16 +29,6 @@ import {
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,
 } from '../persistenceAdapter';
-
-import type {
-  SavedGameState,
-  Shape,
-  TileData,
-  LoadResult,
-  SerializedQueueItem,
-  QueueItem,
-} from '../../types';
-import type { StatsPersistenceData } from '../../types/stats';
 
 // Re-export the main functions
 export {
@@ -82,21 +75,20 @@ async function saveGameState(data: {
   // NOTE: isGameOver is NOT persisted - it's a derived state
 }): Promise<void> {
   // Serialize queue items (strip IDs, keep types and data)
-  const serializedQueue: SerializedQueueItem[] | undefined = data.nextQueue?.map(item => {
+  const serializedQueue: SerializedQueueItem[] | undefined = data.nextQueue?.map((item) => {
     if (item.type === 'shape') {
       return { type: 'shape' as const, shape: item.shape };
-    } else {
-      return {
-        type: 'purchasable-slot' as const,
-        cost: item.cost,
-        slotNumber: item.slotNumber
-      };
     }
+    return {
+      type: 'purchasable-slot' as const,
+      cost: item.cost,
+      slotNumber: item.slotNumber,
+    };
   });
 
   // For backwards compatibility, also extract plain shapes
   const legacyShapes = data.nextQueue
-    ? data.nextQueue.filter(item => item.type === 'shape').map(item => item.shape)
+    ? data.nextQueue.filter((item) => item.type === 'shape').map((item) => item.shape)
     : (data.nextShapes ?? []);
 
   const gameState: SavedGameState = {
@@ -220,7 +212,7 @@ export async function loadMusicSettings(): Promise<{
 export async function saveMusicSettings(
   isMuted: boolean,
   volume: number = 100,
-  isEnabled: boolean = true
+  isEnabled: boolean = true,
 ): Promise<void> {
   await saveMusicSettingsAdapter(isMuted, volume, isEnabled);
 }
@@ -252,7 +244,7 @@ export async function loadSoundEffectsSettings(): Promise<{
 export async function saveSoundEffectsSettings(
   isMuted: boolean,
   volume: number = 100,
-  isEnabled: boolean = true
+  isEnabled: boolean = true,
 ): Promise<void> {
   await saveSoundEffectsSettingsAdapter(isMuted, volume, isEnabled);
 }
@@ -297,6 +289,6 @@ export async function saveBlockTheme(blockTheme: string): Promise<void> {
 /**
  * Load settings
  */
-export async function loadSettingsData(): Promise<LoadResult<import('../../types').GameSettingsPersistenceData>> {
+export async function loadSettingsData(): Promise<LoadResult<import('../../types/persistence').GameSettingsPersistenceData>> {
   return await loadSettingsAdapter();
 }

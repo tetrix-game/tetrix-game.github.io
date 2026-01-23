@@ -1,4 +1,4 @@
-import { TilesSet } from '../../types';
+import type { TilesSet } from '../../types/core';
 
 /**
  * Result of checking map completion
@@ -13,14 +13,14 @@ export interface MapCompletionResult {
 
 /**
  * Check if a map/level is complete and calculate star rating
- * 
+ *
  * A map is complete when all tiles have filled blocks placed.
  * Star rating is based on how many blocks match their tile's background color:
  * - 3 stars: Perfect match (0 mismatches)
  * - 2 stars: 1-2 mismatches
  * - 1 star: 3-5 mismatches
  * - 0 stars (failure): More than 5 mismatches
- * 
+ *
  * @param tiles - The current game board state
  * @param targetTiles - Optional set of tile positions to check. If not provided, checks all tiles.
  *                      In daily challenges, this is automatically derived from tiles with custom backgrounds.
@@ -28,7 +28,7 @@ export interface MapCompletionResult {
  */
 export function checkMapCompletion(
   tiles: TilesSet,
-  targetTiles?: Set<string>
+  targetTiles?: Set<string>,
 ): MapCompletionResult {
   let totalTiles = 0;
   let filledTiles = 0;
@@ -87,7 +87,7 @@ export function checkMapCompletion(
 /**
  * Create a Set of target tile positions from challenge data
  * Used to know which tiles should be filled for a level/challenge
- * 
+ *
  * @param tilePositions - Array of tile position strings (e.g., ["R1C1", "R1C2"])
  * @returns Set of tile positions
  */

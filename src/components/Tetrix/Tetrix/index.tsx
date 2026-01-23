@@ -1,9 +1,9 @@
 import './Tetrix.css';
-import { Grid } from '../../Grid';
-import { GameControlsPanel } from '../../GameControlsPanel';
-import { GemShower } from '../../GemShower';
-import { GameOverOverlay } from '../../GameOverOverlay';
-import { MapCompletionOverlay } from '../../MapCompletionOverlay';
+import { GameControlsPanel } from '../../GameControlsPanel/GameControlsPanel';
+import { GameOverOverlay } from '../../GameOverOverlay/GameOverOverlay';
+import { GemShower } from '../../GemShower/GemShower';
+import { Grid } from '../../Grid/Grid';
+import { MapCompletionOverlay } from '../../MapCompletionOverlay/MapCompletionOverlay';
 import { useTetrixStateContext } from '../TetrixContext';
 
 const Tetrix: React.FC = () => {
@@ -15,16 +15,16 @@ const Tetrix: React.FC = () => {
   }
 
   // Show map completion overlay for daily challenges with completion data
-  const showMapCompletion = gameState === 'gameover' && 
-    (gameMode === 'daily' || gameMode === 'tutorial') && 
-    mapCompletionResult !== null &&
-    !isStatsOpen;
+  const showMapCompletion = gameState === 'gameover'
+    && (gameMode === 'daily' || gameMode === 'tutorial')
+    && mapCompletionResult !== null
+    && !isStatsOpen;
 
   // Show standard game over overlay for infinite mode
-  const showStandardGameOver = gameState === 'gameover' && 
-    (gameMode === 'infinite' || gameMode === 'daily') && 
-    !mapCompletionResult &&
-    !isStatsOpen;
+  const showStandardGameOver = gameState === 'gameover'
+    && (gameMode === 'infinite' || gameMode === 'daily')
+    && !mapCompletionResult
+    && !isStatsOpen;
 
   return (
     <div className="tetrix">
@@ -41,7 +41,7 @@ const Tetrix: React.FC = () => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
 export { Tetrix };

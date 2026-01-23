@@ -1,7 +1,9 @@
 import React from 'react';
-import { ShapeIcon } from "../../ShapeIcon";
-import { BlockSvg } from "../BlockSvg";
-import { BlockTheme, ColorName } from "../../../types";
+
+import type { ColorName } from '../../../types/core';
+import type { BlockTheme } from '../../../types/theme';
+import { ShapeIcon } from '../../ShapeIcon/ShapeIcon';
+import { BlockSvg } from '../BlockSvg';
 import './BlockVisual.css';
 
 type BlockVisualProps = {
@@ -45,7 +47,7 @@ function BlockVisual({ isFilled, color, size, theme = 'gem', showIcon = true }: 
         </div>
       )}
     </div>
-  )
+  );
 }
 
 const MemoizedBlockVisual = React.memo(BlockVisual);

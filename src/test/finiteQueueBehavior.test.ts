@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { initialState } from '../reducers';
-import type { TetrixReducerState } from '../types';
-import { generateRandomShapeWithProbabilities } from '../utils/shapes';
+import type { TetrixReducerState } from '../types/gameState';
+import { generateRandomShapeWithProbabilities } from '../utils/shapes/shapeGenerationWithProbabilities';
 import { DEFAULT_COLOR_PROBABILITIES } from '../types/shapeQueue';
 
 describe('Finite Queue Behavior', () => {

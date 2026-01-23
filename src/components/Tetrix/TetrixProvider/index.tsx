@@ -1,15 +1,16 @@
 import { useReducer, useEffect, useState } from 'react';
-import { initialState, tetrixReducer } from '../TetrixReducer';
-import { TetrixStateContext, TetrixDispatchContext } from '../TetrixContext';
+
+import type { ThemeName, BlockTheme } from '../../../types/theme';
 import {
   loadModifiers,
   loadTheme,
   initializePersistence,
   clearAllDataAndReload,
   loadGameState,
-  loadSettingsData
+  loadSettingsData,
 } from '../../../utils/persistence';
-import { ThemeName, BlockTheme } from '../../../types';
+import { TetrixStateContext, TetrixDispatchContext } from '../TetrixContext';
+import { initialState, tetrixReducer } from '../../../reducers';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
 
@@ -41,7 +42,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
           loadSettingsData().catch((err: Error) => {
             console.error('Error loading settings:', err);
             return { status: 'error', error: err } as const;
-          })
+          }),
         ]);
 
         // Extract data from LoadResults
@@ -51,7 +52,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         if (savedThemeResult && (savedThemeResult === 'dark' || savedThemeResult === 'light' || savedThemeResult === 'block-blast')) {
           dispatch({
             type: 'SET_THEME',
-            value: { theme: savedThemeResult as ThemeName }
+            value: { theme: savedThemeResult as ThemeName },
           });
         }
 
@@ -59,7 +60,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         if (settingsData?.blockTheme) {
           dispatch({
             type: 'SET_BLOCK_THEME',
-            value: { theme: settingsData.blockTheme as BlockTheme }
+            value: { theme: settingsData.blockTheme as BlockTheme },
           });
         }
 
@@ -67,7 +68,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         if (settingsData?.showBlockIcons !== undefined) {
           dispatch({
             type: 'SET_SHOW_BLOCK_ICONS',
-            value: { show: settingsData.showBlockIcons }
+            value: { show: settingsData.showBlockIcons },
           });
         }
 
@@ -75,7 +76,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         if (unlockedModifiersResult.status === 'success') {
           dispatch({
             type: 'LOAD_MODIFIERS',
-            value: { unlockedModifiers: unlockedModifiersResult.data }
+            value: { unlockedModifiers: unlockedModifiersResult.data },
           });
         }
 
@@ -83,7 +84,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         if (settingsData?.buttonSizeMultiplier !== undefined) {
           dispatch({
             type: 'SET_BUTTON_SIZE_MULTIPLIER',
-            value: { multiplier: settingsData.buttonSizeMultiplier }
+            value: { multiplier: settingsData.buttonSizeMultiplier },
           });
         }
 
@@ -91,7 +92,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         if (settingsData?.grandpaMode !== undefined) {
           dispatch({
             type: 'SET_GRANDPA_MODE',
-            value: { enabled: settingsData.grandpaMode }
+            value: { enabled: settingsData.grandpaMode },
           });
         }
 
@@ -107,11 +108,10 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         if (gameStateData) {
           // Check if there's actual progress to load
           // A valid save has either: filled tiles, score > 0, or shapes used
-          const hasProgress =
-            gameStateData.score > 0 ||
-            gameStateData.hasPlacedFirstShape ||
-            gameStateData.shapesUsed > 0 ||
-            gameStateData.tiles.some((t: any) => t.isFilled);
+          const hasProgress = gameStateData.score > 0
+            || gameStateData.hasPlacedFirstShape
+            || gameStateData.shapesUsed > 0
+            || gameStateData.tiles.some((t: any) => t.isFilled);
 
           // Always load if there's progress, regardless of tiles.length
           // Even an empty or partial save should be loaded if it has progress
@@ -121,7 +121,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
               type: 'LOAD_GAME_STATE',
               value: {
                 gameData: gameStateData,
-                stats: gameStateData.stats
+                stats: gameStateData.stats,
               },
             });
           }
@@ -148,8 +148,9 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         height: '100vh',
         backgroundColor: 'rgb(25, 25, 25)',
         color: 'rgb(200, 200, 200)',
-        fontSize: '18px'
-      }}>
+        fontSize: '18px',
+      }}
+      >
         Loading...
       </div>
     );
@@ -168,14 +169,16 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         fontSize: '18px',
         gap: '20px',
         padding: '20px',
-        textAlign: 'center'
-      }}>
+        textAlign: 'center',
+      }}
+      >
         <div>Failed to load game data. The database may be corrupted.</div>
         <div style={{
           color: 'rgb(200, 200, 200)',
           fontSize: '14px',
-          maxWidth: '500px'
-        }}>
+          maxWidth: '500px',
+        }}
+        >
           Your long-term statistics will be preserved if you reset.
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -188,7 +191,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
               background: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: 'white',
-              borderRadius: '4px'
+              borderRadius: '4px',
             }}
           >
             Retry
@@ -202,7 +205,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
               background: 'rgba(255, 50, 50, 0.2)',
               border: '1px solid rgba(255, 50, 50, 0.4)',
               color: 'white',
-              borderRadius: '4px'
+              borderRadius: '4px',
             }}
             title="Clears all data but preserves your long-term statistics"
           >
@@ -219,5 +222,5 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         {children}
       </TetrixDispatchContext.Provider>
     </TetrixStateContext.Provider>
-  )
+  );
 }

@@ -1,21 +1,22 @@
 import React, { useEffect, useRef } from 'react';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
+
 import { useMusicControl } from '../../Header/MusicControlContext';
+import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import './BackgroundMusic.css';
 
 // Per-track volume multipliers to normalize loudness across all BGM tracks
 // Based on measured mean_volume levels - quieter tracks get higher multipliers
 // Target: normalize all tracks to sound like they're at -16 dB mean
 const TRACK_VOLUME_MULTIPLIERS: Record<string, number> = {
-  '/sound/bgm/Jazz2_KEY_C_in_C.mp3': 1.3,           // -18.0 dB mean (quieter)
-  '/sound/bgm/Jazz4_KEY_C_in_C.mp3': 1.3,           // -18.2 dB mean (quieter)
+  '/sound/bgm/Jazz2_KEY_C_in_C.mp3': 1.3, // -18.0 dB mean (quieter)
+  '/sound/bgm/Jazz4_KEY_C_in_C.mp3': 1.3, // -18.2 dB mean (quieter)
   '/sound/bgm/daytime-smooth-jazz-2025-2-458721.mp3': 0.9, // -14.6 dB mean (louder)
-  '/sound/bgm/smooth-jazz-2025-1-458715.mp3': 1.0,  // -16.1 dB mean
-  '/sound/bgm/smooth-jazz-2025-2-458713.mp3': 1.0,  // -15.9 dB mean
+  '/sound/bgm/smooth-jazz-2025-1-458715.mp3': 1.0, // -16.1 dB mean
+  '/sound/bgm/smooth-jazz-2025-2-458713.mp3': 1.0, // -15.9 dB mean
   '/sound/bgm/smooth-jazz-2025-3-458714.mp3': 0.95, // -15.4 dB mean
   '/sound/bgm/smooth-jazz-2025-4-458717.mp3': 0.95, // -15.6 dB mean
-  '/sound/bgm/smooth-jazz-2025-5-458716.mp3': 1.0,  // -16.3 dB mean
-  '/sound/bgm/smooth-jazz-2025-6-458712.mp3': 1.0,  // -16.6 dB mean
+  '/sound/bgm/smooth-jazz-2025-5-458716.mp3': 1.0, // -16.3 dB mean
+  '/sound/bgm/smooth-jazz-2025-6-458712.mp3': 1.0, // -16.6 dB mean
 };
 
 // Base volume scale (0-1) - pleasant background music level
@@ -54,7 +55,7 @@ const BackgroundMusic: React.FC = () => {
       }, 1000); // 1 second delay
 
       return () => clearTimeout(timer);
-    } else if (!hasPlacedFirstShape && hasTriggeredFromShapeRef.current) {
+    } if (!hasPlacedFirstShape && hasTriggeredFromShapeRef.current) {
       // Reset trigger if game is reset
       hasTriggeredFromShapeRef.current = false;
     }
@@ -86,7 +87,7 @@ const BackgroundMusic: React.FC = () => {
       } else {
         // App is coming to foreground - resume if it was playing before
         if (wasPlayingBeforeHiddenRef.current && shouldPlayMusic && isEnabled && volume > 0) {
-          audio.play().catch(error => {
+          audio.play().catch((error) => {
             console.log('Failed to resume music after visibility change:', error);
           });
         }

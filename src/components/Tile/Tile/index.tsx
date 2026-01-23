@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
-import type { ColorName } from '../../../utils/types';
-import { ShapeIcon } from '../../ShapeIcon';
+
+import type { ColorName } from '../../../types/core';
+import { ShapeIcon } from '../../ShapeIcon/ShapeIcon';
 import { TileSvg } from '../TileSvg';
 import './Tile.css';
 
@@ -59,7 +60,6 @@ const Tile: React.FC<TileProps> = ({
     </div>
   );
 };
-
 
 const MemoizedTile = React.memo(Tile);
 export { MemoizedTile as Tile };

@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
+
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../components/Tetrix/TetrixContext';
-import { mousePositionToGridLocation, isValidPlacement, getInvalidBlocks } from '../../utils/shapeUtils';
 import { GRID_SIZE } from '../../utils/gridConstants';
+import { mousePositionToGridLocation } from '../../utils/shapes/shapeGeometry';
+import { isValidPlacement, getInvalidBlocks } from '../../utils/shapes/shapeValidation';
 
 export const usePointerTracking = () => {
   const { gameMode, dragState, gridTileSize, gridBounds, tiles } = useTetrixStateContext();
@@ -22,7 +24,7 @@ export const usePointerTracking = () => {
             location: null,
             position,
             tileSize: gridTileSize,
-            gridBounds: gridBounds,
+            gridBounds,
             isValid: false,
             invalidBlocks: [],
           },
@@ -81,7 +83,7 @@ export const usePointerTracking = () => {
               gridOffsetY: offsets.gridOffsetY,
               tileSize: offsets.tileSize,
               gridGap: offsets.gridGap,
-            }
+            },
           );
 
           // Validate placement when we have a location

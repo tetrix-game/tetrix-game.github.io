@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
-import type { ScoreData } from '../utils/types';
+import { tetrixReducer, initialState } from '../reducers';
+import type { ScoreData } from '../types/scoring';
 
 describe('Test Notification Functionality', () => {
   it('should add score correctly using ADD_SCORE action', () => {

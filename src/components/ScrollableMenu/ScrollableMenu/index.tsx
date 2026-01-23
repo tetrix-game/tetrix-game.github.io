@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState, useRef, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+
 import { MenuSection } from '../MenuSection';
 import './ScrollableMenu.css';
 
@@ -53,11 +54,11 @@ export function ScrollableMenu<T extends string = string>({
   // Mouse down - start dragging
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!paletteRef.current) return;
-    
+
     const rect = paletteRef.current.getBoundingClientRect();
     setDragOffset({
       x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      y: e.clientY - rect.top,
     });
     setIsDragging(true);
   }, []);
@@ -69,7 +70,7 @@ export function ScrollableMenu<T extends string = string>({
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({
         x: e.clientX - dragOffset.x,
-        y: e.clientY - dragOffset.y
+        y: e.clientY - dragOffset.y,
       });
     };
 
@@ -122,7 +123,7 @@ export function ScrollableMenu<T extends string = string>({
       } else if (e.key === ' ') {
         // Space toggles between menu and submenu modes
         // This is handled by the parent component through section onClick
-        const focusedSectionConfig = sections.find(s => s.id === focusedSection);
+        const focusedSectionConfig = sections.find((s) => s.id === focusedSection);
         if (focusedSectionConfig) {
           focusedSectionConfig.onClick();
         }
@@ -175,12 +176,12 @@ export function ScrollableMenu<T extends string = string>({
       )}
 
       {/* Compact draggable menu palette */}
-      <div 
+      <div
         ref={paletteRef}
         className={`scrollable-menu-palette ${isDragging ? 'dragging' : ''}`}
         style={{
           left: `${position.x}px`,
-          top: `${position.y}px`
+          top: `${position.y}px`,
         }}
       >
         {/* Drag handle */}
@@ -192,12 +193,12 @@ export function ScrollableMenu<T extends string = string>({
 
         {/* Compact buttons */}
         <div className="scrollable-menu-buttons">
-          {sections.map(section => (
+          {sections.map((section) => (
             <MenuSection key={section.id} {...section} />
           ))}
         </div>
       </div>
     </>,
-    document.body
+    document.body,
   );
 }

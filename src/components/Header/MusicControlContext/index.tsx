@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+
 import { loadMusicSettings, saveMusicSettings } from '../../../utils/persistence';
 
 export interface MusicControlContextType {
@@ -43,12 +44,12 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     // Listen for any user interaction
     const events = ['click', 'touchstart', 'keydown', 'pointerdown'];
-    events.forEach(event => {
+    events.forEach((event) => {
       document.addEventListener(event, handleUserInteraction, { once: true, passive: true });
     });
 
     return () => {
-      events.forEach(event => {
+      events.forEach((event) => {
         document.removeEventListener(event, handleUserInteraction);
       });
     };
@@ -125,7 +126,7 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
     shouldPlayMusic,
     triggerAutoplay,
     isAudioUnlocked,
-    isWaitingForInteraction
+    isWaitingForInteraction,
   };
 
   return (

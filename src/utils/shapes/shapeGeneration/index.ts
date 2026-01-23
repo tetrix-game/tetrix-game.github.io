@@ -1,4 +1,4 @@
-import type { Shape, Block, ColorName } from '../../types';
+import type { Shape, Block, ColorName } from '../../../types/core';
 import { rotateShape, cloneShape, makeRandomColor } from '../shapeTransforms';
 
 /**
@@ -156,7 +156,7 @@ export function generate3x2Piece(color: ColorName): Shape {
 
 /**
  * Generate a 5x1 line piece (5 blocks)
- * Note: This requires a 5x5 grid if we want to rotate it fully without clipping, 
+ * Note: This requires a 5x5 grid if we want to rotate it fully without clipping,
  * but our Shape type is 4x4. We'll fit it in 4x4 if possible or truncate?
  * Wait, Shape is Block[][]. It's usually 4x4.
  * If I need 5x1, I need to expand the Shape definition or accept that it won't fit in 4x4.
@@ -276,7 +276,7 @@ export function generateSuperShape(): Shape {
 /**
  * Generate a random shape with balanced probability distribution
  * Each base shape type has equal likelihood of being selected, then orientation is randomly chosen
- * 
+ *
  * Shape types and their rotation counts:
  * - I-piece (4-block line): 2 unique rotations
  * - O-piece (square): 1 rotation (no change)
@@ -285,7 +285,7 @@ export function generateSuperShape(): Shape {
  * - Z-piece: 2 unique rotations
  * - L-piece: 4 rotations
  * - J-piece: 4 rotations
- * 
+ *
  * Note: Super combo piece is not in regular rotation - only generated as easter egg
  */
 export function generateRandomShape(): Shape {
@@ -303,7 +303,7 @@ export function generateRandomShape(): Shape {
         [X(), X(), X(), X()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     // O-piece (2x2 square) - 1 rotation (all rotations are identical)
     {
@@ -313,7 +313,7 @@ export function generateRandomShape(): Shape {
         [_(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 1
+      rotations: 1,
     },
     // T-piece - 4 rotations
     {
@@ -323,7 +323,7 @@ export function generateRandomShape(): Shape {
         [X(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
+      rotations: 4,
     },
     // S-piece - 2 unique rotations
     {
@@ -333,7 +333,7 @@ export function generateRandomShape(): Shape {
         [X(), X(), _(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     // Z-piece - 2 unique rotations
     {
@@ -343,7 +343,7 @@ export function generateRandomShape(): Shape {
         [_(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     // J-piece - 4 rotations
     {
@@ -353,7 +353,7 @@ export function generateRandomShape(): Shape {
         [X(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
+      rotations: 4,
     },
     // L-piece - 4 rotations
     {
@@ -363,8 +363,8 @@ export function generateRandomShape(): Shape {
         [X(), _(), _(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
-    }
+      rotations: 4,
+    },
   ];
 
   // Select a random shape template

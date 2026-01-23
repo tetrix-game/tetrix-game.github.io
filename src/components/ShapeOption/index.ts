@@ -1,1 +1,0 @@
-export { ShapeOption } from './ShapeOption';

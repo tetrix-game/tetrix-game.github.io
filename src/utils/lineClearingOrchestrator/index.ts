@@ -1,6 +1,6 @@
 /**
  * Line Clearing Orchestrator
- * 
+ *
  * High-level orchestration of line clearing process including:
  * - Detecting full lines
  * - Clearing tiles
@@ -10,11 +10,11 @@
  * - Detecting full board clears
  */
 
-import type { TilesSet } from '../../types';
+import { playSound } from '../../components/SoundEffectsContext/SoundEffectsContext';
+import type { TilesSet } from '../../types/core';
+import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../lineUtils';
 import { calculateScore } from '../scoringUtils';
-import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
-import { playSound } from '../../components/SoundEffectsContext';
 
 const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
   rows: {
@@ -78,16 +78,16 @@ function calculateNormalAnimationEndTime(rowCount: number, columnCount: number):
     const quadEnd = CLEARING_ANIMATION_CONFIG.rows.quad.startDelay + CLEARING_ANIMATION_CONFIG.rows.quad.duration;
     maxEndTime = Math.max(maxEndTime, quadEnd);
   } else if (rowCount >= 3) {
-    const tripleEnd = CLEARING_ANIMATION_CONFIG.rows.triple.startDelay + CLEARING_ANIMATION_CONFIG.rows.triple.duration + 
-                      (9 * CLEARING_ANIMATION_CONFIG.rows.triple.waveDelay);
+    const tripleEnd = CLEARING_ANIMATION_CONFIG.rows.triple.startDelay + CLEARING_ANIMATION_CONFIG.rows.triple.duration
+      + (9 * CLEARING_ANIMATION_CONFIG.rows.triple.waveDelay);
     maxEndTime = Math.max(maxEndTime, tripleEnd);
   } else if (rowCount >= 2) {
-    const doubleEnd = CLEARING_ANIMATION_CONFIG.rows.double.startDelay + CLEARING_ANIMATION_CONFIG.rows.double.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.rows.double.waveDelay);
+    const doubleEnd = CLEARING_ANIMATION_CONFIG.rows.double.startDelay + CLEARING_ANIMATION_CONFIG.rows.double.duration
+      + (9 * CLEARING_ANIMATION_CONFIG.rows.double.waveDelay);
     maxEndTime = Math.max(maxEndTime, doubleEnd);
   } else if (rowCount >= 1) {
-    const singleEnd = CLEARING_ANIMATION_CONFIG.rows.single.startDelay + CLEARING_ANIMATION_CONFIG.rows.single.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.rows.single.waveDelay);
+    const singleEnd = CLEARING_ANIMATION_CONFIG.rows.single.startDelay + CLEARING_ANIMATION_CONFIG.rows.single.duration
+      + (9 * CLEARING_ANIMATION_CONFIG.rows.single.waveDelay);
     maxEndTime = Math.max(maxEndTime, singleEnd);
   }
 
@@ -96,16 +96,16 @@ function calculateNormalAnimationEndTime(rowCount: number, columnCount: number):
     const quadEnd = CLEARING_ANIMATION_CONFIG.columns.quad.startDelay + CLEARING_ANIMATION_CONFIG.columns.quad.duration;
     maxEndTime = Math.max(maxEndTime, quadEnd);
   } else if (columnCount >= 3) {
-    const tripleEnd = CLEARING_ANIMATION_CONFIG.columns.triple.startDelay + CLEARING_ANIMATION_CONFIG.columns.triple.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.columns.triple.waveDelay);
+    const tripleEnd = CLEARING_ANIMATION_CONFIG.columns.triple.startDelay + CLEARING_ANIMATION_CONFIG.columns.triple.duration
+      + (9 * CLEARING_ANIMATION_CONFIG.columns.triple.waveDelay);
     maxEndTime = Math.max(maxEndTime, tripleEnd);
   } else if (columnCount >= 2) {
-    const doubleEnd = CLEARING_ANIMATION_CONFIG.columns.double.startDelay + CLEARING_ANIMATION_CONFIG.columns.double.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.columns.double.waveDelay);
+    const doubleEnd = CLEARING_ANIMATION_CONFIG.columns.double.startDelay + CLEARING_ANIMATION_CONFIG.columns.double.duration
+      + (9 * CLEARING_ANIMATION_CONFIG.columns.double.waveDelay);
     maxEndTime = Math.max(maxEndTime, doubleEnd);
   } else if (columnCount >= 1) {
-    const singleEnd = CLEARING_ANIMATION_CONFIG.columns.single.startDelay + CLEARING_ANIMATION_CONFIG.columns.single.duration +
-                      (9 * CLEARING_ANIMATION_CONFIG.columns.single.waveDelay);
+    const singleEnd = CLEARING_ANIMATION_CONFIG.columns.single.startDelay + CLEARING_ANIMATION_CONFIG.columns.single.duration
+      + (9 * CLEARING_ANIMATION_CONFIG.columns.single.waveDelay);
     maxEndTime = Math.max(maxEndTime, singleEnd);
   }
 
@@ -114,14 +114,14 @@ function calculateNormalAnimationEndTime(rowCount: number, columnCount: number):
 
 /**
  * Orchestrates the complete line clearing process
- * 
+ *
  * This function:
  * 1. Detects and clears full lines
  * 2. Generates clearing animations
  * 3. Plays sound effects
  * 4. Calculates score (including full board clear bonus)
  * 5. Returns updated tiles and scoring information
- * 
+ *
  * @param tiles - Current tile state
  * @returns LineClearingResult with updated tiles and scoring info
  */
@@ -130,8 +130,8 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
 
   // Step 1: Detect and clear full lines
   const { tiles: clearedTiles, clearedRows, clearedColumns } = clearFullLines(tiles);
-  const clearedRowIndices = clearedRows.map(r => r.index);
-  const clearedColumnIndices = clearedColumns.map(c => c.index);
+  const clearedRowIndices = clearedRows.map((r) => r.index);
+  const clearedColumnIndices = clearedColumns.map((c) => c.index);
 
   // Step 2: Check if clearing resulted in an empty board (full board clear!)
   const isFullBoardClear = isGridCompletelyEmpty(clearedTiles);
@@ -144,7 +144,7 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
     {
       ...CLEARING_ANIMATION_CONFIG,
       baseStartTime,
-    }
+    },
   );
 
   // Step 4: Play sound effects for line clearing
@@ -158,7 +158,7 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
     // Calculate when normal animations finish
     const normalAnimationEndTime = calculateNormalAnimationEndTime(
       clearedRowIndices.length,
-      clearedColumnIndices.length
+      clearedColumnIndices.length,
     );
 
     // Add full board clear animations that play AFTER normal animations
@@ -168,7 +168,7 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
         ...CLEARING_ANIMATION_CONFIG,
         baseStartTime,
       },
-      normalAnimationEndTime
+      normalAnimationEndTime,
     );
 
     // Add 300 bonus points for full board clear

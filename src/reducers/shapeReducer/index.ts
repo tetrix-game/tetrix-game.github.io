@@ -4,20 +4,22 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
-import type { TetrixReducerState, TetrixAction, QueuedShape, QueueItem } from '../../types';
-import { generateRandomShape, rotateShape, cloneShape } from '../../utils/shapes';
+import type { QueuedShape, QueueItem } from '../../types/core';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 import { safeBatchSave } from '../../utils/persistence';
+import { generateRandomShape } from '../../utils/shapes/shapeGeneration';
+import { rotateShape, cloneShape } from '../../utils/shapes/shapeTransforms';
 import { resetNoTurnStreak } from '../../utils/statsUtils';
 
 export function shapeReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
-    case "INITIALIZE_QUEUE": {
+    case 'INITIALIZE_QUEUE': {
       const { items } = action.value;
       // Items already have unique IDs and correct types, just use them directly
       const newState = {
         ...state,
         nextShapes: items,
-        nextShapeIdCounter: Math.max(...items.map(item => item.id), state.nextShapeIdCounter) + 1,
+        nextShapeIdCounter: Math.max(...items.map((item) => item.id), state.nextShapeIdCounter) + 1,
         openRotationMenus: new Array(items.length).fill(false),
         shapeOptionBounds: new Array(items.length).fill(null),
         newShapeAnimationStates: new Array(items.length).fill('none'),
@@ -34,11 +36,11 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       return newState;
     }
 
-    case "SET_AVAILABLE_SHAPES": {
+    case 'SET_AVAILABLE_SHAPES': {
       const { shapes } = action.value;
       // Wrap each plain shape with a unique ID
       let nextId = state.nextShapeIdCounter;
-      const enhancedShapes: QueueItem[] = shapes.map(shape => ({
+      const enhancedShapes: QueueItem[] = shapes.map((shape) => ({
         id: nextId++,
         shape,
         type: 'shape' as const,
@@ -64,7 +66,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       return newState;
     }
 
-    case "ROTATE_SHAPE": {
+    case 'ROTATE_SHAPE': {
       const { shapeIndex, clockwise } = action.value;
 
       if (shapeIndex < 0 || shapeIndex >= state.nextShapes.length) {
@@ -121,7 +123,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       return newState;
     }
 
-    case "ADD_SHAPE_OPTION": {
+    case 'ADD_SHAPE_OPTION': {
       const newShape = generateRandomShape();
       const newQueuedShape: QueuedShape = {
         id: state.nextShapeIdCounter,
@@ -150,7 +152,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       return newState;
     }
 
-    case "REMOVE_SHAPE_OPTION": {
+    case 'REMOVE_SHAPE_OPTION': {
       // In infinite mode, never remove below 1 shape
       // In finite mode, allow going to 0 to show empty queue placeholder
       if (state.queueMode === 'infinite' && state.nextShapes.length <= 1) {
@@ -209,7 +211,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       return newState;
     }
 
-    case "SET_SHAPE_OPTION_BOUNDS": {
+    case 'SET_SHAPE_OPTION_BOUNDS': {
       const { index, bounds } = action.value;
       const newBounds = [...state.shapeOptionBounds];
       newBounds[index] = bounds;
@@ -219,7 +221,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
     }
 
-    case "START_SHAPE_REMOVAL": {
+    case 'START_SHAPE_REMOVAL': {
       const { shapeIndex } = action.value;
       return {
         ...state,
@@ -228,7 +230,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
     }
 
-    case "COMPLETE_SHAPE_REMOVAL": {
+    case 'COMPLETE_SHAPE_REMOVAL': {
       // Phase 2 of two-phase animation:
       // Remove the placed shape from the array (animation has completed)
       // Array goes from 4 shapes back to 3
@@ -259,7 +261,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
     }
 
-    case "PURCHASE_SHAPE_SLOT": {
+    case 'PURCHASE_SHAPE_SLOT': {
       const { slotIndex } = action.value;
 
       // Check if the item at slotIndex is actually a purchasable slot
@@ -281,7 +283,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       const newQueuedShape: QueuedShape = {
         id: state.nextShapeIdCounter,
         shape: newShape,
-        type: 'shape'
+        type: 'shape',
       };
 
       // Add new shape at end (will be at position 5, clipped until animation slides it in)
@@ -301,7 +303,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       };
     }
 
-    case "COMPLETE_SLOT_PURCHASE_REMOVAL": {
+    case 'COMPLETE_SLOT_PURCHASE_REMOVAL': {
       // Phase 2 of two-phase animation:
       // Remove the purchased slot from the array (animation has completed)
       // Increment unlockedSlots counter

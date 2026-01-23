@@ -15,7 +15,7 @@ class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
-    errorInfo: null
+    errorInfo: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -24,7 +24,7 @@ class ErrorBoundary extends Component<Props, State> {
     return {
       hasError: true,
       error,
-      errorInfo: null
+      errorInfo: null,
     };
   }
 
@@ -33,7 +33,7 @@ class ErrorBoundary extends Component<Props, State> {
     console.log('Error boundary activated!');
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
   }
 

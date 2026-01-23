@@ -1,1 +1,0 @@
-export { AudioUnlockIndicator } from './AudioUnlockIndicator';

@@ -1,6 +1,6 @@
 
-import type { StatsPersistenceData, StatCategory } from '../../types/stats';
 import type { ColorName } from '../../types/core';
+import type { StatsPersistenceData, StatCategory } from '../../types/stats';
 
 /**
  * Updates the stats based on the cleared lines and placed shape
@@ -8,7 +8,7 @@ import type { ColorName } from '../../types/core';
 export function updateStats(
   currentStats: StatsPersistenceData,
   clearedRows: { index: number; color?: string }[],
-  clearedColumns: { index: number; color?: string }[]
+  clearedColumns: { index: number; color?: string }[],
 ): StatsPersistenceData {
   const newStats: StatsPersistenceData = JSON.parse(JSON.stringify(currentStats));
   const now = Date.now();
@@ -63,19 +63,19 @@ export function updateStats(
     // Track colors for lines cleared? User said "All of the stats for cleared elements should be tracked for every specific color too"
     // But a line might not have a uniform color.
     // The `clearedRows` object has a `color` property if it was uniform.
-    clearedRows.forEach(row => {
+    clearedRows.forEach((row) => {
       if (row.color) incrementStat('linesCleared', row.color);
     });
-    clearedColumns.forEach(col => {
+    clearedColumns.forEach((col) => {
       if (col.color) incrementStat('linesCleared', col.color);
     });
   }
 
   // 2b. Colored Lines Cleared (only lines with uniform color)
-  const coloredLines = [...clearedRows, ...clearedColumns].filter(line => line.color);
+  const coloredLines = [...clearedRows, ...clearedColumns].filter((line) => line.color);
   if (coloredLines.length > 0) {
     incrementStat('coloredLinesCleared', undefined, coloredLines.length);
-    coloredLines.forEach(line => {
+    coloredLines.forEach((line) => {
       if (line.color) incrementStat('coloredLinesCleared', line.color);
     });
   }
@@ -83,7 +83,7 @@ export function updateStats(
   // 3. Rows Cleared
   if (clearedRows.length > 0) {
     incrementStat('rowsCleared', undefined, clearedRows.length);
-    clearedRows.forEach(row => {
+    clearedRows.forEach((row) => {
       if (row.color) incrementStat('rowsCleared', row.color);
     });
   }
@@ -91,7 +91,7 @@ export function updateStats(
   // 4. Columns Cleared
   if (clearedColumns.length > 0) {
     incrementStat('columnsCleared', undefined, clearedColumns.length);
-    clearedColumns.forEach(col => {
+    clearedColumns.forEach((col) => {
       if (col.color) incrementStat('columnsCleared', col.color);
     });
   }
@@ -128,7 +128,7 @@ export function updateStats(
   if (r === 3 && c === 1) incrementStat('tripleRowsWithSingleColumns', comboColor);
   if (r === 3 && c === 2) incrementStat('tripleRowsWithDoubleColumns', comboColor);
   if (r === 4 && c === 1) incrementStat('quadrupleRowsWithSingleColumns', comboColor);
-  
+
   if (c === 2 && r === 1) incrementStat('doubleColumnsWithSingleRows', comboColor);
   if (c === 3 && r === 2) incrementStat('tripleColumnsWithDoubleRows', comboColor);
   if (c === 3 && r === 1) incrementStat('tripleColumnsWithSingleRows', comboColor);
@@ -146,7 +146,7 @@ export function updateStats(
  */
 export function incrementNoTurnStreak(currentStats: StatsPersistenceData): StatsPersistenceData {
   const newStats = JSON.parse(JSON.stringify(currentStats));
-  
+
   // Ensure noTurnStreak exists (backward compatibility)
   if (!newStats.noTurnStreak) {
     newStats.noTurnStreak = {
@@ -155,19 +155,19 @@ export function incrementNoTurnStreak(currentStats: StatsPersistenceData): Stats
       allTimeBest: 0,
     };
   }
-  
+
   newStats.noTurnStreak.current += 1;
-  
+
   // Update best in current game
   if (newStats.noTurnStreak.current > newStats.noTurnStreak.bestInGame) {
     newStats.noTurnStreak.bestInGame = newStats.noTurnStreak.current;
   }
-  
+
   // Update all-time best
   if (newStats.noTurnStreak.current > newStats.noTurnStreak.allTimeBest) {
     newStats.noTurnStreak.allTimeBest = newStats.noTurnStreak.current;
   }
-  
+
   return newStats;
 }
 
@@ -176,7 +176,7 @@ export function incrementNoTurnStreak(currentStats: StatsPersistenceData): Stats
  */
 export function resetNoTurnStreak(currentStats: StatsPersistenceData): StatsPersistenceData {
   const newStats = JSON.parse(JSON.stringify(currentStats));
-  
+
   // Ensure noTurnStreak exists (backward compatibility)
   if (!newStats.noTurnStreak) {
     newStats.noTurnStreak = {
@@ -185,7 +185,7 @@ export function resetNoTurnStreak(currentStats: StatsPersistenceData): StatsPers
       allTimeBest: 0,
     };
   }
-  
+
   newStats.noTurnStreak.current = 0;
   return newStats;
 }

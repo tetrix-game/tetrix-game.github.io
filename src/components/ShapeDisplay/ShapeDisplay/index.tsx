@@ -1,9 +1,10 @@
 import './ShapeDisplay.css';
-import type { Shape } from '../../../utils/types';
-import type { BlockTheme } from '../../../types';
-import { BlockVisual } from '../../BlockVisual';
 import { useMemo, useRef, useEffect, useState } from 'react';
-import { getShapeBounds } from '../../../utils/shapeUtils';
+
+import type { Shape } from '../../../types/core';
+import type { BlockTheme } from '../../../types/theme';
+import { getShapeBounds } from '../../../utils/shapes/shapeGeometry';
+import { BlockVisual } from '../../BlockVisual/BlockVisual';
 
 type ShapeDisplayProps = {
   shape: Shape;
@@ -16,7 +17,7 @@ type ShapeDisplayProps = {
 
 /**
  * ShapeDisplay - Pure visual display of a shape
- * 
+ *
  * Renders a shape in a 4x4 grid with automatic centering.
  * Fully responsive - sizes itself to fit the parent container.
  * No interactivity - this is just for display purposes.
@@ -28,7 +29,7 @@ const ShapeDisplay = ({
   containerPadding = 4,
   className = '',
   theme,
-  showIcon = true
+  showIcon = true,
 }: ShapeDisplayProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(0);
@@ -96,7 +97,7 @@ const ShapeDisplay = ({
       style={{
         '--shape-cell-size': `${cellSize}px`,
         '--shape-cell-gap': `${cellGap}px`,
-        '--block-overlap': `1px`,
+        '--block-overlap': '1px',
         '--centering-offset-x': `${centeringOffset.x}px`,
         '--centering-offset-y': `${centeringOffset.y}px`,
       } as React.CSSProperties}

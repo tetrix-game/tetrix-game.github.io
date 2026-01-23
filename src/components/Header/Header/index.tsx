@@ -1,12 +1,13 @@
 import { useMemo, useCallback } from 'react';
-import { SettingsOverlay } from '../../SettingsOverlay';
-import { BackgroundMusic } from '../../BackgroundMusic';
-import { ScoreDisplay } from '../../ScoreDisplay';
-import { AudioUnlockIndicator } from '../../AudioUnlockIndicator';
+
+import { AudioUnlockIndicator } from '../../AudioUnlockIndicator/AudioUnlockIndicator';
+import { BackgroundMusic } from '../../BackgroundMusic/BackgroundMusic';
+import { ScoreDisplay } from '../../ScoreDisplay/ScoreDisplay';
+import { SettingsOverlay } from '../../SettingsOverlay/SettingsOverlay';
+import { useSoundEffects } from '../../SoundEffectsContext/SoundEffectsContext';
+import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import { useMusicControl } from '../MusicControlContext';
 import { SoundEffectsControlContext } from '../SoundEffectsControlContext';
-import { useSoundEffects } from '../../SoundEffectsContext';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import './Header.css';
 
 const Header: React.FC = () => {
@@ -26,7 +27,7 @@ const Header: React.FC = () => {
     volume,
     setVolume,
     isEnabled,
-    toggleEnabled: toggleSoundEffectsEnabled
+    toggleEnabled: toggleSoundEffectsEnabled,
   }), [volume, setVolume, isEnabled, toggleSoundEffectsEnabled]);
 
   return (

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+
+import type { ColorName } from '../../../types/core';
+import type { BlockTheme } from '../../../types/theme';
+import { BlockVisual } from '../../BlockVisual/BlockVisual';
 import { Tile } from '../../Tile/Tile';
-import { BlockVisual } from '../../BlockVisual';
-import type { BlockTheme, ColorName } from '../../../types';
 import './TetrixTile.css';
 
 type TetrixTileProps = {
@@ -17,7 +19,7 @@ type TetrixTileProps = {
   theme: BlockTheme;
   showIcon: boolean;
   size?: number;
-}
+};
 
 const TetrixTile = ({
   row,
@@ -31,7 +33,7 @@ const TetrixTile = ({
   animationsJson,
   theme,
   showIcon,
-  size
+  size,
 }: TetrixTileProps) => {
   const [_tick, setTick] = useState(0);
 
@@ -51,7 +53,7 @@ const TetrixTile = ({
 
     let rafId: number;
     const animate = () => {
-      setTick(t => t + 1);
+      setTick((t) => t + 1);
       rafId = requestAnimationFrame(animate);
     };
     rafId = requestAnimationFrame(animate);
@@ -62,7 +64,7 @@ const TetrixTile = ({
   // Filter to only currently-playing animations
   const currentTime = performance.now();
   const playingAnimations = activeAnimations.filter(
-    (anim: any) => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration
+    (anim: any) => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration,
   );
 
   return (

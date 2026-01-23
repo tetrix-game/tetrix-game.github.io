@@ -1,7 +1,8 @@
 import './PurchasableSlotOption.css';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import React, { useRef, useEffect, useCallback } from 'react';
+
 import { ANIMATION_TIMING } from '../../../utils/animationConstants';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 
 type PurchasableSlotOptionProps = {
   cost: number;
@@ -72,7 +73,7 @@ const PurchasableSlotOption = ({ cost, slotNumber, slotIndex, id }: PurchasableS
     // Start purchase process
     dispatch({
       type: 'PURCHASE_SHAPE_SLOT',
-      value: { slotIndex }
+      value: { slotIndex },
     });
   }, [isAnimatingRemoval, canAfford, slotIndex, dispatch]);
 

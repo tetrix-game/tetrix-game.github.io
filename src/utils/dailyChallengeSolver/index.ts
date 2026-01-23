@@ -1,9 +1,10 @@
+import type { Shape, TilesSet, ColorName } from '../../types/core';
 import {
   generateIPiece, generateOPiece, generateTPiece, generateSPiece, generateZPiece, generateJPiece, generateLPiece,
   generate3x3Piece, generate3x2Piece, generate5x1Piece, generate3x1Piece, generate2x1Piece, generate1x1Piece, generateEvenLPiece,
-  rotateShape, getFilledBlocks
-} from '../shapes';
-import type { Shape, TilesSet, ColorName } from '../../types';
+} from '../shapes/shapeGeneration';
+import { getFilledBlocks } from '../shapes/shapeGeometry';
+import { rotateShape } from '../shapes/shapeTransforms';
 
 // Simple seeded RNG (Linear Congruential Generator)
 class SeededRNG {
@@ -66,13 +67,13 @@ SHAPE_GENERATORS.forEach(({ gen, name }) => {
   for (let i = 0; i < 3; i++) {
     current = rotateShape(current);
     // Check if this rotation is unique
-    const isUnique = !variants.some(v => areShapesEqual(v, current));
+    const isUnique = !variants.some((v) => areShapesEqual(v, current));
     if (isUnique) {
       variants.push(current);
     }
   }
 
-  variants.forEach(v => {
+  variants.forEach((v) => {
     ALL_SHAPE_VARIANTS.push({ shape: v, name });
   });
 });
@@ -108,7 +109,7 @@ function calculateScore(
   minRow: number,
   maxRow: number,
   minCol: number,
-  maxCol: number
+  maxCol: number,
 ): number {
   let score = 0;
 
@@ -194,10 +195,10 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
   // Priority queue implemented as sorted array (simple for small search spaces)
   const queue: PartialSolution[] = [{
-    grid: grid.map(row => [...row]),
+    grid: grid.map((row) => [...row]),
     usedShapes: [],
     score: 0,
-    smallShapesUsed: {}
+    smallShapesUsed: {},
   }];
 
   let iterations = 0;
@@ -243,7 +244,7 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
         // Check if this placement is valid
         let isValid = true;
-        const coloredShape: Shape = shape.map(row => row.map(b => ({ ...b }))); // Deep copy
+        const coloredShape: Shape = shape.map((row) => row.map((b) => ({ ...b }))); // Deep copy
 
         for (const block of filledBlocks) {
           const gridR = shapeGridRow + block.row;
@@ -269,7 +270,7 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
           candidates.push({
             shape: coloredShape,
             gridPos: { row: shapeGridRow + 1, col: shapeGridCol + 1 },
-            variant
+            variant,
           });
         }
       }
@@ -281,7 +282,7 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
     // Create new states for each candidate
     for (const candidate of limitedCandidates) {
-      const nextGrid = current.grid.map(row => [...row]);
+      const nextGrid = current.grid.map((row) => [...row]);
       const filledBlocks = getFilledBlocks(candidate.shape);
 
       // Remove covered tiles from grid
@@ -304,7 +305,7 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
         grid: nextGrid,
         usedShapes: [...current.usedShapes, { shape: candidate.shape, gridPosition: candidate.gridPos }],
         smallShapesUsed: nextSmallShapesUsed,
-        score: 0 // Will be calculated below
+        score: 0, // Will be calculated below
       };
 
       nextSolution.score = calculateScore(
@@ -314,7 +315,7 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
         minRow,
         maxRow,
         minCol,
-        maxCol
+        maxCol,
       );
 
       queue.push(nextSolution);

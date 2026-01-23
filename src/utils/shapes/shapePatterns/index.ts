@@ -1,4 +1,4 @@
-import type { TilesSet } from '../../types';
+import type { TilesSet } from '../../../types/core';
 import { makeTileKey } from '../shapeValidation';
 
 /**
@@ -10,21 +10,21 @@ import { makeTileKey } from '../shapeValidation';
  * Pattern: 4 consecutive rows where each row has exactly 9 filled blocks (one missing),
  * and the missing block position increases or decreases by 1 for each row (forming a diagonal).
  * Same pattern must exist for columns.
- * 
+ *
  * Supports both ascending and descending diagonal patterns:
- * 
+ *
  * Ascending diagonal example (X = filled, O = empty):
  * Row 1: O X X X X X X X X X
  * Row 2: X O X X X X X X X X
  * Row 3: X X O X X X X X X X
  * Row 4: X X X O X X X X X X
- * 
+ *
  * Descending diagonal example (X = filled, O = empty):
  * Row 1: X X X O X X X X X X
  * Row 2: X X O X X X X X X X
  * Row 3: X O X X X X X X X X
  * Row 4: O X X X X X X X X X
- * 
+ *
  * @param tiles - Map of tiles (10x10 grid, 1-indexed)
  * @returns true if the pattern exists
  */

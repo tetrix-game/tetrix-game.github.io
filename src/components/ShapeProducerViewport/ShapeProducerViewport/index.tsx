@@ -17,7 +17,7 @@ type ShapeProducerViewportProps = {
  */
 const ShapeProducerViewport = ({ children, isLandscape, className = '' }: ShapeProducerViewportProps) => {
   return (
-    <div 
+    <div
       className={`shape-producer-viewport ${isLandscape ? 'landscape' : 'portrait'} ${className}`}
     >
       {children}

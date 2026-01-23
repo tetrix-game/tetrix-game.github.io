@@ -1,10 +1,11 @@
-import './Grid.css'
-import { TetrixTile } from '../../TetrixTile/TetrixTile';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
+import './Grid.css';
 import { useRef, useEffect, useMemo } from 'react';
-import { useGameSizing } from '../../../hooks/useGameSizing';
+
 import { useDebugGridInteractions } from '../../../hooks/useDebugGridInteractions';
+import { useGameSizing } from '../../../hooks/useGameSizing';
 import { GRID_SIZE } from '../../../utils/gridConstants';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
+import { TetrixTile } from '../../TetrixTile/TetrixTile';
 
 interface GridProps {
   width?: number; // Grid width in tiles (default: GRID_SIZE)
@@ -70,10 +71,10 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
 
   // Create a map of hovered block positions for quick lookup
   const hoveredBlockMap = new Map(
-    dragState.hoveredBlockPositions.map(pos => [
+    dragState.hoveredBlockPositions.map((pos) => [
       `${pos.location.row},${pos.location.column}`,
-      pos.block
-    ])
+      pos.block,
+    ]),
   );
 
   // Generate all potential tile positions in the grid
@@ -156,9 +157,9 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
               showIcon={gameMode === 'daily' || showBlockIcons}
               size={gridCellSize}
             />
-          )
+          );
         })
       }
-    </div >
-  )
+    </div>
+  );
 }

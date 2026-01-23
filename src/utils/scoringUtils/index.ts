@@ -1,12 +1,12 @@
-import type { ScoreData } from '../types';
+import type { ScoreData } from '../../types/scoring';
 
 /**
  * Calculates score using exponential formula with 5x multiplier:
  * ((rows_cleared)² + (columns_cleared)² + (rows × columns × 2)) × 5
- * 
+ *
  * Examples:
  * - 1 row: 1² × 5 = 5 points
- * - 2 rows: 2² × 5 = 20 points  
+ * - 2 rows: 2² × 5 = 20 points
  * - 1 row + 1 column: (1² + 1² + (1×1×2)) × 5 = 4 × 5 = 20 points
  * - 3 rows + 2 columns: (3² + 2² + (3×2×2)) × 5 = 25 × 5 = 125 points
  */
@@ -21,7 +21,7 @@ export function calculateScore(rowsCleared: number, columnsCleared: number): Sco
   return {
     rowsCleared,
     columnsCleared,
-    pointsEarned
+    pointsEarned,
   };
 }
 
@@ -32,7 +32,7 @@ export function calculateScore(rowsCleared: number, columnsCleared: number): Sco
 export function formatScore(score: number): string {
   // Handle invalid inputs gracefully
   if (score === undefined || score === null || isNaN(score)) {
-    return "0";
+    return '0';
   }
 
   if (score < 1000) {
@@ -41,11 +41,11 @@ export function formatScore(score: number): string {
 
   const abbreviations = [
     { value: 1e18, suffix: 'Q' }, // Quintillion
-    { value: 1e15, suffix: 'q' }, // Quadrillion  
+    { value: 1e15, suffix: 'q' }, // Quadrillion
     { value: 1e12, suffix: 't' }, // Trillion
-    { value: 1e9, suffix: 'b' },  // Billion
-    { value: 1e6, suffix: 'm' },  // Million
-    { value: 1e3, suffix: 'k' }   // Thousand
+    { value: 1e9, suffix: 'b' }, // Billion
+    { value: 1e6, suffix: 'm' }, // Million
+    { value: 1e3, suffix: 'k' }, // Thousand
   ];
 
   for (const { value, suffix } of abbreviations) {
@@ -54,10 +54,9 @@ export function formatScore(score: number): string {
       if (formatted >= 100) {
         // 3 digits, no decimal (e.g., "123k")
         return Math.round(formatted) + suffix;
-      } else {
-        // 2 digits + 1 decimal (e.g., "12.3k")
-        return (Math.round(formatted * 10) / 10).toFixed(1) + suffix;
       }
+      // 2 digits + 1 decimal (e.g., "12.3k")
+      return (Math.round(formatted * 10) / 10).toFixed(1) + suffix;
     }
   }
 

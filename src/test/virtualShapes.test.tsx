@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi } from 'vitest';
 import { TetrixProvider } from '../components/Tetrix/TetrixProvider';
-import { ShapeSelector } from '../components/ShapeSelector';
+import { ShapeSelector } from '../components/ShapeSelector/ShapeSelector';
 
 // Mock the persistence utilities to avoid IndexedDB issues in tests
 vi.mock('../utils/persistenceUtils', () => ({

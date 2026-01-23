@@ -2,7 +2,7 @@
  * Color utilities for block color management and luminosity adjustments
  */
 
-import { ColorName } from "../types";
+import type { ColorName } from '../../types/core';
 
 /**
  * Converts RGB string to HSL values
@@ -90,10 +90,10 @@ function parseRgb(rgbString: string): [number, number, number] {
 export function adjustLuminosity(rgbString: string, percent: number): string {
   const [r, g, b] = parseRgb(rgbString);
   const [h, s, l] = rgbToHsl(r, g, b);
-  
+
   // Adjust luminosity, clamping between 0 and 100
   const newL = Math.max(0, Math.min(100, l + percent));
-  
+
   return hslToRgb(h, s, newL);
 }
 
@@ -116,18 +116,18 @@ export type BlockColorPalette = {
  */
 function createBlockPalette(baseColors: Record<ColorName, string>): BlockColorPalette {
   const palette: Partial<BlockColorPalette> = {};
-  
+
   for (const colorName of Object.keys(baseColors) as ColorName[]) {
     const baseColor = baseColors[colorName];
     palette[colorName] = {
       bg: baseColor,
-      borderTop: adjustLuminosity(baseColor, 20),      // +20% lighter for top edge
-      borderLeft: adjustLuminosity(baseColor, 10),     // +10% lighter for left edge
-      borderRight: adjustLuminosity(baseColor, -10),   // -10% darker for right edge
-      borderBottom: adjustLuminosity(baseColor, -20),  // -20% darker for bottom edge
+      borderTop: adjustLuminosity(baseColor, 20), // +20% lighter for top edge
+      borderLeft: adjustLuminosity(baseColor, 10), // +10% lighter for left edge
+      borderRight: adjustLuminosity(baseColor, -10), // -10% darker for right edge
+      borderBottom: adjustLuminosity(baseColor, -20), // -20% darker for bottom edge
     };
   }
-  
+
   return palette as BlockColorPalette;
 }
 
@@ -184,7 +184,7 @@ export const BLOCK_COLOR_PALETTES = {
  */
 export function blockPaletteToCssVars(palette: BlockColorPalette): Record<string, string> {
   const cssVars: Record<string, string> = {};
-  
+
   for (const colorName of Object.keys(palette) as ColorName[]) {
     const colors = palette[colorName];
     cssVars[`--color-${colorName}-bg`] = colors.bg;
@@ -193,6 +193,6 @@ export function blockPaletteToCssVars(palette: BlockColorPalette): Record<string
     cssVars[`--color-${colorName}-border-right`] = colors.borderRight;
     cssVars[`--color-${colorName}-border-bottom`] = colors.borderBottom;
   }
-  
+
   return cssVars;
 }

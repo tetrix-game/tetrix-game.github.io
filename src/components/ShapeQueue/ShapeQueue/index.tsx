@@ -1,7 +1,7 @@
 import './ShapeQueue.css';
-import { ShapeSelector } from '../../ShapeSelector';
-import { QueueIndicator } from '../../QueueIndicator';
-import { QueueOverlay } from '../../QueueOverlay';
+import { QueueIndicator } from '../../QueueIndicator/QueueIndicator';
+import { QueueOverlay } from '../../QueueOverlay/QueueOverlay';
+import { ShapeSelector } from '../../ShapeSelector/ShapeSelector';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 
 const ShapeQueue = (): JSX.Element => {
@@ -15,20 +15,20 @@ const ShapeQueue = (): JSX.Element => {
 
   // Calculate hidden shape count for indicator
   // In finite mode, show the total remaining shapes (hidden + visible)
-  const hiddenCount = queueMode === 'finite' 
+  const hiddenCount = queueMode === 'finite'
     ? queueHiddenShapes.length + nextShapes.length
     : queueHiddenShapes.length;
 
   return (
     <div className="shape-queue">
       <ShapeSelector />
-      
+
       <QueueIndicator
         mode={queueMode}
         hiddenCount={hiddenCount}
         onClick={handleQueueIndicatorClick}
       />
-      
+
       {isQueueOverlayOpen && (
         <QueueOverlay
           hiddenShapes={queueHiddenShapes}

@@ -1,6 +1,7 @@
-import { Shape, TilesSet, GameMode } from '../../types';
-import { isValidPlacement } from '../shapes/shapeValidation';
+import type { Shape, TilesSet } from '../../types/core';
+import type { GameMode } from '../../types/gameState';
 import { rotateShape } from '../shapes/shapeTransforms';
+import { isValidPlacement } from '../shapes/shapeValidation';
 
 /**
  * Check if the game is over (no valid moves left)
@@ -15,7 +16,7 @@ export function checkGameOver(
   tiles: TilesSet,
   shapes: Shape[],
   openRotationMenus: boolean[],
-  gameMode: GameMode = 'infinite'
+  gameMode: GameMode = 'infinite',
 ): boolean {
   // If no shapes left, it's not game over (new ones will spawn)
   if (shapes.length === 0) {
@@ -34,7 +35,6 @@ export function checkGameOver(
 
     let currentShape = shape;
     for (let rotation = 0; rotation < rotationsToCheck; rotation++) {
-
       // Check all possible grid positions
       // The grid is 10x10. The shape is 4x4.
       // We need to check placement where the top-left of the 4x4 grid

@@ -29,7 +29,7 @@ export interface OverlayProps {
 
 /**
  * Overlay - A reusable overlay component that ensures content never overflows the viewport.
- * 
+ *
  * Features:
  * - Viewport-constrained sizing with dvh/dvw for mobile compatibility
  * - Scrollable content area when content exceeds available space

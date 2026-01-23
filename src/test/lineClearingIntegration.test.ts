@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
-import type { Shape } from '../utils/types';
+import { tetrixReducer, initialState } from '../reducers';
+import type { Shape } from '../types/core';
 import { getTileData } from './testHelpers';
 
 // Helper to count filled tiles in a row

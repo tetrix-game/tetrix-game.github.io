@@ -1,1 +1,0 @@
-export { MapCompletionOverlay } from './MapCompletionOverlay';

@@ -1,4 +1,4 @@
-import { ColorName } from '../../../utils/types';
+import type { ColorName } from '../../../types/core';
 import './ShapeIcon.css';
 
 type ShapeIconProps = {
@@ -21,7 +21,7 @@ type ShapeIconProps = {
 export function ShapeIcon({ color, size = 24, opacity = 1, useBorderLeftColor = false }: ShapeIconProps): JSX.Element {
   const viewBoxSize = 100;
   const center = viewBoxSize / 2;
-  
+
   const className = `shape-icon shape-icon-${color}${useBorderLeftColor ? ' shape-icon-border-left' : ''}`;
 
   const renderShape = () => {
@@ -50,19 +50,19 @@ export function ShapeIcon({ color, size = 24, opacity = 1, useBorderLeftColor = 
               const radian = (angle * Math.PI) / 180;
               const innerRadius = 25;
               const outerRadius = 45;
-              
+
               // Calculate three points of the triangle
               const tipX = center + Math.cos(radian) * outerRadius;
               const tipY = center + Math.sin(radian) * outerRadius;
-              
+
               const leftAngle = radian - Math.PI / 8;
               const leftX = center + Math.cos(leftAngle) * innerRadius;
               const leftY = center + Math.sin(leftAngle) * innerRadius;
-              
+
               const rightAngle = radian + Math.PI / 8;
               const rightX = center + Math.cos(rightAngle) * innerRadius;
               const rightY = center + Math.sin(rightAngle) * innerRadius;
-              
+
               return (
                 <polygon
                   key={idx}

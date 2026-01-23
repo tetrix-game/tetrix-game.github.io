@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { tetrixReducer, initialState } from '../components/Tetrix/TetrixReducer';
-import type { TilesSet } from '../utils/types';
+import { tetrixReducer, initialState } from '../reducers';
+import type { TilesSet } from '../types/core';
 
 // Helper to get tile data from TilesSet
 function getTileData(tiles: TilesSet, row: number, column: number) {

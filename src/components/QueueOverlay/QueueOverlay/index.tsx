@@ -1,8 +1,9 @@
 import React from 'react';
-import type { Shape } from '../../../types';
-import { ShapeDisplay } from '../../ShapeDisplay';
+
+import type { Shape } from '../../../types/core';
+import { Overlay } from '../../Overlay/Overlay';
+import { ShapeDisplay } from '../../ShapeDisplay/ShapeDisplay';
 import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
-import { Overlay } from '../../Overlay';
 import './QueueOverlay.css';
 
 interface QueueOverlayProps {
@@ -12,7 +13,7 @@ interface QueueOverlayProps {
 
 /**
  * QueueOverlay - Displays hidden shapes in finite queue mode
- * 
+ *
  * Shows a modal overlay listing all shapes that are queued but not visible
  * in the main drag-and-drop interface
  */
@@ -50,9 +51,9 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
             {hiddenShapes.map((shape, index) => (
               <div key={`hidden-shape-${index}`} className="queue-overlay-shape">
                 <div className="queue-overlay-shape-label">#{index + 4}</div>
-                <ShapeDisplay 
-                  shape={shape} 
-                  theme={blockTheme} 
+                <ShapeDisplay
+                  shape={shape}
+                  theme={blockTheme}
                   showIcon={gameMode === 'daily' || showBlockIcons}
                 />
               </div>

@@ -1,6 +1,7 @@
-import "./FullScreenButton.css";
-import { useEffect, useState, useRef } from "react";
-import { CallToActionPointer } from "../../Pointer";
+import './FullScreenButton.css';
+import { useEffect, useState, useRef } from 'react';
+
+import { CallToActionPointer } from '../../Pointer/CallToActionPointer';
 
 function FullScreenButton() {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -10,18 +11,18 @@ function FullScreenButton() {
   useEffect(() => {
     // Check if running in standalone mode (PWA)
     const checkStandalone = () => {
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
-        window.matchMedia('(display-mode: fullscreen)').matches ||
-        (window.navigator as any).standalone === true;
+      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
+        || window.matchMedia('(display-mode: fullscreen)').matches
+        || (window.navigator as any).standalone === true;
       setIsStandalone(isStandaloneMode);
     };
-    
+
     checkStandalone();
-    
+
     // Listen for changes
     const standaloneQuery = window.matchMedia('(display-mode: standalone)');
     const fullscreenQuery = window.matchMedia('(display-mode: fullscreen)');
-    
+
     const handleChange = () => checkStandalone();
 
     if (standaloneQuery.addEventListener) {
@@ -31,15 +32,14 @@ function FullScreenButton() {
         standaloneQuery.removeEventListener('change', handleChange);
         fullscreenQuery.removeEventListener('change', handleChange);
       };
-    } else {
-      // Fallback for older browsers
-      standaloneQuery.addListener(handleChange);
-      fullscreenQuery.addListener(handleChange);
-      return () => {
-        standaloneQuery.removeListener(handleChange);
-        fullscreenQuery.removeListener(handleChange);
-      };
     }
+    // Fallback for older browsers
+    standaloneQuery.addListener(handleChange);
+    fullscreenQuery.addListener(handleChange);
+    return () => {
+      standaloneQuery.removeListener(handleChange);
+      fullscreenQuery.removeListener(handleChange);
+    };
   }, []);
 
   const goFullScreen = () => {
@@ -49,22 +49,21 @@ function FullScreenButton() {
       doc.requestFullscreen();
       setIsFullScreen(true);
     }
-  }
+  };
 
   useEffect(() => {
     const fullScreenChangeHandler = () => {
       if (document.fullscreenElement) {
         setIsFullScreen(true);
-      }
-      else {
+      } else {
         setIsFullScreen(false);
       }
-    }
-    document.addEventListener("fullscreenchange", fullScreenChangeHandler);
+    };
+    document.addEventListener('fullscreenchange', fullScreenChangeHandler);
     return () => {
-      document.removeEventListener("fullscreenchange", fullScreenChangeHandler);
-    }
-  })
+      document.removeEventListener('fullscreenchange', fullScreenChangeHandler);
+    };
+  });
 
   return (
     <>
@@ -78,7 +77,7 @@ function FullScreenButton() {
           <span>+</span>
         </button>
       ) : null}
-      
+
       {!isStandalone && (
         <CallToActionPointer
           targetRef={buttonRef}
@@ -89,7 +88,7 @@ function FullScreenButton() {
         />
       )}
     </>
-  )
+  );
 }
 
 export { FullScreenButton };

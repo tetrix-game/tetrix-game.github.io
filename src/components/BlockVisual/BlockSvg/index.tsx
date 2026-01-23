@@ -1,5 +1,6 @@
 import React, { useMemo, memo } from 'react';
-import type { BlockTheme } from '../../../types';
+
+import type { BlockTheme } from '../../../types/theme';
 
 interface BlockSvgProps {
   color: string;
@@ -49,7 +50,8 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
     const bg = getVar('bg', color);
     return (
       <rect
-        x="2" y="2"
+        x="2"
+        y="2"
         width={THEME_VIEWBOX_SIZE - 4}
         height={THEME_VIEWBOX_SIZE - 4}
         fill={bg}
@@ -79,7 +81,7 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
           fill = shadow; // Bottom/Right shadow
         } else if (x === 1 || y === 1) {
           // Inner highlight (optional, maybe just keep it simple)
-          // fill = highlight; 
+          // fill = highlight;
         }
 
         // Corner logic for outer frame
@@ -95,7 +97,7 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
             width={pixelSize + 0.5} // +0.5 to avoid subpixel gaps
             height={pixelSize + 0.5}
             fill={fill}
-          />
+          />,
         );
       }
     }

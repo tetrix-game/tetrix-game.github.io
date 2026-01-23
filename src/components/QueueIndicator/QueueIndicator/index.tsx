@@ -9,7 +9,7 @@ interface QueueIndicatorProps {
 
 /**
  * QueueIndicator - Shows queue mode and count
- * 
+ *
  * Infinite mode: Shows ∞ symbol, disabled square button
  * Finite mode: Shows number of hidden shapes, clickable button that opens overlay
  */

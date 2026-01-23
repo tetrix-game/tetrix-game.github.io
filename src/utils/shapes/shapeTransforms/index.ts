@@ -1,4 +1,4 @@
-import type { Shape, ColorName } from '../../types';
+import type { Shape, ColorName } from '../../../types/core';
 
 /**
  * Shape transformation functions - Rotation and cloning operations
@@ -10,8 +10,7 @@ import type { Shape, ColorName } from '../../types';
 export function rotateShape(shape: Shape): Shape {
   const n = shape.length;
   const rotated: Shape = new Array(n).fill(null).map(() =>
-    new Array(n).fill(null).map(() => ({ ...shape[0][0], isFilled: false }))
-  );
+    new Array(n).fill(null).map(() => ({ ...shape[0][0], isFilled: false })));
 
   for (let row = 0; row < n; row++) {
     for (let col = 0; col < n; col++) {
@@ -26,7 +25,7 @@ export function rotateShape(shape: Shape): Shape {
  * Clone a shape
  */
 export function cloneShape(shape: Shape): Shape {
-  return shape.map(row => row.map(block => ({ ...block })));
+  return shape.map((row) => row.map((block) => ({ ...block })));
 }
 
 /**

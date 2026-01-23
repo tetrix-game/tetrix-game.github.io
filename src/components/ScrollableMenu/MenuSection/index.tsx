@@ -21,7 +21,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
   colorClass,
   renderContent,
 }) => {
-
   return (
     <>
       {/* Section button */}

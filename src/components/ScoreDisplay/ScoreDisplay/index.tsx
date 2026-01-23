@@ -1,10 +1,11 @@
 import React, { useRef, useEffect } from 'react';
-import { formatScore } from '../../../utils/scoringUtils';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
-import { BlueGemIcon } from '../../BlueGemIcon';
-import { StatsOverlay } from '../../StatsOverlay/StatsOverlay';
-import { ErrorPointer } from '../../Pointer';
+
 import { useVisualError } from '../../../hooks/useVisualError';
+import { formatScore } from '../../../utils/scoringUtils';
+import { BlueGemIcon } from '../../BlueGemIcon/BlueGemIcon';
+import { ErrorPointer } from '../../Pointer/ErrorPointer';
+import { StatsOverlay } from '../../StatsOverlay/StatsOverlay';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
 import '../../../styles/feedback.css';
 import './ScoreDisplay.css';
 
@@ -27,11 +28,11 @@ const ScoreDisplay: React.FC = () => {
         if (rect) {
           const position = {
             x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2
+            y: rect.top + rect.height / 2,
           };
           dispatch({
             type: 'UPDATE_GEM_ICON_POSITION',
-            value: position
+            value: position,
           });
         }
       };

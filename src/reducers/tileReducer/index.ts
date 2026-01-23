@@ -3,19 +3,23 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import type { TetrixReducerState, TetrixAction, Tile, QueuedShape, QueueItem } from '../../types';
-import { getShapeGridPositions, detectSuperComboPattern, generateSuperShape, generateRandomShapeWithGrandpaMode } from '../../utils/shapes';
+import type { Tile, QueuedShape, QueueItem } from '../../types/core';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // safeBatchSave removed - persistence handled by PersistenceListener
 import { cleanupExpiredAnimations } from '../../utils/clearingAnimationUtils';
-import { updateStats, incrementNoTurnStreak } from '../../utils/statsUtils';
 import { checkGameOver } from '../../utils/gameOverUtils';
-import { checkMapCompletion } from '../../utils/mapCompletionUtils';
 import { makeTileKey } from '../../utils/gridConstants';
 import { performLineClearing } from '../../utils/lineClearingOrchestrator';
+import { checkMapCompletion } from '../../utils/mapCompletionUtils';
+import { generateSuperShape } from '../../utils/shapes/shapeGeneration';
+import { generateRandomShapeWithGrandpaMode } from '../../utils/shapes/shapeGenerationWithProbabilities';
+import { getShapeGridPositions } from '../../utils/shapes/shapeGeometry';
+import { detectSuperComboPattern } from '../../utils/shapes/shapePatterns';
+import { updateStats, incrementNoTurnStreak } from '../../utils/statsUtils';
 
 export function tileReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
-    case "COMPLETE_PLACEMENT": {
+    case 'COMPLETE_PLACEMENT': {
       if (!state.dragState.selectedShape || state.dragState.selectedShapeIndex === null) {
         return state;
       }
@@ -40,7 +44,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
             // Update existing tile's block immutably
             newTiles.set(position, {
               ...existingTile,
-              block: { isFilled: true, color: pos.block.color }
+              block: { isFilled: true, color: pos.block.color },
             });
           } else {
             // Create new tile if it doesn't exist
@@ -48,7 +52,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
               position,
               backgroundColor: 'grey', // default background
               block: { isFilled: true, color: pos.block.color },
-              activeAnimations: []
+              activeAnimations: [],
             };
             newTiles.set(position, newTile);
           }
@@ -59,21 +63,21 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const lineClearResult = performLineClearing(newTiles);
 
       const newScore = state.score + lineClearResult.pointsEarned;
-      const newTotalLinesCleared = state.totalLinesCleared +
-        lineClearResult.clearedRowIndices.length +
-        lineClearResult.clearedColumnIndices.length;
+      const newTotalLinesCleared = state.totalLinesCleared
+        + lineClearResult.clearedRowIndices.length
+        + lineClearResult.clearedColumnIndices.length;
 
       // Update stats (only for infinite mode)
       let newStats = state.stats;
       if (state.gameMode === 'infinite') {
         // Convert indices back to full row/column objects for stats
-        const clearedRows = lineClearResult.clearedRowIndices.map(index => ({
+        const clearedRows = lineClearResult.clearedRowIndices.map((index) => ({
           index,
-          color: 'grey' as const // Color doesn't matter for stats
+          color: 'grey' as const, // Color doesn't matter for stats
         }));
-        const clearedColumns = lineClearResult.clearedColumnIndices.map(index => ({
+        const clearedColumns = lineClearResult.clearedColumnIndices.map((index) => ({
           index,
-          color: 'grey' as const
+          color: 'grey' as const,
         }));
 
         newStats = updateStats(state.stats, clearedRows, clearedColumns);
@@ -96,14 +100,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       //   - Other shapes slide forward to fill the gap
       //   - New shape (4th) slides into view from clipped position
       // Phase 2 (COMPLETE_SHAPE_REMOVAL): Remove placed shape from array (back to 3)
-      
+
       const updatedHiddenShapes = [...state.queueHiddenShapes];
 
       // Keep all existing items (including the one being placed) for animation
       const animatingShapes: QueueItem[] = [...state.nextShapes];
       const animatingRotationMenus = [...state.openRotationMenus];
       const animatingAnimationStates = [...state.newShapeAnimationStates];
-      
+
       // Track the next ID to use
       let nextIdCounter = state.nextShapeIdCounter;
 
@@ -137,12 +141,12 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         animatingRotationMenus.push(false); // New shape starts with menu closed
         animatingAnimationStates.push('none'); // New shape appears normally (slides in via CSS)
       }
-      
+
       // For game over check, we need to check the POST-animation state (without the placed shape)
       const shapesAfterRemoval = animatingShapes.filter((_, index) => index !== removedIndex);
       const menusAfterRemoval = animatingRotationMenus.filter((_, index) => index !== removedIndex);
       // Extract only actual shapes (not purchasable slots) for game over check
-      const plainShapes = shapesAfterRemoval.filter(item => item.type === 'shape').map(item => (item as QueuedShape).shape);
+      const plainShapes = shapesAfterRemoval.filter((item) => item.type === 'shape').map((item) => (item as QueuedShape).shape);
 
       // GAME OVER CHECK: Run on the FINAL state (correct 3 shapes after placement)
       // Infinite mode: Check if any shapes can be placed
@@ -153,14 +157,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       } else if (state.queueMode === 'finite') {
         // In finite mode, check if queue is depleted
         const queueDepleted = shapesAfterRemoval.length === 0 && updatedHiddenShapes.length === 0;
-        
+
         // Check if no moves are possible with remaining shapes
         const noMovesPossible = checkGameOver(lineClearResult.tiles, plainShapes, menusAfterRemoval, state.gameMode);
-        
+
         // If queue is depleted OR no moves possible, check map completion
         if ((queueDepleted || noMovesPossible) && state.targetTiles) {
           const completionResult = checkMapCompletion(lineClearResult.tiles, state.targetTiles);
-          
+
           // For game over, skip animation and use final state directly
           return {
             ...state,
@@ -203,7 +207,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
             shapeRemovalAnimationState: 'none' as const,
           };
         }
-        
+
         isGameOver = queueDepleted || noMovesPossible;
       }
 
@@ -250,7 +254,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       return newState;
     }
 
-    case "CLEANUP_ANIMATIONS": {
+    case 'CLEANUP_ANIMATIONS': {
       const cleanedTiles = cleanupExpiredAnimations(state.tiles);
 
       // Only update state if tiles actually changed
@@ -264,7 +268,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "DEBUG_FILL_ROW": {
+    case 'DEBUG_FILL_ROW': {
       const { row, excludeColumn, color } = action.value;
       const newTiles = new Map(state.tiles);
 
@@ -275,14 +279,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           if (existingTile) {
             newTiles.set(position, {
               ...existingTile,
-              block: { isFilled: true, color }
+              block: { isFilled: true, color },
             });
           } else {
             const tile: Tile = {
               position,
               backgroundColor: 'grey',
               block: { isFilled: true, color },
-              activeAnimations: []
+              activeAnimations: [],
             };
             newTiles.set(position, tile);
           }
@@ -297,7 +301,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "DEBUG_FILL_COLUMN": {
+    case 'DEBUG_FILL_COLUMN': {
       const { column, excludeRow, color } = action.value;
       const newTiles = new Map(state.tiles);
 
@@ -308,14 +312,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           if (existingTile) {
             newTiles.set(position, {
               ...existingTile,
-              block: { isFilled: true, color }
+              block: { isFilled: true, color },
             });
           } else {
             const tile: Tile = {
               position,
               backgroundColor: 'grey',
               block: { isFilled: true, color },
-              activeAnimations: []
+              activeAnimations: [],
             };
             newTiles.set(position, tile);
           }
@@ -330,7 +334,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "DEBUG_REMOVE_BLOCK": {
+    case 'DEBUG_REMOVE_BLOCK': {
       const { location } = action.value;
       const newTiles = new Map(state.tiles);
       const position = makeTileKey(location.row, location.column);
@@ -339,7 +343,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       if (currentTile) {
         newTiles.set(position, {
           ...currentTile,
-          block: { isFilled: false, color: 'grey' }
+          block: { isFilled: false, color: 'grey' },
         });
       }
 
@@ -351,7 +355,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "DEBUG_ADD_BLOCK": {
+    case 'DEBUG_ADD_BLOCK': {
       const { location, color } = action.value;
       const newTiles = new Map(state.tiles);
       const position = makeTileKey(location.row, location.column);
@@ -360,14 +364,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       if (existingTile) {
         newTiles.set(position, {
           ...existingTile,
-          block: { isFilled: true, color }
+          block: { isFilled: true, color },
         });
       } else {
         const tile: Tile = {
           position,
           backgroundColor: 'grey',
           block: { isFilled: true, color },
-          activeAnimations: []
+          activeAnimations: [],
         };
         newTiles.set(position, tile);
       }
@@ -380,7 +384,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "GENERATE_SUPER_COMBO_PATTERN": {
+    case 'GENERATE_SUPER_COMBO_PATTERN': {
       // Generate a 4x4 super combo pattern for testing
       // Pattern: rows 4-7 are completely filled except for diagonal empty spaces
       // AND columns 4-7 are completely filled except for diagonal empty spaces
@@ -412,14 +416,14 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
             if (existingTile) {
               newTiles.set(position, {
                 ...existingTile,
-                block: { isFilled: true, color: 'blue' }
+                block: { isFilled: true, color: 'blue' },
               });
             } else {
               const tile: Tile = {
                 position,
                 backgroundColor: 'grey',
                 block: { isFilled: true, color: 'blue' },
-                activeAnimations: []
+                activeAnimations: [],
               };
               newTiles.set(position, tile);
             }
@@ -427,7 +431,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
             // Empty if on diagonal
             newTiles.set(position, {
               ...existingTile,
-              block: { isFilled: false, color: 'grey' }
+              block: { isFilled: false, color: 'grey' },
             });
           }
           // Keep all other tiles as-is
@@ -442,7 +446,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "DEBUG_REPLACE_FIRST_SHAPE": {
+    case 'DEBUG_REPLACE_FIRST_SHAPE': {
       const { shape } = action.value;
 
       // Remove the first shape and add the new shape to the end
@@ -450,7 +454,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         // If there are no shapes, just add this one as a QueuedShape
         const newQueuedShape: QueuedShape = {
           id: state.nextShapeIdCounter,
-          shape: shape,
+          shape,
           type: 'shape',
         };
         // Persistence handled by listener
@@ -468,7 +472,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Remove first shape and add new shape to the end as a QueuedShape
       const newQueuedShape: QueuedShape = {
         id: state.nextShapeIdCounter,
-        shape: shape,
+        shape,
         type: 'shape',
       };
       const newShapes = [...state.nextShapes.slice(1), newQueuedShape];

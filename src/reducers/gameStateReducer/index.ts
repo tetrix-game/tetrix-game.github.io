@@ -5,15 +5,15 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import type { TetrixReducerState, TetrixAction, Tile, QueuedShape, Shape } from '../../types';
+import type { Tile, QueuedShape, Shape, ColorName } from '../../types/core';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // Persistence imports removed - handled by PersistenceListener
-import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../../types/stats';
 import { DEFAULT_COLOR_PROBABILITIES } from '../../types/shapeQueue';
-import { ColorName } from '../../types/core';
-import { updateStats } from '../../utils/statsUtils';
+import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../../types/stats';
+import { checkGameOver } from '../../utils/gameOverUtils';
 import { GRID_ADDRESSES, makeTileKey } from '../../utils/gridConstants';
 import { checkMapCompletion } from '../../utils/mapCompletionUtils';
-import { checkGameOver } from '../../utils/gameOverUtils';
+import { updateStats } from '../../utils/statsUtils';
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = () => {
@@ -30,7 +30,7 @@ const makeTiles = () => {
         position: key,
         backgroundColor: isDark ? 'grey' : 'grey', // Background color
         block: { isFilled: false, color: 'grey' }, // Block
-        activeAnimations: [] // No animations initially
+        activeAnimations: [], // No animations initially
       };
       tiles.set(key, tile);
     }
@@ -104,7 +104,7 @@ export const initialGameState = {
 
 export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
-    case "SET_LEVEL": {
+    case 'SET_LEVEL': {
       const { levelIndex } = action.value;
       return {
         ...state,
@@ -112,7 +112,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "SET_GAME_MODE": {
+    case 'SET_GAME_MODE': {
       const { mode } = action.value;
 
       // Persistence handled by listener
@@ -123,7 +123,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "UNLOCK_MAP": {
+    case 'UNLOCK_MAP': {
       // Persistence handled by listener
 
       return {
@@ -132,7 +132,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "UNLOCK_MODIFIER": {
+    case 'UNLOCK_MODIFIER': {
       const { primeId } = action.value;
       const newUnlockedModifiers = new Set(state.unlockedModifiers);
       newUnlockedModifiers.add(primeId);
@@ -145,7 +145,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "LOAD_MODIFIERS": {
+    case 'LOAD_MODIFIERS': {
       const { unlockedModifiers } = action.value;
       return {
         ...state,
@@ -153,7 +153,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "LOAD_STATS": {
+    case 'LOAD_STATS': {
       const { stats } = action.value;
       return {
         ...state,
@@ -161,13 +161,13 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "TRIGGER_BACKGROUND_MUSIC": {
+    case 'TRIGGER_BACKGROUND_MUSIC': {
       // This action doesn't modify state, just triggers background music
       // The actual music trigger will be handled by the BackgroundMusic component
       return state;
     }
 
-    case "ACTIVATE_TURNING_MODE": {
+    case 'ACTIVATE_TURNING_MODE': {
       const { direction } = action.value;
 
       // Check if user has enough score (2 points required)
@@ -186,7 +186,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "DEACTIVATE_TURNING_MODE": {
+    case 'DEACTIVATE_TURNING_MODE': {
       return {
         ...state,
         isTurningModeActive: false,
@@ -194,7 +194,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "ACTIVATE_DOUBLE_TURN_MODE": {
+    case 'ACTIVATE_DOUBLE_TURN_MODE': {
       // Check if user has enough score (3 points required)
       if (state.score < 3) {
         return {
@@ -211,14 +211,14 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "DEACTIVATE_DOUBLE_TURN_MODE": {
+    case 'DEACTIVATE_DOUBLE_TURN_MODE': {
       return {
         ...state,
         isDoubleTurnModeActive: false,
       };
     }
 
-    case "LOAD_GAME_STATE": {
+    case 'LOAD_GAME_STATE': {
       const { gameData } = action.value;
       // Convert tiles from persistence format to Map of Tile objects
       const tilesMap = new Map<string, Tile>();
@@ -233,7 +233,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
               position,
               backgroundColor: tileData.tileBackgroundColor || 'grey',
               block: { isFilled: tileData.block.isFilled, color: tileData.block.color },
-              activeAnimations: []
+              activeAnimations: [],
             };
             if (tileData.block.isFilled) {
               hasFilledTiles = true;
@@ -246,7 +246,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
               position: tileData.position,
               backgroundColor: tileData.backgroundColor || 'grey',
               block: { isFilled: tileData.isFilled, color: tileData.color },
-              activeAnimations: tileData.activeAnimations || []
+              activeAnimations: tileData.activeAnimations || [],
             };
             if (tileData.isFilled) {
               hasFilledTiles = true;
@@ -310,7 +310,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
             id: nextIdCounter++,
             type: 'purchasable-slot',
             cost: slotCosts[i - 1], // Get cost from array (0-indexed)
-            slotNumber
+            slotNumber,
           });
         }
       }
@@ -321,7 +321,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // Extract plain shapes for game over check (filter out purchasable slots)
       const plainShapesForCheck = loadedQueue
         .filter((item): item is QueuedShape => item.type === 'shape')
-        .map(qs => qs.shape);
+        .map((qs) => qs.shape);
 
       // POST-LOAD GAME OVER CHECK:
       // Calculate game over based on actual loaded state.
@@ -360,7 +360,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "RESET_GAME": {
+    case 'RESET_GAME': {
       return {
         ...initialGameState,
         gameMode: 'hub',
@@ -388,28 +388,28 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "OPEN_STATS": {
+    case 'OPEN_STATS': {
       return {
         ...state,
         isStatsOpen: true,
       };
     }
 
-    case "CLOSE_STATS": {
+    case 'CLOSE_STATS': {
       return {
         ...state,
         isStatsOpen: false,
       };
     }
 
-    case "INITIALIZATION_COMPLETE": {
+    case 'INITIALIZATION_COMPLETE': {
       return {
         ...state,
         hasLoadedPersistedState: true,
       };
     }
 
-    case "SET_THEME": {
+    case 'SET_THEME': {
       const { theme } = action.value;
       // Persistence handled by listener
       return {
@@ -418,7 +418,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "SET_BLOCK_THEME": {
+    case 'SET_BLOCK_THEME': {
       const { theme } = action.value;
       // Persistence handled by listener
       return {
@@ -427,7 +427,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "SET_SHOW_BLOCK_ICONS": {
+    case 'SET_SHOW_BLOCK_ICONS': {
       const { show } = action.value;
       // Persistence handled by listener
       return {
@@ -436,7 +436,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "SET_BUTTON_SIZE_MULTIPLIER": {
+    case 'SET_BUTTON_SIZE_MULTIPLIER': {
       const { multiplier } = action.value;
       // Clamp between 0.5 and 1.5
       const clampedMultiplier = Math.max(0.5, Math.min(1.5, multiplier));
@@ -447,7 +447,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "SET_GRANDPA_MODE": {
+    case 'SET_GRANDPA_MODE': {
       const { enabled } = action.value;
       // Persistence handled by listener
       return {
@@ -456,7 +456,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "SET_QUEUE_MODE": {
+    case 'SET_QUEUE_MODE': {
       const { mode } = action.value;
       const newState = {
         ...state,
@@ -472,7 +472,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return newState;
     }
 
-    case "UPDATE_COLOR_PROBABILITIES": {
+    case 'UPDATE_COLOR_PROBABILITIES': {
       const { colorProbabilities } = action.value;
 
       // Persistence handled by listener
@@ -483,7 +483,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "POPULATE_FINITE_QUEUE": {
+    case 'POPULATE_FINITE_QUEUE': {
       const { shapes } = action.value;
       const newQueueSize = shapes.length + state.nextShapes.length;
 
@@ -496,14 +496,14 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "TOGGLE_QUEUE_OVERLAY": {
+    case 'TOGGLE_QUEUE_OVERLAY': {
       return {
         ...state,
         isQueueOverlayOpen: !state.isQueueOverlayOpen,
       };
     }
 
-    case "START_DAILY_CHALLENGE": {
+    case 'START_DAILY_CHALLENGE': {
       const { tiles, shapes } = action.value;
 
       // Derive target tiles from the tiles Map - any tile with a non-grey background
@@ -528,7 +528,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       const newState = {
         ...initialGameState,
         gameMode: 'daily' as const,
-        tiles: tiles, // Use the custom grid
+        tiles, // Use the custom grid
         nextShapes: visibleQueuedShapes, // First 3 shapes visible with unique IDs
         nextShapeIdCounter: nextIdCounter,
         queueHiddenShapes: shapes.slice(3), // Rest in queue (plain shapes)
@@ -555,12 +555,12 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return newState;
     }
 
-    case "RESTART_DAILY_CHALLENGE": {
+    case 'RESTART_DAILY_CHALLENGE': {
       if (!state.initialDailyState) {
         return state;
       }
       const { tiles, shapes } = state.initialDailyState;
-      
+
       // Derive target tiles from the tiles Map
       const targetTilesSet = new Set<string>();
       for (const [position, tile] of tiles.entries()) {
@@ -581,7 +581,7 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       return {
         ...initialGameState,
         gameMode: 'daily' as const,
-        tiles: tiles, // Use the custom grid
+        tiles, // Use the custom grid
         nextShapes: visibleQueuedShapes, // First 3 shapes visible with unique IDs
         nextShapeIdCounter: nextIdCounter,
         queueHiddenShapes: shapes.slice(3), // Rest in queue (plain shapes)
@@ -606,14 +606,14 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       };
     }
 
-    case "CHECK_MAP_COMPLETION": {
+    case 'CHECK_MAP_COMPLETION': {
       // Only check completion for finite modes (daily challenges)
       if (state.queueMode !== 'finite') {
         return state;
       }
-      
+
       const result = checkMapCompletion(state.tiles, state.targetTiles || undefined);
-      
+
       // If the map is complete, store the results
       if (result.isComplete) {
         return {
@@ -627,29 +627,29 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
           gameState: 'gameover', // Transition to game over state to show completion
         };
       }
-      
+
       return state;
     }
 
-    case "CLEAR_MAP_COMPLETION": {
+    case 'CLEAR_MAP_COMPLETION': {
       return {
         ...state,
         mapCompletionResult: null,
       };
     }
 
-    case "CLEANUP_ANIMATIONS": {
+    case 'CLEANUP_ANIMATIONS': {
       // Import cleanup function at top of file if needed
       // For now, this is a placeholder - actual cleanup happens in tiles
       return state;
     }
 
-    case "DEBUG_INCREMENT_STATS": {
+    case 'DEBUG_INCREMENT_STATS': {
       let newStats = JSON.parse(JSON.stringify(state.stats));
       const colors: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
 
       // Simulate every scenario for every color
-      colors.forEach(color => {
+      colors.forEach((color) => {
         // 1. Single Row
         newStats = updateStats(newStats, [{ index: 1, color }], []);
 
@@ -699,9 +699,10 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }, { index: 2, color }]);
 
         // 17. 4x4 Legendary
-        newStats = updateStats(newStats,
+        newStats = updateStats(
+          newStats,
           [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }],
-          [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }]
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }],
         );
       });
 

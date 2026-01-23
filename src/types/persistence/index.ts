@@ -5,8 +5,7 @@
 import type { Shape, TileData } from '../core';
 
 // Serialized queue item for persistence
-export type SerializedQueueItem =
-  | { type: 'shape'; shape: Shape }
+export type SerializedQueueItem = | { type: 'shape'; shape: Shape }
   | { type: 'purchasable-slot'; cost: number; slotNumber: number };
 
 // Saved game state for persistence
@@ -65,7 +64,6 @@ export type ModifiersPersistenceData = {
 export type StatsPersistenceData = import('../stats').StatsPersistenceData;
 
 // Load result type distinguishes between empty (new user) and error states
-export type LoadResult<T> =
-  | { status: 'success'; data: T }
-  | { status: 'not_found' }      // Valid: New user
+export type LoadResult<T> = | { status: 'success'; data: T }
+  | { status: 'not_found' } // Valid: New user
   | { status: 'error'; error: Error }; // Critical: Do not overwrite!

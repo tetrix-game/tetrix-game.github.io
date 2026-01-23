@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
-import type { ColorName } from '../../../types';
+
+import type { ColorName } from '../../../types/core';
 
 export type GridEditorTool = 'paint' | 'erase' | 'none';
 export type SectionType = 'rows' | 'columns' | 'brush' | null;
@@ -86,7 +87,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
   });
 
   const openEditor = () => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       isEditorOpen: true,
       currentTool: 'paint',
@@ -96,7 +97,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
   };
 
   const closeEditor = () => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       isEditorOpen: false,
       currentTool: 'none',
@@ -104,37 +105,37 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
   };
 
   const hideInstructions = () => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       showInstructions: false,
     }));
   };
 
   const toggleGridDots = () => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       showGridDots: !prev.showGridDots,
     }));
   };
 
   const setTool = (tool: GridEditorTool) => {
-    setState(prev => ({ ...prev, currentTool: tool }));
+    setState((prev) => ({ ...prev, currentTool: tool }));
   };
 
   const setColor = (color: ColorName | 'eraser') => {
-    setState(prev => ({ 
-      ...prev, 
+    setState((prev) => ({
+      ...prev,
       selectedColor: color,
-      currentTool: color === 'eraser' ? 'erase' : 'paint'
+      currentTool: color === 'eraser' ? 'erase' : 'paint',
     }));
   };
 
   const setLastActiveSection = (section: SectionType) => {
-    setState(prev => ({ ...prev, lastActiveSection: section }));
+    setState((prev) => ({ ...prev, lastActiveSection: section }));
   };
 
   const cycleColor = (direction: 'forward' | 'backward') => {
-    setState(prev => {
+    setState((prev) => {
       const currentIndex = COLOR_ORDER.indexOf(prev.selectedColor);
       let newIndex: number;
 
@@ -145,21 +146,21 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
       }
 
       const newColor = COLOR_ORDER[newIndex];
-      return { 
-        ...prev, 
+      return {
+        ...prev,
         selectedColor: newColor,
-        currentTool: newColor === 'eraser' ? 'erase' : 'paint'
+        currentTool: newColor === 'eraser' ? 'erase' : 'paint',
       };
     });
   };
 
   const setGridWidth = (width: number) => {
     const clampedWidth = Math.max(2, Math.min(20, width));
-    setState(prev => {
+    setState((prev) => {
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
       // Keep existing tiles that fit within new dimensions
-      prev.gridLayout.tiles.forEach(key => {
+      prev.gridLayout.tiles.forEach((key) => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const col = parseInt(match[2], 10);
@@ -172,7 +173,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           }
         }
       });
-      
+
       return {
         ...prev,
         gridLayout: {
@@ -180,18 +181,18 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           width: clampedWidth,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
-        }
+        },
       };
     });
   };
 
   const setGridHeight = (height: number) => {
     const clampedHeight = Math.max(2, Math.min(20, height));
-    setState(prev => {
+    setState((prev) => {
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
       // Keep existing tiles that fit within new dimensions
-      prev.gridLayout.tiles.forEach(key => {
+      prev.gridLayout.tiles.forEach((key) => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const row = parseInt(match[1], 10);
@@ -204,7 +205,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           }
         }
       });
-      
+
       return {
         ...prev,
         gridLayout: {
@@ -212,19 +213,19 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           height: clampedHeight,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
-        }
+        },
       };
     });
   };
 
   const adjustGridWidth = (delta: number) => {
-    setState(prev => {
+    setState((prev) => {
       const newWidth = Math.max(2, Math.min(20, prev.gridLayout.width + delta));
       if (newWidth === prev.gridLayout.width) return prev;
-      
+
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
-      prev.gridLayout.tiles.forEach(key => {
+      prev.gridLayout.tiles.forEach((key) => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const col = parseInt(match[2], 10);
@@ -237,7 +238,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           }
         }
       });
-      
+
       return {
         ...prev,
         gridLayout: {
@@ -245,19 +246,19 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           width: newWidth,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
-        }
+        },
       };
     });
   };
 
   const adjustGridHeight = (delta: number) => {
-    setState(prev => {
+    setState((prev) => {
       const newHeight = Math.max(2, Math.min(20, prev.gridLayout.height + delta));
       if (newHeight === prev.gridLayout.height) return prev;
-      
+
       const newTiles = new Set<string>();
       const newTileBackgrounds = new Map<string, ColorName>();
-      prev.gridLayout.tiles.forEach(key => {
+      prev.gridLayout.tiles.forEach((key) => {
         const match = key.match(/R(\d+)C(\d+)/);
         if (match) {
           const row = parseInt(match[1], 10);
@@ -270,7 +271,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           }
         }
       });
-      
+
       return {
         ...prev,
         gridLayout: {
@@ -278,13 +279,13 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           height: newHeight,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
-        }
+        },
       };
     });
   };
 
   const addTile = (key: string) => {
-    setState(prev => {
+    setState((prev) => {
       const newTiles = new Set(prev.gridLayout.tiles);
       newTiles.add(key);
       const newTileBackgrounds = new Map(prev.gridLayout.tileBackgrounds);
@@ -298,13 +299,13 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           ...prev.gridLayout,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
-        }
+        },
       };
     });
   };
 
   const removeTile = (key: string) => {
-    setState(prev => {
+    setState((prev) => {
       const newTiles = new Set(prev.gridLayout.tiles);
       newTiles.delete(key);
       const newTileBackgrounds = new Map(prev.gridLayout.tileBackgrounds);
@@ -315,45 +316,45 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           ...prev.gridLayout,
           tiles: newTiles,
           tileBackgrounds: newTileBackgrounds,
-        }
+        },
       };
     });
   };
 
   const clearAllTiles = () => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       gridLayout: {
         ...prev.gridLayout,
         tiles: new Set(),
         tileBackgrounds: new Map(),
-      }
+      },
     }));
   };
 
   const importGridLayout = (layout: GridLayout) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       gridLayout: {
         width: Math.max(2, Math.min(20, layout.width)),
         height: Math.max(2, Math.min(20, layout.height)),
         tiles: new Set(layout.tiles),
         tileBackgrounds: new Map(layout.tileBackgrounds),
-      }
+      },
     }));
   };
 
   const cycleActiveSection = useCallback((direction: 'forward' | 'backward') => {
     const delta = direction === 'forward' ? 1 : -1;
-    setState(prev => {
+    setState((prev) => {
       switch (prev.lastActiveSection) {
         case 'rows': {
           const newHeight = Math.max(2, Math.min(20, prev.gridLayout.height + delta));
           if (newHeight === prev.gridLayout.height) return prev;
-          
+
           const newTiles = new Set<string>();
           const newTileBackgrounds = new Map<string, ColorName>();
-          prev.gridLayout.tiles.forEach(key => {
+          prev.gridLayout.tiles.forEach((key) => {
             const match = key.match(/R(\d+)C(\d+)/);
             if (match) {
               const row = parseInt(match[1], 10);
@@ -366,7 +367,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
               }
             }
           });
-          
+
           return {
             ...prev,
             gridLayout: {
@@ -374,16 +375,16 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
               height: newHeight,
               tiles: newTiles,
               tileBackgrounds: newTileBackgrounds,
-            }
+            },
           };
         }
         case 'columns': {
           const newWidth = Math.max(2, Math.min(20, prev.gridLayout.width + delta));
           if (newWidth === prev.gridLayout.width) return prev;
-          
+
           const newTiles = new Set<string>();
           const newTileBackgrounds = new Map<string, ColorName>();
-          prev.gridLayout.tiles.forEach(key => {
+          prev.gridLayout.tiles.forEach((key) => {
             const match = key.match(/R(\d+)C(\d+)/);
             if (match) {
               const col = parseInt(match[2], 10);
@@ -396,7 +397,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
               }
             }
           });
-          
+
           return {
             ...prev,
             gridLayout: {
@@ -404,16 +405,16 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
               width: newWidth,
               tiles: newTiles,
               tileBackgrounds: newTileBackgrounds,
-            }
+            },
           };
         }
         case 'brush': {
           const newColorIndex = (COLOR_ORDER.indexOf(prev.selectedColor) + delta + COLOR_ORDER.length) % COLOR_ORDER.length;
           const newColor = COLOR_ORDER[newColorIndex];
-          return { 
-            ...prev, 
+          return {
+            ...prev,
             selectedColor: newColor,
-            currentTool: newColor === 'eraser' ? 'erase' : 'paint'
+            currentTool: newColor === 'eraser' ? 'erase' : 'paint',
           };
         }
         default:

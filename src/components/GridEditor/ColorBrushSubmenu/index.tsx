@@ -1,5 +1,6 @@
 import React from 'react';
-import type { ColorName } from '../../../types';
+
+import type { ColorName } from '../../../types/core';
 import './ColorBrushSubmenu.css';
 
 interface ColorBrushSubmenuProps {
@@ -8,7 +9,7 @@ interface ColorBrushSubmenuProps {
 }
 
 const COLOR_OPTIONS: Array<ColorName | 'eraser'> = [
-  'grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'eraser'
+  'grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'eraser',
 ];
 
 export const ColorBrushSubmenu: React.FC<ColorBrushSubmenuProps> = ({
@@ -19,7 +20,7 @@ export const ColorBrushSubmenu: React.FC<ColorBrushSubmenuProps> = ({
     <div className="color-brush-submenu">
       <div className="color-brush-label">Paint Brush</div>
       <div className="color-brush-grid">
-        {COLOR_OPTIONS.map(color => (
+        {COLOR_OPTIONS.map((color) => (
           <button
             key={color}
             className={`color-brush-button ${color === 'eraser' ? 'eraser' : `color-${color}`} ${selectedColor === color ? 'active' : ''}`}

@@ -72,7 +72,7 @@ export type TilesSet = Map<string, Tile>;
 
 // Helper to convert TilesSet to array for serialization
 export function tilesToArray(tiles: TilesSet): TileData[] {
-  return Array.from(tiles.values()).map(tile => ({
+  return Array.from(tiles.values()).map((tile) => ({
     position: tile.position,
     backgroundColor: tile.backgroundColor,
     isFilled: tile.block.isFilled,
@@ -80,4 +80,3 @@ export function tilesToArray(tiles: TilesSet): TileData[] {
     activeAnimations: tile.activeAnimations,
   }));
 }
-

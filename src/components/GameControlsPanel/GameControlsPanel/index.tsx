@@ -1,7 +1,8 @@
 import React from 'react';
-import { ShapeQueue } from '../../ShapeQueue';
-import { PurchasesContainer } from '../../PurchasesContainer';
+
 import { useGameSizing } from '../../../hooks/useGameSizing';
+import { PurchasesContainer } from '../../PurchasesContainer/PurchasesContainer';
+import { ShapeQueue } from '../../ShapeQueue/ShapeQueue';
 import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import './GameControlsPanel.css';
 

@@ -1,7 +1,8 @@
 import React from 'react';
+
 import './GameOverOverlay.css';
+import { Overlay } from '../../Overlay/Overlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
-import { Overlay } from '../../Overlay';
 
 const GameOverOverlay: React.FC = () => {
   const { gameMode } = useTetrixStateContext();
@@ -16,7 +17,7 @@ const GameOverOverlay: React.FC = () => {
   };
 
   return (
-    <Overlay 
+    <Overlay
       className="game-over-overlay"
       contentClassName="game-over-content"
       ariaLabel="Game Over"

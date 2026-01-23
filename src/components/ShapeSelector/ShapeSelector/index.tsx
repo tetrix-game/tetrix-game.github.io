@@ -1,11 +1,12 @@
 import './ShapeSelector.css';
-import { ShapeOption } from '../../ShapeOption'
-import { PurchasableSlotOption } from '../../PurchasableSlotOption';
-import { ShapeProducerViewport } from '../../ShapeProducerViewport';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import { useEffect, useMemo } from 'react';
-import { generateRandomShape } from '../../../utils/shapeUtils';
+
 import type { QueueItem, PurchasableSlot } from '../../../types/core';
+import { generateRandomShape } from '../../../utils/shapes/shapeGeneration';
+import { PurchasableSlotOption } from '../../PurchasableSlotOption/PurchasableSlotOption';
+import { ShapeOption } from '../../ShapeOption/ShapeOption';
+import { ShapeProducerViewport } from '../../ShapeProducerViewport/ShapeProducerViewport';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
@@ -21,7 +22,7 @@ const ShapeSelector = (): JSX.Element => {
       queue.push({
         id: idCounter++,
         shape: generateRandomShape(),
-        type: 'shape'
+        type: 'shape',
       });
     }
 
@@ -33,7 +34,7 @@ const ShapeSelector = (): JSX.Element => {
         id: idCounter++,
         type: 'purchasable-slot',
         cost: slotCosts[i - 1], // Get cost from array (0-indexed)
-        slotNumber
+        slotNumber,
       });
     }
 
@@ -82,23 +83,22 @@ const ShapeSelector = (): JSX.Element => {
                   />
                 </div>
               );
-            } else {
-              // Purchasable slot
-              const slot = queueItem as PurchasableSlot;
-              return (
-                <div
-                  key={queueItem.id}
-                  className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
-                  data-landscape={isLandscape ? '1' : '0'}
-                >
-                  <PurchasableSlotOption
-                    cost={slot.cost}
-                    slotNumber={slot.slotNumber}
-                    slotIndex={index}
-                  />
-                </div>
-              );
             }
+            // Purchasable slot
+            const slot = queueItem as PurchasableSlot;
+            return (
+              <div
+                key={queueItem.id}
+                className={`shape-selector-shape-wrapper${isRemoving ? ' removing' : ''}`}
+                data-landscape={isLandscape ? '1' : '0'}
+              >
+                <PurchasableSlotOption
+                  cost={slot.cost}
+                  slotNumber={slot.slotNumber}
+                  slotIndex={index}
+                />
+              </div>
+            );
           })
         ) : (
           // Show placeholder when queue is empty
@@ -113,7 +113,7 @@ const ShapeSelector = (): JSX.Element => {
         )}
       </ShapeProducerViewport>
     </div>
-  )
-}
+  );
+};
 
 export { ShapeSelector };

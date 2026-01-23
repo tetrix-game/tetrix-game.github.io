@@ -1,4 +1,4 @@
-import { SavedGameState } from '../../types';
+import type { SavedGameState } from '../../types/persistence';
 
 /**
  * Represents a node in the Merkle Tree.
@@ -70,7 +70,7 @@ function hashLeaf(data: any): string {
 function hashBranch(children: Record<string, ChecksumNode>): string {
   // Sort keys to ensure consistent order (e.g., "score" then "tiles")
   const sortedKeys = Object.keys(children).sort();
-  const combinedHashes = sortedKeys.map(key => `${key}:${children[key].hash}`).join('|');
+  const combinedHashes = sortedKeys.map((key) => `${key}:${children[key].hash}`).join('|');
   return hashString(combinedHashes);
 }
 
@@ -85,7 +85,7 @@ export function generateChecksumManifest(state: SavedGameState): ChecksumManifes
   const nextShapesNode: ChecksumNode = { hash: hashLeaf(state.nextShapes) };
   const savedShapeNode: ChecksumNode = { hash: hashLeaf(state.savedShape) };
   const statsNode: ChecksumNode = { hash: hashLeaf(state.stats) };
-  
+
   // Optional/Other fields can be grouped or hashed individually
   // For now, we'll group remaining metadata
   const metadata = {
@@ -112,13 +112,13 @@ export function generateChecksumManifest(state: SavedGameState): ChecksumManifes
 
   const root: ChecksumNode = {
     hash: rootHash,
-    children: children
+    children,
   };
 
   return {
     timestamp: Date.now(),
     schemaVersion: SCHEMA_VERSION,
-    root: root
+    root,
   };
 }
 

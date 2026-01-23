@@ -1,4 +1,4 @@
-import type { TilesSet, Tile } from '../types';
+import type { TilesSet, Tile } from '../../types/core';
 
 const GRID_SIZE = 10;
 
@@ -89,14 +89,14 @@ export function clearRows(tiles: TilesSet, rows: number[]): TilesSet {
         if (tile) {
           newTiles.set(position, {
             ...tile,
-            block: { isFilled: false, color: 'grey' }
+            block: { isFilled: false, color: 'grey' },
           });
         } else {
           const newTile: Tile = {
             position,
             backgroundColor: 'grey',
             block: { isFilled: false, color: 'grey' },
-            activeAnimations: []
+            activeAnimations: [],
           };
           newTiles.set(position, newTile);
         }
@@ -127,14 +127,14 @@ export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
         if (tile) {
           newTiles.set(position, {
             ...tile,
-            block: { isFilled: false, color: 'grey' }
+            block: { isFilled: false, color: 'grey' },
           });
         } else {
           const newTile: Tile = {
             position,
             backgroundColor: 'grey',
             block: { isFilled: false, color: 'grey' },
-            activeAnimations: []
+            activeAnimations: [],
           };
           newTiles.set(position, newTile);
         }
@@ -210,14 +210,14 @@ export function clearFullLines(tiles: TilesSet): {
   const fullRows = findFullRows(tiles);
   const fullColumns = findFullColumns(tiles);
 
-  const clearedRowsWithColor = fullRows.map(row => ({
+  const clearedRowsWithColor = fullRows.map((row) => ({
     index: row,
-    color: getLineColor(tiles, row, true)
+    color: getLineColor(tiles, row, true),
   }));
 
-  const clearedColumnsWithColor = fullColumns.map(col => ({
+  const clearedColumnsWithColor = fullColumns.map((col) => ({
     index: col,
-    color: getLineColor(tiles, col, false)
+    color: getLineColor(tiles, col, false),
   }));
 
   // Clear rows first, then columns
@@ -228,6 +228,6 @@ export function clearFullLines(tiles: TilesSet): {
     tiles: newTiles,
     clearedRows: clearedRowsWithColor,
     clearedColumns: clearedColumnsWithColor,
-    totalLinesCleared: fullRows.length + fullColumns.length
+    totalLinesCleared: fullRows.length + fullColumns.length,
   };
 }

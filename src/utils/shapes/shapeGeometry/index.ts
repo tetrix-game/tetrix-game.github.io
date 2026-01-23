@@ -1,4 +1,4 @@
-import type { Shape, Block, Location } from '../../types';
+import type { Shape, Block, Location } from '../../../types/core';
 
 /**
  * Shape geometry functions - Calculate bounds, centers, and anchor points
@@ -44,13 +44,13 @@ export function getShapeBounds(shape: Shape): {
 /**
  * Calculate grid positions for a shape placed at a specific location
  * The location represents where the 4x4 grid's top-left corner (0,0) would be placed
- * 
+ *
  * Handles any location values (including negative and > 10) gracefully.
  * Simply calculates positions - validation happens elsewhere.
  */
 export function getShapeGridPositions(
   shape: Shape,
-  gridTopLeftLocation: Location
+  gridTopLeftLocation: Location,
 ): Array<{ location: Location; block: Block }> {
   const positions: Array<{ location: Location; block: Block }> = [];
 
@@ -97,7 +97,7 @@ export function getFilledBlocks(shape: Shape): Array<{ row: number; col: number;
 export function getShapeVisualOffset(
   shape: Shape,
   tileSize: number,
-  gridGap: number
+  gridGap: number,
 ): { offsetX: number; offsetY: number } {
   const bounds = getShapeBounds(shape);
 
@@ -118,11 +118,11 @@ export function getShapeVisualOffset(
 /**
  * Convert a mouse position to a grid location
  * Returns null if the mouse is outside the grid bounds
- * 
+ *
  * Uses pre-computed gridOffset to directly map mouse position to the 4x4 grid's top-left corner.
  * The returned location represents where the top-left corner (row 0, col 0) of the 4x4 shape
  * would be placed on the grid.
- * 
+ *
  * @param precomputedOffsets - Pre-calculated offsets (REQUIRED when shape is provided)
  */
 export function mousePositionToGridLocation(
@@ -137,7 +137,7 @@ export function mousePositionToGridLocation(
     gridOffsetY: number;
     tileSize: number;
     gridGap: number;
-  }
+  },
 ): Location | null {
   const rect = gridElement.getBoundingClientRect();
 
@@ -171,10 +171,10 @@ export function mousePositionToGridLocation(
   // For a 4x4 shape, the top-left can be up to 3 tiles outside the grid
   const tolerance = tileSize * 3.5; // Allow up to 3.5 tiles outside
   if (
-    gridTopLeftX < rect.left - tolerance ||
-    gridTopLeftX > rect.right + tolerance ||
-    gridTopLeftY < rect.top - tolerance ||
-    gridTopLeftY > rect.bottom + tolerance
+    gridTopLeftX < rect.left - tolerance
+    || gridTopLeftX > rect.right + tolerance
+    || gridTopLeftY < rect.top - tolerance
+    || gridTopLeftY > rect.bottom + tolerance
   ) {
     return null;
   }

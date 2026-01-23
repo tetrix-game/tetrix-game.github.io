@@ -11,7 +11,7 @@ import { isGridCompletelyEmpty } from '../utils/lineUtils';
 import { generateFullBoardClearAnimation } from '../utils/clearingAnimationUtils';
 import { tileReducer } from '../reducers/tileReducer';
 import { makeTileKey } from '../utils/gridConstants';
-import type { TetrixReducerState } from '../types';
+import type { TetrixReducerState } from '../types/gameState';
 import { createTilesWithFilled } from './testHelpers';
 
 describe('Full Board Clear - isGridCompletelyEmpty', () => {

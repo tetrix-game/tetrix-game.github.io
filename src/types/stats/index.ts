@@ -1,8 +1,7 @@
 
 import type { ColorName } from '../core';
 
-export type StatCategory =
-  | 'shapesPlaced'
+export type StatCategory = | 'shapesPlaced'
   | 'linesCleared'
   | 'coloredLinesCleared'
   | 'rowsCleared'

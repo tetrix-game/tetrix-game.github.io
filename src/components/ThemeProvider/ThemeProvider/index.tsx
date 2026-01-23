@@ -3,9 +3,10 @@
  */
 
 import React from 'react';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
-import { THEME_DEFINITIONS, themeToCssVars } from '../../../utils/themeUtils';
+
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../../../utils/colorUtils';
+import { THEME_DEFINITIONS, themeToCssVars } from '../../../utils/themeUtils';
+import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
 
 type ThemeProviderProps = {
   children: React.ReactNode;

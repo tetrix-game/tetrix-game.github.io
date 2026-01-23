@@ -1,9 +1,9 @@
 /**
  * Clearing Animation Utilities
- * 
+ *
  * Manages tile-based clearing animations with configurable timing and wave effects.
  * Animations are instanced per tile and persist independently of block state.
- * 
+ *
  * Animation Types:
  * - row-cw: Clockwise rotation for single row clears
  * - row-double: Dynamic grow/rotate effect for double row clears
@@ -19,10 +19,10 @@ import type { TileAnimation, TilesSet } from '../../types/core';
 import type { ClearedLine } from '../lineUtils';
 
 export type AnimationTierConfig = {
-  duration: number;    // Animation duration in ms
-  waveDelay: number;   // Delay between each tile in ms
-  startDelay: number;  // Delay before the first animation starts in ms
-  beatCount?: number;  // Number of heartbeats (for quad animations)
+  duration: number; // Animation duration in ms
+  waveDelay: number; // Delay between each tile in ms
+  startDelay: number; // Delay before the first animation starts in ms
+  beatCount?: number; // Number of heartbeats (for quad animations)
   finishDuration?: number; // Duration of the shrink/fade out phase
 };
 
@@ -47,7 +47,7 @@ export type AnimationConfig = {
    */
   fullBoardClear: {
     columns: AnimationTierConfig; // Animation for all 10 columns (plays after normal animations)
-    rows: AnimationTierConfig;    // Animation for all 10 rows (starts after columns)
+    rows: AnimationTierConfig; // Animation for all 10 rows (starts after columns)
   };
   baseStartTime?: number; // Base timestamp (defaults to performance.now())
 };
@@ -91,7 +91,7 @@ function calculateWaveOffset(index: number, waveDelay: number): number {
 /**
  * Generates clearing animations and applies them directly to tiles.
  * Animations persist on tiles independently of block state changes.
- * 
+ *
  * @param tiles - The tiles map to update with animations
  * @param clearedRows - Array of row objects being cleared
  * @param clearedColumns - Array of column objects being cleared
@@ -102,7 +102,7 @@ export function generateClearingAnimations(
   tiles: TilesSet,
   clearedRows: ClearedLine[],
   clearedColumns: ClearedLine[],
-  config: Partial<AnimationConfig> = {}
+  config: Partial<AnimationConfig> = {},
 ): TilesSet {
   // Deep merge config with defaults
   const finalConfig: AnimationConfig = {
@@ -249,7 +249,7 @@ export function generateClearingAnimations(
           beatCount: finalConfig.columns.quad.beatCount,
           finishDuration: finalConfig.columns.quad.finishDuration,
           color,
-          });
+        });
       }
 
       tileData.activeAnimations = [...tileData.activeAnimations, ...animations];
@@ -266,7 +266,7 @@ export function generateClearingAnimations(
  * 1. Normal line clear animations play first
  * 2. All 10 columns animate simultaneously (after normal animations finish)
  * 3. All 10 rows animate simultaneously (after columns complete)
- * 
+ *
  * @param tiles - The tiles map to update with animations
  * @param config - Animation timing configuration
  * @param delayAfterNormalAnimations - Milliseconds to wait after normal animations finish
@@ -275,7 +275,7 @@ export function generateClearingAnimations(
 export function generateFullBoardClearAnimation(
   tiles: TilesSet,
   config: Partial<AnimationConfig> = {},
-  delayAfterNormalAnimations: number = 0
+  delayAfterNormalAnimations: number = 0,
 ): TilesSet {
   // Merge config with defaults
   const finalConfig: AnimationConfig = {
@@ -349,14 +349,14 @@ export function generateFullBoardClearAnimation(
 /**
  * Cleans up expired animations from all tiles.
  * Should be called periodically to prevent memory buildup.
- * 
+ *
  * @param tiles - The tiles map to clean
  * @param currentTime - Current timestamp (defaults to performance.now())
  * @returns Updated tiles map with expired animations removed
  */
 export function cleanupExpiredAnimations(
   tiles: TilesSet,
-  currentTime: number = performance.now()
+  currentTime: number = performance.now(),
 ): TilesSet {
   const newTiles = new Map(tiles);
   let hasChanges = false;
@@ -365,7 +365,7 @@ export function cleanupExpiredAnimations(
     if (!tileData.activeAnimations || tileData.activeAnimations.length === 0) continue;
 
     const activeAnimations = tileData.activeAnimations.filter(
-      anim => currentTime < anim.startTime + anim.duration
+      (anim) => currentTime < anim.startTime + anim.duration,
     );
 
     if (activeAnimations.length !== tileData.activeAnimations.length) {

@@ -5,15 +5,15 @@
  * Uses the CRUD pattern for IndexedDB operations.
  */
 
-import * as crud from '../indexedDBCrud';
-import {
-  type SavedGameState,
-  type GameSettingsPersistenceData,
-  type ModifiersPersistenceData,
-  type LoadResult,
-} from '../../types';
-import { STORES } from '../indexedDBCrud';
+import type {
+  SavedGameState,
+  GameSettingsPersistenceData,
+  ModifiersPersistenceData,
+  LoadResult,
+} from '../../types/persistence';
 import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../checksumUtils';
+import * as crud from '../indexedDBCrud';
+import { STORES } from '../indexedDBCrud';
 
 // Toggle this to enable/disable persistence logging
 const DEBUG_PERSISTENCE_CHECKSUMS = false;
@@ -28,7 +28,7 @@ const DEBUG_PERSISTENCE_CHECKSUMS = false;
 export async function saveGameState(state: SavedGameState): Promise<void> {
   // CRITICAL: Strip isGameOver from persisted data.
   // It's a derived state calculated on load, NOT persisted.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const cleanedState = { ...state };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (cleanedState as any).isGameOver;
@@ -39,7 +39,7 @@ export async function saveGameState(state: SavedGameState): Promise<void> {
   // Atomic-like write: Save Data AND Manifest
   await crud.batchWrite([
     { storeName: STORES.GAME_STATE, key: 'current', data: cleanedState },
-    { storeName: STORES.CHECKSUMS, key: 'game_manifest', data: manifest }
+    { storeName: STORES.CHECKSUMS, key: 'game_manifest', data: manifest },
   ]);
 
   if (DEBUG_PERSISTENCE_CHECKSUMS) {
@@ -55,7 +55,7 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
     // Load Data and Manifest in parallel using a single transaction for consistency
     const [state, manifest] = await crud.batchRead([
       { storeName: STORES.GAME_STATE, key: 'current' },
-      { storeName: STORES.CHECKSUMS, key: 'game_manifest' }
+      { storeName: STORES.CHECKSUMS, key: 'game_manifest' },
     ]) as [SavedGameState | null, ChecksumManifest | null];
 
     if (state) {
@@ -93,7 +93,7 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
           console.error('%c[Persistence] CRITICAL DATA CORRUPTION!', 'color: red; font-weight: bold; font-size: 14px;');
           console.error(`%cRoot Hash Mismatch! Expected: ${manifest.root.hash}`, 'color: red;');
           console.group('%cCorruption Triage Report', 'color: orange;');
-          result.mismatches.forEach(mismatch => {
+          result.mismatches.forEach((mismatch) => {
             console.error(`❌ Validation Failed at Node: ${mismatch}`);
           });
           console.groupEnd();
@@ -209,7 +209,7 @@ export async function loadSettings(): Promise<LoadResult<GameSettingsPersistence
  * Update partial settings
  */
 export async function updateSettings(
-  updates: Partial<GameSettingsPersistenceData>
+  updates: Partial<GameSettingsPersistenceData>,
 ): Promise<void> {
   const currentResult = await loadSettings();
   const current = currentResult.status === 'success' ? currentResult.data : null;
@@ -231,7 +231,7 @@ export async function updateSettings(
 export async function saveMusicSettings(
   isMuted: boolean,
   volume: number = 100,
-  isEnabled: boolean = true
+  isEnabled: boolean = true,
 ): Promise<void> {
   await updateSettings({
     music: {
@@ -262,7 +262,7 @@ export async function loadMusicSettings(): Promise<LoadResult<{ isMuted: boolean
 export async function saveSoundEffectsSettings(
   isMuted: boolean,
   volume: number = 100,
-  isEnabled: boolean = true
+  isEnabled: boolean = true,
 ): Promise<void> {
   await updateSettings({
     soundEffects: {
@@ -390,8 +390,8 @@ export async function clearAllDataAndReload(): Promise<void> {
           allTime: JSON.parse(JSON.stringify(gameStateResult.data.stats.allTime)),
           highScore: JSON.parse(JSON.stringify(gameStateResult.data.stats.highScore)),
           noTurnStreak: {
-            allTimeBest: gameStateResult.data.stats.noTurnStreak.allTimeBest
-          }
+            allTimeBest: gameStateResult.data.stats.noTurnStreak.allTimeBest,
+          },
         };
         console.log('[Persistence] Preserved long-term stats before clearing data');
       }
@@ -402,7 +402,7 @@ export async function clearAllDataAndReload(): Promise<void> {
 
     // STEP 2: Clear all stores
     await Promise.all(
-      Object.values(STORES).map(store => crud.clear(store))
+      Object.values(STORES).map((store) => crud.clear(store)),
     );
 
     // Clear localStorage backup
@@ -411,13 +411,13 @@ export async function clearAllDataAndReload(): Promise<void> {
     // Clear caches
     if ('caches' in globalThis) {
       const cacheNames = await caches.keys();
-      await Promise.all(cacheNames.map(name => caches.delete(name)));
+      await Promise.all(cacheNames.map((name) => caches.delete(name)));
     }
 
     // Unregister service workers
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map(reg => reg.unregister()));
+      await Promise.all(registrations.map((reg) => reg.unregister()));
     }
 
     // STEP 3: Restore preserved stats if they were successfully extracted
@@ -432,9 +432,9 @@ export async function clearAllDataAndReload(): Promise<void> {
           noTurnStreak: {
             current: 0,
             bestInGame: 0,
-            allTimeBest: preservedStats.noTurnStreak.allTimeBest
+            allTimeBest: preservedStats.noTurnStreak.allTimeBest,
           },
-          lastUpdated: Date.now()
+          lastUpdated: Date.now(),
         };
 
         // Save the restored stats to a fresh game state
@@ -447,7 +447,7 @@ export async function clearAllDataAndReload(): Promise<void> {
           shapesUsed: 0,
           hasPlacedFirstShape: false,
           stats: restoredStats,
-          lastUpdated: Date.now()
+          lastUpdated: Date.now(),
         };
 
         await saveGameState(freshGameState);

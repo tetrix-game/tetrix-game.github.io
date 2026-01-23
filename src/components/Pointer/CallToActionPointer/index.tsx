@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Pointer, PointerProps } from '../Pointer';
+
 import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../../utils/persistence';
+import { Pointer, PointerProps } from '../Pointer';
 import './CallToActionPointer.css';
 
 export type CallToActionPointerProps = Omit<PointerProps, 'children' | 'isVisible'> & {
@@ -9,13 +10,13 @@ export type CallToActionPointerProps = Omit<PointerProps, 'children' | 'isVisibl
    * This prop is mandatory.
    */
   callKey: string;
-  
+
   /**
    * Label/message to display in the call-to-action.
    * This prop is mandatory.
    */
   label: string;
-  
+
   /**
    * Timeout in milliseconds before the call-to-action automatically appears.
    * This prop is mandatory.
@@ -58,12 +59,12 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
       try {
         const lastDismissedResult = await loadCallToActionTimestamp(callKey);
         const now = Date.now();
-        
+
         let lastDismissed: number | null = null;
         if (lastDismissedResult.status === 'success') {
           lastDismissed = lastDismissedResult.data;
         }
-        
+
         if (!lastDismissed || (now - lastDismissed) >= timeout) {
           setIsVisible(true);
         } else {
@@ -82,7 +83,7 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
   const handleDismiss = async () => {
     setIsDismissedForSession(true);
     setIsVisible(false);
-    
+
     try {
       await saveCallToActionTimestamp(callKey, Date.now());
     } catch (error) {
@@ -96,7 +97,7 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
         <div className="call-to-action-pointer-message">
           {label}
         </div>
-        <button 
+        <button
           className="call-to-action-pointer-dismiss"
           onClick={handleDismiss}
           aria-label="Dismiss call to action"

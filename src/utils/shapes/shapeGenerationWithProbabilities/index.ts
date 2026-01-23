@@ -14,15 +14,15 @@ import { rotateShape, cloneShape } from '../shapeTransforms';
 function selectColorByProbability(probabilities: ColorProbability[]): ColorName {
   // Calculate total weight
   const totalWeight = probabilities.reduce((sum, p) => sum + p.weight, 0);
-  
+
   if (totalWeight === 0) {
     // Fallback to first color if no weights
     return probabilities[0]?.color || 'blue';
   }
-  
+
   // Generate random number between 0 and totalWeight
   const random = Math.random() * totalWeight;
-  
+
   // Find which color this random value corresponds to
   let cumulativeWeight = 0;
   for (const { color, weight } of probabilities) {
@@ -31,7 +31,7 @@ function selectColorByProbability(probabilities: ColorProbability[]): ColorName 
       return color;
     }
   }
-  
+
   // Fallback (should never reach here)
   return probabilities[probabilities.length - 1].color;
 }
@@ -42,10 +42,10 @@ function selectColorByProbability(probabilities: ColorProbability[]): ColorName 
  * @returns Random shape with color selected by probability
  */
 export function generateRandomShapeWithProbabilities(
-  colorProbabilities: ColorProbability[]
+  colorProbabilities: ColorProbability[],
 ): Shape {
   const color = selectColorByProbability(colorProbabilities);
-  
+
   // Use same logic as generateRandomShape but with selected color
   const _ = () => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
   const X = () => ({ color, isFilled: true });
@@ -60,7 +60,7 @@ export function generateRandomShapeWithProbabilities(
         [X(), X(), X(), X()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     // O-piece (2x2 square) - 1 rotation (all rotations are identical)
     {
@@ -70,7 +70,7 @@ export function generateRandomShapeWithProbabilities(
         [_(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 1
+      rotations: 1,
     },
     // T-piece - 4 rotations
     {
@@ -80,7 +80,7 @@ export function generateRandomShapeWithProbabilities(
         [X(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
+      rotations: 4,
     },
     // S-piece - 2 unique rotations
     {
@@ -90,7 +90,7 @@ export function generateRandomShapeWithProbabilities(
         [X(), X(), _(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     // Z-piece - 2 unique rotations
     {
@@ -100,7 +100,7 @@ export function generateRandomShapeWithProbabilities(
         [_(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     // J-piece - 4 rotations
     {
@@ -110,7 +110,7 @@ export function generateRandomShapeWithProbabilities(
         [X(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
+      rotations: 4,
     },
     // L-piece - 4 rotations
     {
@@ -120,8 +120,8 @@ export function generateRandomShapeWithProbabilities(
         [X(), _(), _(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
-    }
+      rotations: 4,
+    },
   ];
 
   // Select a random shape template
@@ -146,7 +146,7 @@ export function generateRandomShapeWithProbabilities(
  */
 export function generateShapesWithProbabilities(
   count: number,
-  colorProbabilities: ColorProbability[]
+  colorProbabilities: ColorProbability[],
 ): Shape[] {
   const shapes: Shape[] = [];
   for (let i = 0; i < count; i++) {
@@ -169,10 +169,10 @@ type ShapeType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
  */
 export function generateRandomShapeWithGrandpaMode(
   colorProbabilities: ColorProbability[],
-  grandpaMode: boolean = false
+  grandpaMode: boolean = false,
 ): Shape {
   const color = selectColorByProbability(colorProbabilities);
-  
+
   const _ = () => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
   const X = () => ({ color, isFilled: true });
 
@@ -192,7 +192,7 @@ export function generateRandomShapeWithGrandpaMode(
   const random = Math.random() * totalWeight;
   let cumulativeWeight = 0;
   let selectedType: ShapeType = 'I';
-  
+
   for (const { type, weight } of shapeWeights) {
     cumulativeWeight += weight;
     if (random < cumulativeWeight) {
@@ -210,7 +210,7 @@ export function generateRandomShapeWithGrandpaMode(
         [X(), X(), X(), X()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     'O': {
       template: [
@@ -219,7 +219,7 @@ export function generateRandomShapeWithGrandpaMode(
         [_(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 1
+      rotations: 1,
     },
     'T': {
       template: [
@@ -228,7 +228,7 @@ export function generateRandomShapeWithGrandpaMode(
         [X(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
+      rotations: 4,
     },
     'S': {
       template: [
@@ -237,7 +237,7 @@ export function generateRandomShapeWithGrandpaMode(
         [X(), X(), _(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     'Z': {
       template: [
@@ -246,7 +246,7 @@ export function generateRandomShapeWithGrandpaMode(
         [_(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 2
+      rotations: 2,
     },
     'J': {
       template: [
@@ -255,7 +255,7 @@ export function generateRandomShapeWithGrandpaMode(
         [X(), X(), X(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
+      rotations: 4,
     },
     'L': {
       template: [
@@ -264,8 +264,8 @@ export function generateRandomShapeWithGrandpaMode(
         [X(), _(), _(), _()],
         [_(), _(), _(), _()],
       ],
-      rotations: 4
-    }
+      rotations: 4,
+    },
   };
 
   const { template, rotations } = shapeTemplates[selectedType];

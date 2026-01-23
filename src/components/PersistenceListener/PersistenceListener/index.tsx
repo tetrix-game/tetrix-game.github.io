@@ -1,15 +1,16 @@
 import { useEffect, useRef } from 'react';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
+
+import { tilesToArray } from '../../../types/core';
 import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme, clearGameBoard } from '../../../utils/persistence';
 import { updateSettings } from '../../../utils/persistenceAdapter';
-import { tilesToArray } from '../../../types';
+import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
 
 /**
  * PersistenceListener
- * 
+ *
  * This component is responsible for listening to state changes and persisting them to IndexedDB.
  * It replaces the anti-pattern of triggering side effects (saves) directly inside reducers.
- * 
+ *
  * It follows the "Load Once, Save Often" pattern:
  * - Loading happens only on app initialization (in Main.tsx/TetrixProvider)
  * - Saving happens here whenever relevant state changes
@@ -38,7 +39,7 @@ export const PersistenceListener = () => {
     shapesUsed,
     hasPlacedFirstShape,
     buttonSizeMultiplier,
-    grandpaMode
+    grandpaMode,
   } = state;
 
   // Track previous values to avoid unnecessary saves if we want to optimize further,
@@ -53,7 +54,7 @@ export const PersistenceListener = () => {
     // If transitioning TO hub mode from a game mode, clear the persisted game board
     // This ensures "Back to Menu" after game over clears the old board state
     if (gameMode === 'hub' && prevGameMode !== 'hub') {
-      clearGameBoard().catch(error => {
+      clearGameBoard().catch((error) => {
         console.error('Failed to clear game board on return to hub:', error);
       });
       return;
@@ -82,7 +83,7 @@ export const PersistenceListener = () => {
       queueColorProbabilities,
       unlockedSlots,
       // isGameOver is intentionally NOT persisted - see LOAD_GAME_STATE for recalculation
-    }).catch(error => {
+    }).catch((error) => {
       console.error('Failed to save game state via listener:', error);
     });
   }, [
@@ -100,12 +101,12 @@ export const PersistenceListener = () => {
     queueHiddenShapes,
     queueSize,
     queueColorProbabilities,
-    unlockedSlots
+    unlockedSlots,
   ]);
 
   // Effect for Modifiers
   useEffect(() => {
-    saveModifiers(unlockedModifiers).catch(error => {
+    saveModifiers(unlockedModifiers).catch((error) => {
       console.error('Failed to save modifiers via listener:', error);
     });
   }, [unlockedModifiers]);
@@ -113,24 +114,24 @@ export const PersistenceListener = () => {
   // Effect for Settings (Button Size, Show Block Icons, Grandpa Mode)
   useEffect(() => {
     updateSettings({
-      buttonSizeMultiplier: buttonSizeMultiplier,
-      showBlockIcons: showBlockIcons,
-      grandpaMode: grandpaMode
-    }).catch(error => {
+      buttonSizeMultiplier,
+      showBlockIcons,
+      grandpaMode,
+    }).catch((error) => {
       console.error('Failed to save settings via listener:', error);
     });
   }, [buttonSizeMultiplier, showBlockIcons, grandpaMode]);
 
   // Effect for Theme
   useEffect(() => {
-    saveTheme(currentTheme).catch(error => {
+    saveTheme(currentTheme).catch((error) => {
       console.error('Failed to save theme via listener:', error);
     });
   }, [currentTheme]);
 
   // Effect for Block Theme
   useEffect(() => {
-    saveBlockTheme(blockTheme).catch(error => {
+    saveBlockTheme(blockTheme).catch((error) => {
       console.error('Failed to save block theme via listener:', error);
     });
   }, [blockTheme]);

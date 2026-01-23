@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import { usePWAUpdate } from '../usePWAUpdate';
 
 export const useUpdateNotification = () => {

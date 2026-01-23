@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { useGridEditor } from '../GridEditorContext';
+
 import { EditorGridTile } from '../EditorGridTile';
+import { useGridEditor } from '../GridEditorContext';
 import '../Grid/Grid.css'; // Reuse grid styles
 
 const EditorGrid: React.FC = () => {
@@ -114,7 +115,7 @@ const EditorGrid: React.FC = () => {
           '--grid-size': `${cellSize * gridLayout.width}px`,
         } as React.CSSProperties}
       >
-        {positions.map(position => {
+        {positions.map((position) => {
           const match = position.match(/R(\d+)C(\d+)/);
           if (!match) return null;
           const row = parseInt(match[1]);

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+
 import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../../utils/persistence';
 
-export type SoundEffect =
-  | 'click_into_place'
+export type SoundEffect = | 'click_into_place'
   | 'game_over'
   | 'pickup_shape'
   | 'invalid_placement'
@@ -15,15 +15,15 @@ export type SoundEffect =
 // Per-sound volume multipliers to normalize loudness across all sound effects
 // Based on measured mean_volume levels - quieter sounds get higher multipliers
 const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
-  click_into_place: 1.0,    // -27.4 dB mean, reference level
-  game_over: 0.7,           // -22.1 dB mean, louder than others
-  pickup_shape: 0.4,        // -14.8 dB mean, much louder than others
-  invalid_placement: 1.4,   // -31.2 dB mean, quieter than others
-  clear_combo_1: 1.0,       // -27.4 dB mean
-  clear_combo_2: 1.1,       // -28.7 dB mean
-  clear_combo_3: 1.2,       // -29.8 dB mean
-  clear_combo_4: 1.1,       // -28.4 dB mean
-  heartbeat: 1.0,           // Synthesized, already calibrated
+  click_into_place: 1.0, // -27.4 dB mean, reference level
+  game_over: 0.7, // -22.1 dB mean, louder than others
+  pickup_shape: 0.4, // -14.8 dB mean, much louder than others
+  invalid_placement: 1.4, // -31.2 dB mean, quieter than others
+  clear_combo_1: 1.0, // -27.4 dB mean
+  clear_combo_2: 1.1, // -28.7 dB mean
+  clear_combo_3: 1.2, // -29.8 dB mean
+  clear_combo_4: 1.1, // -28.4 dB mean
+  heartbeat: 1.0, // Synthesized, already calibrated
 };
 
 // Base volume scale (0-1) - pleasant listening level
@@ -270,7 +270,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setVolumeState(clampedVolume);
 
     // Save to DB in background (async, non-blocking)
-    saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch(error => {
+    saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch((error) => {
       console.error('Failed to save sound effects volume:', error);
       // Fallback to localStorage
       try {
@@ -286,7 +286,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setIsEnabledState(enabled);
 
     // Save to DB in background (async, non-blocking)
-    saveSoundEffectsSettings(!enabled, volume, enabled).catch(error => {
+    saveSoundEffectsSettings(!enabled, volume, enabled).catch((error) => {
       console.error('Failed to save sound effects enabled state:', error);
       // Fallback to localStorage
       try {

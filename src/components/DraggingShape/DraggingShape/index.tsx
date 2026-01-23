@@ -1,26 +1,27 @@
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
-import { BlockVisual } from '../../BlockVisual';
-import { useSoundEffects } from '../../SoundEffectsContext';
 import { useEffect, useState } from 'react';
+
 import { useGameSizing } from '../../../hooks/useGameSizing';
-import { getShapeBounds } from '../../../utils/shapes';
 import { ANIMATION_TIMING } from '../../../utils/animationConstants';
+import { getShapeBounds } from '../../../utils/shapes/shapeGeometry';
+import { BlockVisual } from '../../BlockVisual/BlockVisual';
+import { useSoundEffects } from '../../SoundEffectsContext/SoundEffectsContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
 import './DraggingShape.css';
 
 /**
  * DraggingShape Component
- * 
+ *
  * PURPOSE:
  * This component acts as the visual bridge between the static ShapeOption (in the menu)
  * and the interactive Grid (on the board). It is a temporary overlay that exists only
  * during the drag-and-drop lifecycle.
- * 
+ *
  * RESPONSIBILITIES:
  * 1. Handle all movement animations (pickup, dragging, placing, returning).
  * 2. Smoothly interpolate between the ShapeOption's coordinate system and the Grid's coordinate system.
- * 3. Ensure the "Filled Center" of the shape aligns with the mouse cursor (during drag) 
+ * 3. Ensure the "Filled Center" of the shape aligns with the mouse cursor (during drag)
  *    or the target grid tiles (during drop).
- * 
+ *
  * COORDINATE SYSTEMS:
  * - ShapeOption: Uses a padded container with a centered 4x4 grid.
  * - Grid: Uses a fixed tile grid.
@@ -50,7 +51,7 @@ export function DraggingShape() {
     PLACING_DURATION,
     RETURN_DURATION,
     PLACEMENT_SOUND_DURATION,
-    INVALID_BLOCK_ANIMATION_DURATION
+    INVALID_BLOCK_ANIMATION_DURATION,
   } = ANIMATION_TIMING;
 
   // ShapeOption constants (must match ShapeOption.tsx)
@@ -179,7 +180,7 @@ export function DraggingShape() {
 
     shapeOptionCenter = {
       x: sourcePosition.x + sourcePosition.width / 2,
-      y: sourcePosition.y + sourcePosition.height / 2
+      y: sourcePosition.y + sourcePosition.height / 2,
     };
   }
 
@@ -200,7 +201,7 @@ export function DraggingShape() {
 
     return {
       x: (gridCenter - shapeVisualCenterCol) * cellWithGap,
-      y: (gridCenter - shapeVisualCenterRow) * cellWithGap
+      y: (gridCenter - shapeVisualCenterRow) * cellWithGap,
     };
   };
 
@@ -214,18 +215,16 @@ export function DraggingShape() {
 
     currentCenter = {
       x: shapeOptionCenter.x + (targetX - shapeOptionCenter.x) * pickupProgress,
-      y: shapeOptionCenter.y + (targetY - shapeOptionCenter.y) * pickupProgress
+      y: shapeOptionCenter.y + (targetY - shapeOptionCenter.y) * pickupProgress,
     };
-
   } else if (dragState.phase === 'dragging') {
     // Follow mouse exactly
     currentCellSize = GRID_TILE_SIZE;
     currentGap = GRID_GAP;
     currentCenter = {
       x: mousePosition.x,
-      y: mousePosition.y - MOBILE_TOUCH_OFFSET
+      y: mousePosition.y - MOBILE_TOUCH_OFFSET,
     };
-
   } else if (dragState.phase === 'placing' && dragState.targetPosition) {
     // Interpolate from Mouse (Placement Start) to Grid Target
     currentCellSize = GRID_TILE_SIZE;
@@ -240,11 +239,10 @@ export function DraggingShape() {
 
     currentCenter = {
       x: startX + (targetX - startX) * placingProgress,
-      y: startY + (targetY - startY) * placingProgress
+      y: startY + (targetY - startY) * placingProgress,
     };
 
     scale = 1 - 0.05 * Math.sin(placingProgress * Math.PI);
-
   } else if (dragState.phase === 'returning' && sourcePosition) {
     // Interpolate from Mouse back to ShapeOption
     currentCellSize = GRID_TILE_SIZE + (shapeOptionCellSize - GRID_TILE_SIZE) * returningProgress;
@@ -255,7 +253,7 @@ export function DraggingShape() {
 
     currentCenter = {
       x: startX + (shapeOptionCenter.x - startX) * returningProgress,
-      y: startY + (shapeOptionCenter.y - startY) * returningProgress
+      y: startY + (shapeOptionCenter.y - startY) * returningProgress,
     };
 
     scale = 1 - 0.2 * returningProgress;
@@ -276,7 +274,7 @@ export function DraggingShape() {
   }
 
   const invalidBlockSet = new Set(
-    dragState.invalidBlockPositions.map(pos => `${pos.shapeRow},${pos.shapeCol}`)
+    dragState.invalidBlockPositions.map((pos) => `${pos.shapeRow},${pos.shapeCol}`),
   );
 
   return (
@@ -287,7 +285,7 @@ export function DraggingShape() {
         '--container-left': `${containerLeft}px`,
         '--tile-size': `${currentCellSize}px`,
         '--grid-gap': `${currentGap}px`,
-        '--block-overlap': `1px`,
+        '--block-overlap': '1px',
         '--scale': scale,
         // Apply centering offset to children via CSS variable (matching ShapeOption)
         '--centering-offset-x': `${centeringOffset.x}px`,
@@ -307,7 +305,7 @@ export function DraggingShape() {
               className={`dragging-shape-cell ${isInvalid ? 'invalid-cell' : ''}`}
               style={{
                 // Apply the centering transform here
-                transform: `translate(var(--centering-offset-x), var(--centering-offset-y))`,
+                transform: 'translate(var(--centering-offset-x), var(--centering-offset-y))',
               } as React.CSSProperties}
             >
               <div

@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
+
+import { useSoundEffects } from '../../components/SoundEffectsContext/SoundEffectsContext';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../components/Tetrix/TetrixContext';
-import { useSoundEffects } from '../../components/SoundEffectsContext';
-import { mousePositionToGridLocation, isValidPlacement } from '../../utils/shapeUtils';
 import { GRID_SIZE } from '../../utils/gridConstants';
+import { mousePositionToGridLocation } from '../../utils/shapes/shapeGeometry';
+import { isValidPlacement } from '../../utils/shapes/shapeValidation';
 
 export const useShapePlacement = () => {
   const { gameMode, dragState, tiles } = useTetrixStateContext();
@@ -50,7 +52,7 @@ export const useShapePlacement = () => {
           gridOffsetY: offsets.gridOffsetY,
           tileSize: offsets.tileSize,
           gridGap: offsets.gridGap,
-        }
+        },
       );
 
       // If location is null or placement is invalid, return the shape

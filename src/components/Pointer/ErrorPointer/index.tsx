@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Pointer, PointerProps } from '../Pointer';
 import './ErrorPointer.css';
 

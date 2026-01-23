@@ -1,26 +1,27 @@
 /**
  * Combined Reducer - Composes all domain-specific reducers
- * 
+ *
  * This follows the reducer composition pattern where each domain reducer
  * handles its own slice of actions, and they're applied in sequence.
- * 
+ *
  * Order matters: Some reducers depend on state changes from previous reducers.
  * For example, tileReducer (COMPLETE_PLACEMENT) needs to run and update tiles/score
  * before other reducers might need that updated state.
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types';
+import type { TetrixReducerState, TetrixAction } from '../types/gameState';
+
 import { dragReducer } from './dragReducer';
+import { gameStateReducer, initialGameState } from './gameStateReducer';
+import { scoringReducer } from './scoringReducer';
 import { shapeReducer } from './shapeReducer';
 import { tileReducer } from './tileReducer';
-import { scoringReducer } from './scoringReducer';
-import { gameStateReducer, initialGameState } from './gameStateReducer';
 
 export const initialState: TetrixReducerState = initialGameState;
 
 /**
  * Combined reducer that applies domain reducers in sequence
- * 
+ *
  * Each reducer only handles its own actions and returns unchanged state for others.
  * This creates a clean separation of concerns while maintaining a single state tree.
  */

@@ -1,7 +1,8 @@
 import React from 'react';
+
+import type { Block, ColorName, Location } from '../../../types/core';
+import { BlockVisual } from '../../BlockVisual/BlockVisual';
 import { Tile } from '../../Tile/Tile';
-import { BlockVisual } from '../../BlockVisual';
-import type { Block, ColorName, Location } from '../../../utils/types';
 import './EditorGridTile.css';
 
 type EditorGridTileProps = {
@@ -14,7 +15,7 @@ type EditorGridTileProps = {
   onClick?: () => void;
   onMouseEnter?: (e: React.MouseEvent) => void;
   onMouseDown?: (e: React.MouseEvent) => void;
-}
+};
 
 const EditorGridTile: React.FC<EditorGridTileProps> = ({
   location,
@@ -25,7 +26,7 @@ const EditorGridTile: React.FC<EditorGridTileProps> = ({
   tileExists = true,
   onClick,
   onMouseEnter,
-  onMouseDown
+  onMouseDown,
 }) => {
   // Determine tile opacity in editor mode - dim tiles that don't exist
   const tileOpacity = !tileExists ? 0.2 : 1;
@@ -50,7 +51,6 @@ const EditorGridTile: React.FC<EditorGridTileProps> = ({
     </Tile>
   );
 };
-
 
 const MemoizedEditorGridTile = React.memo(EditorGridTile);
 export { MemoizedEditorGridTile as EditorGridTile };

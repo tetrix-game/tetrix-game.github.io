@@ -1,13 +1,13 @@
 /**
  * Grid Constants - Static grid addresses and helper functions
- * 
+ *
  * This module provides:
  * - GRID_ADDRESSES: Static array of all grid tile keys (R1C1 through R10C10)
  * - Helper functions for tile key manipulation
  * - Challenge board data conversion utilities
  */
 
-import type { ColorName, TilesSet } from '../../types';
+import type { ColorName, TilesSet } from '../../types/core';
 
 // Grid configuration - mutable to allow runtime size changes
 export let GRID_SIZE = 10;
@@ -95,11 +95,10 @@ export function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData 
         data: {
           isFilled: tile.block.isFilled,
           color: tile.block.color,
-        }
+        },
       });
     }
   });
 
   return { tiles };
 }
-

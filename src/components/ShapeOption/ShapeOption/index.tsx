@@ -1,9 +1,10 @@
 import './ShapeOption.css';
-import type { Shape } from '../../../utils/types';
-import { ShapeDisplay } from '../../ShapeDisplay';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 import React, { useRef, useEffect, useCallback } from 'react';
+
+import type { Shape } from '../../../types/core';
 import { ANIMATION_TIMING } from '../../../utils/animationConstants';
+import { ShapeDisplay } from '../../ShapeDisplay/ShapeDisplay';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
 
 type ShapeOptionProps = {
   shape: Shape;
@@ -24,7 +25,7 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
     score,
     blockTheme,
     showBlockIcons,
-    gameMode
+    gameMode,
   } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
@@ -85,16 +86,16 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
             scoreData: {
               rowsCleared: 0,
               columnsCleared: 0,
-              pointsEarned: -2
-            }
-          }
+              pointsEarned: -2,
+            },
+          },
         });
 
         const clockwise = turningDirection === 'cw';
 
         dispatch({
           type: 'ROTATE_SHAPE',
-          value: { shapeIndex, clockwise }
+          value: { shapeIndex, clockwise },
         });
 
         // Deactivate turning mode after rotation
@@ -117,20 +118,20 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
             scoreData: {
               rowsCleared: 0,
               columnsCleared: 0,
-              pointsEarned: -3
-            }
-          }
+              pointsEarned: -3,
+            },
+          },
         });
 
         // Perform two clockwise rotations for 180-degree turn
         dispatch({
           type: 'ROTATE_SHAPE',
-          value: { shapeIndex, clockwise: true }
+          value: { shapeIndex, clockwise: true },
         });
 
         dispatch({
           type: 'ROTATE_SHAPE',
-          value: { shapeIndex, clockwise: true }
+          value: { shapeIndex, clockwise: true },
         });
 
         // Deactivate double turn mode after rotation
@@ -162,10 +163,10 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
           top: rect.top,
           left: rect.left,
           width: rect.width,
-          height: rect.height
+          height: rect.height,
         },
-        shapeIndex
-      }
+        shapeIndex,
+      },
     });
   }, [dispatch, shapeIndex, dragState.selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval, score, shape, shapeId]);
 
@@ -173,7 +174,7 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
 
   // Render empty blocks during removal animation
   const displayShape = isAnimatingRemoval
-    ? shape.map(row => row.map(block => ({ ...block, isFilled: false })))
+    ? shape.map((row) => row.map((block) => ({ ...block, isFilled: false })))
     : shape;
 
   // Simple opacity: fully visible when not selected, fade when selected
@@ -193,13 +194,13 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
       } as React.CSSProperties}
       onPointerDown={handlePointerDown}
     >
-      <ShapeDisplay 
-        shape={displayShape} 
-        theme={blockTheme} 
+      <ShapeDisplay
+        shape={displayShape}
+        theme={blockTheme}
         showIcon={gameMode === 'daily' || showBlockIcons}
       />
     </div>
-  )
-}
+  );
+};
 
 export { ShapeOption };

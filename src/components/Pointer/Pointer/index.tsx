@@ -20,13 +20,13 @@ const Pointer: React.FC<PointerProps> = ({
   isVisible,
   arrowLength = 100,
   offsetFromTarget = 60,
-  children
+  children,
 }) => {
   const [targetPosition, setTargetPosition] = useState<Point | null>(null);
 
   const screenCenter = useMemo(() => ({
     x: window.innerWidth / 2,
-    y: window.innerHeight / 2
+    y: window.innerHeight / 2,
   }), []);
 
   // Calculate target position from ref
@@ -36,7 +36,7 @@ const Pointer: React.FC<PointerProps> = ({
         const rect = targetRef.current.getBoundingClientRect();
         setTargetPosition({
           x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2
+          y: rect.top + rect.height / 2,
         });
       }
     };
@@ -45,7 +45,7 @@ const Pointer: React.FC<PointerProps> = ({
       updatePosition();
       window.addEventListener('resize', updatePosition);
       window.addEventListener('scroll', updatePosition);
-      
+
       return () => {
         window.removeEventListener('resize', updatePosition);
         window.removeEventListener('scroll', updatePosition);
@@ -58,7 +58,7 @@ const Pointer: React.FC<PointerProps> = ({
   // Vector from center to target
   const vector = {
     x: targetPosition.x - screenCenter.x,
-    y: targetPosition.y - screenCenter.y
+    y: targetPosition.y - screenCenter.y,
   };
 
   const angleRad = Math.atan2(vector.y, vector.x);
@@ -67,12 +67,12 @@ const Pointer: React.FC<PointerProps> = ({
   const magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
   const unitVector = {
     x: vector.x / magnitude,
-    y: vector.y / magnitude
+    y: vector.y / magnitude,
   };
 
   const tipPosition = {
     x: targetPosition.x - (unitVector.x * offsetFromTarget),
-    y: targetPosition.y - (unitVector.y * offsetFromTarget)
+    y: targetPosition.y - (unitVector.y * offsetFromTarget),
   };
 
   return (

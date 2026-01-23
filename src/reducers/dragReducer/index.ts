@@ -4,13 +4,13 @@
  *          RETURN_SHAPE_TO_SELECTOR, COMPLETE_RETURN, CLEAR_SELECTION
  */
 
-import type { TetrixReducerState, TetrixAction } from '../../types';
-import { getShapeGridPositions, getShapeVisualOffset } from '../../utils/shapes';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 import { ANIMATION_TIMING } from '../../utils/animationConstants';
+import { getShapeGridPositions, getShapeVisualOffset } from '../../utils/shapes/shapeGeometry';
 
 export function dragReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
-    case "START_DRAG": {
+    case 'START_DRAG': {
       const { shape, sourceId, sourceBounds, shapeIndex } = action.value;
 
       // Calculate grid dimensions - match the Grid component's calculation
@@ -51,7 +51,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       const { offsetX: visualOffsetX, offsetY: visualOffsetY } = getShapeVisualOffset(
         shape,
         TILE_SIZE,
-        GRID_GAP
+        GRID_GAP,
       );
 
       // Calculate grid offset from mouse to 4x4 top-left corner
@@ -104,7 +104,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "SELECT_SHAPE": {
+    case 'SELECT_SHAPE': {
       const { shapeIndex } = action.value;
       const queueItem = state.nextShapes[shapeIndex];
       const bounds = state.shapeOptionBounds[shapeIndex];
@@ -159,7 +159,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       const { offsetX: visualOffsetX, offsetY: visualOffsetY } = getShapeVisualOffset(
         shape,
         TILE_SIZE,
-        GRID_GAP
+        GRID_GAP,
       );
 
       // Calculate grid offset from mouse to 4x4 top-left corner
@@ -212,7 +212,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "UPDATE_MOUSE_LOCATION": {
+    case 'UPDATE_MOUSE_LOCATION': {
       const { location, position, tileSize, gridBounds, isValid, invalidBlocks } = action.value;
 
       // If we are in the placing phase, we should NOT update the validity or hovered blocks
@@ -238,8 +238,8 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       const invalidBlockPositions = invalidBlocks ?? [];
 
       // Transition from picking-up to dragging after pickup animation completes
-      const shouldTransitionToDragging = state.dragState.phase === 'picking-up' && state.dragState.startTime &&
-        (performance.now() - state.dragState.startTime > ANIMATION_TIMING.PICKUP_DURATION);
+      const shouldTransitionToDragging = state.dragState.phase === 'picking-up' && state.dragState.startTime
+        && (performance.now() - state.dragState.startTime > ANIMATION_TIMING.PICKUP_DURATION);
 
       const newDragState = shouldTransitionToDragging
         ? { ...state.dragState, phase: 'dragging' as const, hoveredBlockPositions, invalidBlockPositions, isValidPlacement: isValid ?? false }
@@ -255,7 +255,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "PLACE_SHAPE": {
+    case 'PLACE_SHAPE': {
       const { location, mousePosition: clickPosition } = action.value;
 
       if (!state.dragState.selectedShape || state.dragState.selectedShapeIndex === null) {
@@ -311,7 +311,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // Calculate the center point of all filled blocks that will be placed
       let minRow = Infinity, maxRow = -Infinity, minCol = Infinity, maxCol = -Infinity;
-      shapePositions.forEach(pos => {
+      shapePositions.forEach((pos) => {
         minRow = Math.min(minRow, pos.location.row);
         maxRow = Math.max(maxRow, pos.location.row);
         minCol = Math.min(minCol, pos.location.column);
@@ -351,7 +351,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "COMPLETE_RETURN": {
+    case 'COMPLETE_RETURN': {
       // Clear shape after return animation completes
       return {
         ...state,
@@ -374,7 +374,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "RETURN_SHAPE_TO_SELECTOR": {
+    case 'RETURN_SHAPE_TO_SELECTOR': {
       // Return shape to selector (invalid placement or drag outside grid)
       // If we have a selected shape and bounds, animate the return
       if (state.dragState.selectedShape) {
@@ -473,7 +473,7 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
-    case "CLEAR_SELECTION": {
+    case 'CLEAR_SELECTION': {
       // Clear selection immediately (ESC key)
       return {
         ...state,

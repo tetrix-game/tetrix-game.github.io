@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+
+import { GemParticle } from '../../GemParticle/GemParticle';
 import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
-import { GemParticle } from '../../GemParticle';
 import './GemShower.css';
 
 interface GemData {
@@ -20,7 +21,7 @@ const GemShower: React.FC = () => {
   // Calculate the two possible emission origins
   const centerScreenPosition = useMemo(() => ({
     x: window.innerWidth / 2,
-    y: window.innerHeight / 2
+    y: window.innerHeight / 2,
   }), []);
 
   const gemIconOrigin = useMemo(() => gemIconPosition, [gemIconPosition]);
@@ -57,11 +58,11 @@ const GemShower: React.FC = () => {
     // - For <10 points: show normal gems (40px), 1 gem per point, max 100 gems
     const useLargeGems = pointsForEffect >= 10;
     const gemsToShow = useLargeGems
-      ? Math.min(Math.floor(pointsForEffect / 10), 10)  // 10-100 points = 1-10 large gems
-      : pointsForEffect;                                  // 1-9 points = 1-9 normal gems
+      ? Math.min(Math.floor(pointsForEffect / 10), 10) // 10-100 points = 1-10 large gems
+      : pointsForEffect; // 1-9 points = 1-9 normal gems
 
     const coinsToSpawn = generateGems(gemsToShow, emissionOrigin, isGainingPoints, useLargeGems);
-    setGems(prevGems => [...prevGems, ...coinsToSpawn]);
+    setGems((prevGems) => [...prevGems, ...coinsToSpawn]);
 
     lastScoreRef.current = score;
   }, [score, centerScreenPosition, gemIconOrigin]);
@@ -70,7 +71,7 @@ const GemShower: React.FC = () => {
     gemCount: number,
     origin: { x: number; y: number },
     isGainingPoints: boolean,
-    useLargeGems: boolean = false
+    useLargeGems: boolean = false,
   ): GemData[] => {
     const gems: GemData[] = [];
     const delayIncrement = 10; // Stagger each gem by 10ms
@@ -99,7 +100,7 @@ const GemShower: React.FC = () => {
         velocity: { x: velocityX, y: velocityY },
         delay: currentDelay,
         size: useLargeGems ? 80 : 40, // 80px for large gems, 40px for normal gems
-        attractTo: isGainingPoints ? gemIconOrigin : undefined // Attract to gem icon when gaining
+        attractTo: isGainingPoints ? gemIconOrigin : undefined, // Attract to gem icon when gaining
       });
 
       currentDelay += delayIncrement;
@@ -109,13 +110,13 @@ const GemShower: React.FC = () => {
   };
 
   const handleGemComplete = (gemId: string) => {
-    setGems(prevGems => prevGems.filter(gem => gem.id !== gemId));
+    setGems((prevGems) => prevGems.filter((gem) => gem.id !== gemId));
   };
 
   return (
     <div className="gem-shower-container">
       {/* Render all gems */}
-      {gems.map(gem => (
+      {gems.map((gem) => (
         <GemParticle
           key={gem.id}
           startPosition={gem.startPosition}

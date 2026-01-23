@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { tetrixReducer } from '../components/Tetrix/TetrixReducer';
-import type { TetrixReducerState } from '../utils/types';
-import { generateRandomShape } from '../utils/shapeUtils';
+import { tetrixReducer } from '../reducers';
+import type { TetrixReducerState } from '../types/gameState';
+import { generateRandomShape } from '../utils/shapes/shapeGeneration';
 
 describe('Drag and Drop Return to Selector', () => {
   it('should trigger return animation when RETURN_SHAPE_TO_SELECTOR is dispatched during dragging phase', () => {

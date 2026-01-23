@@ -1,8 +1,9 @@
 import React from 'react';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
-import { StatCategory } from '../../../types/stats';
+
 import { ColorName } from '../../../types/core';
-import { Overlay } from '../../Overlay';
+import { StatCategory } from '../../../types/stats';
+import { Overlay } from '../../Overlay/Overlay';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
 import './StatsOverlay.css';
 
 interface StatsOverlayProps {
@@ -11,12 +12,12 @@ interface StatsOverlayProps {
 
 const CATEGORY_GROUPS: { title: string; categories: StatCategory[]; className?: string }[] = [
   {
-    title: "General",
+    title: 'General',
     categories: ['shapesPlaced', 'linesCleared', 'coloredLinesCleared'],
-    className: "stats-group-general"
+    className: 'stats-group-general',
   },
   {
-    title: "Rows",
+    title: 'Rows',
     categories: [
       'rowsCleared',
       'doubleRows',
@@ -25,11 +26,11 @@ const CATEGORY_GROUPS: { title: string; categories: StatCategory[]; className?: 
       'doubleRowsWithSingleColumns',
       'tripleRowsWithSingleColumns',
       'tripleRowsWithDoubleColumns',
-      'quadrupleRowsWithSingleColumns'
-    ]
+      'quadrupleRowsWithSingleColumns',
+    ],
   },
   {
-    title: "Columns",
+    title: 'Columns',
     categories: [
       'columnsCleared',
       'doubleColumns',
@@ -38,46 +39,46 @@ const CATEGORY_GROUPS: { title: string; categories: StatCategory[]; className?: 
       'doubleColumnsWithSingleRows',
       'tripleColumnsWithDoubleRows',
       'tripleColumnsWithSingleRows',
-      'quadrupleColumnsWithSingleRows'
-    ]
+      'quadrupleColumnsWithSingleRows',
+    ],
   },
   {
-    title: "Squares",
+    title: 'Squares',
     categories: [
       'singleColumnBySingleRow',
-      'doubleColumnByDoubleRow'
-    ]
+      'doubleColumnByDoubleRow',
+    ],
   },
   {
-    title: "Legendary",
+    title: 'Legendary',
     categories: ['quadrupleRowByQuadrupleColumn'],
-    className: "stats-group-legendary"
-  }
+    className: 'stats-group-legendary',
+  },
 ];
 
 const CATEGORY_LABELS: Record<StatCategory, string> = {
-  shapesPlaced: "Shapes Placed",
-  linesCleared: "Lines Cleared",
-  coloredLinesCleared: "Colored Lines Cleared",
-  rowsCleared: "Rows Cleared",
-  doubleRows: "2R",
-  tripleRows: "3R",
-  quadrupleRows: "4R",
-  doubleRowsWithSingleColumns: "2R x 1C",
-  tripleRowsWithSingleColumns: "3R x 1C",
-  tripleRowsWithDoubleColumns: "3R x 2C",
-  quadrupleRowsWithSingleColumns: "4R x 1C",
-  columnsCleared: "Columns Cleared",
-  doubleColumns: "2C",
-  tripleColumns: "3C",
-  quadrupleColumns: "4C",
-  doubleColumnsWithSingleRows: "2C x 1R",
-  tripleColumnsWithDoubleRows: "3C x 2R",
-  tripleColumnsWithSingleRows: "3C x 1R",
-  quadrupleColumnsWithSingleRows: "4C x 1R",
-  singleColumnBySingleRow: "1R x 1C",
-  doubleColumnByDoubleRow: "2R x 2C",
-  quadrupleRowByQuadrupleColumn: "4R x 4C"
+  shapesPlaced: 'Shapes Placed',
+  linesCleared: 'Lines Cleared',
+  coloredLinesCleared: 'Colored Lines Cleared',
+  rowsCleared: 'Rows Cleared',
+  doubleRows: '2R',
+  tripleRows: '3R',
+  quadrupleRows: '4R',
+  doubleRowsWithSingleColumns: '2R x 1C',
+  tripleRowsWithSingleColumns: '3R x 1C',
+  tripleRowsWithDoubleColumns: '3R x 2C',
+  quadrupleRowsWithSingleColumns: '4R x 1C',
+  columnsCleared: 'Columns Cleared',
+  doubleColumns: '2C',
+  tripleColumns: '3C',
+  quadrupleColumns: '4C',
+  doubleColumnsWithSingleRows: '2C x 1R',
+  tripleColumnsWithDoubleRows: '3C x 2R',
+  tripleColumnsWithSingleRows: '3C x 1R',
+  quadrupleColumnsWithSingleRows: '4C x 1R',
+  singleColumnBySingleRow: '1R x 1C',
+  doubleColumnByDoubleRow: '2R x 2C',
+  quadrupleRowByQuadrupleColumn: '4R x 4C',
 };
 
 const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
@@ -93,7 +94,7 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
 
   const renderNoTurnStreak = () => {
     const { current, bestInGame, allTimeBest } = stats.noTurnStreak;
-    
+
     // Highlight if current equals or exceeds best in game
     const isNewGameRecord = current > 0 && current >= bestInGame;
     // Highlight if current equals or exceeds all-time best
@@ -135,9 +136,9 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
             {isNewRecord && current.total > 0 && <span className="streak-indicator">★</span>}
           </div>
         </div>
-        
+
         {/* Color breakdown */}
-        {COLORS.map(color => {
+        {COLORS.map((color) => {
           const colorTotal = allTime.colors[color] || 0;
           if (colorTotal === 0) return null;
 
@@ -174,7 +175,7 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
         <h2>Statistics</h2>
         <button className="close-button" onClick={onClose}>×</button>
       </div>
-      
+
       <div className="stats-table-header">
         <div className="header-label">Category</div>
         <div className="header-value">All Time</div>

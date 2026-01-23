@@ -3,7 +3,6 @@ import BlockVisual from '../BlockVisual';
 import { useSoundEffects } from '../SoundEffectsContext';
 import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
-import { useDebugEditor } from '../DebugEditor';
 import { getShapeBounds } from '../../utils/shapes';
 import { ANIMATION_TIMING } from '../../utils/animationConstants';
 import './DraggingShape.css';
@@ -41,7 +40,6 @@ export default function DraggingShape() {
   const [pickupProgress, setPickupProgress] = useState(0);
   const [placingProgress, setPlacingProgress] = useState(0);
   const [returningProgress, setReturningProgress] = useState(0);
-  const { state: debugState } = useDebugEditor();
 
   // Get dynamic sizing from hook
   const { gridSize, gridGap } = useGameSizing();
@@ -319,28 +317,12 @@ export default function DraggingShape() {
                 } as React.CSSProperties}
               >
                 {block.isFilled && (
-                  <BlockVisual 
+                  <BlockVisual
                     isFilled={block.isFilled}
                     color={block.color}
-                    size={isInvalid ? currentCellSize * 0.5 : currentCellSize} 
-                    theme={blockTheme} 
+                    size={isInvalid ? currentCellSize * 0.5 : currentCellSize}
+                    theme={blockTheme}
                     showIcon={gameMode === 'daily' || showBlockIcons}
-                  />
-                )}
-                {!block.isFilled && debugState.isEditorOpen && debugState.showGridDots && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: 'white',
-                      opacity: 0.6,
-                      pointerEvents: 'none',
-                    }}
                   />
                 )}
               </div>

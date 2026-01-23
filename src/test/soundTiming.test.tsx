@@ -4,7 +4,6 @@ import DraggingShape from '../components/DraggingShape';
 import { TetrixStateContext, TetrixDispatchContext } from '../components/Tetrix/TetrixContext';
 import { TetrixReducerState, DragPhase } from '../utils/types';
 import { INITIAL_GAME_STATS } from '../types/stats';
-import { DebugEditorProvider } from '../components/DebugEditor';
 import { ANIMATION_TIMING } from '../utils/animationConstants';
 
 const mocks = vi.hoisted(() => ({
@@ -107,13 +106,11 @@ describe('Sound Timing in DraggingShape', () => {
     const mockState = createMockState('placing');
 
     render(
-      <DebugEditorProvider>
-        <TetrixStateContext.Provider value={mockState}>
-          <TetrixDispatchContext.Provider value={mockDispatch}>
-            <DraggingShape />
-          </TetrixDispatchContext.Provider>
-        </TetrixStateContext.Provider>
-      </DebugEditorProvider>
+      <TetrixStateContext.Provider value={mockState}>
+        <TetrixDispatchContext.Provider value={mockDispatch}>
+          <DraggingShape />
+        </TetrixDispatchContext.Provider>
+      </TetrixStateContext.Provider>
     );
 
     // Calculate sound trigger time
@@ -134,13 +131,11 @@ describe('Sound Timing in DraggingShape', () => {
     const mockState = createMockState('none');
 
     render(
-      <DebugEditorProvider>
-        <TetrixStateContext.Provider value={mockState}>
-          <TetrixDispatchContext.Provider value={mockDispatch}>
-            <DraggingShape />
-          </TetrixDispatchContext.Provider>
-        </TetrixStateContext.Provider>
-      </DebugEditorProvider>
+      <TetrixStateContext.Provider value={mockState}>
+        <TetrixDispatchContext.Provider value={mockDispatch}>
+          <DraggingShape />
+        </TetrixDispatchContext.Provider>
+      </TetrixStateContext.Provider>
     );
 
     // Fast-forward past the sound trigger point
@@ -156,13 +151,11 @@ describe('Sound Timing in DraggingShape', () => {
     const mockState = createMockState('placing');
 
     render(
-      <DebugEditorProvider>
-        <TetrixStateContext.Provider value={mockState}>
-          <TetrixDispatchContext.Provider value={mockDispatch}>
-            <DraggingShape />
-          </TetrixDispatchContext.Provider>
-        </TetrixStateContext.Provider>
-      </DebugEditorProvider>
+      <TetrixStateContext.Provider value={mockState}>
+        <TetrixDispatchContext.Provider value={mockDispatch}>
+          <DraggingShape />
+        </TetrixDispatchContext.Provider>
+      </TetrixStateContext.Provider>
     );
 
     // Fast-forward to completion

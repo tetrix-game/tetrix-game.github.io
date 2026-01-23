@@ -10,10 +10,8 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import { useMusicControl } from '../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../Tetrix/TetrixContext';
-import { useDebugEditor } from '../DebugEditor';
 import { useGridEditor } from '../GridEditor';
 import { generateShapesWithProbabilities } from '../../utils/shapes';
-import ColorPicker from '../ColorPicker';
 import { THEMES, ThemeName, BLOCK_THEMES, BlockTheme } from '../../types';
 import {
   loadDebugSettings,
@@ -131,14 +129,12 @@ const GrandpaModeToggle: React.FC = () => {
 const SettingsOverlay: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled, isWaitingForInteraction } = useMusicControl();
   const { volume: soundVolume, setVolume: setSoundVolume, isEnabled: isSoundEnabled, toggleEnabled: toggleSoundEnabled } = useSoundEffectsControl();
   const state = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
-  const { openEditor } = useDebugEditor();
   const { openEditor: openGridEditor } = useGridEditor();
   const [debugUnlocked, setDebugUnlocked] = useState(false);
   const [debugClickCount, setDebugClickCount] = useState(0);
@@ -522,36 +518,12 @@ const SettingsOverlay: React.FC = () => {
                   <button
                     className="debug-action-button"
                     onClick={() => {
-                      openEditor();
-                      setIsOpen(false);
-                    }}
-                    title="Open the debug editor to manually edit the game grid"
-                  >
-                    Debug Editor
-                  </button>
-                </div>
-                <div className="menu-item submenu-item">
-                  <button
-                    className="debug-action-button"
-                    onClick={() => {
                       openGridEditor();
                       setIsOpen(false);
                     }}
                     title="Open the grid editor to design custom tile layouts"
                   >
                     Grid Editor
-                  </button>
-                </div>
-                <div className="menu-item submenu-item">
-                  <button
-                    className="debug-action-button"
-                    onClick={() => {
-                      setIsColorPickerOpen(true);
-                      setIsOpen(false);
-                    }}
-                    title="Open color picker to customize block colors"
-                  >
-                    Color Picker
                   </button>
                 </div>
                 <div className="menu-item submenu-item">
@@ -569,11 +541,6 @@ const SettingsOverlay: React.FC = () => {
         </div>,
         document.body
       )}
-
-      <ColorPicker
-        isOpen={isColorPickerOpen}
-        onClose={() => setIsColorPickerOpen(false)}
-      />
     </div>
   );
 };

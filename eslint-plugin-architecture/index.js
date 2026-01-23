@@ -327,68 +327,60 @@ const contextProviderFile = {
 };
 
 /**
- * Rule: component-folder-structure
+ * Rule: no-reexports
  *
- * Every component needs its own folder with an index file.
- * Index file should only export the component and associated context.
+ * No symbol can be imported and re-exported from a file.
+ * All exports must be declared in the file itself.
+ *
+ * This ensures clear module boundaries and prevents unnecessary indirection.
  */
-const componentFolderStructure = {
+const noReexports = {
   meta: {
     type: 'problem',
     docs: {
-      description: 'Enforce component folder structure with index exports',
+      description: 'Disallow re-exporting symbols from other modules',
     },
     messages: {
-      indexOnlyExportsComponent:
-        'Index files should only export the main component and associated context, not "{{name}}".',
-      componentNeedsFolderWithIndex:
-        'Component "{{name}}" should be in its own folder with an index.ts(x) file.',
+      noReexport:
+        'Re-exporting "{{name}}" from "{{source}}" is not allowed. Declare exports in this file or import directly from the source.',
+      noReexportAll:
+        'Re-exporting all symbols from "{{source}}" is not allowed. Export symbols individually from this file.',
     },
     schema: [],
   },
   create(context) {
-    const filename = context.filename || context.getFilename();
-    const basename = path.basename(filename, path.extname(filename));
-
-    if (basename !== 'index') {
-      return {};
-    }
-
     return {
+      // Check named re-exports: export { Foo } from './bar'
       ExportNamedDeclaration(node) {
-        // Check re-exports from index
         if (node.source) {
           const exportSource = node.source.value;
 
-          // Allow component and context exports
+          // Report each re-exported specifier
           for (const specifier of node.specifiers || []) {
             const exportedName = specifier.exported.name;
 
-            // Allow: ComponentName, ComponentNameContext, useComponentNameContext
-            const isComponent = /^[A-Z]/.test(exportedName) && !exportedName.endsWith('Context');
-            const isContext = exportedName.endsWith('Context');
-            const isContextHook = /^use.*Context$/.test(exportedName);
-            // Allow type exports (from types.ts)
-            const isTypeExport = specifier.exportKind === 'type' || node.exportKind === 'type';
-
-            if (!isComponent && !isContext && !isContextHook && !isTypeExport) {
-              context.report({
-                node: specifier,
-                messageId: 'indexOnlyExportsComponent',
-                data: { name: exportedName },
-              });
-            }
+            context.report({
+              node: specifier,
+              messageId: 'noReexport',
+              data: {
+                name: exportedName,
+                source: exportSource,
+              },
+            });
           }
         }
       },
-      // Allow export * from './types' in index files
+      // Check wildcard re-exports: export * from './bar'
       ExportAllDeclaration(node) {
         const exportSource = node.source.value;
-        // Allow re-exporting everything from types file
-        if (exportSource === './types') {
-          return;
-        }
-        // Other export * statements could be checked here if needed
+
+        context.report({
+          node,
+          messageId: 'noReexportAll',
+          data: {
+            source: exportSource,
+          },
+        });
       },
     };
   },
@@ -504,151 +496,6 @@ const importBoundaries = {
               }
             }
           }
-        }
-      },
-    };
-  },
-};
-
-/**
- * Rule: file-export-name-match
- *
- * File names must match their primary export name.
- * Folder names must match the export name (except Shared folders).
- */
-const fileExportNameMatch = {
-  meta: {
-    type: 'problem',
-    docs: {
-      description: 'Enforce file names match export names',
-    },
-    messages: {
-      fileNameMismatch:
-        'File name "{{filename}}" does not match the primary export "{{exportName}}". Rename file to "{{exportName}}.{{ext}}".',
-      folderNameMismatch:
-        'Folder name "{{folderName}}" does not match the exported component "{{exportName}}". Rename folder to "{{exportName}}".',
-    },
-    schema: [],
-  },
-  create(context) {
-    const filename = context.filename || context.getFilename();
-    const basename = path.basename(filename, path.extname(filename));
-    const ext = path.extname(filename).slice(1);
-    const folderName = path.basename(path.dirname(filename));
-
-    // Skip index files (they export from folder)
-    if (basename === 'index') {
-      return {};
-    }
-
-    // Skip types files (they can export multiple types)
-    if (isTypesFile(filename)) {
-      return {};
-    }
-
-    // Skip files in src/Shared directory (they can export multiple)
-    if (isInSharedDir(filename)) {
-      return {};
-    }
-
-    let primaryExport = null;
-
-    return {
-      // Track the first named export
-      ExportNamedDeclaration(node) {
-        if (primaryExport) return;
-
-        if (node.declaration) {
-          if (node.declaration.type === 'FunctionDeclaration' && node.declaration.id) {
-            primaryExport = node.declaration.id.name;
-          } else if (node.declaration.type === 'VariableDeclaration') {
-            const firstDecl = node.declaration.declarations[0];
-            if (firstDecl && firstDecl.id.type === 'Identifier') {
-              primaryExport = firstDecl.id.name;
-            }
-          } else if (node.declaration.type === 'TSTypeAliasDeclaration') {
-            primaryExport = node.declaration.id.name;
-          } else if (node.declaration.type === 'TSInterfaceDeclaration') {
-            primaryExport = node.declaration.id.name;
-          }
-        }
-      },
-
-      'Program:exit'(node) {
-        if (!primaryExport) return;
-
-        // Check file name matches export
-        if (basename !== primaryExport) {
-          context.report({
-            node,
-            messageId: 'fileNameMismatch',
-            data: {
-              filename: basename,
-              exportName: primaryExport,
-              ext,
-            },
-          });
-        }
-
-        // For component files, check folder name matches (except for hook files)
-        // Skip files in src/Shared directory (they can have different folder names)
-        if (
-          isTsxComponentFile(filename)
-          && folderName !== primaryExport
-          && folderName !== 'src'
-          && !isInSharedDir(filename)
-        ) {
-          context.report({
-            node,
-            messageId: 'folderNameMismatch',
-            data: {
-              folderName,
-              exportName: primaryExport,
-            },
-          });
-        }
-      },
-    };
-  },
-};
-
-/**
- * Rule: no-useRef-in-components
- *
- * useRef is not allowed in component files (must be in hook files).
- * This is covered by no-react-hooks-in-components but we make it explicit.
- */
-const noUseRefInComponents = {
-  meta: {
-    type: 'problem',
-    docs: {
-      description: 'Disallow useRef in component files',
-    },
-    messages: {
-      noUseRef:
-        'useRef cannot be used directly in component files. Extract to a custom hook.',
-    },
-    schema: [],
-  },
-  create(context) {
-    const filename = context.filename || context.getFilename();
-
-    if (!isTsxComponentFile(filename)) {
-      return {};
-    }
-
-    return {
-      CallExpression(node) {
-        const isUseRef = (node.callee.type === 'Identifier' && node.callee.name === 'useRef')
-          || (node.callee.type === 'MemberExpression'
-            && node.callee.object.name === 'React'
-            && node.callee.property.name === 'useRef');
-
-        if (isUseRef) {
-          context.report({
-            node,
-            messageId: 'noUseRef',
-          });
         }
       },
     };
@@ -984,6 +831,76 @@ const memoPrimitivePropsOnly = {
 const sharedComponentImports = new Map(); // componentName -> Set of importing file paths
 
 /**
+ * Rule: index-only-files
+ *
+ * All TypeScript/JavaScript files must be named index.{ts,tsx,js,jsx} and
+ * must be nested within a folder named after the component/module.
+ *
+ * This enforces a strict folder structure:
+ *   ✅ ComponentName/index.tsx
+ *   ✅ utils/index.ts
+ *   ❌ ComponentName.tsx
+ *   ❌ utils.ts
+ *
+ * This ensures consistent imports and clear module boundaries.
+ */
+const indexOnlyFiles = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'All declarations must be in index files nested in folders',
+    },
+    messages: {
+      notIndexFile:
+        'File "{{filename}}" must be renamed to "index.{{ext}}" and placed in a "{{suggestedFolder}}/" folder. All declarations must be in index files: {{suggestedPath}}',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+    const basename = path.basename(filename, path.extname(filename));
+    const ext = path.extname(filename).slice(1);
+    const dirname = path.dirname(filename);
+    const folderName = path.basename(dirname);
+
+    // Only apply to TypeScript/JavaScript files
+    if (!['ts', 'tsx', 'js', 'jsx'].includes(ext)) {
+      return {};
+    }
+
+    // Skip node_modules and build output
+    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+      return {};
+    }
+
+    // If this is not an index file, report an error
+    if (basename !== 'index') {
+      return {
+        Program(node) {
+          // Suggest the proper structure
+          const suggestedFolder = basename;
+          const currentDir = path.dirname(filename);
+          const suggestedPath = path.join(currentDir, basename, `index.${ext}`);
+
+          context.report({
+            node,
+            messageId: 'notIndexFile',
+            data: {
+              filename: path.basename(filename),
+              ext,
+              suggestedFolder: basename,
+              suggestedPath: suggestedPath.replace(process.cwd(), ''),
+            },
+          });
+        },
+      };
+    }
+
+    return {};
+  },
+};
+
+/**
  * Rule: shared-must-be-multi-imported
  *
  * Components in src/Shared must be imported from at least 2 different files.
@@ -1109,14 +1026,13 @@ export default {
     'react-hooks-only-in-hook-files': hooksOnlyInHookFiles,
     'memo-component-rules': memoComponentRules,
     'context-provider-file': contextProviderFile,
-    'component-folder-structure': componentFolderStructure,
+    'no-reexports': noReexports,
     'import-boundaries': importBoundaries,
-    'file-export-name-match': fileExportNameMatch,
-    'no-useref-in-components': noUseRefInComponents,
     'memo-no-context-hooks': memoNoContextHooks,
     'import-from-index': importFromIndex,
     'memo-primitive-props-only': memoPrimitivePropsOnly,
     'shared-must-be-multi-imported': sharedMustBeMultiImported,
+    'index-only-files': indexOnlyFiles,
   },
   configs: {
     recommended: {
@@ -1127,14 +1043,13 @@ export default {
         'architecture/react-hooks-only-in-hook-files': 'error',
         'architecture/memo-component-rules': 'error',
         'architecture/context-provider-file': 'error',
-        'architecture/component-folder-structure': 'error',
+        'architecture/no-reexports': 'error',
         'architecture/import-boundaries': 'error',
-        'architecture/file-export-name-match': 'error',
-        'architecture/no-useref-in-components': 'error',
         'architecture/memo-no-context-hooks': 'error',
         'architecture/import-from-index': 'error',
         'architecture/memo-primitive-props-only': 'error',
         'architecture/shared-must-be-multi-imported': 'error',
+        'architecture/index-only-files': 'error',
       },
     },
   },

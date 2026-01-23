@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getShapeBounds } from '../App/utils/shapes/shapeGeometry';
-import type { Shape, Block } from '../App/types/core';
+import { getShapeBounds } from '../main/App/utils/shapes/shapeGeometry';
+import type { Shape, Block } from '../main/App/types/core';
 
 describe('Shape Centering', () => {
   const createBlock = (isFilled: boolean): Block => ({

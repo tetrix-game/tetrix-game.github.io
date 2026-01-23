@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
-import { DraggingShape } from '../App/components/DraggingShape';
-import { TetrixStateContext, TetrixDispatchContext } from '../App/contexts/TetrixContext';
-import type { TetrixReducerState } from '../App/types/gameState';
-import type { DragPhase } from '../App/types/drag';
-import { INITIAL_GAME_STATS } from '../App/types/stats';
-import { ANIMATION_TIMING } from '../App/utils/animationConstants';
+import { DraggingShape } from '../main/App/components/DraggingShape';
+import { TetrixStateContext, TetrixDispatchContext } from '../main/App/contexts/TetrixContext';
+import type { TetrixReducerState } from '../main/App/types/gameState';
+import type { DragPhase } from '../main/App/types/drag';
+import { INITIAL_GAME_STATS } from '../main/App/types/stats';
+import { ANIMATION_TIMING } from '../main/App/utils/animationConstants';
 
 const mocks = vi.hoisted(() => ({
   playSound: vi.fn(),

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { detectSuperComboPattern } from '../App/utils/shapes/shapePatterns';
-import type { TilesSet, ColorName } from '../App/types/core';
+import { detectSuperComboPattern } from '../main/App/utils/shapes/shapePatterns';
+import type { TilesSet, ColorName } from '../main/App/types/core';
 import { createTilesWithFilled } from './testHelpers';
 
 /**

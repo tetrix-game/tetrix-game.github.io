@@ -7,11 +7,11 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { isGridCompletelyEmpty } from '../App/utils/lineUtils';
-import { generateFullBoardClearAnimation } from '../App/utils/clearingAnimationUtils';
-import { tileReducer } from '../App/reducers/tileReducer';
-import { makeTileKey } from '../App/utils/gridConstants';
-import type { TetrixReducerState } from '../App/types/gameState';
+import { isGridCompletelyEmpty } from '../main/App/utils/lineUtils';
+import { generateFullBoardClearAnimation } from '../main/App/utils/clearingAnimationUtils';
+import { tileReducer } from '../main/App/reducers/tileReducer';
+import { makeTileKey } from '../main/App/utils/gridConstants';
+import type { TetrixReducerState } from '../main/App/types/gameState';
 import { createTilesWithFilled } from './testHelpers';
 
 describe('Full Board Clear - isGridCompletelyEmpty', () => {

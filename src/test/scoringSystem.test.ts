@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateScore, formatScore, getScoreMessage } from '../App/utils/scoringUtils';
+import { calculateScore, formatScore, getScoreMessage } from '../main/App/utils/scoringUtils';
 
 describe('Scoring System', () => {
   describe('calculateScore', () => {

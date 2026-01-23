@@ -1,5 +1,5 @@
 import type { TilesSet, ColorName, Tile } from '../../types';
-import { GRID_SIZE } from '../../utils/gridConstants';
+import { GRID_SIZE } from '../../main/App/utils/gridConstants';
 
 /**
  * Helper functions for testing with TilesSet (Map-based tiles using plain Tile objects)

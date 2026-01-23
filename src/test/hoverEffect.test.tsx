@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { getShapeGridPositions } from '../App/utils/shapes/shapeGeometry';
-import { canPlaceShape } from '../App/utils/shapes/shapeValidation';
-import type { Shape, Location } from '../App/types/core';
+import { getShapeGridPositions } from '../main/App/utils/shapes/shapeGeometry';
+import { canPlaceShape } from '../main/App/utils/shapes/shapeValidation';
+import type { Shape, Location } from '../main/App/types/core';
 import { createTilesWithFilled } from './testHelpers';
 
 // Helper to create test shapes (4x4 grid format)

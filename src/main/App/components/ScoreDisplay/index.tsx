@@ -6,7 +6,7 @@ import { BlueGemIcon } from '../../../Shared/BlueGemIcon';
 import { ErrorPointer } from '../Pointer/ErrorPointer';
 import { StatsOverlay } from '../StatsOverlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
-import '../../../styles/feedback.css';
+import '../../styles/feedback.css';
 import './ScoreDisplay.css';
 
 const ScoreDisplay: React.FC = () => {

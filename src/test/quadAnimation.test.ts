@@ -3,9 +3,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateClearingAnimations } from '../App/utils/clearingAnimationUtils';
+import { generateClearingAnimations } from '../main/App/utils/clearingAnimationUtils';
 import { createTilesWithFilled } from './testHelpers';
-import type { ClearedLine } from '../App/utils/lineUtils';
+import type { ClearedLine } from '../main/App/utils/lineUtils';
 
 describe('Quad clearing animations (beating heart)', () => {
   it('should generate row-quad animation when 4 rows are cleared', () => {

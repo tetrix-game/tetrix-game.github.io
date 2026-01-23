@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import React from 'react';
-import { TetrixTile } from '../App/components/TetrixTile';
-import { BlockVisual } from '../Shared/BlockVisual';
+import { TetrixTile } from '../main/App/components/TetrixTile';
+import { BlockVisual } from '../main/Shared/BlockVisual';
 
 // Helper to check if a value is primitive
 const isPrimitive = (val: any) => {

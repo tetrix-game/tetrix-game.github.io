@@ -3,7 +3,6 @@
  * Analyzes component dependencies to identify:
  * - Which components are used by 2+ other files (Shared candidates)
  * - Current import patterns
- * - Violations of import-boundaries
  */
 
 const fs = require('fs');

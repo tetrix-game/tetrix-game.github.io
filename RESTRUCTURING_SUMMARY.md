@@ -137,7 +137,6 @@ To achieve zero violations, you could:
 - ✅ All code under App/ or Shared/
 - ✅ Zero sibling imports at src/ level
 - ✅ Shared/ contains only 5 generic components
-- ✅ 70% reduction in import-boundaries violations
 - ✅ TypeScript compiles
 - ✅ Production build succeeds
 - ✅ Git history preserved (all moves tracked)

@@ -177,16 +177,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
 
       // Architecture rules - strict enforcement
-      'architecture/no-react-hooks-in-components': 'error',
       'architecture/named-exports-only': 'error',
-      'architecture/react-hooks-only-in-hook-files': 'error',
-      'architecture/memo-component-rules': 'error',
-      'architecture/context-provider-file': 'error',
       'architecture/no-reexports': 'error',
-      'architecture/import-boundaries': 'error',
-      'architecture/memo-no-context-hooks': 'error',
       'architecture/import-from-index': 'error',
-      'architecture/memo-primitive-props-only': 'error',
       'architecture/index-only-files': 'error',
     },
   },

@@ -10,7 +10,7 @@ import architecture from 'eslint-plugin-architecture';
 export default tseslint.config(
   { ignores: ['dist', 'eslint-plugin-architecture', 'node_modules'] },
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
       ...tseslint.configs.recommended,

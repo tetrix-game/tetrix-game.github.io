@@ -2,10 +2,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { solveDailyChallenge } from '../../../utils/dailyChallengeSolver';
 import { ScrollableMenu, type MenuSectionConfig } from '../../ScrollableMenu';
-import { ColorBrushSubmenu } from '../ColorBrushSubmenu';
-import { EditorGrid } from '../EditorGrid';
+import { ColorBrushSubmenu } from './ColorBrushSubmenu';
+import { EditorGrid } from './EditorGrid';
 import { useGridEditor } from '../../../contexts/GridEditorContext';
-import { NumberInputSubmenu } from '../NumberInputSubmenu';
+import { NumberInputSubmenu } from './NumberInputSubmenu';
 import './GridEditor.css';
 
 type SectionId = 'rows' | 'columns' | 'brush' | 'actions';

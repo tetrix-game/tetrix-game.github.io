@@ -477,8 +477,9 @@ const importBoundaries = {
             }
           }
 
-          // Check component imports (PascalCase, not context)
-          if (/^[A-Z]/.test(importedName) && !importedName.endsWith('Context')) {
+          // Check component imports (PascalCase, not context, not ALL_CAPS constants)
+          const isAllCaps = /^[A-Z_]+$/.test(importedName);
+          if (/^[A-Z]/.test(importedName) && !importedName.endsWith('Context') && !isAllCaps) {
             // Check if this is a type import (from ImportSpecifier with type modifier)
             // Type imports are allowed from ancestor directories
             const isTypeImport = specifier.importKind === 'type' || node.importKind === 'type';

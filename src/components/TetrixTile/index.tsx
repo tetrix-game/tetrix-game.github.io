@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { ColorName } from '../../../types/core';
 import type { BlockTheme } from '../../../types/theme';
 import { BlockVisual } from '../../../Shared/BlockVisual';
-import { Tile } from '../../Tile';
+import { Tile } from '../../../Shared/Tile';
 import './TetrixTile.css';
 
 type TetrixTileProps = {

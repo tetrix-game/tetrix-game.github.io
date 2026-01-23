@@ -3,7 +3,7 @@ import React from 'react';
 import type { ColorName } from '../../../types/core';
 import type { BlockTheme } from '../../../types/theme';
 import { ShapeIcon } from '../../../Shared/ShapeIcon';
-import { BlockSvg } from '../BlockSvg';
+import { BlockSvg } from './BlockSvg';
 import './BlockVisual.css';
 
 type BlockVisualProps = {

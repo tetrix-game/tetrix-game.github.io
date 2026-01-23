@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { Block, ColorName, Location } from '../../../types/core';
 import { BlockVisual } from '../../../Shared/BlockVisual';
-import { Tile } from '../../Tile';
+import { Tile } from '../../../Shared/Tile';
 import './EditorGridTile.css';
 
 type EditorGridTileProps = {

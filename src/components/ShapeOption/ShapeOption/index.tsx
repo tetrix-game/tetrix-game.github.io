@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import type { Shape } from '../../../types/core';
 import { ANIMATION_TIMING } from '../../../utils/animationConstants';
 import { ShapeDisplay } from '../../ShapeDisplay/ShapeDisplay';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../../contexts/TetrixContext';
 
 type ShapeOptionProps = {
   shape: Shape;

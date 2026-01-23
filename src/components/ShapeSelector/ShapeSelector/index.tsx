@@ -6,7 +6,7 @@ import { generateRandomShape } from '../../../utils/shapes/shapeGeneration';
 import { PurchasableSlotOption } from '../../PurchasableSlotOption/PurchasableSlotOption';
 import { ShapeOption } from '../../ShapeOption/ShapeOption';
 import { ShapeProducerViewport } from '../../ShapeProducerViewport/ShapeProducerViewport';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../../contexts/TetrixContext';
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();

@@ -4,7 +4,7 @@ import { solveDailyChallenge } from '../../../utils/dailyChallengeSolver';
 import { ScrollableMenu, type MenuSectionConfig } from '../../ScrollableMenu/ScrollableMenu';
 import { ColorBrushSubmenu } from '../ColorBrushSubmenu';
 import { EditorGrid } from '../EditorGrid';
-import { useGridEditor } from '../GridEditorContext';
+import { useGridEditor } from '../../../contexts/GridEditorContext';
 import { NumberInputSubmenu } from '../NumberInputSubmenu';
 import './GridEditor.css';
 

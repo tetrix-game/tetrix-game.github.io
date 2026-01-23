@@ -3,7 +3,7 @@ import React from 'react';
 import { ColorName } from '../../../types/core';
 import { StatCategory } from '../../../types/stats';
 import { Overlay } from '../../Overlay/Overlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
 import './StatsOverlay.css';
 
 interface StatsOverlayProps {

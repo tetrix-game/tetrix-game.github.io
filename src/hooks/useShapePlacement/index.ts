@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { useSoundEffects } from '../../components/SoundEffectsContext/SoundEffectsContext';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../components/Tetrix/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import { GRID_SIZE } from '../../utils/gridConstants';
 import { mousePositionToGridLocation } from '../../utils/shapes/shapeGeometry';
 import { isValidPlacement } from '../../utils/shapes/shapeValidation';

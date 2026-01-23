@@ -2,7 +2,7 @@ import './ShapeQueue.css';
 import { QueueIndicator } from '../../QueueIndicator/QueueIndicator';
 import { QueueOverlay } from '../../QueueOverlay/QueueOverlay';
 import { ShapeSelector } from '../../ShapeSelector/ShapeSelector';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../../contexts/TetrixContext';
 
 const ShapeQueue = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();

@@ -1,6 +1,6 @@
 import { useReducer, useEffect, useState } from 'react';
 
-import type { ThemeName, BlockTheme } from '../../../types/theme';
+import type { ThemeName, BlockTheme } from '../../types/theme';
 import {
   loadModifiers,
   loadTheme,
@@ -8,9 +8,9 @@ import {
   clearAllDataAndReload,
   loadGameState,
   loadSettingsData,
-} from '../../../utils/persistence';
-import { TetrixStateContext, TetrixDispatchContext } from '../TetrixContext';
-import { initialState, tetrixReducer } from '../../../reducers';
+} from '../../utils/persistence';
+import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
+import { initialState, tetrixReducer } from '../../reducers';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
 

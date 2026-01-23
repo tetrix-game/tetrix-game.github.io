@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 
 import { EditorGridTile } from '../EditorGridTile';
-import { useGridEditor } from '../GridEditorContext';
+import { useGridEditor } from '../../../contexts/GridEditorContext';
 import '../Grid/Grid.css'; // Reuse grid styles
 
 const EditorGrid: React.FC = () => {

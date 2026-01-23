@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { tilesToArray } from '../../../types/core';
 import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme, clearGameBoard } from '../../../utils/persistence';
 import { updateSettings } from '../../../utils/persistenceAdapter';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useTetrixStateContext } from '../../../contexts/TetrixContext';
 
 /**
  * PersistenceListener

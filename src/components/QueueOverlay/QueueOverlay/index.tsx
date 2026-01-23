@@ -3,7 +3,7 @@ import React from 'react';
 import type { Shape } from '../../../types/core';
 import { Overlay } from '../../Overlay/Overlay';
 import { ShapeDisplay } from '../../ShapeDisplay/ShapeDisplay';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useTetrixStateContext } from '../../../contexts/TetrixContext';
 import './QueueOverlay.css';
 
 interface QueueOverlayProps {

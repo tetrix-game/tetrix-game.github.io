@@ -4,7 +4,7 @@ import { useRef, useEffect, useMemo } from 'react';
 import { useDebugGridInteractions } from '../../../hooks/useDebugGridInteractions';
 import { useGameSizing } from '../../../hooks/useGameSizing';
 import { GRID_SIZE } from '../../../utils/gridConstants';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
 import { TetrixTile } from '../../TetrixTile/TetrixTile';
 
 interface GridProps {

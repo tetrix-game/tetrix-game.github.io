@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { useTetrixDispatchContext } from '../../components/Tetrix/TetrixContext';
+import { useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import type { Location } from '../../types/core';
 
 /**

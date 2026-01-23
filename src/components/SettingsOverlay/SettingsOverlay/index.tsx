@@ -16,11 +16,11 @@ import {
 } from '../../../utils/persistence';
 import { generateShapesWithProbabilities } from '../../../utils/shapes/shapeGenerationWithProbabilities';
 import { APP_VERSION } from '../../../version';
-import { useGridEditor } from '../../GridEditor/GridEditorContext';
+import { useGridEditor } from '../../../contexts/GridEditorContext';
 import { useMusicControl } from '../../Header/MusicControlContext';
 import { useSoundEffectsControl } from '../../Header/SoundEffectsControlContext';
 import { InstallButton } from '../../InstallButton/InstallButton';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../../contexts/TetrixContext';
 import './SettingsOverlay.css';
 
 const ThemeSelector: React.FC = () => {

@@ -3,7 +3,7 @@ import React from 'react';
 import { useGameSizing } from '../../../hooks/useGameSizing';
 import { PurchasesContainer } from '../../PurchasesContainer/PurchasesContainer';
 import { ShapeQueue } from '../../ShapeQueue/ShapeQueue';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useTetrixStateContext } from '../../../contexts/TetrixContext';
 import './GameControlsPanel.css';
 
 const GameControlsPanel: React.FC = () => {

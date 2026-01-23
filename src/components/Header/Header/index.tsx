@@ -4,8 +4,8 @@ import { AudioUnlockIndicator } from '../../AudioUnlockIndicator/AudioUnlockIndi
 import { BackgroundMusic } from '../../BackgroundMusic/BackgroundMusic';
 import { ScoreDisplay } from '../../ScoreDisplay/ScoreDisplay';
 import { SettingsOverlay } from '../../SettingsOverlay/SettingsOverlay';
-import { useSoundEffects } from '../../SoundEffectsContext/SoundEffectsContext';
-import { useTetrixStateContext } from '../../Tetrix/TetrixContext';
+import { useSoundEffects } from '../../../contexts/SoundEffectsContext';
+import { useTetrixStateContext } from '../../../contexts/TetrixContext';
 import { useMusicControl } from '../MusicControlContext';
 import { SoundEffectsControlContext } from '../SoundEffectsControlContext';
 import './Header.css';

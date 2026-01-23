@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
-import { loadMusicSettings, saveMusicSettings } from '../../../utils/persistence';
+import { loadMusicSettings, saveMusicSettings } from '../../utils/persistence';
 
 export interface MusicControlContextType {
   volume: number;

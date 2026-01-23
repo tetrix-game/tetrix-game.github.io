@@ -5,7 +5,7 @@ import { formatScore } from '../../../utils/scoringUtils';
 import { BlueGemIcon } from '../../BlueGemIcon/BlueGemIcon';
 import { ErrorPointer } from '../../Pointer/ErrorPointer';
 import { StatsOverlay } from '../../StatsOverlay/StatsOverlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Tetrix/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../../contexts/TetrixContext';
 import '../../../styles/feedback.css';
 import './ScoreDisplay.css';
 

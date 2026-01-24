@@ -1,18 +1,14 @@
 import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
-
 import type { ColorName } from '../../types/core';
 
 export type GridEditorTool = 'paint' | 'erase' | 'none';
 export type SectionType = 'rows' | 'columns' | 'brush' | null;
-
-// Grid layout configuration
 export type GridLayout = {
   width: number; // Number of columns (2-20)
   height: number; // Number of rows (2-20)
   tiles: Set<string>; // Set of tile keys that exist (e.g., 'R1C1', 'R2C5')
   tileBackgrounds: Map<string, ColorName>; // Map of tile keys to their background colors
 };
-
 type GridEditorState = {
   isEditorOpen: boolean;
   currentTool: GridEditorTool;
@@ -23,7 +19,6 @@ type GridEditorState = {
   showGridDots: boolean;
   lastActiveSection: SectionType;
 };
-
 type GridEditorContextValue = {
   state: GridEditorState;
   openEditor: () => void;
@@ -45,13 +40,8 @@ type GridEditorContextValue = {
   hideInstructions: () => void;
   toggleGridDots: () => void;
 };
-
 const GridEditorContext = createContext<GridEditorContextValue | null>(null);
-
-// Default color order includes eraser at the end
 const COLOR_ORDER: Array<ColorName | 'eraser'> = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'eraser'];
-
-// Create default grid layout (10x10 with all tiles present)
 function createDefaultGridLayout(): GridLayout {
   const tiles = new Set<string>();
   const tileBackgrounds = new Map<string, ColorName>();
@@ -73,7 +63,6 @@ function createDefaultGridLayout(): GridLayout {
     tileBackgrounds,
   };
 }
-
 export function GridEditorProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [state, setState] = useState<GridEditorState>({
     isEditorOpen: false,
@@ -460,7 +449,6 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     </GridEditorContext.Provider>
   );
 }
-
 export function useGridEditor() {
   const context = useContext(GridEditorContext);
   if (!context) {

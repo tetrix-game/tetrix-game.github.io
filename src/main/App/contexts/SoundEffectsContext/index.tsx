@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-
 import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../utils/persistence';
 
 export type SoundEffect = | 'click_into_place'
@@ -11,9 +10,6 @@ export type SoundEffect = | 'click_into_place'
   | 'clear_combo_3'
   | 'clear_combo_4'
   | 'heartbeat';
-
-// Per-sound volume multipliers to normalize loudness across all sound effects
-// Based on measured mean_volume levels - quieter sounds get higher multipliers
 const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
   click_into_place: 1.0, // -27.4 dB mean, reference level
   game_over: 0.7, // -22.1 dB mean, louder than others
@@ -25,14 +21,8 @@ const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
   clear_combo_4: 1.1, // -28.4 dB mean
   heartbeat: 1.0, // Synthesized, already calibrated
 };
-
-// Base volume scale (0-1) - pleasant listening level
 const BASE_SOUND_EFFECTS_VOLUME = 0.5;
-
-// Module-level state for non-React code (like reducers) to use
 let modulePlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | null = null;
-
-// Export function that non-React code can import and use
 export function playSound(soundEffect: SoundEffect, startTime?: number): void {
   if (modulePlaySound) {
     modulePlaySound(soundEffect, startTime);
@@ -40,7 +30,6 @@ export function playSound(soundEffect: SoundEffect, startTime?: number): void {
     console.warn('SoundEffectsProvider not initialized yet');
   }
 }
-
 interface SoundEffectsContextValue {
   playSound: (soundEffect: SoundEffect, startTime?: number) => void;
   setVolume: (volume: number) => void;
@@ -48,9 +37,7 @@ interface SoundEffectsContextValue {
   volume: number;
   isEnabled: boolean;
 }
-
 const SoundEffectsContext = createContext<SoundEffectsContextValue | undefined>(undefined);
-
 export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [volume, setVolumeState] = useState(100);
   const [isEnabled, setIsEnabledState] = useState(true);
@@ -311,7 +298,6 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     </SoundEffectsContext.Provider>
   );
 };
-
 export const useSoundEffects = (): SoundEffectsContextValue => {
   const context = useContext(SoundEffectsContext);
   if (!context) {

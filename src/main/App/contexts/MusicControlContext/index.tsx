@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-
 import { loadMusicSettings, saveMusicSettings } from '../../utils/persistence';
 
 export interface MusicControlContextType {
@@ -14,9 +13,7 @@ export interface MusicControlContextType {
   /** Whether audio is waiting for user interaction to play */
   isWaitingForInteraction: boolean;
 }
-
 const MusicControlContext = createContext<MusicControlContextType | null>(null);
-
 export const useMusicControl = () => {
   const context = useContext(MusicControlContext);
   if (!context) {
@@ -24,7 +21,6 @@ export const useMusicControl = () => {
   }
   return context;
 };
-
 export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [volume, setVolumeState] = useState(100);
   const [isEnabled, setIsEnabled] = useState(true);

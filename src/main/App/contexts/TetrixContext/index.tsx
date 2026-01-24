@@ -1,5 +1,4 @@
 import { useReducer, useEffect, useState } from 'react';
-
 import type { ThemeName, BlockTheme } from '../../types/theme';
 import {
   loadModifiers,
@@ -9,11 +8,11 @@ import {
   loadGameState,
   loadSettingsData,
 } from '../../utils/persistence';
-import { TetrixStateContext, TetrixDispatchContext } from './TetrixContext';
 import { initialState, tetrixReducer } from '../../reducers';
+import { createContext, useContext } from 'react';
+import type { TetrixDispatch, TetrixReducerState } from '../../types/gameState';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
-
 export function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
@@ -223,4 +222,20 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
       </TetrixDispatchContext.Provider>
     </TetrixStateContext.Provider>
   );
+}
+export const TetrixStateContext = createContext<TetrixReducerState | null>(null);
+export const TetrixDispatchContext = createContext<TetrixDispatch | null>(null);
+export function useTetrixStateContext() {
+  const context = useContext(TetrixStateContext);
+  if (!context) {
+    throw new Error('useTetrixStateContext must be used within a TetrixStateProvider');
+  }
+  return context;
+}
+export function useTetrixDispatchContext() {
+  const context = useContext(TetrixDispatchContext);
+  if (!context) {
+    throw new Error('useTetrixDispatchContext must be used within a TetrixDispatchProvider');
+  }
+  return context;
 }

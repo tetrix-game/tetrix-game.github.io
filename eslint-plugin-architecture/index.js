@@ -252,6 +252,10 @@ const PRIMITIVE_TYPE_FLAGS = [
 // Track shared component imports across all files for shared-must-be-multi-imported rule
 const sharedComponentImports = new Map(); // componentName -> Set of importing file paths
 
+// Track all imports across files for import-from-sibling-directory-or-shared rule
+// Maps: resolved module path -> Set of importing file paths
+const moduleImportTracker = new Map();
+
 /**
  * Rule: index-only-files
  *
@@ -436,6 +440,235 @@ const sharedMustBeMultiImported = {
   },
 };
 
+/**
+ * Helper: Resolve a relative import to an absolute directory path
+ * Given a file doing the import and the import path, resolve to the imported module's directory
+ */
+const resolveImportPath = (importingFile, importPath) => {
+  if (!importPath.startsWith('.')) {
+    return null; // External module, skip
+  }
+
+  const importingDir = path.dirname(importingFile);
+  const resolved = path.resolve(importingDir, importPath);
+  return resolved;
+};
+
+/**
+ * Helper: Calculate Least Common Ancestor directory of multiple file paths
+ */
+const calculateLCA = (filePaths) => {
+  if (filePaths.length === 0) return null;
+  if (filePaths.length === 1) return path.dirname(filePaths[0]);
+
+  // Split all paths into segments
+  const pathSegments = filePaths.map(p => p.split(path.sep));
+
+  // Find common prefix
+  const firstPath = pathSegments[0];
+  let lcaSegments = [];
+
+  for (let i = 0; i < firstPath.length; i++) {
+    const segment = firstPath[i];
+    const allMatch = pathSegments.every(p => p[i] === segment);
+
+    if (!allMatch) break;
+    lcaSegments.push(segment);
+  }
+
+  return lcaSegments.join(path.sep) || path.sep;
+};
+
+/**
+ * Helper: Check if import path is a direct sibling (./Name pattern)
+ */
+const isDirectSibling = (importPath) => {
+  // Must start with ./ and have exactly one segment after it
+  if (!importPath.startsWith('./')) return false;
+
+  const withoutDotSlash = importPath.slice(2);
+  // Should not contain any more slashes (just the folder name)
+  return !withoutDotSlash.includes('/');
+};
+
+/**
+ * Helper: Get the parent directory path
+ */
+const getParentDir = (filePath) => {
+  return path.dirname(filePath);
+};
+
+/**
+ * Rule: import-from-sibling-directory-or-shared
+ *
+ * Enforces that imports are located at the appropriate level:
+ * - If a module is imported only once (single dependency), it should be a direct sibling
+ *   of the importing file (import path: './Name')
+ * - If a module is imported from multiple locations, it should be located at the
+ *   Least Common Ancestor directory of all importing files
+ *
+ * This ensures modules are placed at the right level in the hierarchy based on usage.
+ */
+const importFromSiblingDirectoryOrShared = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description:
+        'Enforce imports are from sibling directories (single use) or from LCA (multi-use)',
+    },
+    messages: {
+      singleUseShouldBeSibling:
+        'Module "{{importPath}}" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./{{moduleName}}" (current: "{{currentPath}}").',
+      multiUseShouldBeInLCA:
+        'Module "{{importPath}}" is imported from {{count}} different locations. It should be located at the Least Common Ancestor directory ({{lca}}) to minimize coupling. Current location: {{currentLocation}}',
+      checkUsageAndMove:
+        'Import from "{{importPath}}" may not be at the correct level. Check if this module is imported from multiple locations:\n' +
+        '  - If this is the ONLY file importing it, move the imported folder to be a direct sibling (./Name)\n' +
+        '  - If MULTIPLE files import it, move it to the Least Common Ancestor directory of all importers\n' +
+        'This ensures the folder structure documents dependencies clearly.',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+    const DEBUG = process.env.ESLINT_DEBUG_ARCHITECTURE === 'true';
+
+    // Skip node_modules and build output
+    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+      return {};
+    }
+
+    return {
+      // First pass: Track all imports
+      ImportDeclaration(node) {
+        const importPath = node.source.value;
+
+        // Skip external modules
+        if (!importPath.startsWith('.')) {
+          return;
+        }
+
+        // Resolve the import to an absolute path
+        const resolvedPath = resolveImportPath(filename, importPath);
+        if (!resolvedPath) return;
+
+        if (DEBUG) {
+          console.log('[import-from-sibling] Tracking:', {
+            from: filename.replace(process.cwd(), ''),
+            import: importPath,
+            resolved: resolvedPath.replace(process.cwd(), ''),
+          });
+        }
+
+        // Track this import
+        if (!moduleImportTracker.has(resolvedPath)) {
+          moduleImportTracker.set(resolvedPath, new Set());
+        }
+        moduleImportTracker.get(resolvedPath).add(filename);
+      },
+
+      // Second pass: Validate each import
+      'Program:exit'(node) {
+        // Re-visit all imports in this file
+        for (const statement of node.body) {
+          if (statement.type !== 'ImportDeclaration') continue;
+
+          const importPath = statement.source.value;
+
+          // Skip external modules
+          if (!importPath.startsWith('.')) continue;
+
+          // Skip imports from Shared (these have their own rule)
+          const fileDir = path.dirname(filename);
+          if (isSharedImport(importPath, fileDir)) continue;
+
+          // Resolve the import
+          const resolvedPath = resolveImportPath(filename, importPath);
+          if (!resolvedPath) continue;
+
+          // Get all files that import this module
+          const importingFiles = moduleImportTracker.get(resolvedPath);
+          if (!importingFiles) continue;
+
+          const importCount = importingFiles.size;
+
+          if (DEBUG) {
+            console.log('[import-from-sibling] Validating:', {
+              file: filename.replace(process.cwd(), ''),
+              import: importPath,
+              importCount,
+              importingFiles: [...importingFiles].map(f => f.replace(process.cwd(), '')),
+            });
+          }
+
+          // CASE 1: Single import - should be a direct sibling
+          if (importCount === 1) {
+            const isSibling = isDirectSibling(importPath);
+
+            if (!isSibling) {
+              // Extract the module name from the import path
+              const parts = importPath.split('/');
+              const moduleName = parts[parts.length - 1];
+
+              if (DEBUG) {
+                console.log('[import-from-sibling] VIOLATION: Single import not sibling', {
+                  importPath,
+                  isSibling,
+                  moduleName,
+                });
+              }
+
+              context.report({
+                node: statement,
+                messageId: 'singleUseShouldBeSibling',
+                data: {
+                  importPath: importPath,
+                  currentPath: importPath,
+                  moduleName: moduleName,
+                },
+              });
+            }
+          }
+
+          // CASE 2: Multiple imports - should be at LCA
+          else if (importCount > 1) {
+            const lca = calculateLCA([...importingFiles]);
+            const currentModuleDir = path.dirname(resolvedPath);
+
+            // Check if the module is in the LCA directory
+            // The module should be a direct child of the LCA
+            const expectedParent = lca;
+            const actualParent = path.dirname(currentModuleDir);
+
+            if (DEBUG) {
+              console.log('[import-from-sibling] Multi-import check:', {
+                importPath,
+                lca: lca.replace(process.cwd(), ''),
+                expectedParent: expectedParent.replace(process.cwd(), ''),
+                actualParent: actualParent.replace(process.cwd(), ''),
+                match: actualParent === expectedParent,
+              });
+            }
+
+            if (actualParent !== expectedParent) {
+              context.report({
+                node: statement,
+                messageId: 'multiUseShouldBeInLCA',
+                data: {
+                  importPath: importPath,
+                  count: importCount,
+                  lca: lca.replace(process.cwd(), ''),
+                  currentLocation: currentModuleDir.replace(process.cwd(), ''),
+                },
+              });
+            }
+          }
+        }
+      },
+    };
+  },
+};
+
 // Export the plugin
 export default {
   meta: {
@@ -448,6 +681,7 @@ export default {
     'import-from-index': importFromIndex,
     'shared-must-be-multi-imported': sharedMustBeMultiImported,
     'index-only-files': indexOnlyFiles,
+    'import-from-sibling-directory-or-shared': importFromSiblingDirectoryOrShared,
   },
   configs: {
     recommended: {
@@ -458,6 +692,7 @@ export default {
         'architecture/import-from-index': 'error',
         'architecture/shared-must-be-multi-imported': 'error',
         'architecture/index-only-files': 'error',
+        'architecture/import-from-sibling-directory-or-shared': 'error',
       },
     },
   },

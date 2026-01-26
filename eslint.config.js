@@ -181,6 +181,7 @@ export default tseslint.config(
       'architecture/no-reexports': 'error',
       'architecture/import-from-index': 'error',
       'architecture/index-only-files': 'error',
+      'architecture/import-from-sibling-directory-or-shared': 'error',
     },
   },
   // Config files need default exports (Vite, ESLint, etc.)

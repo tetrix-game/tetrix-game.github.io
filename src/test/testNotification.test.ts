@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { tetrixReducer, initialState } from '../main/App/reducers';
+import { tetrixReducer, initialState } from '../main/App/Shared/Shared_reducers';
 import type { ScoreData } from '../main/App/types/scoring';
 
 describe('Test Notification Functionality', () => {

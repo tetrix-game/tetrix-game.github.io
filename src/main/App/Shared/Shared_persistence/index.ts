@@ -28,7 +28,7 @@ import {
   initializePersistence,
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,
-} from '../../utils/persistenceAdapter';
+} from '../Shared_persistenceAdapter';
 
 // Re-export the main functions
 export {

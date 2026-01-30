@@ -3,8 +3,8 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import { makeTileKey } from '../../Shared/gridConstants';
-import { getShapeGridPositions } from '../../Shared/shapeGeometry';
+import { makeTileKey } from '../../Shared/Shared_gridConstants';
+import { getShapeGridPositions } from '../../Shared/Shared_shapeGeometry';
 import type { Tile, QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // safeBatchSave removed - persistence handled by PersistenceListener

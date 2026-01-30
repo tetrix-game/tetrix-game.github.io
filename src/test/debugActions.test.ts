@@ -1,6 +1,6 @@
 import { expect, test, describe } from 'vitest';
 
-import { tetrixReducer, initialState } from '../main/App/reducers';
+import { tetrixReducer, initialState } from '../main/App/Shared/Shared_reducers';
 import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
 
 describe('Debug Actions for Shape Management', () => {

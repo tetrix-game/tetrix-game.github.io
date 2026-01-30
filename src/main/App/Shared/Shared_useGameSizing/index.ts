@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import { GRID_SIZE, GRID_GAP } from '../gridConstants';
+import { GRID_SIZE, GRID_GAP } from '../Shared_gridConstants';
 
 export interface GameSizing {
   gridSize: number;

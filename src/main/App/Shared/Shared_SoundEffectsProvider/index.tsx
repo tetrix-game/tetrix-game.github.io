@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
-import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../persistence';
+import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../Shared_persistence';
 
 import { SOUND_VOLUME_MULTIPLIERS, BASE_SOUND_EFFECTS_VOLUME, registerPlaySound, unregisterPlaySound } from './Shared_playSound/';
 import { Shared_SoundEffectsContext } from './Shared_useSoundEffects/Shared_SoundEffectsContext/';

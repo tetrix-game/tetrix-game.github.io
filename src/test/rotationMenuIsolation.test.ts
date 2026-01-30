@@ -1,6 +1,6 @@
 import { expect, test, describe } from 'vitest';
 
-import { tetrixReducer, initialState } from '../main/App/reducers';
+import { tetrixReducer, initialState } from '../main/App/Shared/Shared_reducers';
 import type { QueuedShape, Shape } from '../main/App/types/core';
 import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
 

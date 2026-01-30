@@ -8,8 +8,8 @@ import {
   clearAllDataAndReload,
   loadGameState,
   loadSettingsData,
-} from '../persistence';
-import { initialState, tetrixReducer } from '../Shared_tetrixReducer';
+} from '../Shared_persistence';
+import { initialState, tetrixReducer } from '../Shared_reducers';
 
 import { Shared_TetrixDispatchContext } from './Shared_TetrixDispatchContext/';
 import { Shared_TetrixStateContext } from './Shared_TetrixStateContext/';

@@ -10,8 +10,8 @@ import { createPortal } from 'react-dom';
 
 import { APP_VERSION } from '../../../version';
 import { useGridEditor } from '../../contexts/GridEditorProvider';
-import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
 import { loadDebugSettings, saveDebugSettings } from '../../Shared/persistence';
+import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { THEMES, BLOCK_THEMES } from '../../types/theme';

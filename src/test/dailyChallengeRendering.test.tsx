@@ -9,9 +9,9 @@ import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 
 import { Grid } from '../main/App/components/Grid';
-import { initialState } from '../main/App/reducers';
-import { Shared_TetrixStateContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_TetrixStateContext';
+import { initialState } from '../main/App/Shared/Shared_reducers';
 import { Shared_TetrixDispatchContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_TetrixDispatchContext';
+import { Shared_TetrixStateContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_TetrixStateContext';
 import type { TetrixReducerState, TetrixDispatch } from '../main/App/types/gameState';
 
 describe('Daily Challenge Grid Rendering', () => {

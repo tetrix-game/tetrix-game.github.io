@@ -5,7 +5,7 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import { GRID_ADDRESSES, makeTileKey } from '../../Shared/gridConstants';
+import { GRID_ADDRESSES, makeTileKey } from '../../Shared/Shared_gridConstants';
 import type { Tile, QueuedShape, Shape, ColorName } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // Persistence imports removed - handled by PersistenceListener

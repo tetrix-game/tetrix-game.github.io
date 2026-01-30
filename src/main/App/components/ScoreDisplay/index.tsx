@@ -2,8 +2,8 @@ import React, { useRef, useEffect } from 'react';
 
 import { Shared_BlueGemIcon } from '../../../Shared/BlueGemIcon';
 import { useVisualError } from '../../hooks/useVisualError';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { formatScore } from '../../utils/scoringUtils';
 import { ErrorPointer } from '../Pointer/ErrorPointer';
 import { StatsOverlay } from '../StatsOverlay';

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { tetrixReducer } from '../main/App/reducers';
+import { tetrixReducer } from '../main/App/Shared/Shared_reducers';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
 

@@ -1,4 +1,4 @@
-import { GRID_SIZE } from '../../main/App/Shared/gridConstants';
+import { GRID_SIZE } from '../../main/App/Shared/Shared_gridConstants';
 import type { TilesSet, ColorName, Tile } from '../../main/types';
 
 /**

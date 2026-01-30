@@ -2,8 +2,8 @@ import React from 'react';
 
 import './GameOverOverlay.css';
 import { Shared_Overlay } from '../../../Shared/Overlay';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 
 const GameOverOverlay: React.FC = (): JSX.Element => {
   const { gameMode } = Shared_useTetrixStateContext();

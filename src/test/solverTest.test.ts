@@ -16,7 +16,6 @@ describe('solveDailyChallenge', () => {
     const seed = 12345;
     const solution = solveDailyChallenge(tiles, seed);
 
-    console.log('Solution length:', solution ? solution.length : 'null');
 
     expect(solution).not.toBeNull();
     expect(solution!.length).toBeGreaterThan(0);

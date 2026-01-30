@@ -17,11 +17,7 @@ describe('Updated Shape Generation', () => {
       shapeStats.set(count, (shapeStats.get(count) || 0) + 1);
     }
 
-    console.log('Shape distribution by filled block count:');
     const sortedStats = Array.from(shapeStats.entries()).sort((a, b) => a[0] - b[0]);
-    for (const [count, frequency] of sortedStats) {
-      console.log(`${count} blocks: ${((frequency / testCount) * 100).toFixed(1)}% (${frequency}/${testCount})`);
-    }
 
     // Verify we only have 4-block shapes
     const blockCounts = Array.from(shapeStats.keys()).sort((a, b) => a - b);
@@ -45,7 +41,6 @@ describe('Updated Shape Generation', () => {
       totalShapes++;
     }
 
-    console.log(`All shapes have 4 blocks: ${totalShapes} (${((totalShapes / testCount) * 100).toFixed(1)}%)`);
 
     // With 7 shape types (all with 4 blocks), we expect equal distribution
     // Each shape type should appear ~14.3% (1/7) of the time
@@ -64,11 +59,6 @@ describe('Updated Shape Generation', () => {
       }
     }
 
-    console.log(`Found ${shapes.length} different shape patterns:`);
-    for (const [index, pattern] of shapes.entries()) {
-      console.log(`Pattern ${index + 1}:`);
-      console.log(pattern);
-    }
 
     // We expect to find 7 different shape types: I, O, T, S, Z, L, J
     expect(shapes.length).toBeGreaterThanOrEqual(7);

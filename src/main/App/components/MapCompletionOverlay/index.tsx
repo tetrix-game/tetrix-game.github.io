@@ -2,8 +2,8 @@ import React from 'react';
 
 import './MapCompletionOverlay.css';
 import { Shared_Overlay } from '../../../Shared/Overlay';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { Grid } from '../Grid';
 
 interface MapCompletionOverlayProps {

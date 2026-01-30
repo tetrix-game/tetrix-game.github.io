@@ -7,8 +7,8 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { canPlaceShape, isValidPlacement, getInvalidBlocks } from '../main/App/Shared/Shared_shapeValidation';
-import type { Shape, TilesSet, Location, Tile } from '../main/App/types/core';
+import { canPlaceShape, isValidPlacement, getInvalidBlocks } from '../shapeValidation';
+import type { Shape, TilesSet, Location, Tile } from '../types';
 
 // Helper to create a simple 2x2 square shape in top-left of 4x4 grid
 function createSquareShape(): Shape {

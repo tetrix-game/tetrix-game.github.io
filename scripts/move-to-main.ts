@@ -63,8 +63,8 @@ for (const sourceFile of project.getSourceFiles()) {
     }
     // Pattern 2: Files in main/App/ importing from what was ../Shared
     else if (filePath.includes('src/main/App/')) {
-      // ../../../Shared/ → ../../Shared/
-      newSpecifier = moduleSpecifier.replace(/^\.\.\/\.\.\/\.\.\/Shared\//, '../../Shared/');
+      // ../Shared/ → ../Shared/
+      newSpecifier = moduleSpecifier.replace(/^\.\.\/\.\.\/\.\.\/Shared\//, '../Shared/');
 
       if (newSpecifier !== moduleSpecifier) {
         modified = true;

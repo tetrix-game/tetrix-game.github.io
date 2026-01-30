@@ -7,7 +7,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { GRID_SIZE, GRID_ADDRESSES, setGridSize, makeTileKey } from '../main/App/Shared/Shared_gridConstants';
+import { GRID_SIZE, GRID_ADDRESSES, setGridSize, makeTileKey } from '../gridConstants';
 
 import { createTilesWithFilled } from './testHelpers';
 

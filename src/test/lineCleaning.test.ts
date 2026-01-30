@@ -8,8 +8,8 @@ import {
   clearRows,
   clearColumns,
   clearFullLines,
-} from '../main/App/Shared/Shared_lineUtils';
-import type { TilesSet, ColorName } from '../main/App/types/core';
+} from '../lineUtils';
+import type { TilesSet, ColorName } from '../types';
 
 import {
   createTilesWithFilled,

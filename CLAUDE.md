@@ -16,9 +16,9 @@ Core gameplay: Place Tetris-like shapes onto a 10x10 grid to clear rows and colu
 - **Facade exports required** - Each folder must export an object matching its name (e.g., `Shared_gridConstants/` exports `Shared_gridConstants`)
 
 ### Import Rules
-- **Import from siblings or Shared** - `import { foo } from '../SiblingModule'` or `import { bar } from '../../Shared/Shared_Module'`
+- **Import from siblings or Shared** - `import { foo } from '../SiblingModule'` or `import { bar } from '../Shared/Shared_Module'`
 - **Never import upwards** - Components cannot import from parent directories (except types and Shared)
-- **No deep imports within Shared** - Import from sibling: `'../Shared_module'` not `'../../Shared/Shared_module'`
+- **No deep imports within Shared** - Import from sibling: `'../Shared_module'` not `'../Shared/Shared_module'`
 
 ## Key Architecture Files
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { detectSuperComboPattern } from '../main/App/Shared/Shared_shapePatterns';
-import type { TilesSet, ColorName } from '../main/App/types/core';
+import { detectSuperComboPattern } from '../shapePatterns';
+import type { TilesSet, ColorName } from '../types';
 
 import { createTilesWithFilled } from './testHelpers';
 

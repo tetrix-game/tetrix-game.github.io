@@ -5,7 +5,7 @@ echo "Updating SoundEffectsProvider imports..."
 
 # Update import paths
 find src/main/App -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
-  "s|from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects'|from '../../Shared/Shared_SoundEffectsProvider'|g" {} \;
+  "s|from '../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects'|from '../Shared/Shared_SoundEffectsProvider'|g" {} \;
 
 find src/main/App -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
   "s|from '../Shared/Shared_SoundEffectsProvider/types'|from '../Shared/Shared_SoundEffectsProvider'|g" {} \;

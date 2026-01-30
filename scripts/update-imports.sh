@@ -19,8 +19,8 @@ echo "   To: $NEW_PATH"
 # Find all TypeScript files and update imports
 find src -type f \( -name "*.tsx" -o -name "*.ts" \) -exec sed -i '' \
   -e "s|from ['\"]\.\./$OLD_PATH|from '../$NEW_PATH|g" \
-  -e "s|from ['\"]\.\.\/\.\./$OLD_PATH|from '../../$NEW_PATH|g" \
-  -e "s|from ['\"]\.\.\/\.\.\/\.\./$OLD_PATH|from '../../../$NEW_PATH|g" \
+  -e "s|from ['\"]\.\.\/\.\./$OLD_PATH|from '../$NEW_PATH|g" \
+  -e "s|from ['\"]\.\.\/\.\.\/\.\./$OLD_PATH|from '../$NEW_PATH|g" \
   {} +
 
 echo "✅ Import paths updated!"

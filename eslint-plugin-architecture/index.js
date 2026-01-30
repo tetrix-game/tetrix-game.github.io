@@ -39,7 +39,7 @@ const isInSharedDir = (filePath) => {
 const isSharedImport = (importPath, currentFileDir) => {
   if (!importPath) return false;
   // Check if the import path includes 'Shared/' after any number of '../' navigations
-  // This covers patterns like '../../../Shared/', '../../Shared/', '../Shared/'
+  // This covers patterns like '../Shared/', '../Shared/', '../Shared/'
   const normalizedPath = importPath.replace(/\\/g, '/');
   return normalizedPath.includes('Shared/') || normalizedPath.endsWith('Shared');
 };
@@ -54,10 +54,10 @@ const isTypesFile = (filename) => {
 const isConfigFile = (filename) => {
   const basename = path.basename(filename);
   return basename.endsWith('.config.ts') ||
-         basename.endsWith('.config.js') ||
-         basename.endsWith('.config.tsx') ||
-         basename.endsWith('.config.mjs') ||
-         basename.endsWith('.config.cjs');
+    basename.endsWith('.config.js') ||
+    basename.endsWith('.config.tsx') ||
+    basename.endsWith('.config.mjs') ||
+    basename.endsWith('.config.cjs');
 };
 
 // Helper to check if a file is part of the React ecosystem
@@ -932,7 +932,7 @@ const noCircularDependencies = {
  *
  * Enforces that components can only import from:
  * - Direct subdirectories (./SubComponent)
- * - Shared directory (../../Shared/Component)
+ * - Shared directory (../Shared/Component)
  * - Types at same level (./types)
  *
  * Rejects upwards imports (../ParentComponent) to maintain clear hierarchy.
@@ -949,7 +949,7 @@ const enforceDownwardsImports = {
         'Upwards import detected: "{{importPath}}"\n\n' +
         'Components should only import from:\n' +
         '  ✅ Direct subdirectories: ./SubComponent\n' +
-        '  ✅ Shared directory: ../../Shared/Component\n' +
+        '  ✅ Shared directory: ../Shared/Component\n' +
         '  ✅ Types at same level: ./types\n' +
         '  ❌ Parent directories: ../ParentComponent\n\n' +
         'Upwards imports create tight coupling and make code harder to understand.\n' +
@@ -989,7 +989,7 @@ const enforceDownwardsImports = {
         }
 
         // Allow imports from types files at any level
-        // Pattern: ./types, ../types, ../../App/types, etc.
+        // Pattern: ./types, ../types, ../App/types, etc.
         if (importPath === './types' || importPath.endsWith('/types') || importPath.includes('/types/')) {
           return;
         }

@@ -36,7 +36,7 @@ EOF
 # Update imports - handle different quote styles
 echo "Updating imports..."
 find src/main/App -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
-  "s|from ['\"]../../types/|from '../../Shared/Shared_types/|g" {} \;
+  "s|from ['\"]../types/|from '../Shared/Shared_types/|g" {} \;
 
 find src/main/App -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
   "s|from ['\"]../types/|from '../Shared/Shared_types/|g" {} \;

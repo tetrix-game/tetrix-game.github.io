@@ -1,7 +1,7 @@
-import { Shared_gridConstants } from '../../main/App/Shared/Shared_gridConstants';
-import type { TilesSet, ColorName, Tile } from '../../main/App/types/core';
+import { gridConstants } from '../main/App/Shared/gridConstants';
+import type { TilesSet, ColorName, Tile } from '../main/App/types/core';
 
-const { GRID_SIZE } = Shared_gridConstants;
+const { GRID_SIZE } = gridConstants;
 
 /**
  * Helper functions for testing with TilesSet (Map-based tiles using plain Tile objects)

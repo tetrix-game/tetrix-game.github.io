@@ -131,9 +131,9 @@ done
 
 # Update imports to use Shared_types directly instead of subdirectories
 echo "Updating imports..."
-cd ../../..
+cd ../..
 find . -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
-  "s|from '../../Shared/Shared_types/[^']*'|from '../../Shared/Shared_types'|g" {} \;
+  "s|from '../Shared/Shared_types/[^']*'|from '../Shared/Shared_types'|g" {} \;
 
 find . -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
   "s|from '../Shared/Shared_types/[^']*'|from '../Shared/Shared_types'|g" {} \;

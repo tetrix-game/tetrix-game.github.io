@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { tetrixReducer, initialState } from '../main/App/Shared/Shared_reducers';
-import type { Shape, Tile } from '../main/App/types/core';
+import { tetrixReducer, initialState } from '../reducers';
+import type { Shape, Tile } from '../types';
 
 import { getTileData } from './testHelpers';
 

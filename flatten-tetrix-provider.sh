@@ -11,7 +11,7 @@ echo "Creating flat hook files..."
 cat > useTetrixDispatchContext.ts << 'EOF'
 import { useContext } from 'react';
 
-import type { TetrixDispatch } from '../../Shared_types';
+import type { TetrixDispatch } from '../Shared_types';
 
 import { TetrixDispatchContext } from './index';
 
@@ -27,7 +27,7 @@ EOF
 cat > useTetrixStateContext.ts << 'EOF'
 import { useContext } from 'react';
 
-import type { TetrixReducerState } from '../../Shared_types';
+import type { TetrixReducerState } from '../Shared_types';
 
 import { TetrixStateContext } from './index';
 
@@ -44,7 +44,7 @@ EOF
 cat > index.tsx << 'EOF'
 import { useReducer, useEffect, useState, createContext } from 'react';
 
-import type { ThemeName, BlockTheme, TetrixReducerState, TetrixDispatch } from '../../Shared_types';
+import type { ThemeName, BlockTheme, TetrixReducerState, TetrixDispatch } from '../Shared_types';
 import {
   loadTheme,
   loadGameState,

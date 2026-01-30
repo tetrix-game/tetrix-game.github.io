@@ -1,7 +1,7 @@
 import { expect, test, describe } from 'vitest';
 
-import { tetrixReducer, initialState } from '../main/App/Shared/Shared_reducers';
-import { generateRandomShape } from '../main/App/Shared/Shared_shapeGeneration';
+import { tetrixReducer, initialState } from '../reducers';
+import { generateRandomShape } from '../shapeGeneration';
 
 describe('Debug Actions for Shape Management', () => {
   test('ADD_SHAPE_OPTION adds a new shape to existing shapes', () => {

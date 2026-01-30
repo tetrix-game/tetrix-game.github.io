@@ -13,7 +13,8 @@
     "lint:ci": "eslint . --config eslint.config.ci.js",
     "generate-icons": "node generate-icons.js",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "flatten": "tsx scripts/flatten-structure.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

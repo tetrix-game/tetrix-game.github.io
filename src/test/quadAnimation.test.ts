@@ -4,16 +4,16 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { generateClearingAnimations } from '../main/App/Shared/Shared_clearingAnimationUtils';
-import type { Shared_ClearedLine } from '../main/App/Shared/Shared_lineUtils';
+import { generateClearingAnimations } from '../clearingAnimationUtils';
+import type { ClearedLine } from '../lineUtils';
 
 import { createTilesWithFilled } from './testHelpers';
 
 describe('Quad clearing animations (beating heart)', () => {
   it('should generate row-quad animation when 4 rows are cleared', () => {
     const tiles = createTilesWithFilled([]);
-    const clearedRows: Shared_ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
-    const clearedColumns: Shared_ClearedLine[] = [];
+    const clearedRows: ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
+    const clearedColumns: ClearedLine[] = [];
 
     const result = generateClearingAnimations(tiles, clearedRows, clearedColumns);
 
@@ -30,8 +30,8 @@ describe('Quad clearing animations (beating heart)', () => {
 
   it('should generate column-quad animation when 4 columns are cleared', () => {
     const tiles = createTilesWithFilled([]);
-    const clearedRows: Shared_ClearedLine[] = [];
-    const clearedColumns: Shared_ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
+    const clearedRows: ClearedLine[] = [];
+    const clearedColumns: ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
 
     const result = generateClearingAnimations(tiles, clearedRows, clearedColumns);
 
@@ -48,8 +48,8 @@ describe('Quad clearing animations (beating heart)', () => {
 
   it('should allow custom beat count', () => {
     const tiles = createTilesWithFilled([]);
-    const clearedRows: Shared_ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
-    const clearedColumns: Shared_ClearedLine[] = [];
+    const clearedRows: ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
+    const clearedColumns: ClearedLine[] = [];
 
     const result = generateClearingAnimations(tiles, clearedRows, clearedColumns, {
       rows: {
@@ -75,8 +75,8 @@ describe('Quad clearing animations (beating heart)', () => {
 
   it('should not generate quad animation when less than 4 lines are cleared', () => {
     const tiles = createTilesWithFilled([]);
-    const clearedRows: Shared_ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }];
-    const clearedColumns: Shared_ClearedLine[] = [];
+    const clearedRows: ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }];
+    const clearedColumns: ClearedLine[] = [];
 
     const result = generateClearingAnimations(tiles, clearedRows, clearedColumns);
 
@@ -88,8 +88,8 @@ describe('Quad clearing animations (beating heart)', () => {
 
   it('should generate both row-quad and column-quad for 4x4 clear', () => {
     const tiles = createTilesWithFilled([]);
-    const clearedRows: Shared_ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
-    const clearedColumns: Shared_ClearedLine[] = [{ index: 5 }, { index: 6 }, { index: 7 }, { index: 8 }];
+    const clearedRows: ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
+    const clearedColumns: ClearedLine[] = [{ index: 5 }, { index: 6 }, { index: 7 }, { index: 8 }];
 
     const result = generateClearingAnimations(tiles, clearedRows, clearedColumns);
 
@@ -106,8 +106,8 @@ describe('Quad clearing animations (beating heart)', () => {
 
   it('should layer quad on top of single, double, and triple animations', () => {
     const tiles = createTilesWithFilled([]);
-    const clearedRows: Shared_ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
-    const clearedColumns: Shared_ClearedLine[] = [];
+    const clearedRows: ClearedLine[] = [{ index: 1 }, { index: 2 }, { index: 3 }, { index: 4 }];
+    const clearedColumns: ClearedLine[] = [];
 
     const result = generateClearingAnimations(tiles, clearedRows, clearedColumns);
 

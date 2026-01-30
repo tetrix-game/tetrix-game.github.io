@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 
-import { getShapeGridPositions } from '../main/App/Shared/Shared_shapeGeometry';
-import { canPlaceShape } from '../main/App/Shared/Shared_shapeValidation';
-import type { Shape, Location } from '../main/App/types/core';
+import { getShapeGridPositions } from '../shapeGeometry';
+import { canPlaceShape } from '../shapeValidation';
+import type { Shape, Location } from '../types';
 
 import { createTilesWithFilled } from './testHelpers';
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ColorName } from '../../types/core';
 import { StatCategory } from '../../types/stats';
-import { Overlay } from '../../../Shared/Overlay';
+import { Shared_Overlay } from '../../../Shared/Overlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import './StatsOverlay.css';
 
@@ -164,7 +164,7 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
   };
 
   return (
-    <Overlay
+    <Shared_Overlay
       className="stats-overlay-backdrop"
       contentClassName="stats-overlay-content"
       onBackdropClick={onClose}
@@ -207,7 +207,7 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
           </button>
         </div>
       )}
-    </Overlay>
+    </Shared_Overlay>
   );
 };
 

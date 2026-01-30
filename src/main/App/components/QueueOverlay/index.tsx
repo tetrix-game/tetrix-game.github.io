@@ -1,7 +1,7 @@
 import React from 'react';
 
 import type { Shape } from '../../types/core';
-import { Overlay } from '../../../Shared/Overlay';
+import { Shared_Overlay } from '../../../Shared/Overlay';
 import { ShapeDisplay } from '../ShapeDisplay';
 import { useTetrixStateContext } from '../../contexts/TetrixContext';
 import './QueueOverlay.css';
@@ -24,7 +24,7 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
   const { blockTheme, showBlockIcons, gameMode } = useTetrixStateContext();
 
   return (
-    <Overlay
+    <Shared_Overlay
       className="queue-overlay-backdrop"
       contentClassName="queue-overlay-content"
       onBackdropClick={onClose}
@@ -61,7 +61,7 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
           </div>
         )}
       </div>
-    </Overlay>
+    </Shared_Overlay>
   );
 };
 

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 
 import type { ColorName } from '../../types/core';
 import type { BlockTheme } from '../../types/theme';
-import { BlockVisual } from '../../../Shared/BlockVisual';
-import { Tile } from '../../../Shared/Tile';
+import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
+import { Shared_Tile } from '../../../Shared/Tile';
 import './TetrixTile.css';
 
 type TetrixTileProps = {
@@ -68,7 +68,7 @@ const TetrixTile = ({
   );
 
   return (
-    <Tile
+    <Shared_Tile
       row={row}
       col={col}
       backgroundColor={backgroundColor as ColorName}
@@ -76,7 +76,7 @@ const TetrixTile = ({
       // Pass data attributes for event delegation in parent
       {...{ 'data-row': row, 'data-col': col } as any}
     >
-      <BlockVisual
+      <Shared_BlockVisual
         isFilled={blockIsFilled}
         color={blockColor}
         size={size}
@@ -130,7 +130,7 @@ const TetrixTile = ({
           />
         );
       })}
-    </Tile>
+    </Shared_Tile>
   );
 };
 

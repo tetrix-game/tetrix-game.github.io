@@ -2,7 +2,7 @@ import React from 'react';
 
 import './MapCompletionOverlay.css';
 import { Grid } from '../Grid';
-import { Overlay } from '../../../Shared/Overlay';
+import { Shared_Overlay } from '../../../Shared/Overlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 
 interface MapCompletionOverlayProps {
@@ -42,7 +42,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
   };
 
   return (
-    <Overlay
+    <Shared_Overlay
       className="map-completion-overlay"
       contentClassName="map-completion-content"
       ariaLabel={isSuccess ? 'Level Complete' : 'Level Failed'}
@@ -111,7 +111,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
           </div>
         </div>
       </div>
-    </Overlay>
+    </Shared_Overlay>
   );
 };
 

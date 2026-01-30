@@ -1,8 +1,8 @@
 import React from 'react';
 
 import type { Block, ColorName, Location } from '../../../types/core';
-import { BlockVisual } from '../../../../Shared/BlockVisual';
-import { Tile } from '../../../../Shared/Tile';
+import { Shared_BlockVisual } from '../../../../Shared/BlockVisual';
+import { Shared_Tile } from '../../../../Shared/Tile';
 import './EditorGridTile.css';
 
 type EditorGridTileProps = {
@@ -32,7 +32,7 @@ const EditorGridTile: React.FC<EditorGridTileProps> = ({
   const tileOpacity = !tileExists ? 0.2 : 1;
 
   return (
-    <Tile
+    <Shared_Tile
       row={location.row}
       col={location.column}
       backgroundColor={backgroundColor}
@@ -43,12 +43,12 @@ const EditorGridTile: React.FC<EditorGridTileProps> = ({
       className="editor-grid-tile"
       style={{ cursor: 'pointer' }}
     >
-      <BlockVisual isFilled={block.isFilled} color={block.color} size={size} />
+      <Shared_BlockVisual isFilled={block.isFilled} color={block.color} size={size} />
 
       {editorColor && (
         <div className={`editor-grid-tile-overlay color-${editorColor}`} />
       )}
-    </Tile>
+    </Shared_Tile>
   );
 };
 

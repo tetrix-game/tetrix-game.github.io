@@ -18,7 +18,7 @@ type ShapeIconProps = {
  * - purple: crescent moon
  * - grey: diamond (rotated square)
  */
-export function ShapeIcon({ color, size = 24, opacity = 1, useBorderLeftColor = false }: ShapeIconProps): JSX.Element {
+export function Shared_ShapeIcon({ color, size = 24, opacity = 1, useBorderLeftColor = false }: ShapeIconProps): JSX.Element {
   const viewBoxSize = 100;
   const center = viewBoxSize / 2;
 

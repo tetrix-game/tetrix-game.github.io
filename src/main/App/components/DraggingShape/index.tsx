@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useGameSizing } from '../../hooks/useGameSizing';
 import { ANIMATION_TIMING } from '../../utils/animationConstants';
 import { getShapeBounds } from '../../utils/shapes/shapeGeometry';
-import { BlockVisual } from '../../../Shared/BlockVisual';
+import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
 import { useSoundEffects } from '../../contexts/SoundEffectsContext';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import './DraggingShape.css';
@@ -315,7 +315,7 @@ export function DraggingShape() {
                 } as React.CSSProperties}
               >
                 {block.isFilled && (
-                  <BlockVisual
+                  <Shared_BlockVisual
                     isFilled={block.isFilled}
                     color={block.color}
                     size={isInvalid ? currentCellSize * 0.5 : currentCellSize}

@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 
 import { useVisualError } from '../../hooks/useVisualError';
 import { formatScore } from '../../utils/scoringUtils';
-import { BlueGemIcon } from '../../../Shared/BlueGemIcon';
+import { Shared_BlueGemIcon } from '../../../Shared/BlueGemIcon';
 import { ErrorPointer } from '../Pointer/ErrorPointer';
 import { StatsOverlay } from '../StatsOverlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
@@ -61,7 +61,7 @@ const ScoreDisplay: React.FC = () => {
         title="Click to view stats"
       >
         <div ref={gemIconRef}>
-          <BlueGemIcon />
+          <Shared_BlueGemIcon />
         </div>
         <span className="score-display-value">
           {formatScore(score)}

@@ -6,6 +6,7 @@
 
 import path from 'path';
 import { ESLintUtils } from '@typescript-eslint/utils';
+import { graphManager } from './managers/DependencyGraphManager.js';
 
 // Helper to check if a file is a hook file (prefixed with "use")
 const isHookFile = (filename) => {
@@ -24,8 +25,12 @@ const isMemoComponent = (name) => {
 };
 
 // Helper to check if a file path is inside src/Shared directory
+// Uses normalized path matching to prevent false positives
 const isInSharedDir = (filePath) => {
-  return filePath && filePath.includes('/src/Shared/');
+  if (!filePath) return false;
+  const normalized = path.normalize(filePath);
+  const sharedPattern = path.join('src', 'main', 'Shared');
+  return normalized.includes(sharedPattern);
 };
 
 // Helper to check if an import path points to src/Shared
@@ -249,12 +254,8 @@ const PRIMITIVE_TYPE_FLAGS = [
   'booleanLiteral',
 ];
 
-// Track shared component imports across all files for shared-must-be-multi-imported rule
-const sharedComponentImports = new Map(); // componentName -> Set of importing file paths
-
-// Track all imports across files for import-from-sibling-directory-or-shared rule
-// Maps: resolved module path -> Set of importing file paths
-const moduleImportTracker = new Map();
+// Global Maps removed - now handled by DependencyGraphManager
+// See graphManager.trackSharedImport() and graphManager.trackImport()
 
 /**
  * Rule: index-only-files
@@ -370,7 +371,7 @@ const sharedMustBeMultiImported = {
             return;
           }
 
-          // Track each imported component
+          // Track each imported component using graphManager
           for (const specifier of node.specifiers) {
             if (specifier.type !== 'ImportSpecifier') continue;
 
@@ -379,11 +380,8 @@ const sharedMustBeMultiImported = {
             // Only track component imports (PascalCase)
             if (!/^[A-Z]/.test(importedName)) continue;
 
-            // Add this file to the set of files importing this component
-            if (!sharedComponentImports.has(importedName)) {
-              sharedComponentImports.set(importedName, new Set());
-            }
-            sharedComponentImports.get(importedName).add(filename);
+            // Use graphManager to track shared imports
+            graphManager.trackSharedImport(importedName, filename);
           }
         },
       };
@@ -421,9 +419,8 @@ const sharedMustBeMultiImported = {
 
         if (!componentName) return;
 
-        // Check how many files import this component
-        const importingFiles = sharedComponentImports.get(componentName);
-        const importCount = importingFiles ? importingFiles.size : 0;
+        // Check how many files import this component using graphManager
+        const { count: importCount } = graphManager.getSharedImportInfo(componentName);
 
         if (importCount < 2) {
           context.report({
@@ -440,44 +437,8 @@ const sharedMustBeMultiImported = {
   },
 };
 
-/**
- * Helper: Resolve a relative import to an absolute directory path
- * Given a file doing the import and the import path, resolve to the imported module's directory
- */
-const resolveImportPath = (importingFile, importPath) => {
-  if (!importPath.startsWith('.')) {
-    return null; // External module, skip
-  }
-
-  const importingDir = path.dirname(importingFile);
-  const resolved = path.resolve(importingDir, importPath);
-  return resolved;
-};
-
-/**
- * Helper: Calculate Least Common Ancestor directory of multiple file paths
- */
-const calculateLCA = (filePaths) => {
-  if (filePaths.length === 0) return null;
-  if (filePaths.length === 1) return path.dirname(filePaths[0]);
-
-  // Split all paths into segments
-  const pathSegments = filePaths.map(p => p.split(path.sep));
-
-  // Find common prefix
-  const firstPath = pathSegments[0];
-  let lcaSegments = [];
-
-  for (let i = 0; i < firstPath.length; i++) {
-    const segment = firstPath[i];
-    const allMatch = pathSegments.every(p => p[i] === segment);
-
-    if (!allMatch) break;
-    lcaSegments.push(segment);
-  }
-
-  return lcaSegments.join(path.sep) || path.sep;
-};
+// Helper functions removed - now handled by DependencyGraphManager
+// See graphManager.resolvePath() and graphManager.calculateLCA()
 
 /**
  * Helper: Check if import path is a direct sibling (./Name pattern)
@@ -491,12 +452,7 @@ const isDirectSibling = (importPath) => {
   return !withoutDotSlash.includes('/');
 };
 
-/**
- * Helper: Get the parent directory path
- */
-const getParentDir = (filePath) => {
-  return path.dirname(filePath);
-};
+// Helper removed - unused after refactoring
 
 /**
  * Rule: import-from-sibling-directory-or-shared
@@ -539,7 +495,7 @@ const importFromSiblingDirectoryOrShared = {
     }
 
     return {
-      // First pass: Track all imports
+      // First pass: Track all imports using graphManager
       ImportDeclaration(node) {
         const importPath = node.source.value;
 
@@ -548,8 +504,8 @@ const importFromSiblingDirectoryOrShared = {
           return;
         }
 
-        // Resolve the import to an absolute path
-        const resolvedPath = resolveImportPath(filename, importPath);
+        // Resolve the import to an absolute path using graphManager
+        const resolvedPath = graphManager.resolvePath(filename, importPath);
         if (!resolvedPath) return;
 
         if (DEBUG) {
@@ -560,11 +516,8 @@ const importFromSiblingDirectoryOrShared = {
           });
         }
 
-        // Track this import
-        if (!moduleImportTracker.has(resolvedPath)) {
-          moduleImportTracker.set(resolvedPath, new Set());
-        }
-        moduleImportTracker.get(resolvedPath).add(filename);
+        // Track this import using graphManager
+        graphManager.trackImport(filename, resolvedPath);
       },
 
       // Second pass: Validate each import
@@ -582,15 +535,18 @@ const importFromSiblingDirectoryOrShared = {
           const fileDir = path.dirname(filename);
           if (isSharedImport(importPath, fileDir)) continue;
 
-          // Resolve the import
-          const resolvedPath = resolveImportPath(filename, importPath);
+          // Skip imports from types files (they're shared resources)
+          if (importPath === './types' || importPath.endsWith('/types') || importPath.includes('/types/')) {
+            continue;
+          }
+
+          // Resolve the import using graphManager
+          const resolvedPath = graphManager.resolvePath(filename, importPath);
           if (!resolvedPath) continue;
 
-          // Get all files that import this module
-          const importingFiles = moduleImportTracker.get(resolvedPath);
-          if (!importingFiles) continue;
-
-          const importCount = importingFiles.size;
+          // Get all files that import this module using graphManager
+          const { count: importCount, files: importingFiles } = graphManager.getImportInfo(resolvedPath);
+          if (importCount === 0) continue;
 
           if (DEBUG) {
             console.log('[import-from-sibling] Validating:', {
@@ -632,7 +588,8 @@ const importFromSiblingDirectoryOrShared = {
 
           // CASE 2: Multiple imports - should be at LCA
           else if (importCount > 1) {
-            const lca = calculateLCA([...importingFiles]);
+            // Use graphManager's memoized LCA calculation
+            const lca = graphManager.calculateLCA([...importingFiles]);
             const currentModuleDir = path.dirname(resolvedPath);
 
             // Check if the module is in the LCA directory
@@ -669,30 +626,502 @@ const importFromSiblingDirectoryOrShared = {
   },
 };
 
+/**
+ * Rule: no-circular-dependencies
+ *
+ * Detects and prevents circular import dependencies between files.
+ * A circular dependency occurs when file A imports file B, which imports file C,
+ * which eventually imports file A again, forming a cycle.
+ *
+ * This rule uses DFS cycle detection to identify cycles efficiently.
+ */
+const noCircularDependencies = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'Prevent circular dependencies between modules',
+    },
+    messages: {
+      circularDependency:
+        'Circular dependency detected: {{cyclePath}}\n\nCircular dependencies cause:\n' +
+        '  - Hard-to-debug initialization issues\n  - Unpredictable module load order\n' +
+        '  - Potential runtime errors\n\nTo fix:\n' +
+        '  1. Extract shared code to a new module\n  2. Use dependency injection\n' +
+        '  3. Refactor to remove the circular reference',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+
+    // Skip node_modules and build output
+    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+      return {};
+    }
+
+    return {
+      ImportDeclaration(node) {
+        const importPath = node.source.value;
+
+        // Skip external modules
+        if (!importPath.startsWith('.')) {
+          return;
+        }
+
+        // Resolve the import path
+        const resolvedPath = graphManager.resolvePath(filename, importPath);
+        if (!resolvedPath) return;
+
+        // Add dependency edge and check for cycles
+        const result = graphManager.addDependencyEdge(filename, resolvedPath);
+
+        if (result.hasCycle) {
+          const cyclePath = graphManager.formatCyclePath(result.cyclePath);
+
+          context.report({
+            node,
+            messageId: 'circularDependency',
+            data: {
+              cyclePath,
+            },
+          });
+        }
+      },
+    };
+  },
+};
+
+/**
+ * Rule: enforce-downwards-imports
+ *
+ * Enforces that components can only import from:
+ * - Direct subdirectories (./SubComponent)
+ * - Shared directory (../../Shared/Component)
+ * - Types at same level (./types)
+ *
+ * Rejects upwards imports (../ParentComponent) to maintain clear hierarchy.
+ * This ensures dependencies flow downwards in the component tree.
+ */
+const enforceDownwardsImports = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'Enforce downwards-only imports in component hierarchy',
+    },
+    messages: {
+      upwardsImport:
+        'Upwards import detected: "{{importPath}}"\n\n' +
+        'Components should only import from:\n' +
+        '  ✅ Direct subdirectories: ./SubComponent\n' +
+        '  ✅ Shared directory: ../../Shared/Component\n' +
+        '  ✅ Types at same level: ./types\n' +
+        '  ❌ Parent directories: ../ParentComponent\n\n' +
+        'Upwards imports create tight coupling and make code harder to understand.\n' +
+        'Consider:\n' +
+        '  1. Moving the imported code to a Shared location\n' +
+        '  2. Passing data/behavior through props\n' +
+        '  3. Restructuring the component hierarchy',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+    const fileDir = path.dirname(filename);
+
+    // Skip node_modules and build output
+    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+      return {};
+    }
+
+    // Skip type files - they can import types from anywhere
+    if (filename.endsWith('types.ts') || filename.endsWith('types.tsx')) {
+      return {};
+    }
+
+    return {
+      ImportDeclaration(node) {
+        const importPath = node.source.value;
+
+        // Skip external modules
+        if (!importPath.startsWith('.')) {
+          return;
+        }
+
+        // Allow imports from Shared (these are explicitly allowed)
+        if (isSharedImport(importPath, fileDir)) {
+          return;
+        }
+
+        // Allow imports from types files at any level
+        // Pattern: ./types, ../types, ../../App/types, etc.
+        if (importPath === './types' || importPath.endsWith('/types') || importPath.includes('/types/')) {
+          return;
+        }
+
+        // Allow direct subdirectory imports (./Something)
+        if (importPath.startsWith('./') && !importPath.startsWith('./.')) {
+          const pathWithoutPrefix = importPath.slice(2);
+          // If no slashes remain, it's a direct child
+          if (!pathWithoutPrefix.includes('/')) {
+            return;
+          }
+        }
+
+        // Allow sibling imports within same parent (../Sibling pattern)
+        // This is common in Shared directories where components import from each other
+        if (importPath.startsWith('../')) {
+          const pathWithoutPrefix = importPath.slice(3); // Remove '../'
+          // If no slashes remain, it's a sibling
+          if (!pathWithoutPrefix.includes('/')) {
+            return;
+          }
+
+          // Otherwise, it's an upwards import to a parent directory
+          context.report({
+            node,
+            messageId: 'upwardsImport',
+            data: {
+              importPath,
+            },
+          });
+        }
+      },
+    };
+  },
+};
+
+/**
+ * Rule: shared-exports-must-be-prefixed
+ *
+ * All exports from src/main/Shared/ must be prefixed with "Shared_".
+ * This creates an explicit contract that symbols are intended for shared use
+ * and prevents false positives from path-based detection.
+ *
+ * Examples:
+ *   ✅ export const Shared_Tile = ...
+ *   ✅ export function Shared_BlockVisual() { ... }
+ *   ❌ export const Tile = ...
+ *   ❌ export function BlockVisual() { ... }
+ *
+ * This rule includes auto-fix capability for easy migration.
+ */
+const sharedExportsMustBePrefixed = {
+  meta: {
+    type: 'problem',
+    fixable: 'code',
+    docs: {
+      description: 'Exports from Shared directory must be prefixed with Shared_',
+    },
+    messages: {
+      missingPrefix:
+        'Export "{{name}}" from Shared directory must be prefixed with "Shared_"\n\n' +
+        'Components in src/main/Shared/ are shared across the codebase.\n' +
+        'The Shared_ prefix creates an explicit contract that this symbol is\n' +
+        'intended for shared use and makes imports more readable.\n\n' +
+        'Example:\n' +
+        '  ✅ export const Shared_{{name}} = ...\n' +
+        '  ❌ export const {{name}} = ...\n\n' +
+        'This rule can auto-fix the export, but you\'ll need to update imports manually.',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+
+    // Only apply to files in Shared directory
+    if (!isInSharedDir(filename)) {
+      return {};
+    }
+
+    /**
+     * Extract exported names from various export declaration types
+     */
+    const checkExportAndFix = (node, exportedName, declarationNode) => {
+      // Skip if already has Shared_ prefix
+      if (exportedName.startsWith('Shared_')) {
+        return;
+      }
+
+      // Skip lowercase exports (types, constants, utilities)
+      if (!/^[A-Z]/.test(exportedName)) {
+        return;
+      }
+
+      // Skip Memo-wrapped components that already have Shared_ prefix on the wrapped component
+      // e.g., MemoShared_Tile is acceptable
+      if (exportedName.startsWith('Memo') && exportedName.includes('Shared_')) {
+        return;
+      }
+
+      const newName = `Shared_${exportedName}`;
+
+      context.report({
+        node: declarationNode || node,
+        messageId: 'missingPrefix',
+        data: {
+          name: exportedName,
+        },
+        fix(fixer) {
+          // Find the identifier node and replace it
+          if (declarationNode && declarationNode.type === 'Identifier') {
+            return fixer.replaceText(declarationNode, newName);
+          }
+          return null;
+        },
+      });
+    };
+
+    return {
+      // Handle: export const Foo = ...
+      // Handle: export function Foo() { ... }
+      ExportNamedDeclaration(node) {
+        if (!node.declaration) return;
+
+        // Function declaration: export function Foo() { ... }
+        if (
+          node.declaration.type === 'FunctionDeclaration' &&
+          node.declaration.id
+        ) {
+          checkExportAndFix(node, node.declaration.id.name, node.declaration.id);
+        }
+
+        // Variable declaration: export const Foo = ...
+        if (node.declaration.type === 'VariableDeclaration') {
+          for (const declarator of node.declaration.declarations) {
+            if (declarator.id.type === 'Identifier') {
+              checkExportAndFix(node, declarator.id.name, declarator.id);
+            }
+          }
+        }
+
+        // Type alias: export type Foo = ...
+        if (
+          node.declaration.type === 'TSTypeAliasDeclaration' &&
+          node.declaration.id
+        ) {
+          checkExportAndFix(node, node.declaration.id.name, node.declaration.id);
+        }
+
+        // Interface: export interface Foo { ... }
+        if (
+          node.declaration.type === 'TSInterfaceDeclaration' &&
+          node.declaration.id
+        ) {
+          checkExportAndFix(node, node.declaration.id.name, node.declaration.id);
+        }
+      },
+    };
+  },
+};
+
+/**
+ * Rule: folder-export-must-match
+ *
+ * Enforces that the primary export from an index file must match the folder name.
+ * This ensures the folder structure clearly documents what's inside.
+ *
+ * Examples:
+ *   ✅ Header/index.tsx exports Header or MemoHeader
+ *   ✅ Shared/Tile/index.tsx exports Shared_Tile or MemoShared_Tile
+ *   ❌ Header/index.tsx exports Button
+ *   ❌ Utils/index.tsx exports Header
+ *
+ * Allows variations: ComponentName, MemoComponentName, MemoizedComponentName
+ * Skips root-level index files: src/main/index.tsx, App/index.tsx
+ */
+const folderExportMustMatch = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'Primary export must match folder name',
+    },
+    messages: {
+      mismatch:
+        'Folder "{{folderName}}" must export a matching symbol.\n\n' +
+        'Current exports: {{actualExports}}\n' +
+        'Expected one of: {{expectedNames}}\n\n' +
+        'The folder structure should clearly document what\'s inside.\n' +
+        'If this folder contains "{{folderName}}", the primary export should be:\n' +
+        '  - {{folderName}}\n' +
+        '  - Memo{{folderName}}\n' +
+        '  - Shared_{{folderName}} (if in Shared directory)\n\n' +
+        'If you\'re exporting something else, either:\n' +
+        '  1. Rename the folder to match the export\n' +
+        '  2. Move the export to a folder with the correct name',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+    const basename = path.basename(filename);
+
+    // Only apply to index files
+    if (basename !== 'index.tsx' && basename !== 'index.ts') {
+      return {};
+    }
+
+    // Skip node_modules and build output
+    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+      return {};
+    }
+
+    const folderName = path.basename(path.dirname(filename));
+
+    // Skip root-level index files (they can export anything)
+    const rootLevelFolders = ['src', 'main', 'App', 'components', 'utils'];
+    if (rootLevelFolders.includes(folderName)) {
+      return {};
+    }
+
+    // Skip types folders
+    if (folderName === 'types') {
+      return {};
+    }
+
+    return {
+      'Program:exit'(node) {
+        // Collect all exports
+        const exports = [];
+
+        for (const statement of node.body) {
+          // Named exports with declarations
+          if (
+            statement.type === 'ExportNamedDeclaration' &&
+            statement.declaration
+          ) {
+            // Function: export function Foo() { ... }
+            if (
+              statement.declaration.type === 'FunctionDeclaration' &&
+              statement.declaration.id
+            ) {
+              exports.push(statement.declaration.id.name);
+            }
+
+            // Variable: export const Foo = ...
+            if (statement.declaration.type === 'VariableDeclaration') {
+              for (const declarator of statement.declaration.declarations) {
+                if (declarator.id.type === 'Identifier') {
+                  exports.push(declarator.id.name);
+                }
+              }
+            }
+
+            // Skip Type/Interface exports - we only care about component exports
+            // Types don't need to match folder names
+          }
+        }
+
+        if (exports.length === 0) return;
+
+        // Build expected names
+        const expectedNames = [
+          folderName,
+          `Memo${folderName}`,
+          `Memoized${folderName}`,
+        ];
+
+        // If in Shared directory, also allow Shared_ prefix
+        if (isInSharedDir(filename)) {
+          expectedNames.push(`Shared_${folderName}`);
+          expectedNames.push(`MemoShared_${folderName}`);
+          expectedNames.push(`MemoizedShared_${folderName}`);
+        }
+
+        // Check if any export matches
+        const hasMatch = exports.some(exp =>
+          expectedNames.includes(exp)
+        );
+
+        if (!hasMatch) {
+          // Filter to only PascalCase exports for the error message
+          const pascalCaseExports = exports.filter(exp => /^[A-Z]/.test(exp));
+
+          context.report({
+            node,
+            messageId: 'mismatch',
+            data: {
+              folderName,
+              actualExports: pascalCaseExports.length > 0
+                ? pascalCaseExports.join(', ')
+                : '(none)',
+              expectedNames: expectedNames.slice(0, 3).join(', '),
+            },
+          });
+        }
+      },
+    };
+  },
+};
+
+// State management for ensuring fresh state on each ESLint run
+let lastRunTimestamp = 0;
+const RUN_TIMEOUT_MS = 1000; // If more than 1s between files, assume new run
+
+const ensureFreshState = () => {
+  const now = Date.now();
+  // If it's been more than 1s since last file, assume this is a new ESLint run
+  if (now - lastRunTimestamp > RUN_TIMEOUT_MS) {
+    graphManager.reset();
+  }
+  lastRunTimestamp = now;
+};
+
+// Processor to manage state lifecycle
+const cleanupProcessor = {
+  preprocess(text) {
+    // Reset state at start of each ESLint run (heuristic: gap > 1s between files)
+    ensureFreshState();
+    return [text];
+  },
+  postprocess(messages) {
+    return messages[0];
+  },
+  supportsAutofix: true,
+};
+
 // Export the plugin
 export default {
   meta: {
     name: 'eslint-plugin-architecture',
-    version: '1.0.0',
+    version: '2.0.0', // Bumped for new features
   },
   rules: {
+    // Existing rules
     'named-exports-only': namedExportsOnly,
     'no-reexports': noReexports,
     'import-from-index': importFromIndex,
     'shared-must-be-multi-imported': sharedMustBeMultiImported,
     'index-only-files': indexOnlyFiles,
     'import-from-sibling-directory-or-shared': importFromSiblingDirectoryOrShared,
+
+    // New rules
+    'no-circular-dependencies': noCircularDependencies,
+    'enforce-downwards-imports': enforceDownwardsImports,
+    'shared-exports-must-be-prefixed': sharedExportsMustBePrefixed,
+    'folder-export-must-match': folderExportMustMatch,
+  },
+  processors: {
+    // Add cleanup processor for TypeScript files
+    '.ts': cleanupProcessor,
+    '.tsx': cleanupProcessor,
   },
   configs: {
     recommended: {
       plugins: ['architecture'],
       rules: {
+        // Existing rules
         'architecture/named-exports-only': 'error',
         'architecture/no-reexports': 'error',
         'architecture/import-from-index': 'error',
         'architecture/shared-must-be-multi-imported': 'error',
         'architecture/index-only-files': 'error',
         'architecture/import-from-sibling-directory-or-shared': 'error',
+
+        // New rules
+        'architecture/no-circular-dependencies': 'error',
+        'architecture/enforce-downwards-imports': 'error',
+        'architecture/shared-exports-must-be-prefixed': 'error',
+        'architecture/folder-export-must-match': 'error',
       },
     },
   },

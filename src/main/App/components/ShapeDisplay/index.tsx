@@ -4,7 +4,7 @@ import { useMemo, useRef, useEffect, useState } from 'react';
 import type { Shape } from '../../types/core';
 import type { BlockTheme } from '../../types/theme';
 import { getShapeBounds } from '../../utils/shapes/shapeGeometry';
-import { BlockVisual } from '../../../Shared/BlockVisual';
+import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
 
 type ShapeDisplayProps = {
   shape: Shape;
@@ -108,7 +108,7 @@ const ShapeDisplay = ({
             key={`${rowIndex}-${colIndex}`}
             className="shape-display-tile"
           >
-            <BlockVisual isFilled={block.isFilled} color={block.color} size={cellSize} theme={theme} showIcon={showIcon} />
+            <Shared_BlockVisual isFilled={block.isFilled} color={block.color} size={cellSize} theme={theme} showIcon={showIcon} />
           </div>
         ))
       ))}

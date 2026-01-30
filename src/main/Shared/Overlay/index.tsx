@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import './Overlay.css';
 
-export interface OverlayProps {
+export interface Shared_OverlayProps {
   /** Content to render inside the overlay */
   children: React.ReactNode;
   /** Whether the overlay is open/visible */
@@ -38,7 +38,7 @@ export interface OverlayProps {
  * - Escape key handling
  * - Accessible dialog semantics
  */
-const Overlay: React.FC<OverlayProps> = ({
+const Overlay: React.FC<Shared_OverlayProps> = ({
   children,
   isOpen = true,
   onBackdropClick,
@@ -95,4 +95,4 @@ const Overlay: React.FC<OverlayProps> = ({
   return overlayContent;
 };
 
-export { Overlay };
+export { Overlay as Shared_Overlay };

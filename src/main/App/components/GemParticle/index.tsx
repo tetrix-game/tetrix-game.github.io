@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import { BlueGemIcon } from '../../../Shared/BlueGemIcon';
+import { Shared_BlueGemIcon } from '../../../Shared/BlueGemIcon';
 import './GemParticle.css';
 
 interface GemParticleProps {
@@ -142,7 +142,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
         '--particle-opacity': opacity,
       } as React.CSSProperties}
     >
-      <BlueGemIcon size={size} />
+      <Shared_BlueGemIcon size={size} />
     </div>
   );
 };

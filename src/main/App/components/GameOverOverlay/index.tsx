@@ -1,7 +1,7 @@
 import React from 'react';
 
 import './GameOverOverlay.css';
-import { Overlay } from '../../../Shared/Overlay';
+import { Shared_Overlay } from '../../../Shared/Overlay';
 import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 
 const GameOverOverlay: React.FC = () => {
@@ -17,7 +17,7 @@ const GameOverOverlay: React.FC = () => {
   };
 
   return (
-    <Overlay
+    <Shared_Overlay
       className="game-over-overlay"
       contentClassName="game-over-content"
       ariaLabel="Game Over"
@@ -29,7 +29,7 @@ const GameOverOverlay: React.FC = () => {
       <button className="new-game-button" onClick={handleRestart}>
         {gameMode === 'daily' ? 'Restart Challenge' : 'Back to Menu'}
       </button>
-    </Overlay>
+    </Shared_Overlay>
   );
 };
 

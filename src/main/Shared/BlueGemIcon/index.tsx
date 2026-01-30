@@ -88,4 +88,4 @@ const BlueGemIcon: React.FC<BlueGemIconProps> = ({ size, className = '' }) => {
   );
 };
 
-export { BlueGemIcon };
+export { BlueGemIcon as Shared_BlueGemIcon };

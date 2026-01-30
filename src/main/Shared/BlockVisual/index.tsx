@@ -2,8 +2,9 @@ import React from 'react';
 
 import type { ColorName } from '../../App/types/core';
 import type { BlockTheme } from '../../App/types/theme';
-import { ShapeIcon } from '../ShapeIcon';
-import { BlockSvg } from './BlockSvg';
+import { Shared_ShapeIcon } from '../ShapeIcon';
+
+import { Shared_BlockSvg } from './BlockSvg';
 import './BlockVisual.css';
 
 type BlockVisualProps = {
@@ -38,12 +39,12 @@ function BlockVisual({ isFilled, color, size, theme = 'gem', showIcon = true }: 
       {/* Only render SVG for gem and pixel themes */}
       {!isSimple && (
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-          <BlockSvg color={color} theme={theme} />
+          <Shared_BlockSvg color={color} theme={theme} />
         </div>
       )}
       {showIcon && (
         <div className="block-icon-container" style={{ position: 'relative', zIndex: 1 }}>
-          <ShapeIcon color={color} size={iconSize} opacity={1.0} useBorderLeftColor={true} />
+          <Shared_ShapeIcon color={color} size={iconSize} opacity={1.0} useBorderLeftColor={true} />
         </div>
       )}
     </div>
@@ -51,4 +52,4 @@ function BlockVisual({ isFilled, color, size, theme = 'gem', showIcon = true }: 
 }
 
 const MemoizedBlockVisual = React.memo(BlockVisual);
-export { MemoizedBlockVisual as BlockVisual };
+export { MemoizedBlockVisual as Shared_BlockVisual };

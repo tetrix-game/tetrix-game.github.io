@@ -5,7 +5,7 @@ interface TileSvgProps {
   className?: string;
 }
 
-export const TileSvg: React.FC<TileSvgProps> = ({ color = 'grey', className }) => {
+export const Shared_TileSvg: React.FC<TileSvgProps> = ({ color = 'grey', className }) => {
   // "20% opacity middle-gray color for both light and dark mode"
   // "darker purple for blast mode"
 

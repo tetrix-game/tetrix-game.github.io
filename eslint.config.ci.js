@@ -8,12 +8,15 @@ import importX from 'eslint-plugin-import-x';
 import architecture from 'eslint-plugin-architecture';
 
 /**
- * ESLint Configuration for Development
+ * ESLint Configuration for CI/Build
  *
- * This config uses lightweight rules suitable for IDE/watch mode:
- * - Uses import-x/no-cycle for circular dependency detection (fast, per-file)
- * - Excludes cross-file architecture rules (shared-must-be-multi-imported, LCA checks)
- * - For full architectural validation, run: npm run lint:ci
+ * This config includes the full architecture plugin with cross-file analysis rules.
+ * It should only be run during CI builds, not during development, because:
+ * - Cross-file rules require analyzing the entire codebase
+ * - Incremental linting (IDE save) won't give accurate results
+ * - Rules like LCA calculation need complete dependency graphs
+ *
+ * Usage: npm run lint:ci
  */
 export default tseslint.config(
   { ignores: ['dist', 'eslint-plugin-architecture', 'node_modules'] },
@@ -174,8 +177,6 @@ export default tseslint.config(
       'import-x/newline-after-import': ['error', { count: 1 }],
       'import-x/no-duplicates': 'error',
       'import-x/first': 'error',
-      // Circular dependency detection (fast, works per-file)
-      'import-x/no-cycle': ['error', { maxDepth: 10 }],
 
       // React specific
       'react-hooks/rules-of-hooks': 'error',
@@ -186,21 +187,17 @@ export default tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
 
-      // Architecture rules - SINGLE-FILE ONLY (dev mode)
-      // Cross-file rules are disabled in dev for performance
+      // Architecture rules - FULL ENFORCEMENT (CI only)
       'architecture/named-exports-only': 'error',
       'architecture/no-reexports': 'error',
       'architecture/import-from-index': 'error',
       'architecture/index-only-files': 'error',
+      'architecture/shared-must-be-multi-imported': 'error',
+      'architecture/import-from-sibling-directory-or-shared': 'error',
+      'architecture/no-circular-dependencies': 'error',
       'architecture/enforce-downwards-imports': 'error',
       'architecture/shared-exports-must-be-prefixed': 'error',
       'architecture/folder-export-must-match': 'error',
-
-      // DISABLED IN DEV (require cross-file analysis):
-      // - shared-must-be-multi-imported (needs to track all imports)
-      // - import-from-sibling-directory-or-shared (needs LCA calculation)
-      // - no-circular-dependencies (using import-x/no-cycle instead)
-      // Run 'npm run lint:ci' for full validation
     },
   },
   // Config files need default exports (Vite, ESLint, etc.)

@@ -1,8 +1,9 @@
 import React, { ReactNode } from 'react';
 
 import type { ColorName } from '../../App/types/core';
-import { ShapeIcon } from '../ShapeIcon';
-import { TileSvg } from './TileSvg';
+import { Shared_ShapeIcon } from '../ShapeIcon';
+
+import { Shared_TileSvg } from './TileSvg';
 import './Tile.css';
 
 interface TileProps {
@@ -48,12 +49,12 @@ const Tile: React.FC<TileProps> = ({
       {...rest}
     >
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
-        <TileSvg color={backgroundColor} />
+        <Shared_TileSvg color={backgroundColor} />
       </div>
 
       {hasCustomBackground && backgroundColor && (
         <div className="tile-icon-background">
-          <ShapeIcon color={backgroundColor} size={20} opacity={0.3} useBorderLeftColor={true} />
+          <Shared_ShapeIcon color={backgroundColor} size={20} opacity={0.3} useBorderLeftColor={true} />
         </div>
       )}
       {children}
@@ -62,4 +63,4 @@ const Tile: React.FC<TileProps> = ({
 };
 
 const MemoizedTile = React.memo(Tile);
-export { MemoizedTile as Tile };
+export { MemoizedTile as Shared_Tile };

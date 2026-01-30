@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite --host",
     "start": "vite --host",
-    "build": "tsc -b && vite build",
+    "build": "npm run lint:ci && tsc -b && vite build",
     "bump-version": "node bump-version.js",
-    "publish": "npm run bump-version && npm run generate-icons && npx vite build && gh-pages -d dist",
+    "publish": "npm run bump-version && npm run generate-icons && npm run build && gh-pages -d dist",
     "lint": "eslint .",
+    "lint:ci": "eslint . --config eslint.config.ci.js",
     "generate-icons": "node generate-icons.js",
     "preview": "vite preview",
     "test": "vitest run"

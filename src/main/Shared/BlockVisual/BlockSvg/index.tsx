@@ -125,4 +125,4 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
 };
 
 // Memoize to prevent re-renders when parent re-renders with same props
-export const BlockSvg = memo(BlockSvgInner);
+export const Shared_BlockSvg = memo(BlockSvgInner);

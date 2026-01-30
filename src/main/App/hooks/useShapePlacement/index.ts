@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { Shared_gridConstants } from '../../Shared/Shared_gridConstants';
 import { mousePositionToGridLocation } from '../../Shared/Shared_shapeGeometry';
 import { isValidPlacement } from '../../Shared/Shared_shapeValidation';
-import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
+import { useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider';
 import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
 import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 
@@ -12,7 +12,7 @@ const { GRID_SIZE } = Shared_gridConstants;
 export const useShapePlacement = (): void => {
   const { gameMode, dragState, tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
-  const { playSound } = Shared_useSoundEffects();
+  const { playSound } = useSoundEffects();
   const gridRef = useRef<HTMLElement | null>(null);
 
   // Global pointerup handler - consolidates all placement/return logic

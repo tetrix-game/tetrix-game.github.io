@@ -1,12 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
 
 import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../Shared_persistence';
 import { Shared_playSound } from '../Shared_playSound';
-
-import { Shared_SoundEffectsContext } from './Shared_SoundEffectsContext/';
-import type { Shared_SoundEffect, Shared_SoundEffectsContextValue } from './types/';
-
-type SoundEffect = Shared_SoundEffect;
 
 const {
   SOUND_VOLUME_MULTIPLIERS,
@@ -14,6 +9,41 @@ const {
   registerPlaySound,
   unregisterPlaySound,
 } = Shared_playSound;
+
+// Type definitions (exported with Shared_ prefix for external use)
+export type Shared_SoundEffect = | 'click_into_place'
+  | 'game_over'
+  | 'pickup_shape'
+  | 'invalid_placement'
+  | 'clear_combo_1'
+  | 'clear_combo_2'
+  | 'clear_combo_3'
+  | 'clear_combo_4'
+  | 'heartbeat';
+
+export interface Shared_SoundEffectsContextValue {
+  playSound: (soundEffect: Shared_SoundEffect, startTime?: number) => void;
+  setVolume: (volume: number) => void;
+  setEnabled: (enabled: boolean) => void;
+  volume: number;
+  isEnabled: boolean;
+}
+
+type SoundEffect = Shared_SoundEffect;
+
+// Context definition (internal)
+const SoundEffectsContext = createContext<
+  Shared_SoundEffectsContextValue | undefined
+>(undefined);
+
+// Hook (exported without Shared_ prefix - internal to module but exported for external use)
+export function useSoundEffects(): Shared_SoundEffectsContextValue {
+  const context = useContext(SoundEffectsContext);
+  if (!context) {
+    throw new Error('useSoundEffects must be used within a Shared_SoundEffectsProvider');
+  }
+  return context;
+}
 
 export const Shared_SoundEffectsProvider: React.FC<{
   children: React.ReactNode;
@@ -272,8 +302,8 @@ export const Shared_SoundEffectsProvider: React.FC<{
   };
 
   return (
-    <Shared_SoundEffectsContext.Provider value={value}>
+    <SoundEffectsContext.Provider value={value}>
       {children}
-    </Shared_SoundEffectsContext.Provider>
+    </SoundEffectsContext.Provider>
   );
 };

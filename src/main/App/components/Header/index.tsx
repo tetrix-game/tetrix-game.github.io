@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 
 import { Shared_SoundEffectsControlContext } from '../../Shared/Shared_SoundEffectsControlContext';
-import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
+import { useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider';
 import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { Shared_useMusicControl } from '../../Shared/Shared_useMusicControl';
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
@@ -12,7 +12,7 @@ import './Header.css';
 
 export const Header: React.FC = () => {
   // Use the main sound effects context
-  const { volume, setVolume, isEnabled, setEnabled } = Shared_useSoundEffects();
+  const { volume, setVolume, isEnabled, setEnabled } = useSoundEffects();
   // Get music control for the audio unlock indicator
   const { isWaitingForInteraction } = Shared_useMusicControl();
 

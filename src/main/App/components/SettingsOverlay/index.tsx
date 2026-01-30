@@ -12,7 +12,7 @@ import { APP_VERSION } from '../../../version';
 import { useGridEditor } from '../../contexts/GridEditorProvider';
 import { loadDebugSettings, saveDebugSettings } from '../../Shared/Shared_persistence';
 import { Shared_shapeGenerationWithProbabilities } from '../../Shared/Shared_shapeGenerationWithProbabilities';
-import { Shared_useSoundEffectsControl } from '../../Shared/Shared_SoundEffectsControlContext';
+import { useSoundEffectsControl } from '../../Shared/Shared_SoundEffectsControlContext';
 import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
 import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { Shared_useMusicControl } from '../../Shared/Shared_useMusicControl';
@@ -146,7 +146,7 @@ export const SettingsOverlay: React.FC = () => {
     setVolume: setSoundVolume,
     isEnabled: isSoundEnabled,
     toggleEnabled: toggleSoundEnabled,
-  } = Shared_useSoundEffectsControl();
+  } = useSoundEffectsControl();
   const state = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { openEditor: openGridEditor } = useGridEditor();

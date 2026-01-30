@@ -11,11 +11,11 @@ export const Shared_SoundEffectsControlContext = createContext<
   Shared_SoundEffectsControlContextType | null
 >(null);
 
-export const Shared_useSoundEffectsControl = (): Shared_SoundEffectsControlContextType => {
+export const useSoundEffectsControl = (): Shared_SoundEffectsControlContextType => {
   const context = useContext(Shared_SoundEffectsControlContext);
   if (!context) {
     throw new Error(
-      'Shared_useSoundEffectsControl must be used within a'
+      'useSoundEffectsControl must be used within a'
       + ' Shared_SoundEffectsControlContext.Provider',
     );
   }

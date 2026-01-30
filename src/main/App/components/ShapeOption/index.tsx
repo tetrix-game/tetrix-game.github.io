@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { Shared_animationConstants } from '../../Shared/Shared_animationConstants';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import type { Shape } from '../../types/core';
+import type { Shape } from '../../Shared/Shared_types';
 import { ShapeDisplay } from '../ShapeDisplay';
 
 const { ANIMATION_TIMING } = Shared_animationConstants;

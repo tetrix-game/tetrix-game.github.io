@@ -1,5 +1,5 @@
-import type { Shape, Location, TilesSet } from '../../types/core';
-import type { GameMode } from '../../types/gameState';
+import type { Shape, Location, TilesSet } from '../../Shared/Shared_types';
+import type { GameMode } from '../../Shared/Shared_types';
 import { Shared_gridConstants } from '../Shared_gridConstants';
 
 const { GRID_SIZE } = Shared_gridConstants;

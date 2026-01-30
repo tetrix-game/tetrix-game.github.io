@@ -15,7 +15,7 @@
  * - column-quad: Beating heart effect for quad column clears (4+ columns)
  */
 
-import type { TileAnimation, TilesSet } from '../../types/core';
+import type { TileAnimation, TilesSet } from '../../Shared/Shared_types';
 
 type ClearedLine = { index: number; color?: string };
 

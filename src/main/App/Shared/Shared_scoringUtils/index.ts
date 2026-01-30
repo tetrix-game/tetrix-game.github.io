@@ -1,4 +1,4 @@
-import type { ScoreData } from '../../types/scoring';
+import type { ScoreData } from '../../Shared/Shared_types';
 
 /**
  * Calculates score using exponential formula with 5x multiplier:

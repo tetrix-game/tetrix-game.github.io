@@ -1,5 +1,5 @@
-import type { Shape, ColorName } from '../../types/core';
-import { shapeQueue } from '../../types/shapeQueue';
+import type { Shape, ColorName } from '../../Shared/Shared_types';
+import { shapeQueue } from '../../Shared/Shared_types';
 import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
 
 type ColorProbability = shapeQueue['ColorProbability'];

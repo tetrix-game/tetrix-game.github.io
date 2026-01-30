@@ -1,5 +1,5 @@
-import type { Shape, TilesSet } from '../../types/core';
-import type { GameMode } from '../../types/gameState';
+import type { Shape, TilesSet } from '../../Shared/Shared_types';
+import type { GameMode } from '../../Shared/Shared_types';
 import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
 import { isValidPlacement } from '../Shared_shapeValidation';
 

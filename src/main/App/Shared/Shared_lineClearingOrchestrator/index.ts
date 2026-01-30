@@ -10,7 +10,7 @@
  * - Detecting full board clears
  */
 
-import type { Tile, TileAnimation, TilesSet } from '../../types/core';
+import type { Tile, TileAnimation, TilesSet } from '../../Shared/Shared_types';
 import { generateClearingAnimations, generateFullBoardClearAnimation, Shared_AnimationConfig } from '../Shared_clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../Shared_lineUtils';
 import { Shared_playSound } from '../Shared_playSound';

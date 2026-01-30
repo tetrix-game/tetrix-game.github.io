@@ -2,7 +2,7 @@
  * Theme definitions and utilities for visual theming
  */
 
-import type { ThemeName } from '../../types/theme';
+import type { ThemeName } from '../../Shared/Shared_types';
 
 /**
  * Theme color definitions

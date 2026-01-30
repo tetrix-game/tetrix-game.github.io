@@ -16,8 +16,8 @@ import { Shared_useSoundEffectsControl } from '../../Shared/Shared_SoundEffectsC
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { Shared_useMusicControl } from '../../Shared/Shared_useMusicControl';
-import type { ThemeName, BlockTheme } from '../../types/theme';
-import { theme } from '../../types/theme';
+import type { ThemeName, BlockTheme } from '../../Shared/Shared_types';
+import { theme } from '../../Shared/Shared_types';
 import { InstallButton } from '../InstallButton';
 import './SettingsOverlay.css';
 

@@ -1,4 +1,4 @@
-import type { Tile, TilesSet } from '../../types/core';
+import type { Tile, TilesSet } from '../../Shared/Shared_types';
 
 /**
  * Result of checking map completion

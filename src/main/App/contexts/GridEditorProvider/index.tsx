@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
 
-import type { ColorName } from '../../types/core';
+import type { ColorName } from '../../Shared/Shared_types';
 
 export type GridEditorTool = 'paint' | 'erase' | 'none';
 export type SectionType = 'rows' | 'columns' | 'brush' | null;

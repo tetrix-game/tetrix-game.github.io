@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { safeBatchSave, saveTheme, saveBlockTheme } from '../../Shared/Shared_persistence';
 import { Shared_persistenceAdapter } from '../../Shared/Shared_persistenceAdapter';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import { core } from '../../types/core';
+import { core } from '../../Shared/Shared_types';
 
 const { updateSettings, saveModifiers, clearGameBoard } = Shared_persistenceAdapter;
 const { tilesToArray } = core;

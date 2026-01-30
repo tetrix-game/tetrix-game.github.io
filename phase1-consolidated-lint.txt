@@ -1,0 +1,1091 @@
+
+> my-app@1.3.0 lint:ci
+> eslint . --config eslint.config.ci.js
+
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_SoundEffectsControlContext/index.ts
+  1:1  error  Shared module "Shared_SoundEffectsControlContext" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_SoundEffectsProvider/Shared_SoundEffectsContext/index.ts
+  1:1  error  Shared module "Shared_SoundEffectsContext" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects/index.ts
+  1:1  error  Shared module "Shared_useSoundEffects" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                   architecture/shared-must-be-multi-imported
+  3:1  error  Module "../Shared_SoundEffectsContext" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_SoundEffectsContext" (current: "../Shared_SoundEffectsContext")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_SoundEffectsProvider/index.tsx
+  1:1  error  Shared module "Shared_SoundEffectsProvider" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                   architecture/shared-must-be-multi-imported
+  3:1  error  Module "../Shared_persistence" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_persistence" (current: "../Shared_persistence")                                                                                                                                                               architecture/import-from-sibling-directory-or-shared
+  4:1  error  Module "../Shared_playSound" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_playSound" (current: "../Shared_playSound")                                                                                                                                                                     architecture/import-from-sibling-directory-or-shared
+  6:1  error  Module "./Shared_SoundEffectsContext/" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared/Shared_SoundEffectsProvider
+Expected: /src/main/App/Shared/Shared_SoundEffectsProvider/Shared/Shared_SoundEffectsProvider
+
+Shared directory should be at: /src/main/App/Shared/Shared_SoundEffectsProvider/Shared/
+Move the module to the LCA-level Shared directory  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext/Shared_TetrixDispatchContext/index.ts
+  1:1  error  Shared module "Shared_TetrixDispatchContext" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext/index.ts
+  1:1  error  Shared module "Shared_useTetrixDispatchContext" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                       architecture/shared-must-be-multi-imported
+  5:1  error  Import "./Shared_TetrixDispatchContext" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext/Shared_TetrixDispatchContext
+Actual: /src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixStateContext/Shared_TetrixStateContext/index.ts
+  1:1  error  Shared module "Shared_TetrixStateContext" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixStateContext/index.ts
+  1:1  error  Shared module "Shared_useTetrixStateContext" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                            architecture/shared-must-be-multi-imported
+  5:1  error  Module "./Shared_TetrixStateContext" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixStateContext
+Expected: /src/main/App/Shared/Shared_TetrixProvider/Shared/Shared_useTetrixStateContext
+
+Shared directory should be at: /src/main/App/Shared/Shared_TetrixProvider/Shared/
+Move the module to the LCA-level Shared directory  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_TetrixProvider/index.tsx
+   1:1  error  Shared module "Shared_TetrixProvider" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                             architecture/shared-must-be-multi-imported
+   9:1  error  Module "../Shared_persistenceAdapter" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_persistenceAdapter" (current: "../Shared_persistenceAdapter")                                                                                                                                                                                              architecture/import-from-sibling-directory-or-shared
+  10:1  error  Module "../Shared_reducers" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_reducers" (current: "../Shared_reducers")                                                                                                                                                                                                                            architecture/import-from-sibling-directory-or-shared
+  12:1  error  Module "./Shared_useTetrixDispatchContext/Shared_TetrixDispatchContext/" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext
+Expected: /src/main/App/Shared/Shared_TetrixProvider/Shared/Shared_useTetrixDispatchContext
+
+Shared directory should be at: /src/main/App/Shared/Shared_TetrixProvider/Shared/
+Move the module to the LCA-level Shared directory  architecture/import-from-sibling-directory-or-shared
+  13:1  error  Module "./Shared_useTetrixStateContext/Shared_TetrixStateContext/" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./" (current: "./Shared_useTetrixStateContext/Shared_TetrixStateContext/")                                                                                                                                                             architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_animationConstants/index.ts
+  8:1  error  Shared module "Shared_animationConstants" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_checksumUtils/index.ts
+  1:1  error  Shared module "generateChecksumManifest" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_clearingAnimationUtils/index.ts
+  18:1  error  Shared module "generateClearingAnimations" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_colorUtils/index.ts
+  5:1  error  Shared module "Shared_colorUtils" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_dailyChallengeSolver/index.ts
+  1:1  error  Shared module "solveDailyChallenge" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                          architecture/shared-must-be-multi-imported
+  2:1  error  Module "../Shared_shapeGeneration" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_shapeGeneration" (current: "../Shared_shapeGeneration")  architecture/import-from-sibling-directory-or-shared
+  3:1  error  Module "../Shared_shapeGeometry" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_shapeGeometry" (current: "../Shared_shapeGeometry")        architecture/import-from-sibling-directory-or-shared
+  4:1  error  Module "../Shared_shapeTransforms" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_shapeTransforms" (current: "../Shared_shapeTransforms")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_gameOverUtils/index.ts
+  1:1   error  Shared module "checkGameOver" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                architecture/shared-must-be-multi-imported
+  1:38  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                                                              import-x/no-duplicates
+  2:31  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                                                              import-x/no-duplicates
+  4:1   error  Module "../Shared_shapeValidation" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_shapeValidation" (current: "../Shared_shapeValidation")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_gridConstants/index.ts
+  10:1   error  Shared module "Shared_gridConstants" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  10:15  error  'Tile' is defined but never used                                                                                                                                                                               @typescript-eslint/no-unused-vars
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_gridShapes/index.ts
+  14:1  error  Shared module "Shared_gridShapes" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_indexedDBCrud/index.ts
+  13:1  error  Shared module "Shared_indexedDBCrud" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_lineClearingOrchestrator/index.ts
+  13:1   error  Shared module "performLineClearing" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                               architecture/shared-must-be-multi-imported
+  13:15  error  'Tile' is defined but never used                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  13:21  error  'TileAnimation' is defined but never used                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  14:1   error  Module "../Shared_clearingAnimationUtils" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_clearingAnimationUtils" (current: "../Shared_clearingAnimationUtils")  architecture/import-from-sibling-directory-or-shared
+  15:1   error  Module "../Shared_lineUtils" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_lineUtils" (current: "../Shared_lineUtils")                                         architecture/import-from-sibling-directory-or-shared
+  17:1   error  Module "../Shared_scoringUtils" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_scoringUtils" (current: "../Shared_scoringUtils")                                architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_lineUtils/index.ts
+  1:1  error  Shared module "isRowFull" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_mapCompletionUtils/index.ts
+  1:1   error  Shared module "checkMapCompletion" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  1:15  error  'Tile' is defined but never used                                                                                                                                                                             @typescript-eslint/no-unused-vars
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_persistence/index.ts
+  7:1   error  Shared module "saveGameState" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  7:22  error  'Tile' is defined but never used                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  7:44  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                                import-x/no-duplicates
+  8:70  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                                import-x/no-duplicates
+  9:43  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                                import-x/no-duplicates
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_persistenceAdapter/index.ts
+   8:1  error  Upwards import detected: "../../config/version"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+   8:1  error  Module "../../config/version" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./version" (current: "../../config/version")                                                                                                                                                                                                                                                                          architecture/import-from-sibling-directory-or-shared
+  15:1  error  Module "../Shared_checksumUtils" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_checksumUtils" (current: "../Shared_checksumUtils")                                                                                                                                                                                                                                                       architecture/import-from-sibling-directory-or-shared
+  16:1  error  Module "../Shared_indexedDBCrud" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_indexedDBCrud" (current: "../Shared_indexedDBCrud")                                                                                                                                                                                                                                                       architecture/import-from-sibling-directory-or-shared
+  17:1  error  Module "../Shared_indexedDBCrud" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_indexedDBCrud" (current: "../Shared_indexedDBCrud")                                                                                                                                                                                                                                                       architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_reducers/dragReducer/index.ts
+  7:1  error  Shared module "dragReducer" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                            architecture/shared-must-be-multi-imported
+  8:1  error  Upwards import detected: "../../Shared_animationConstants"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  8:1  error  Module "../../Shared_animationConstants" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_animationConstants" (current: "../../Shared_animationConstants")                                                                                                                                                                                                                                             architecture/import-from-sibling-directory-or-shared
+  9:1  error  Upwards import detected: "../../Shared_shapeGeometry"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy       architecture/enforce-downwards-imports
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_reducers/gameStateReducer/index.ts
+    8:1   error  Shared module "gameStateReducer" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                       architecture/shared-must-be-multi-imported
+   11:10  error  'stats' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   12:1   error  Upwards import detected: "../../Shared_gameOverUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy       architecture/enforce-downwards-imports
+   12:1   error  Module "../../Shared_gameOverUtils" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_gameOverUtils" (current: "../../Shared_gameOverUtils")                                                                                                                                                                                                                                                            architecture/import-from-sibling-directory-or-shared
+   13:1   error  Upwards import detected: "../../Shared_gridConstants"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy       architecture/enforce-downwards-imports
+   13:1   error  Module "../../Shared_gridConstants" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_gridConstants" (current: "../../Shared_gridConstants")                                                                                                                                                                                                                                                            architecture/import-from-sibling-directory-or-shared
+   14:1   error  Upwards import detected: "../../Shared_mapCompletionUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+   14:1   error  Module "../../Shared_mapCompletionUtils" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_mapCompletionUtils" (current: "../../Shared_mapCompletionUtils")                                                                                                                                                                                                                                             architecture/import-from-sibling-directory-or-shared
+   15:1   error  Upwards import detected: "../../Shared_statsUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy          architecture/enforce-downwards-imports
+   15:1   error  Module "../../Shared_statsUtils" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_statsUtils" (current: "../../Shared_statsUtils")                                                                                                                                                                                                                                                                     architecture/import-from-sibling-directory-or-shared
+  824:10  error  Export "initialGameState" is separate from its declaration.
+
+Exports must be inline with declarations:
+  ✅ export const initialGameState = ...
+  ✅ export function initialGameState() { ... }
+  ❌ const initialGameState = ...; export { initialGameState }
+  ❌ export { SomethingElse as initialGameState }
+
+This ensures declarations and exports are always together,
+making the code easier to understand and maintain                                                                      architecture/no-separate-export-declarations
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_reducers/index.ts
+  12:1  error  Shared module "initialState" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                      architecture/shared-must-be-multi-imported
+  14:1  error  Import "./dragReducer" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/Shared/Shared_reducers/dragReducer
+Actual: /src/main/App/Shared/Shared_reducers
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path            architecture/import-from-sibling-directory-or-shared
+  15:1  error  Import "./gameStateReducer" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/Shared/Shared_reducers/gameStateReducer
+Actual: /src/main/App/Shared/Shared_reducers
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path  architecture/import-from-sibling-directory-or-shared
+  16:1  error  Import "./scoringReducer" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/Shared/Shared_reducers/scoringReducer
+Actual: /src/main/App/Shared/Shared_reducers
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path      architecture/import-from-sibling-directory-or-shared
+  17:1  error  Import "./shapeReducer" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/Shared/Shared_reducers/shapeReducer
+Actual: /src/main/App/Shared/Shared_reducers
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path          architecture/import-from-sibling-directory-or-shared
+  18:1  error  Import "./tileReducer" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/Shared/Shared_reducers/tileReducer
+Actual: /src/main/App/Shared/Shared_reducers
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path            architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_reducers/scoringReducer/index.ts
+  6:1  error  Shared module "scoringReducer" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                  architecture/shared-must-be-multi-imported
+  7:1  error  Upwards import detected: "../../Shared_persistence"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_reducers/shapeReducer/index.ts
+   7:1  error  Shared module "shapeReducer" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                        architecture/shared-must-be-multi-imported
+   9:1  error  Upwards import detected: "../../Shared_persistence"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy      architecture/enforce-downwards-imports
+  10:1  error  Upwards import detected: "../../Shared_shapeGeneration"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  11:1  error  Upwards import detected: "../../Shared_shapeTransforms"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  12:1  error  Upwards import detected: "../../Shared_statsUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy       architecture/enforce-downwards-imports
+  12:1  error  Module "../../Shared_statsUtils" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared
+Expected: /src/main/App/Shared/Shared_reducers/Shared/Shared
+
+Shared directory should be at: /src/main/App/Shared/Shared_reducers/Shared/
+Move the module to the LCA-level Shared directory                                                                                                                                                                                       architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_reducers/tileReducer/index.ts
+   6:1  error  Shared module "tileReducer" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                                          architecture/shared-must-be-multi-imported
+   9:1  error  Upwards import detected: "../../Shared_clearingAnimationUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy            architecture/enforce-downwards-imports
+  10:1  error  Upwards import detected: "../../Shared_gameOverUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                     architecture/enforce-downwards-imports
+  10:1  error  Module "../../Shared_gameOverUtils" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared
+Expected: /src/main/App/Shared/Shared_reducers/Shared/Shared
+
+Shared directory should be at: /src/main/App/Shared/Shared_reducers/Shared/
+Move the module to the LCA-level Shared directory                                                                                                                                                                                                     architecture/import-from-sibling-directory-or-shared
+  11:1  error  Upwards import detected: "../../Shared_gridConstants"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                     architecture/enforce-downwards-imports
+  11:1  error  Module "../../Shared_gridConstants" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared
+Expected: /src/main/App/Shared/Shared_reducers/Shared/Shared
+
+Shared directory should be at: /src/main/App/Shared/Shared_reducers/Shared/
+Move the module to the LCA-level Shared directory                                                                                                                                                                                                     architecture/import-from-sibling-directory-or-shared
+  12:1  error  Upwards import detected: "../../Shared_lineClearingOrchestrator"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy          architecture/enforce-downwards-imports
+  12:1  error  Module "../../Shared_lineClearingOrchestrator" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_lineClearingOrchestrator" (current: "../../Shared_lineClearingOrchestrator")                                                                                                                                                                                                                                         architecture/import-from-sibling-directory-or-shared
+  13:1  error  Upwards import detected: "../../Shared_mapCompletionUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                architecture/enforce-downwards-imports
+  13:1  error  Module "../../Shared_mapCompletionUtils" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared
+Expected: /src/main/App/Shared/Shared_reducers/Shared/Shared
+
+Shared directory should be at: /src/main/App/Shared/Shared_reducers/Shared/
+Move the module to the LCA-level Shared directory                                                                                                                                                                                                architecture/import-from-sibling-directory-or-shared
+  14:1  error  Upwards import detected: "../../Shared_shapeGeneration"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                   architecture/enforce-downwards-imports
+  15:1  error  Upwards import detected: "../../Shared_shapeGenerationWithProbabilities"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  15:1  error  Module "../../Shared_shapeGenerationWithProbabilities" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_shapeGenerationWithProbabilities" (current: "../../Shared_shapeGenerationWithProbabilities")                                                                                                                                                                                                                 architecture/import-from-sibling-directory-or-shared
+  16:1  error  Upwards import detected: "../../Shared_shapeGeometry"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                     architecture/enforce-downwards-imports
+  17:1  error  Upwards import detected: "../../Shared_shapePatterns"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                     architecture/enforce-downwards-imports
+  17:1  error  Module "../../Shared_shapePatterns" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Shared_shapePatterns" (current: "../../Shared_shapePatterns")                                                                                                                                                                                                                                                                          architecture/import-from-sibling-directory-or-shared
+  18:1  error  Upwards import detected: "../../Shared_statsUtils"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                        architecture/enforce-downwards-imports
+  18:1  error  Module "../../Shared_statsUtils" is in Shared but not at correct LCA level.
+
+Current: /src/main/App/Shared
+Expected: /src/main/App/Shared/Shared_reducers/Shared/Shared
+
+Shared directory should be at: /src/main/App/Shared/Shared_reducers/Shared/
+Move the module to the LCA-level Shared directory                                                                                                                                                                                                        architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_scoringUtils/index.ts
+  1:1  error  Shared module "calculateScore" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_shapeGeneration/index.ts
+  1:1  error  Shared module "generateIPiece" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_shapeGenerationWithProbabilities/index.ts
+  1:1  error  Shared module "generateRandomShapeWithProbabilities" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_shapeGeometry/index.ts
+  1:1  error  Shared module "getShapeBounds" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_shapePatterns/index.ts
+  1:1  error  Shared module "detectSuperComboPattern" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_shapeTransforms/index.ts
+  1:1  error  Shared module "rotateShape" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_shapeValidation/index.ts
+    1:48  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                                                                                                                                                                                                                                                    import-x/no-duplicates
+    2:31  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                                                                                                                                                                                                                                                    import-x/no-duplicates
+  217:10  error  Export "makeTileKey" is separate from its declaration.
+
+Exports must be inline with declarations:
+  ✅ export const makeTileKey = ...
+  ✅ export function makeTileKey() { ... }
+  ❌ const makeTileKey = ...; export { makeTileKey }
+  ❌ export { SomethingElse as makeTileKey }
+
+This ensures declarations and exports are always together,
+making the code easier to understand and maintain                                architecture/no-separate-export-declarations
+  217:23  error  Export "canPlaceShape" is separate from its declaration.
+
+Exports must be inline with declarations:
+  ✅ export const canPlaceShape = ...
+  ✅ export function canPlaceShape() { ... }
+  ❌ const canPlaceShape = ...; export { canPlaceShape }
+  ❌ export { SomethingElse as canPlaceShape }
+
+This ensures declarations and exports are always together,
+making the code easier to understand and maintain                    architecture/no-separate-export-declarations
+  217:38  error  Export "isValidPlacement" is separate from its declaration.
+
+Exports must be inline with declarations:
+  ✅ export const isValidPlacement = ...
+  ✅ export function isValidPlacement() { ... }
+  ❌ const isValidPlacement = ...; export { isValidPlacement }
+  ❌ export { SomethingElse as isValidPlacement }
+
+This ensures declarations and exports are always together,
+making the code easier to understand and maintain  architecture/no-separate-export-declarations
+  217:56  error  Export "getInvalidBlocks" is separate from its declaration.
+
+Exports must be inline with declarations:
+  ✅ export const getInvalidBlocks = ...
+  ✅ export function getInvalidBlocks() { ... }
+  ❌ const getInvalidBlocks = ...; export { getInvalidBlocks }
+  ❌ export { SomethingElse as getInvalidBlocks }
+
+This ensures declarations and exports are always together,
+making the code easier to understand and maintain  architecture/no-separate-export-declarations
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_statsUtils/index.ts
+  2:32  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times  import-x/no-duplicates
+  3:57  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times  import-x/no-duplicates
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_themeUtils/index.ts
+  5:1  error  Shared module "Shared_themeUtils" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts
+  756:2  error  Parsing error: Expression expected
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_useGameSizing/index.ts
+  1:1  error  Shared module "Shared_useGameSizing" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_useMusicControl/index.ts
+  1:1  error  Shared module "Shared_useMusicControl" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                                           architecture/shared-must-be-multi-imported
+  3:1  error  Upwards import detected: "../../Shared_MusicControlProvider/MusicControlContext"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy      architecture/enforce-downwards-imports
+  3:1  error  Module "../../Shared_MusicControlProvider/MusicControlContext" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./MusicControlContext" (current: "../../Shared_MusicControlProvider/MusicControlContext")                                                                                                                                                                                                                                 architecture/import-from-sibling-directory-or-shared
+  4:1  error  Upwards import detected: "../../Shared_MusicControlProvider/MusicControlContextType"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  4:1  error  Module "../../Shared_MusicControlProvider/MusicControlContextType" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./MusicControlContextType" (current: "../../Shared_MusicControlProvider/MusicControlContextType")                                                                                                                                                                                                                     architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared_MusicControlProvider/MusicControlContext/index.ts
+  3:1  error  Module "../MusicControlContextType" is imported from 2 locations but NOT in a Shared directory.
+
+Current: /src/main/App/Shared_MusicControlProvider
+Expected: /src/main/App/Shared/Shared_Shared_MusicControlProvider
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/Shared/Shared_Shared_MusicControlProvider  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared_MusicControlProvider/index.tsx
+  1:1  error  Shared module "Shared_MusicControlProvider" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                         architecture/shared-must-be-multi-imported
+  5:1  error  Module "./MusicControlContext" is imported from 2 locations but NOT in a Shared directory.
+
+Current: /src/main/App/Shared_MusicControlProvider
+Expected: /src/main/App/Shared/Shared_Shared_MusicControlProvider
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/Shared/Shared_Shared_MusicControlProvider  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/AudioUnlockIndicator/index.tsx
+  1:1  error  Shared module "AudioUnlockIndicator" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/BackgroundMusic/index.tsx
+  1:1  error  Shared module "BackgroundMusic" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/DraggingShape/index.tsx
+  1:1  error  Shared module "DraggingShape" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/FullScreenButton/index.tsx
+  1:1  error  Shared module "FullScreenButton" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                      architecture/shared-must-be-multi-imported
+  4:1  error  Upwards import detected: "../Pointer/CallToActionPointer"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  4:1  error  Module "../Pointer/CallToActionPointer" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./CallToActionPointer" (current: "../Pointer/CallToActionPointer")                                                                                                                                                                                                                                                    architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GameControlsPanel/index.tsx
+  1:1  error  Shared module "GameControlsPanel" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                architecture/shared-must-be-multi-imported
+  5:1  error  Module "../PurchasesContainer" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./PurchasesContainer" (current: "../PurchasesContainer")  architecture/import-from-sibling-directory-or-shared
+  6:1  error  Module "../ShapeQueue" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ShapeQueue" (current: "../ShapeQueue")                          architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GameOverOverlay/index.tsx
+  1:1  error  Shared module "GameOverOverlay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GemParticle/index.tsx
+  1:1  error  Shared module "GemParticle" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GemShower/index.tsx
+  1:1  error  Shared module "GemShower" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used   architecture/shared-must-be-multi-imported
+  4:1  error  Module "../GemParticle" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./GemParticle" (current: "../GemParticle")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/Grid/index.tsx
+  1:1  error  Shared module "Grid" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                                        architecture/shared-must-be-multi-imported
+  4:1  error  Upwards import detected: "../../components/TetrixTile"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy           architecture/enforce-downwards-imports
+  4:1  error  Module "../../components/TetrixTile" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./TetrixTile" (current: "../../components/TetrixTile")                                                                                                                                                                                                                                                                         architecture/import-from-sibling-directory-or-shared
+  5:1  error  Upwards import detected: "../../hooks/useDebugGridInteractions"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  5:1  error  Module "../../hooks/useDebugGridInteractions" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./useDebugGridInteractions" (current: "../../hooks/useDebugGridInteractions")                                                                                                                                                                                                                                         architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GridEditor/ColorBrushSubmenu/index.tsx
+  1:1  error  Shared module "ColorBrushSubmenu" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GridEditor/EditorGrid/index.tsx
+  1:1  error  Shared module "EditorGrid" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                                  architecture/shared-must-be-multi-imported
+  3:1  error  Upwards import detected: "../../../contexts/GridEditorProvider"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  3:1  error  Module "../../../contexts/GridEditorProvider" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./GridEditorProvider" (current: "../../../contexts/GridEditorProvider")                                                                                                                                                                                                                                               architecture/import-from-sibling-directory-or-shared
+  4:1  error  Module "../EditorGridTile" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./EditorGridTile" (current: "../EditorGridTile")                                                                                                                                                                                                                                                                                         architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GridEditor/EditorGridTile/index.tsx
+  1:1  error  Shared module "EditorGridTile" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GridEditor/NumberInputSubmenu/index.tsx
+  1:1  error  Shared module "NumberInputSubmenu" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/GridEditor/index.tsx
+  1:1  error  Shared module "GridEditor" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                               architecture/shared-must-be-multi-imported
+  3:1  error  Upwards import detected: "../../contexts/GridEditorProvider"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  3:1  error  Module "../../contexts/GridEditorProvider" is imported from 2 locations but NOT in a Shared directory.
+
+Current: /src/main/App/contexts
+Expected: /src/main/App/components/GridEditor/Shared/Shared_contexts
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/components/GridEditor/Shared/Shared_contexts                                                                                                                                                        architecture/import-from-sibling-directory-or-shared
+  5:1  error  Module "../ScrollableMenu" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ScrollableMenu" (current: "../ScrollableMenu")                                                                                                                                                                                                                                                                                      architecture/import-from-sibling-directory-or-shared
+  7:1  error  Import "./ColorBrushSubmenu" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/components/GridEditor/ColorBrushSubmenu
+Actual: /src/main/App/components/GridEditor
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path                                                                                                                                                         architecture/import-from-sibling-directory-or-shared
+  8:1  error  Import "./EditorGrid" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/components/GridEditor/EditorGrid
+Actual: /src/main/App/components/GridEditor
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path                                                                                                                                                                       architecture/import-from-sibling-directory-or-shared
+  9:1  error  Import "./NumberInputSubmenu" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/components/GridEditor/NumberInputSubmenu
+Actual: /src/main/App/components/GridEditor
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path                                                                                                                                                       architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/Header/index.tsx
+   1:1  error  Shared module "Header" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                 architecture/shared-must-be-multi-imported
+   7:1  error  Module "../AudioUnlockIndicator" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./AudioUnlockIndicator" (current: "../AudioUnlockIndicator")  architecture/import-from-sibling-directory-or-shared
+   8:1  error  Module "../BackgroundMusic" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./BackgroundMusic" (current: "../BackgroundMusic")                 architecture/import-from-sibling-directory-or-shared
+   9:1  error  Module "../ScoreDisplay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ScoreDisplay" (current: "../ScoreDisplay")                          architecture/import-from-sibling-directory-or-shared
+  10:1  error  Module "../SettingsOverlay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./SettingsOverlay" (current: "../SettingsOverlay")                 architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/InstallButton/index.tsx
+  1:1  error  Shared module "InstallButton" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/MapCompletionOverlay/index.tsx
+   1:1   error  Shared module "MapCompletionOverlay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+   7:1   error  Module "../Grid" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Grid" (current: "../Grid")                                 architecture/import-from-sibling-directory-or-shared
+  58:14  error  Do not nest ternary expressions                                                                                                                                                                                no-nested-ternary
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/PersistenceListener/index.tsx
+  1:1  error  Shared module "PersistenceListener" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/Pointer/CallToActionPointer/index.tsx
+  1:1  error  Shared module "CallToActionPointer" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  3:1  error  Module ".." is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./.." (current: "..")                                            architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/Pointer/ErrorPointer/index.tsx
+  1:1  error  Shared module "ErrorPointer" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                        architecture/shared-must-be-multi-imported
+  3:1  error  Module ".." is imported from 2 locations but NOT in a Shared directory.
+
+Current: /src/main/App/components
+Expected: /src/main/App/components/Pointer/Shared/Shared_components
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/components/Pointer/Shared/Shared_components  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/Pointer/index.tsx
+  1:1  error  Shared module "Pointer" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/PurchasableSlotOption/index.tsx
+  1:1  error  Shared module "PurchasableSlotOption" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/PurchasesContainer/index.tsx
+  1:1  error  Shared module "PurchasesContainer" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/QueueIndicator/index.tsx
+  1:1  error  Shared module "QueueIndicator" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/QueueOverlay/index.tsx
+  1:1  error  Shared module "QueueOverlay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used   architecture/shared-must-be-multi-imported
+  6:1  error  Module "../ShapeDisplay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ShapeDisplay" (current: "../ShapeDisplay")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ScoreDisplay/index.tsx
+   1:1  error  Shared module "ScoreDisplay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                      architecture/shared-must-be-multi-imported
+   4:1  error  Upwards import detected: "../../hooks/useVisualError"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+   4:1  error  Module "../../hooks/useVisualError" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./useVisualError" (current: "../../hooks/useVisualError")                                                                                                                                                                                                                                                             architecture/import-from-sibling-directory-or-shared
+   8:1  error  Upwards import detected: "../Pointer/ErrorPointer"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy     architecture/enforce-downwards-imports
+   8:1  error  Module "../Pointer/ErrorPointer" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ErrorPointer" (current: "../Pointer/ErrorPointer")                                                                                                                                                                                                                                                                     architecture/import-from-sibling-directory-or-shared
+   9:1  error  Module "../StatsOverlay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./StatsOverlay" (current: "../StatsOverlay")                                                                                                                                                                                                                                                                                     architecture/import-from-sibling-directory-or-shared
+  10:1  error  Upwards import detected: "../../styles/feedback.css"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy   architecture/enforce-downwards-imports
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ScrollableMenu/MenuSection/index.tsx
+  1:1  error  Shared module "MenuSection" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ScrollableMenu/index.tsx
+  1:1  error  Shared module "ScrollableMenu" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                architecture/shared-must-be-multi-imported
+  4:1  error  Import "./MenuSection" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/components/ScrollableMenu/MenuSection
+Actual: /src/main/App/components/ScrollableMenu
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/SettingsOverlay/index.tsx
+   1:1  error  Shared module "SettingsOverlay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                                                                                                                                                                                          architecture/shared-must-be-multi-imported
+  11:1  error  Upwards import detected: "../../../version"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy                   architecture/enforce-downwards-imports
+  11:1  error  Module "../../../version" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./version" (current: "../../../version")                                                                                                                                                                                                                                                                                               architecture/import-from-sibling-directory-or-shared
+  12:1  error  Upwards import detected: "../../contexts/GridEditorProvider"
+
+Components should only import from:
+  ✅ Direct subdirectories: ./SubComponent
+  ✅ Shared directory: ../../Shared/Component
+  ✅ Types at same level: ./types
+  ❌ Parent directories: ../ParentComponent
+
+Upwards imports create tight coupling and make code harder to understand.
+Consider:
+  1. Moving the imported code to a Shared location
+  2. Passing data/behavior through props
+  3. Restructuring the component hierarchy  architecture/enforce-downwards-imports
+  12:1  error  Module "../../contexts/GridEditorProvider" is imported from 3 locations but NOT in a Shared directory.
+
+Current: /src/main/App/contexts
+Expected: /src/main/App/components/Shared/Shared_contexts
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/components/Shared/Shared_contexts                                                                                                                                                                              architecture/import-from-sibling-directory-or-shared
+  18:1  error  `../../Shared/Shared_useMusicControl` import should occur after import of `../../Shared/Shared_types`                                                                                                                                                                                                                                                                                                                                                                                             import-x/order
+  21:1  error  Module "../InstallButton" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./InstallButton" (current: "../InstallButton")                                                                                                                                                                                                                                                                                         architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ShapeDisplay/index.tsx
+  1:1   error  Shared module "ShapeDisplay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  6:28  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                               import-x/no-duplicates
+  7:33  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                               import-x/no-duplicates
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ShapeOption/index.tsx
+  1:1  error  Shared module "ShapeOption" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                      architecture/shared-must-be-multi-imported
+  8:1  error  Module "../ShapeDisplay" is imported from 2 locations but NOT in a Shared directory.
+
+Current: /src/main/App/components
+Expected: /src/main/App/components/Shared/Shared_components
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/components/Shared/Shared_components  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ShapeProducerViewport/index.tsx
+  1:1  error  Shared module "ShapeProducerViewport" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ShapeQueue/index.tsx
+  1:1  error  Shared module "ShapeQueue" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used           architecture/shared-must-be-multi-imported
+  4:1  error  Module "../QueueIndicator" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./QueueIndicator" (current: "../QueueIndicator")  architecture/import-from-sibling-directory-or-shared
+  5:1  error  Module "../QueueOverlay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./QueueOverlay" (current: "../QueueOverlay")        architecture/import-from-sibling-directory-or-shared
+  6:1  error  Module "../ShapeSelector" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ShapeSelector" (current: "../ShapeSelector")     architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ShapeSelector/index.tsx
+   1:1  error  Shared module "ShapeSelector" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                             architecture/shared-must-be-multi-imported
+   8:1  error  Module "../PurchasableSlotOption" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./PurchasableSlotOption" (current: "../PurchasableSlotOption")  architecture/import-from-sibling-directory-or-shared
+   9:1  error  Module "../ShapeOption" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ShapeOption" (current: "../ShapeOption")                                architecture/import-from-sibling-directory-or-shared
+  10:1  error  Module "../ShapeProducerViewport" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ShapeProducerViewport" (current: "../ShapeProducerViewport")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/StatsOverlay/index.tsx
+  1:1   error  Shared module "StatsOverlay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  6:32  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                               import-x/no-duplicates
+  7:35  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                               import-x/no-duplicates
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/Tetrix/index.tsx
+  1:1  error  Shared module "Tetrix" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                   architecture/shared-must-be-multi-imported
+  3:1  error  Module "../GameControlsPanel" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./GameControlsPanel" (current: "../GameControlsPanel")                                                                             architecture/import-from-sibling-directory-or-shared
+  4:1  error  Module "../GameOverOverlay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./GameOverOverlay" (current: "../GameOverOverlay")                                                                                   architecture/import-from-sibling-directory-or-shared
+  5:1  error  Module "../GemShower" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./GemShower" (current: "../GemShower")                                                                                                     architecture/import-from-sibling-directory-or-shared
+  6:1  error  Module "../Grid" is imported from 2 locations but NOT in a Shared directory.
+
+Current: /src/main/App/components
+Expected: /src/main/App/components/Shared/Shared_components
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/components/Shared/Shared_components  architecture/import-from-sibling-directory-or-shared
+  7:1  error  Module "../MapCompletionOverlay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./MapCompletionOverlay" (current: "../MapCompletionOverlay")                                                                    architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/TetrixTile/index.tsx
+  1:1   error  Shared module "TetrixTile" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  5:47  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                             import-x/no-duplicates
+  6:33  error  '/Users/tannerbrobers/dev/tetrix-game/src/main/App/Shared/Shared_types/index.ts' imported multiple times                                                                                             import-x/no-duplicates
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ThemeProvider/index.tsx
+  5:1  error  Shared module "ThemeProvider" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/ToastOverlay/index.tsx
+  1:1  error  Shared module "ToastOverlay" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/components/UpdateNotification/index.tsx
+  1:1  error  Shared module "UpdateNotification" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/config/version.ts
+  11:1  error  File "version.ts" must be renamed to "index.ts" and placed in a "version/" folder. All declarations must be in index files: /src/main/App/config/version/index.ts  architecture/index-only-files
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/contexts/GridEditorProvider/index.tsx
+    1:1   error    Shared module "GridEditorProvider" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  455:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                               react-refresh/only-export-components
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/hooks/useUpdateNotification/index.ts
+  3:1  error  Module "../usePWAUpdate" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./usePWAUpdate" (current: "../usePWAUpdate")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/App/index.tsx
+   1:1  error  Shared module "App" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used                                                                                                                       architecture/shared-must-be-multi-imported
+   3:1  error  Module "./components/DraggingShape" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./DraggingShape" (current: "./components/DraggingShape")                                                                                      architecture/import-from-sibling-directory-or-shared
+   4:1  error  Module "./components/ErrorBoundary" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ErrorBoundary" (current: "./components/ErrorBoundary")                                                                                      architecture/import-from-sibling-directory-or-shared
+   5:1  error  Module "./components/FullScreenButton" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./FullScreenButton" (current: "./components/FullScreenButton")                                                                             architecture/import-from-sibling-directory-or-shared
+   6:1  error  Module "./components/Header" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Header" (current: "./components/Header")                                                                                                           architecture/import-from-sibling-directory-or-shared
+   7:1  error  Module "./components/PersistenceListener" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./PersistenceListener" (current: "./components/PersistenceListener")                                                                    architecture/import-from-sibling-directory-or-shared
+   8:1  error  Module "./components/Tetrix" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./Tetrix" (current: "./components/Tetrix")                                                                                                           architecture/import-from-sibling-directory-or-shared
+   9:1  error  Module "./components/ThemeProvider" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ThemeProvider" (current: "./components/ThemeProvider")                                                                                      architecture/import-from-sibling-directory-or-shared
+  10:1  error  Module "./components/ToastOverlay" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ToastOverlay" (current: "./components/ToastOverlay")                                                                                         architecture/import-from-sibling-directory-or-shared
+  11:1  error  Module "./components/UpdateNotification" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./UpdateNotification" (current: "./components/UpdateNotification")                                                                       architecture/import-from-sibling-directory-or-shared
+  12:1  error  Module "./contexts/GridEditorProvider" is imported from 4 locations but NOT in a Shared directory.
+
+Current: /src/main/App/contexts
+Expected: /src/main/App/Shared/Shared_contexts
+
+Multi-use components must be in Shared at the LCA level.
+Move to: /src/main/App/Shared/Shared_contexts                         architecture/import-from-sibling-directory-or-shared
+  13:1  error  Module "./hooks/usePointerTracking" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./usePointerTracking" (current: "./hooks/usePointerTracking")                                                                                 architecture/import-from-sibling-directory-or-shared
+  14:1  error  Module "./hooks/useShapePlacement" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./useShapePlacement" (current: "./hooks/useShapePlacement")                                                                                    architecture/import-from-sibling-directory-or-shared
+  15:1  error  Module "./hooks/useUpdateNotification" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./useUpdateNotification" (current: "./hooks/useUpdateNotification")                                                                        architecture/import-from-sibling-directory-or-shared
+  18:1  error  Import "./Shared_MusicControlProvider" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App/Shared_MusicControlProvider
+Actual: /src/main/App
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/Shared/BlockVisual/BlockSvg/index.tsx
+   1:1  error    Shared module "Shared_BlockSvg" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+  13:7  warning  Fast refresh only works when a file only exports components. Move your component(s) to a separate file                                                                                                    react-refresh/only-export-components
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/Shared/BlockVisual/index.tsx
+   5:1   error    Module "../ShapeIcon" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./ShapeIcon" (current: "../ShapeIcon")                                                                                                              architecture/import-from-sibling-directory-or-shared
+   7:1   error    Import "./BlockSvg" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/Shared/BlockVisual/BlockSvg
+Actual: /src/main/Shared/BlockVisual
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path  architecture/import-from-sibling-directory-or-shared
+  18:10  warning  Fast refresh only works when a file only exports components. Move your component(s) to a separate file                                                                                                                                                                                                     react-refresh/only-export-components
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/Shared/ShapeIcon/index.tsx
+  1:1  error  Shared module "Shared_ShapeIcon" is only imported from 1 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/Shared/Tile/TileSvg/index.tsx
+  1:1  error  Shared module "Shared_TileSvg" is only imported from 0 file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it's used  architecture/shared-must-be-multi-imported
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/Shared/Tile/index.tsx
+   6:1  error    Import "./TileSvg" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/Shared/Tile/TileSvg
+Actual: /src/main/Shared/Tile
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path  architecture/import-from-sibling-directory-or-shared
+  22:7  warning  Fast refresh only works when a file only exports components. Move your component(s) to a separate file                                                                                                                                                                                     react-refresh/only-export-components
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/index.tsx
+  3:1  error  Import "./App" appears to be a child import but is not a subdirectory.
+
+Expected: /src/main/App
+Actual: /src/main
+
+Single-use components must be in child directories of their parent.
+Move the module to be a direct subdirectory or fix the import path  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/main/version/index.ts
+  8:1  error  Module "../../../package.json" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./package.json" (current: "../../../package.json")  architecture/import-from-sibling-directory-or-shared
+
+/Users/tannerbrobers/dev/tetrix-game/src/test/quadAnimation.test.ts
+   15:1  error  This line has a length of 103. Maximum allowed is 100  @stylistic/max-len
+   34:1  error  This line has a length of 106. Maximum allowed is 100  @stylistic/max-len
+   51:1  error  This line has a length of 103. Maximum allowed is 100  @stylistic/max-len
+   91:1  error  This line has a length of 103. Maximum allowed is 100  @stylistic/max-len
+   92:1  error  This line has a length of 106. Maximum allowed is 100  @stylistic/max-len
+  109:1  error  This line has a length of 103. Maximum allowed is 100  @stylistic/max-len
+
+✖ 260 problems (256 errors, 4 warnings)
+  8 errors and 0 warnings potentially fixable with the `--fix` option.
+

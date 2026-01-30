@@ -4,9 +4,9 @@
  * Provides easy-to-use functions for common persistence operations.
  */
 
-import type { Shape, Tile, TileData } from '../../types/core';
-import type { SavedGameState, LoadResult, SerializedQueueItem } from '../../types/persistence';
-import type { StatsPersistenceData } from '../../types/stats';
+import type { Shape, Tile, TileData } from '../../Shared/Shared_types';
+import type { SavedGameState, LoadResult, SerializedQueueItem } from '../../Shared/Shared_types';
+import type { StatsPersistenceData } from '../../Shared/Shared_types';
 import { Shared_persistenceAdapter } from '../Shared_persistenceAdapter';
 
 const {

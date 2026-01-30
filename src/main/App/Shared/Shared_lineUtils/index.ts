@@ -1,4 +1,4 @@
-import type { Tile, TilesSet } from '../../types/core';
+import type { Tile, TilesSet } from '../../Shared/Shared_types';
 
 const GRID_SIZE = 10;
 

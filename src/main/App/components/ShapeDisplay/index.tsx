@@ -3,8 +3,8 @@ import { useMemo, useRef, useEffect, useState } from 'react';
 
 import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
 import { Shared_shapeGeometry } from '../../Shared/Shared_shapeGeometry';
-import type { Shape } from '../../types/core';
-import type { BlockTheme } from '../../types/theme';
+import type { Shape } from '../../Shared/Shared_types';
+import type { BlockTheme } from '../../Shared/Shared_types';
 
 const { getShapeBounds } = Shared_shapeGeometry;
 

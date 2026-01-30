@@ -1,6 +1,22 @@
+#!/bin/bash
+set -e
+
+echo "=== Consolidating types into single file ==="
+
+cd src/main/App/Shared/Shared_types
+
+# Create consolidated index.ts
+cat > index.ts << 'EOFMAIN'
 /**
- * Core game types - Basic building blocks (Block, Tile, Shape, Location)
+ * Shared_types - All type definitions for the Tetrix game
+ *
+ * This module consolidates all type definitions to comply with architecture rules.
+ * Sections: core, gameState, animation, drag, theme, persistence, scoring, shapeQueue, stats
  */
+
+// ============================================================================
+// CORE TYPES - Basic building blocks (Block, Tile, Shape, Location)
+// ============================================================================
 
 // A shape is a 4X4 grid of blocks
 // 0,0 is the top left corner
@@ -81,7 +97,48 @@ function tilesToArray(tiles: TilesSet): TileData[] {
   }));
 }
 
+EOFMAIN
+
+# Append other type files
+for subdir in animation drag gameState persistence scoring shapeQueue stats theme; do
+  if [ -f "$subdir/index.ts" ]; then
+    echo "" >> index.ts
+    echo "// ============================================================================" >> index.ts
+    echo "// $(echo $subdir | tr '[:lower:]' '[:upper:]') TYPES" >> index.ts
+    echo "// ============================================================================" >> index.ts
+    echo "" >> index.ts
+    # Extract exports only (skip imports and comments at the top)
+    tail -n +5 "$subdir/index.ts" | grep -v "^import " >> index.ts
+  fi
+done
+
+# Add facade export at the end
+cat >> index.ts << 'EOFFACADE'
+
 // Facade export to match folder name
-export const core = {
+export const Shared_types = {
   tilesToArray,
 };
+EOFFACADE
+
+# Remove subdirectories
+echo "Removing subdirectories..."
+for subdir in animation core drag gameState persistence scoring shapeQueue stats theme; do
+  if [ -d "$subdir" ]; then
+    rm -rf "$subdir"
+  fi
+done
+
+# Update imports to use Shared_types directly instead of subdirectories
+echo "Updating imports..."
+cd ../../..
+find . -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
+  "s|from '../../Shared/Shared_types/[^']*'|from '../../Shared/Shared_types'|g" {} \;
+
+find . -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
+  "s|from '../Shared/Shared_types/[^']*'|from '../Shared/Shared_types'|g" {} \;
+
+find . -type f \( -name "*.ts" -o -name "*.tsx" \) -exec sed -i '' \
+  "s|from './Shared/Shared_types/[^']*'|from './Shared/Shared_types'|g" {} \;
+
+echo "Types consolidated!"

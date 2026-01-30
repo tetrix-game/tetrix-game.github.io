@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import type { Location } from '../../types/core';
+import type { Location } from '../../Shared/Shared_types';
 
 /**
  * Custom hook for handling debug grid interactions

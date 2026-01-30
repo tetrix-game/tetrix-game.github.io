@@ -1,4 +1,4 @@
-import type { TilesSet } from '../../types/core';
+import type { TilesSet } from '../../Shared/Shared_types';
 import { makeTileKey } from '../Shared_shapeValidation';
 
 /**

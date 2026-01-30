@@ -3,8 +3,8 @@ import React from 'react';
 import { Shared_Overlay } from '../../../Shared/Overlay';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import type { ColorName } from '../../types/core';
-import type { StatCategory } from '../../types/stats';
+import type { ColorName } from '../../Shared/Shared_types';
+import type { StatCategory } from '../../Shared/Shared_types';
 import './StatsOverlay.css';
 
 interface StatsOverlayProps {

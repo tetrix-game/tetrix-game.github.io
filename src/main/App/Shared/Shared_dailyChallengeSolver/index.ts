@@ -1,4 +1,4 @@
-import type { Shape, ColorName, TilesSet } from '../../types/core';
+import type { Shape, ColorName, TilesSet } from '../../Shared/Shared_types';
 import { Shared_shapeGeneration } from '../Shared_shapeGeneration';
 import { getFilledBlocks } from '../Shared_shapeGeometry';
 import { Shared_shapeTransforms } from '../Shared_shapeTransforms';

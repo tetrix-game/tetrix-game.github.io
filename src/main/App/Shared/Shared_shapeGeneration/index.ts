@@ -1,4 +1,4 @@
-import type { Shape, Block, ColorName } from '../../types/core';
+import type { Shape, Block, ColorName } from '../../Shared/Shared_types';
 import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
 
 const { rotateShape, cloneShape, makeRandomColor } = Shared_shapeTransforms;

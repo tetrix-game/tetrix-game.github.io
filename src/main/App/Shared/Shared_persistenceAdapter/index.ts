@@ -11,7 +11,7 @@ import type {
   GameSettingsPersistenceData,
   ModifiersPersistenceData,
   LoadResult,
-} from '../../types/persistence';
+} from '../../Shared/Shared_types';
 import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../Shared_checksumUtils';
 import * as crud from '../Shared_indexedDBCrud';
 import { STORES } from '../Shared_indexedDBCrud';

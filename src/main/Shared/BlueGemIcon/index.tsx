@@ -5,7 +5,7 @@ interface BlueGemIconProps {
   className?: string;
 }
 
-const BlueGemIcon: React.FC<BlueGemIconProps> = ({ size, className = '' }) => {
+export const Shared_BlueGemIcon: React.FC<BlueGemIconProps> = ({ size, className = '' }) => {
   // If size is provided, use it. Otherwise, let CSS control dimensions
   const sizeProps = size ? { width: size, height: size } : {};
 
@@ -87,5 +87,3 @@ const BlueGemIcon: React.FC<BlueGemIconProps> = ({ size, className = '' }) => {
     </svg>
   );
 };
-
-export { BlueGemIcon as Shared_BlueGemIcon };

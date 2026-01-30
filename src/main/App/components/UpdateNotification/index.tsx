@@ -6,7 +6,7 @@ interface UpdateNotificationProps {
   onDismiss: () => void;
 }
 
-const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate, onDismiss }) => {
+export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate, onDismiss }) => {
   return (
     <div className="update-notification">
       <div className="update-notification-content">
@@ -29,5 +29,3 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate, onDis
     </div>
   );
 };
-
-export { UpdateNotification };

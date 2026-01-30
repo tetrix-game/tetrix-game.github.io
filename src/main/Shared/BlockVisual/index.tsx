@@ -57,5 +57,4 @@ function BlockVisual({
   );
 }
 
-const MemoizedBlockVisual = React.memo(BlockVisual);
-export { MemoizedBlockVisual as Shared_BlockVisual };
+export const Shared_BlockVisual = React.memo(BlockVisual);

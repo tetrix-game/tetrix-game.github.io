@@ -23,7 +23,7 @@ type ShapeDisplayProps = {
  * No interactivity - this is just for display purposes.
  * Used by ShapeOption (with drag/drop) and QueueOverlay (read-only).
  */
-const ShapeDisplay = ({
+export const ShapeDisplay = ({
   shape,
   cellGap = 2,
   containerPadding = 4,
@@ -121,5 +121,3 @@ const ShapeDisplay = ({
     </div>
   );
 };
-
-export { ShapeDisplay };

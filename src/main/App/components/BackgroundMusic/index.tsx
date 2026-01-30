@@ -22,7 +22,7 @@ const TRACK_VOLUME_MULTIPLIERS: Record<string, number> = {
 // Base volume scale (0-1) - pleasant background music level
 const BASE_BGM_VOLUME = 0.5;
 
-const BackgroundMusic: React.FC = (): JSX.Element => {
+export const BackgroundMusic: React.FC = (): JSX.Element => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const currentTrackRef = useRef<string>('');
   const { hasPlacedFirstShape } = Shared_useTetrixStateContext();
@@ -172,5 +172,3 @@ const BackgroundMusic: React.FC = (): JSX.Element => {
     </div>
   );
 };
-
-export { BackgroundMusic };

@@ -11,7 +11,7 @@ import { SettingsOverlay } from '../SettingsOverlay';
 import { SoundEffectsControlContext } from './SoundEffectsControlContext';
 import './Header.css';
 
-const Header: React.FC = () => {
+export const Header: React.FC = () => {
   // Use the main sound effects context
   const { volume, setVolume, isEnabled, setEnabled } = Shared_useSoundEffects();
   // Get music control for the audio unlock indicator
@@ -50,5 +50,3 @@ const Header: React.FC = () => {
     </SoundEffectsControlContext.Provider>
   );
 };
-
-export { Header };

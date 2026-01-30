@@ -5,7 +5,7 @@ import { QueueIndicator } from '../QueueIndicator';
 import { QueueOverlay } from '../QueueOverlay';
 import { ShapeSelector } from '../ShapeSelector';
 
-const ShapeQueue = (): JSX.Element => {
+export const ShapeQueue = (): JSX.Element => {
   const dispatch = Shared_useTetrixDispatchContext();
   const { queueMode, queueHiddenShapes, isQueueOverlayOpen, nextShapes } = Shared_useTetrixStateContext();
 
@@ -39,5 +39,3 @@ const ShapeQueue = (): JSX.Element => {
     </div>
   );
 };
-
-export { ShapeQueue };

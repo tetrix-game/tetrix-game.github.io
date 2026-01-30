@@ -2,13 +2,15 @@ import { useReducer, useEffect, useState } from 'react';
 
 import type { ThemeName, BlockTheme } from '../../types/theme';
 import {
-  loadModifiers,
   loadTheme,
-  initializePersistence,
-  clearAllDataAndReload,
   loadGameState,
   loadSettingsData,
 } from '../Shared_persistence';
+import {
+  loadModifiers,
+  initializePersistence,
+  clearAllDataAndReload,
+} from '../Shared_persistenceAdapter';
 import { initialState, tetrixReducer } from '../Shared_reducers';
 
 import { Shared_TetrixDispatchContext } from './Shared_TetrixDispatchContext/';

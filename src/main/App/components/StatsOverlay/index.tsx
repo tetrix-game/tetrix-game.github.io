@@ -84,7 +84,7 @@ const CATEGORY_LABELS: Record<StatCategory, string> = {
 
 const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
 
-const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }): JSX.Element => {
+export const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }): JSX.Element => {
   const { stats, gameState } = Shared_useTetrixStateContext();
   const dispatch = Shared_useTetrixDispatchContext();
 
@@ -211,5 +211,3 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }): JSX.Element => 
     </Shared_Overlay>
   );
 };
-
-export { StatsOverlay };

@@ -12,7 +12,7 @@ interface GemParticleProps {
   attractTo?: { x: number; y: number }; // If set, gem will be attracted to this point
 }
 
-const GemParticle: React.FC<GemParticleProps> = ({
+export const GemParticle: React.FC<GemParticleProps> = ({
   startPosition,
   velocity,
   onComplete,
@@ -155,5 +155,3 @@ const GemParticle: React.FC<GemParticleProps> = ({
     </div>
   );
 };
-
-export { GemParticle };

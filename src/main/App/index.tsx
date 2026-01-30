@@ -47,7 +47,7 @@ const AppContent = (): JSX.Element => {
   );
 };
 
-const App = (): JSX.Element => {
+export const App = (): JSX.Element => {
   return (
     <StrictMode>
       <ErrorBoundary>
@@ -66,8 +66,6 @@ const App = (): JSX.Element => {
     </StrictMode>
   );
 };
-
-export { App };
 
 /**
  * A "shape" consists of a 4x4 grid of Blocks.

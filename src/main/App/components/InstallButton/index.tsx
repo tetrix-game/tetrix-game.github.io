@@ -8,7 +8,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
-const InstallButton: React.FC = (): JSX.Element | null => {
+export const InstallButton: React.FC = (): JSX.Element | null => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -115,5 +115,3 @@ const InstallButton: React.FC = (): JSX.Element | null => {
     </>
   );
 };
-
-export { InstallButton };

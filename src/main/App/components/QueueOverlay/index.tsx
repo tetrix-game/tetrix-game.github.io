@@ -17,7 +17,7 @@ interface QueueOverlayProps {
  * Shows a modal overlay listing all shapes that are queued but not visible
  * in the main drag-and-drop interface
  */
-const QueueOverlay: React.FC<QueueOverlayProps> = ({
+export const QueueOverlay: React.FC<QueueOverlayProps> = ({
   hiddenShapes,
   onClose,
 }) => {
@@ -64,5 +64,3 @@ const QueueOverlay: React.FC<QueueOverlayProps> = ({
     </Shared_Overlay>
   );
 };
-
-export { QueueOverlay };

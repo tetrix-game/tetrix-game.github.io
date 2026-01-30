@@ -38,7 +38,7 @@ export interface Shared_OverlayProps {
  * - Escape key handling
  * - Accessible dialog semantics
  */
-const Overlay: React.FC<Shared_OverlayProps> = ({
+export const Shared_Overlay: React.FC<Shared_OverlayProps> = ({
   children,
   isOpen = true,
   onBackdropClick,
@@ -94,5 +94,3 @@ const Overlay: React.FC<Shared_OverlayProps> = ({
 
   return overlayContent;
 };
-
-export { Overlay as Shared_Overlay };

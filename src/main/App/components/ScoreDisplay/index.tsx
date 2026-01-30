@@ -10,7 +10,7 @@ import { StatsOverlay } from '../StatsOverlay';
 import '../../styles/feedback.css';
 import './ScoreDisplay.css';
 
-const ScoreDisplay: React.FC = (): JSX.Element => {
+export const ScoreDisplay: React.FC = (): JSX.Element => {
   const { score, gameState, isStatsOpen, insufficientFundsError } = Shared_useTetrixStateContext();
   const dispatch = Shared_useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
@@ -80,5 +80,3 @@ const ScoreDisplay: React.FC = (): JSX.Element => {
     </>
   );
 };
-
-export { ScoreDisplay };

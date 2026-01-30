@@ -15,7 +15,7 @@ export type PointerProps = {
  * Generic Pointer component that draws an animated arrow pointing to a DOM element.
  * Takes a React ref to calculate the target element's center point dynamically.
  */
-const Pointer: React.FC<PointerProps> = ({
+export const Pointer: React.FC<PointerProps> = ({
   targetRef,
   isVisible,
   arrowLength = 100,
@@ -103,5 +103,3 @@ const Pointer: React.FC<PointerProps> = ({
     </div>
   );
 };
-
-export { Pointer };

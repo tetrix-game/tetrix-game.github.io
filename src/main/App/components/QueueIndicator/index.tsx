@@ -13,7 +13,7 @@ interface QueueIndicatorProps {
  * Infinite mode: Shows ∞ symbol, disabled square button
  * Finite mode: Shows number of hidden shapes, clickable button that opens overlay
  */
-const QueueIndicator: React.FC<QueueIndicatorProps> = ({
+export const QueueIndicator: React.FC<QueueIndicatorProps> = ({
   mode,
   hiddenCount,
   onClick,
@@ -40,5 +40,3 @@ const QueueIndicator: React.FC<QueueIndicatorProps> = ({
     </button>
   );
 };
-
-export { QueueIndicator };

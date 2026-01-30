@@ -6,7 +6,7 @@ import { GemShower } from '../GemShower';
 import { Grid } from '../Grid';
 import { MapCompletionOverlay } from '../MapCompletionOverlay';
 
-const Tetrix: React.FC = () => {
+export const Tetrix: React.FC = () => {
   const { gameState, gameMode, isStatsOpen, mapCompletionResult } = Shared_useTetrixStateContext();
 
   // Only render when in playing or gameover state
@@ -43,5 +43,3 @@ const Tetrix: React.FC = () => {
     </div>
   );
 };
-
-export { Tetrix };

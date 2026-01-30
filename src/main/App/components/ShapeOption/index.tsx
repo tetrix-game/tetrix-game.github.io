@@ -13,7 +13,7 @@ type ShapeOptionProps = {
   id?: string;
 };
 
-const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.Element => {
+export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.Element => {
   const dispatch = Shared_useTetrixDispatchContext();
   const {
     dragState,
@@ -215,5 +215,3 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.Element =
     </div>
   );
 };
-
-export { ShapeOption };

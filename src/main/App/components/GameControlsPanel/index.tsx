@@ -6,7 +6,7 @@ import { PurchasesContainer } from '../PurchasesContainer';
 import { ShapeQueue } from '../ShapeQueue';
 import './GameControlsPanel.css';
 
-const GameControlsPanel: React.FC = () => {
+export const GameControlsPanel: React.FC = () => {
   const { buttonSizeMultiplier } = Shared_useTetrixStateContext();
   const { gameControlsButtonSize } = Shared_useGameSizing(buttonSizeMultiplier);
 
@@ -22,5 +22,3 @@ const GameControlsPanel: React.FC = () => {
     </div>
   );
 };
-
-export { GameControlsPanel };

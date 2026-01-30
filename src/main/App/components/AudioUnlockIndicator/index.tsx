@@ -14,7 +14,7 @@ import './AudioUnlockIndicator.css';
  * - Disappears automatically once the user interacts with the page
  * - Provides a helpful tooltip explaining why music hasn't started
  */
-const AudioUnlockIndicator: React.FC = () => {
+export const AudioUnlockIndicator: React.FC = () => {
   const { isWaitingForInteraction } = Shared_useMusicControl();
 
   if (!isWaitingForInteraction) {
@@ -36,5 +36,3 @@ const AudioUnlockIndicator: React.FC = () => {
     </div>
   );
 };
-
-export { AudioUnlockIndicator };

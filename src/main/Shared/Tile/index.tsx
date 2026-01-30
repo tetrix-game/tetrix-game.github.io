@@ -76,5 +76,4 @@ const Tile: React.FC<TileProps> = ({
   );
 };
 
-const MemoizedTile = React.memo(Tile);
-export { MemoizedTile as Shared_Tile };
+export const Shared_Tile = React.memo(Tile);

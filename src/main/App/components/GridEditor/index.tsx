@@ -11,7 +11,7 @@ import './GridEditor.css';
 
 type SectionId = 'rows' | 'columns' | 'brush' | 'actions';
 
-const GridEditor: React.FC = (): JSX.Element => {
+export const GridEditor: React.FC = (): JSX.Element => {
   const {
     state,
     closeEditor,
@@ -327,5 +327,3 @@ const GridEditor: React.FC = (): JSX.Element => {
     </>
   );
 };
-
-export { GridEditor };

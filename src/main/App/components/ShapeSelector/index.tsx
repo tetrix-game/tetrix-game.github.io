@@ -9,7 +9,7 @@ import { PurchasableSlotOption } from '../PurchasableSlotOption';
 import { ShapeOption } from '../ShapeOption';
 import { ShapeProducerViewport } from '../ShapeProducerViewport';
 
-const ShapeSelector = (): JSX.Element => {
+export const ShapeSelector = (): JSX.Element => {
   const dispatch = Shared_useTetrixDispatchContext();
   const {
     nextShapes,
@@ -122,5 +122,3 @@ const ShapeSelector = (): JSX.Element => {
     </div>
   );
 };
-
-export { ShapeSelector };

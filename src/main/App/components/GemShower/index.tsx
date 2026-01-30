@@ -13,7 +13,7 @@ interface GemData {
   attractTo?: { x: number; y: number };
 }
 
-const GemShower: React.FC = () => {
+export const GemShower: React.FC = () => {
   const { score, gemIconPosition } = Shared_useTetrixStateContext();
   const [gems, setGems] = useState<GemData[]>([]);
   const lastScoreRef = useRef<number | null>(null);
@@ -130,5 +130,3 @@ const GemShower: React.FC = () => {
     </div>
   );
 };
-
-export { GemShower };

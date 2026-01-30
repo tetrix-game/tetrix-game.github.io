@@ -29,7 +29,7 @@ export type CallToActionPointerProps = Omit<PointerProps, 'children' | 'isVisibl
  * It tracks when it was last dismissed using IndexedDB and only shows again after the timeout.
  * All props (callKey, label, timeout) are mandatory and will throw errors if not provided.
  */
-const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
+export const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
   callKey,
   label,
   timeout,
@@ -107,5 +107,3 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
     </Pointer>
   );
 };
-
-export { CallToActionPointer };

@@ -30,26 +30,6 @@ import {
   loadCallToActionTimestamp,
 } from '../Shared_persistenceAdapter';
 
-// Re-export the main functions
-export {
-  // Game state
-  clearGameBoard,
-
-  // Modifiers
-  saveModifiers,
-  loadModifiers,
-
-  // Cleanup
-  clearAllDataAndReload,
-
-  // Initialization
-  initializePersistence,
-
-  // Call to Action
-  saveCallToActionTimestamp,
-  loadCallToActionTimestamp,
-};
-
 // ============================================================================
 // CONVENIENCE FUNCTIONS
 // ============================================================================
@@ -57,7 +37,7 @@ export {
 /**
  * Save complete game state
  */
-async function saveGameState(data: {
+export async function saveGameState(data: {
   score: number;
   tiles: TileData[];
   nextShapes?: Shape[]; // Legacy - for backwards compatibility

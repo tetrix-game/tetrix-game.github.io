@@ -6,7 +6,7 @@ interface ToastMessage {
   text: string;
 }
 
-const ToastOverlay: React.FC = (): JSX.Element => {
+export const ToastOverlay: React.FC = (): JSX.Element => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   useEffect((): (() => void) => {
@@ -41,5 +41,3 @@ const ToastOverlay: React.FC = (): JSX.Element => {
     </div>
   );
 };
-
-export { ToastOverlay };

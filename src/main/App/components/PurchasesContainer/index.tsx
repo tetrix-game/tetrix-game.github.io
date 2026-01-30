@@ -2,7 +2,7 @@ import './PurchasesContainer.css';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 
-const PurchasesContainer = (): JSX.Element => {
+export const PurchasesContainer = (): JSX.Element => {
   const dispatch = Shared_useTetrixDispatchContext();
   const state = Shared_useTetrixStateContext();
 
@@ -80,5 +80,3 @@ const PurchasesContainer = (): JSX.Element => {
     </div>
   );
 };
-
-export { PurchasesContainer };

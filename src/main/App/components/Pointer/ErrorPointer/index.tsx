@@ -14,7 +14,7 @@ export type ErrorPointerProps = Omit<PointerProps, 'children'> & {
  * ErrorPointer displays a pointer with an error dialog message.
  * The message prop is mandatory and will throw an error if not provided.
  */
-const ErrorPointer: React.FC<ErrorPointerProps> = ({
+export const ErrorPointer: React.FC<ErrorPointerProps> = ({
   message,
   ...pointerProps
 }) => {
@@ -30,5 +30,3 @@ const ErrorPointer: React.FC<ErrorPointerProps> = ({
     </Pointer>
   );
 };
-
-export { ErrorPointer };

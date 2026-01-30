@@ -126,7 +126,7 @@ const GrandpaModeToggle: React.FC = () => {
   );
 };
 
-const SettingsOverlay: React.FC = () => {
+export const SettingsOverlay: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -555,5 +555,3 @@ const SettingsOverlay: React.FC = () => {
     </div>
   );
 };
-
-export { SettingsOverlay };

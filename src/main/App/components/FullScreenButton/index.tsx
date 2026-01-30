@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 
 import { CallToActionPointer } from '../Pointer/CallToActionPointer';
 
-function FullScreenButton(): JSX.Element {
+export function FullScreenButton(): JSX.Element {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -90,5 +90,3 @@ function FullScreenButton(): JSX.Element {
     </>
   );
 }
-
-export { FullScreenButton };

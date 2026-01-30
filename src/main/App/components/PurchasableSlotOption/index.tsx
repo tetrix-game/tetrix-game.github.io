@@ -12,7 +12,7 @@ type PurchasableSlotOptionProps = {
   id?: string;
 };
 
-const PurchasableSlotOption = ({
+export const PurchasableSlotOption = ({
   cost,
   slotNumber,
   slotIndex,
@@ -104,5 +104,3 @@ const PurchasableSlotOption = ({
     </div>
   );
 };
-
-export { PurchasableSlotOption };

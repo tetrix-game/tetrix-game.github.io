@@ -13,7 +13,7 @@ interface MapCompletionOverlayProps {
   missedTiles: number;
 }
 
-const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
+export const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
   stars,
   matchedTiles,
   totalTiles,
@@ -115,5 +115,3 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
     </Shared_Overlay>
   );
 };
-
-export { MapCompletionOverlay };

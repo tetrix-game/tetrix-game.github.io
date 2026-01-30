@@ -17,7 +17,7 @@ type EditorGridTileProps = {
   onMouseDown?: (e: React.MouseEvent) => void;
 };
 
-const EditorGridTile: React.FC<EditorGridTileProps> = ({
+const EditorGridTileComponent: React.FC<EditorGridTileProps> = ({
   location,
   block,
   backgroundColor,
@@ -52,5 +52,4 @@ const EditorGridTile: React.FC<EditorGridTileProps> = ({
   );
 };
 
-const MemoizedEditorGridTile = React.memo(EditorGridTile);
-export { MemoizedEditorGridTile as EditorGridTile };
+export const EditorGridTile = React.memo(EditorGridTileComponent);

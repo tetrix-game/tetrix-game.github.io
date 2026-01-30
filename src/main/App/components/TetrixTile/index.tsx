@@ -21,7 +21,7 @@ type TetrixTileProps = {
   size?: number;
 };
 
-const TetrixTile = ({
+const TetrixTileComponent = ({
   row,
   col,
   backgroundColor,
@@ -134,5 +134,4 @@ const TetrixTile = ({
   );
 };
 
-const MemoizedTetrixTile = React.memo(TetrixTile);
-export { MemoizedTetrixTile as TetrixTile };
+export const TetrixTile = React.memo(TetrixTileComponent);

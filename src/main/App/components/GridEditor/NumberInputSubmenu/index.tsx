@@ -17,7 +17,7 @@ export const NumberInputSubmenu: React.FC<NumberInputSubmenuProps> = ({
   max,
   onChange,
   isExpanded,
-}) => {
+}): JSX.Element => {
   const [inputValue, setInputValue] = useState(value.toString());
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -34,11 +34,11 @@ export const NumberInputSubmenu: React.FC<NumberInputSubmenuProps> = ({
     }
   }, [isExpanded]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setInputValue(e.target.value);
   };
 
-  const handleInputBlur = () => {
+  const handleInputBlur = (): void => {
     const numValue = parseInt(inputValue, 10);
     if (!isNaN(numValue)) {
       const clampedValue = Math.max(min, Math.min(max, numValue));
@@ -49,7 +49,7 @@ export const NumberInputSubmenu: React.FC<NumberInputSubmenuProps> = ({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       handleInputBlur();
       inputRef.current?.blur();

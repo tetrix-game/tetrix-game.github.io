@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getShapeBounds } from '../main/App/utils/shapes/shapeGeometry';
+
+import { getShapeBounds } from '../main/App/Shared/shapeGeometry';
 import type { Shape, Block } from '../main/App/types/core';
 
 describe('Shape Centering', () => {
@@ -8,8 +9,8 @@ describe('Shape Centering', () => {
     isFilled,
   });
 
-  const _ = () => createBlock(false);
-  const X = () => createBlock(true);
+  const _ = (): Block => createBlock(false);
+  const X = (): Block => createBlock(true);
 
   it('should calculate correct bounds for 2x2 square (O-piece)', () => {
     const shape: Shape = [

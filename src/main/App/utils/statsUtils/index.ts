@@ -24,19 +24,23 @@ export function updateStats(
   }
 
   // Helper to increment a stat
-  const incrementStat = (category: StatCategory, color?: string, amount: number = 1) => {
+  const incrementStat = (category: StatCategory, color?: string, amount: number = 1): void => {
     // Update current game
     newStats.current[category].total += amount;
     if (color) {
       const colorName = color as ColorName;
-      newStats.current[category].colors[colorName] = (newStats.current[category].colors[colorName] || 0) + amount;
+      newStats.current[category].colors[colorName] = (
+        newStats.current[category].colors[colorName] || 0
+      ) + amount;
     }
 
     // Update all time
     newStats.allTime[category].total += amount;
     if (color) {
       const colorName = color as ColorName;
-      newStats.allTime[category].colors[colorName] = (newStats.allTime[category].colors[colorName] || 0) + amount;
+      newStats.allTime[category].colors[colorName] = (
+        newStats.allTime[category].colors[colorName] || 0
+      ) + amount;
     }
 
     // Update high score (check if current game exceeds high score)
@@ -100,7 +104,10 @@ export function updateStats(
   const c = clearedColumns.length;
 
   // Helper to get common color if all lines in the combo share the same color
-  const getComboColor = (rows: typeof clearedRows, cols: typeof clearedColumns): string | undefined => {
+  const getComboColor = (
+    rows: typeof clearedRows,
+    cols: typeof clearedColumns,
+  ): string | undefined => {
     const allLines = [...rows, ...cols];
     if (allLines.length === 0) return undefined;
     const firstColor = allLines[0].color;

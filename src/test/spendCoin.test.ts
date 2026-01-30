@@ -1,7 +1,8 @@
 import { expect, test, describe } from 'vitest';
+
 import { tetrixReducer, initialState } from '../main/App/reducers';
-import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
 import type { QueuedShape, Shape } from '../main/App/types/core';
+import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
 
 // Helper functions to create QueuedShapes for tests
 let testShapeIdCounter = 4000;
@@ -10,7 +11,7 @@ const createQueuedShape = (shape: Shape): QueuedShape => ({
   shape,
 });
 const createQueuedShapes = (shapes: Shape[]): QueuedShape[] =>
-  shapes.map(shape => createQueuedShape(shape));
+  shapes.map((shape) => createQueuedShape(shape));
 
 describe('Spend Coin Feature', () => {
   test('SPEND_COIN action reduces score and opens rotation menu', () => {
@@ -34,8 +35,8 @@ describe('Spend Coin Feature', () => {
       type: 'SPEND_COIN',
       value: {
         shapeIndex: 0,
-        mousePosition: { x: 100, y: 100 }
-      }
+        mousePosition: { x: 100, y: 100 },
+      },
     });
 
     // Verify the score was reduced and menu was opened
@@ -59,7 +60,7 @@ describe('Spend Coin Feature', () => {
     // Try to spend when no coins available
     const newState = tetrixReducer(state, {
       type: 'SPEND_COIN',
-      value: { shapeIndex: 0 }
+      value: { shapeIndex: 0 },
     });
 
     // Score should remain 0 and error should be set
@@ -71,7 +72,7 @@ describe('Spend Coin Feature', () => {
   test('SPEND_COIN action fails with invalid shape index', () => {
     const plainShapes = [generateRandomShape()];
     const testShapes = createQueuedShapes(plainShapes);
-    
+
     const state = {
       ...initialState,
       nextShapes: testShapes,
@@ -82,7 +83,7 @@ describe('Spend Coin Feature', () => {
     // Try to spend on non-existent shape
     const newState = tetrixReducer(state, {
       type: 'SPEND_COIN',
-      value: { shapeIndex: 5 }
+      value: { shapeIndex: 5 },
     });
 
     // State should be unchanged
@@ -104,7 +105,7 @@ describe('Spend Coin Feature', () => {
     // Set new shapes
     const newState = tetrixReducer(state, {
       type: 'SET_AVAILABLE_SHAPES',
-      value: { shapes: newShapes }
+      value: { shapes: newShapes },
     });
 
     // All rotation menus should be closed

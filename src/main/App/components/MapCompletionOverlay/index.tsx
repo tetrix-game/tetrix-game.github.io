@@ -1,9 +1,9 @@
 import React from 'react';
 
 import './MapCompletionOverlay.css';
-import { Grid } from '../Grid';
 import { Shared_Overlay } from '../../../Shared/Overlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
+import { Grid } from '../Grid';
 
 interface MapCompletionOverlayProps {
   stars: number; // 0-3 stars (0 = failure)
@@ -23,7 +23,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
 
   const isSuccess = stars > 0;
 
-  const handleContinue = () => {
+  const handleContinue = (): void => {
     // Close the completion overlay and return to hub/map
     if (gameMode === 'daily') {
       dispatch({ type: 'SET_GAME_MODE', value: { mode: 'hub' } });
@@ -32,7 +32,7 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
     }
   };
 
-  const handleRetry = () => {
+  const handleRetry = (): void => {
     // Reset the current level
     if (gameMode === 'daily') {
       dispatch({ type: 'RESTART_DAILY_CHALLENGE' });

@@ -77,7 +77,12 @@ function checkDiagonalPattern(grid: boolean[][], startRow: number, startCol: num
  * Check if 4 consecutive rows have the diagonal empty pattern
  * @param ascending - true for ascending diagonal, false for descending
  */
-function checkRowPattern(grid: boolean[][], startRow: number, startCol: number, ascending: boolean): boolean {
+function checkRowPattern(
+  grid: boolean[][],
+  startRow: number,
+  startCol: number,
+  ascending: boolean,
+): boolean {
   for (let i = 0; i < 4; i++) {
     const row = startRow + i;
     const emptyCol = ascending ? startCol + i : startCol + (3 - i);
@@ -93,7 +98,12 @@ function checkRowPattern(grid: boolean[][], startRow: number, startCol: number, 
  * Check if 4 consecutive columns have the diagonal empty pattern
  * @param ascending - true for ascending diagonal, false for descending
  */
-function checkColumnPattern(grid: boolean[][], startRow: number, startCol: number, ascending: boolean): boolean {
+function checkColumnPattern(
+  grid: boolean[][],
+  startRow: number,
+  startCol: number,
+  ascending: boolean,
+): boolean {
   for (let i = 0; i < 4; i++) {
     const col = startCol + i;
     const emptyRow = ascending ? startRow + i : startRow + (3 - i);

@@ -1,18 +1,18 @@
 import { useEffect, useRef } from 'react';
 
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
-import { GRID_SIZE } from '../../utils/gridConstants';
-import { mousePositionToGridLocation } from '../../utils/shapes/shapeGeometry';
+import { GRID_SIZE } from '../../Shared/gridConstants';
+import { mousePositionToGridLocation } from '../../Shared/shapeGeometry';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
 import { isValidPlacement, getInvalidBlocks } from '../../utils/shapes/shapeValidation';
 
-export const usePointerTracking = () => {
+export const usePointerTracking = (): void => {
   const { gameMode, dragState, gridTileSize, gridBounds, tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLElement | null>(null);
 
   // Global mouse/pointer tracking for DraggingShape
-  useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
+  useEffect((): (() => void) => {
+    const handlePointerMove = (e: PointerEvent): void => {
       const position = { x: e.clientX, y: e.clientY };
 
       // Optimization: If we are placing or returning, we don't need to calculate fit
@@ -63,7 +63,6 @@ export const usePointerTracking = () => {
           const offsets = dragState.dragOffsets;
           if (!offsets) {
             // No offsets means SELECT_SHAPE didn't properly calculate them
-            console.error('dragOffsets not available - this indicates a logic error in SELECT_SHAPE');
             return;
           }
 
@@ -113,9 +112,21 @@ export const usePointerTracking = () => {
     // Track pointer movement globally
     document.addEventListener('pointermove', handlePointerMove);
 
-    return () => {
+    return (): void => {
       document.removeEventListener('pointermove', handlePointerMove);
       gridRef.current = null;
     };
-  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, dragState.hoveredBlockPositions, dragState.isValidPlacement, dragState.invalidBlockPositions, dragState.phase, gridTileSize, gridBounds, tiles, gameMode]);
+  }, [
+    dispatch,
+    dragState.selectedShape,
+    dragState.dragOffsets,
+    dragState.hoveredBlockPositions,
+    dragState.isValidPlacement,
+    dragState.invalidBlockPositions,
+    dragState.phase,
+    gridTileSize,
+    gridBounds,
+    tiles,
+    gameMode,
+  ]);
 };

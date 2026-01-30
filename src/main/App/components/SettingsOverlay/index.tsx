@@ -8,26 +8,26 @@ import { QRCodeSVG } from 'qrcode.react';
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-import { THEMES, BLOCK_THEMES } from '../../types/theme';
-import type { ThemeName, BlockTheme } from '../../types/theme';
+import { APP_VERSION } from '../../../version';
+import { useGridEditor } from '../../contexts/GridEditorContext';
+import { useMusicControl } from '../../Shared/MusicControlContext';
 import {
   loadDebugSettings,
   saveDebugSettings,
-} from '../../utils/persistence';
+} from '../../Shared/persistence';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Shared/TetrixContext';
+import { THEMES, BLOCK_THEMES } from '../../types/theme';
+import type { ThemeName, BlockTheme } from '../../types/theme';
 import { generateShapesWithProbabilities } from '../../utils/shapes/shapeGenerationWithProbabilities';
-import { APP_VERSION } from '../../../version';
-import { useGridEditor } from '../../contexts/GridEditorContext';
-import { useMusicControl } from '../../contexts/MusicControlContext';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { InstallButton } from '../InstallButton';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../contexts/TetrixContext';
 import './SettingsOverlay.css';
 
 const ThemeSelector: React.FC = () => {
   const { currentTheme } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
 
-  const handleThemeChange = (theme: ThemeName) => {
+  const handleThemeChange = (theme: ThemeName): void => {
     dispatch({ type: 'SET_THEME', value: { theme } });
   };
 
@@ -54,7 +54,7 @@ const BlockThemeSelector: React.FC = () => {
   const { blockTheme } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
 
-  const handleThemeChange = (theme: BlockTheme) => {
+  const handleThemeChange = (theme: BlockTheme): void => {
     dispatch({ type: 'SET_BLOCK_THEME', value: { theme } });
   };
 
@@ -133,35 +133,46 @@ const SettingsOverlay: React.FC = () => {
   const [isDebugOpen, setIsDebugOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { volume: musicVolume, setVolume: setMusicVolume, isEnabled: isMusicEnabled, toggleEnabled: toggleMusicEnabled, isWaitingForInteraction } = useMusicControl();
-  const { volume: soundVolume, setVolume: setSoundVolume, isEnabled: isSoundEnabled, toggleEnabled: toggleSoundEnabled } = useSoundEffectsControl();
+  const {
+    volume: musicVolume,
+    setVolume: setMusicVolume,
+    isEnabled: isMusicEnabled,
+    toggleEnabled: toggleMusicEnabled,
+    isWaitingForInteraction,
+  } = useMusicControl();
+  const {
+    volume: soundVolume,
+    setVolume: setSoundVolume,
+    isEnabled: isSoundEnabled,
+    toggleEnabled: toggleSoundEnabled,
+  } = useSoundEffectsControl();
   const state = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { openEditor: openGridEditor } = useGridEditor();
   const [debugUnlocked, setDebugUnlocked] = useState(false);
   const [debugClickCount, setDebugClickCount] = useState(0);
 
-  useEffect(() => {
+  useEffect((): void => {
     loadDebugSettings().then(setDebugUnlocked);
   }, []);
 
-  useEffect(() => {
+  useEffect((): (() => void) => {
     if (!isOpen) {
       setDebugClickCount(0);
     }
 
     // Close on Escape key
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       if (isOpen && e.key === 'Escape') {
         setIsOpen(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return (): void => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
-  const handleHiddenDebugClick = (e: React.MouseEvent) => {
+  const handleHiddenDebugClick = (e: React.MouseEvent): void => {
     const newCount = debugClickCount + 1;
     setDebugClickCount(newCount);
 
@@ -184,21 +195,21 @@ const SettingsOverlay: React.FC = () => {
     }
   };
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (): void => {
     setIsOpen(!isOpen);
   };
 
-  const toggleDebugMenu = () => {
+  const toggleDebugMenu = (): void => {
     setIsDebugOpen(!isDebugOpen);
   };
 
   // New game function - resets game state while preserving stats and settings
-  const handleNewGame = () => {
+  const handleNewGame = (): void => {
     dispatch({ type: 'RESET_GAME' });
   };
 
   // Test notification function for debugging - injects 1000 points
-  const testNotification = (e: React.MouseEvent) => {
+  const testNotification = (e: React.MouseEvent): void => {
     // Capture the click position for gem emission
     const clickPosition = { x: e.clientX, y: e.clientY };
 
@@ -218,7 +229,7 @@ const SettingsOverlay: React.FC = () => {
   };
 
   // Toggle finite queue mode and populate with 20 shapes if enabling
-  const toggleFiniteMode = () => {
+  const toggleFiniteMode = (): void => {
     const newMode = state.queueMode === 'infinite' ? 'finite' : 'infinite';
 
     dispatch({
@@ -237,7 +248,7 @@ const SettingsOverlay: React.FC = () => {
   };
 
   // Handle clicking on the overlay background (not the content)
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>): void => {
     // Only close if clicking directly on the overlay (not its children)
     if (e.target === e.currentTarget) {
       setIsOpen(false);
@@ -245,15 +256,15 @@ const SettingsOverlay: React.FC = () => {
   };
 
   // Close dropdown on escape key
-  useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
+  useEffect((): (() => void) => {
+    const handleEscapeKey = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         setIsOpen(false);
       }
     };
 
     document.addEventListener('keydown', handleEscapeKey);
-    return () => {
+    return (): void => {
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, []);

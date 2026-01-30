@@ -1,4 +1,4 @@
-import type { Shape, ColorName } from '../../../types/core';
+import type { Shape, ColorName, Block } from '../../../types/core';
 import type { ColorProbability } from '../../../types/shapeQueue';
 import { rotateShape, cloneShape } from '../shapeTransforms';
 
@@ -47,8 +47,8 @@ export function generateRandomShapeWithProbabilities(
   const color = selectColorByProbability(colorProbabilities);
 
   // Use same logic as generateRandomShape but with selected color
-  const _ = () => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
-  const X = () => ({ color, isFilled: true });
+  const _ = (): Block => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
+  const X = (): Block => ({ color, isFilled: true });
 
   // Define base shape templates and their unique rotation counts
   const shapeTemplates: Array<{ template: Shape; rotations: number }> = [
@@ -173,8 +173,8 @@ export function generateRandomShapeWithGrandpaMode(
 ): Shape {
   const color = selectColorByProbability(colorProbabilities);
 
-  const _ = () => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
-  const X = () => ({ color, isFilled: true });
+  const _ = (): Block => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
+  const X = (): Block => ({ color, isFilled: true });
 
   // Shape types with their weights (normal = 1, grandpa mode reduces Z/S to 0.25)
   const shapeWeights: Array<{ type: ShapeType; weight: number }> = [

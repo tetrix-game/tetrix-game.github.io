@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { tetrixReducer } from '../main/App/reducers';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
@@ -9,7 +10,7 @@ describe('Drag and Drop Return to Selector', () => {
     const shape = generateRandomShape();
     const initialState = {
       shapeOptionBounds: [
-        { top: 50, left: 50, width: 100, height: 100 }
+        { top: 50, left: 50, width: 100, height: 100 },
       ],
       dragState: {
         phase: 'dragging',
@@ -42,7 +43,7 @@ describe('Drag and Drop Return to Selector', () => {
     const shape = generateRandomShape();
     const initialState = {
       shapeOptionBounds: [
-        { top: 50, left: 50, width: 100, height: 100 }
+        { top: 50, left: 50, width: 100, height: 100 },
       ],
       dragState: {
         phase: 'picking-up',

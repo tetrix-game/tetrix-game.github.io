@@ -43,29 +43,30 @@ async function openDatabase(): Promise<IDBDatabase> {
     throw new Error('IndexedDB not available in this environment');
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    request.onerror = () => {
-      console.error('Failed to open IndexedDB:', request.error);
+    request.onerror = (): void => {
       reject(new Error(`Failed to open IndexedDB: ${request.error}`));
     };
 
-    request.onsuccess = () => {
+    request.onsuccess = (): void => {
       const db = request.result;
 
       // Verify required stores exist
       const requiredStores = Object.values(STORES);
-      const missingStores = requiredStores.filter((store) => !db.objectStoreNames.contains(store));
+      const missingStores = requiredStores.filter(
+        (store): boolean => !db.objectStoreNames.contains(store),
+      );
 
       if (missingStores.length > 0) {
-        console.warn('Missing stores:', missingStores, '- Database may need upgrade');
+        // Database may need upgrade
       }
 
       resolve(db);
     };
 
-    request.onupgradeneeded = (event) => {
+    request.onupgradeneeded = (event): void => {
       const db = (event.target as IDBOpenDBRequest).result;
 
       // Create all required stores
@@ -106,28 +107,25 @@ export async function write<T>(
 ): Promise<void> {
   const db = await getDatabase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction([storeName], 'readwrite');
 
-      transaction.onerror = () => {
-        console.error(`Transaction failed for ${storeName}:`, transaction.error);
+      transaction.onerror = (): void => {
         reject(new Error(`Transaction failed: ${transaction.error}`));
       };
 
       const store = transaction.objectStore(storeName);
       const request = store.put(data, key);
 
-      request.onsuccess = () => {
+      request.onsuccess = (): void => {
         resolve();
       };
 
-      request.onerror = () => {
-        console.error(`Failed to write to ${storeName}:`, request.error);
+      request.onerror = (): void => {
         reject(new Error(`Failed to write: ${request.error}`));
       };
     } catch (error) {
-      console.error(`Error creating transaction for ${storeName}:`, error);
       reject(error);
     }
   });
@@ -145,22 +143,20 @@ export async function read<T>(
 ): Promise<T | null> {
   const db = await getDatabase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.get(key);
 
-      request.onsuccess = () => {
+      request.onsuccess = (): void => {
         resolve(request.result ?? null);
       };
 
-      request.onerror = () => {
-        console.error(`Failed to read from ${storeName}:`, request.error);
+      request.onerror = (): void => {
         reject(new Error(`Failed to read: ${request.error}`));
       };
     } catch (error) {
-      console.error(`Error reading from ${storeName}:`, error);
       reject(error);
     }
   });
@@ -177,22 +173,20 @@ export async function remove(
 ): Promise<void> {
   const db = await getDatabase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.delete(key);
 
-      request.onsuccess = () => {
+      request.onsuccess = (): void => {
         resolve();
       };
 
-      request.onerror = () => {
-        console.error(`Failed to delete from ${storeName}:`, request.error);
+      request.onerror = (): void => {
         reject(new Error(`Failed to delete: ${request.error}`));
       };
     } catch (error) {
-      console.error(`Error deleting from ${storeName}:`, error);
       reject(error);
     }
   });
@@ -206,22 +200,20 @@ export async function remove(
 export async function listKeys(storeName: StoreName): Promise<IDBValidKey[]> {
   const db = await getDatabase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getAllKeys();
 
-      request.onsuccess = () => {
+      request.onsuccess = (): void => {
         resolve(request.result);
       };
 
-      request.onerror = () => {
-        console.error(`Failed to list keys from ${storeName}:`, request.error);
+      request.onerror = (): void => {
         reject(new Error(`Failed to list keys: ${request.error}`));
       };
     } catch (error) {
-      console.error(`Error listing keys from ${storeName}:`, error);
       reject(error);
     }
   });
@@ -235,22 +227,20 @@ export async function listKeys(storeName: StoreName): Promise<IDBValidKey[]> {
 export async function readAll<T>(storeName: StoreName): Promise<T[]> {
   const db = await getDatabase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getAll();
 
-      request.onsuccess = () => {
+      request.onsuccess = (): void => {
         resolve(request.result as T[]);
       };
 
-      request.onerror = () => {
-        console.error(`Failed to read all from ${storeName}:`, request.error);
+      request.onerror = (): void => {
         reject(new Error(`Failed to read all: ${request.error}`));
       };
     } catch (error) {
-      console.error(`Error reading all from ${storeName}:`, error);
       reject(error);
     }
   });
@@ -263,22 +253,20 @@ export async function readAll<T>(storeName: StoreName): Promise<T[]> {
 export async function clear(storeName: StoreName): Promise<void> {
   const db = await getDatabase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.clear();
 
-      request.onsuccess = () => {
+      request.onsuccess = (): void => {
         resolve();
       };
 
-      request.onerror = () => {
-        console.error(`Failed to clear ${storeName}:`, request.error);
+      request.onerror = (): void => {
         reject(new Error(`Failed to clear: ${request.error}`));
       };
     } catch (error) {
-      console.error(`Error clearing ${storeName}:`, error);
       reject(error);
     }
   });
@@ -302,18 +290,17 @@ export async function batchWrite(
   const db = await getDatabase();
 
   // Group operations by store for efficient transactions
-  const storeNames = [...new Set(operations.map((op) => op.storeName))];
+  const storeNames = [...new Set(operations.map((op): StoreName => op.storeName))];
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction(storeNames, 'readwrite');
 
-      transaction.onerror = () => {
-        console.error('Batch write transaction failed:', transaction.error);
+      transaction.onerror = (): void => {
         reject(new Error(`Batch write failed: ${transaction.error}`));
       };
 
-      transaction.oncomplete = () => {
+      transaction.oncomplete = (): void => {
         resolve();
       };
 
@@ -323,7 +310,6 @@ export async function batchWrite(
         store.put(data, key);
       }
     } catch (error) {
-      console.error('Error creating batch write transaction:', error);
       reject(error);
     }
   });
@@ -345,16 +331,15 @@ export async function batchRead<T>(
   }
 
   const db = await getDatabase();
-  const storeNames = [...new Set(operations.map((op) => op.storeName))];
+  const storeNames = [...new Set(operations.map((op): StoreName => op.storeName))];
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction(storeNames, 'readonly');
       const results: (T | null)[] = new Array(operations.length).fill(null);
       let completed = 0;
 
-      transaction.onerror = () => {
-        console.error('Batch read transaction failed:', transaction.error);
+      transaction.onerror = (): void => {
         reject(new Error(`Batch read failed: ${transaction.error}`));
       };
 
@@ -363,7 +348,7 @@ export async function batchRead<T>(
         const store = transaction.objectStore(storeName);
         const request = store.get(key);
 
-        request.onsuccess = () => {
+        request.onsuccess = (): void => {
           results[i] = request.result ?? null;
           completed++;
 
@@ -373,7 +358,6 @@ export async function batchRead<T>(
         };
       }
     } catch (error) {
-      console.error('Error creating batch read transaction:', error);
       reject(error);
     }
   });
@@ -391,22 +375,20 @@ export async function exists(
 ): Promise<boolean> {
   const db = await getDatabase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject): void => {
     try {
       const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getKey(key);
 
-      request.onsuccess = () => {
+      request.onsuccess = (): void => {
         resolve(request.result !== undefined);
       };
 
-      request.onerror = () => {
-        console.error(`Failed to check existence in ${storeName}:`, request.error);
+      request.onerror = (): void => {
         reject(new Error(`Failed to check existence: ${request.error}`));
       };
     } catch (error) {
-      console.error(`Error checking existence in ${storeName}:`, error);
       reject(error);
     }
   });

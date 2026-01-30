@@ -1,4 +1,5 @@
 import { expect, test, describe } from 'vitest';
+
 import { tetrixReducer, initialState } from '../main/App/reducers';
 import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
 
@@ -18,7 +19,7 @@ describe('Debug Actions for Shape Management', () => {
     };
 
     const newState = tetrixReducer(state, {
-      type: 'ADD_SHAPE_OPTION'
+      type: 'ADD_SHAPE_OPTION',
     });
 
     // Should have one more shape
@@ -56,7 +57,7 @@ describe('Debug Actions for Shape Management', () => {
     };
 
     const newState = tetrixReducer(state, {
-      type: 'REMOVE_SHAPE_OPTION'
+      type: 'REMOVE_SHAPE_OPTION',
     });
 
     // Should have one fewer shape
@@ -86,7 +87,7 @@ describe('Debug Actions for Shape Management', () => {
     };
 
     const newState = tetrixReducer(state, {
-      type: 'REMOVE_SHAPE_OPTION'
+      type: 'REMOVE_SHAPE_OPTION',
     });
 
     // Should not change - still 1 shape
@@ -116,7 +117,7 @@ describe('Debug Actions for Shape Management', () => {
     };
 
     const newState = tetrixReducer(state, {
-      type: 'REMOVE_SHAPE_OPTION'
+      type: 'REMOVE_SHAPE_OPTION',
     });
 
     // Should have removed the selected shape and cleared selection
@@ -149,7 +150,7 @@ describe('Debug Actions for Shape Management', () => {
     };
 
     const newState = tetrixReducer(state, {
-      type: 'REMOVE_SHAPE_OPTION'
+      type: 'REMOVE_SHAPE_OPTION',
     });
 
     // Should preserve selection since we're not removing the selected shape
@@ -157,6 +158,8 @@ describe('Debug Actions for Shape Management', () => {
     expect(newState.dragState.selectedShape).toBe(testShapes[0]);
     expect(newState.dragState.selectedShapeIndex).toBe(0);
     expect(newState.dragState.phase).toBe('dragging');
-    expect(newState.dragState.hoveredBlockPositions).toEqual([{ location: { row: 1, column: 1 }, block: testShapes[0][0][0] }]);
+    expect(newState.dragState.hoveredBlockPositions).toEqual([
+      { location: { row: 1, column: 1 }, block: testShapes[0][0][0] },
+    ]);
   });
 });

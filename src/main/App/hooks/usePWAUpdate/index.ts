@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 interface PWAUpdateHook {
@@ -20,32 +19,17 @@ export function usePWAUpdate(): PWAUpdateHook {
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(registration) {
-      console.log('[PWA] Service Worker registered');
-
       // Check for updates every hour
       if (registration) {
         setInterval(() => {
-          console.log('[PWA] Checking for updates...');
           registration.update();
         }, 60 * 60 * 1000); // 1 hour
       }
     },
-    onRegisterError(error) {
-      console.error('[PWA] Service Worker registration error:', error);
+    onRegisterError() {
+      // Silently handle registration error
     },
   });
-
-  useEffect(() => {
-    if (needRefresh) {
-      console.log('[PWA] New version available!');
-    }
-  }, [needRefresh]);
-
-  useEffect(() => {
-    if (offlineReady) {
-      console.log('[PWA] App ready to work offline');
-    }
-  }, [offlineReady]);
 
   return {
     needRefresh,

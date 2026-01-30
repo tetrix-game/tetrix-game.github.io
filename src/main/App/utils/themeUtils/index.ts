@@ -81,7 +81,10 @@ export const THEME_DEFINITIONS: Record<ThemeName, ThemeDefinition> = {
 /**
  * Converts theme definition to CSS custom properties
  */
-export function themeToCssVars(theme: ThemeDefinition, themeName: ThemeName): Record<string, string> {
+export function themeToCssVars(
+  theme: ThemeDefinition,
+  themeName: ThemeName,
+): Record<string, string> {
   return {
     '--theme-text': theme.text,
     '--theme-text-secondary': theme.textSecondary,

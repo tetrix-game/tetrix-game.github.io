@@ -1,12 +1,12 @@
+import { GRID_SIZE } from '../../main/App/Shared/gridConstants';
 import type { TilesSet, ColorName, Tile } from '../../types';
-import { GRID_SIZE } from '../../main/App/utils/gridConstants';
 
 /**
  * Helper functions for testing with TilesSet (Map-based tiles using plain Tile objects)
  */
 
 // Helper to get tile data from TilesSet
-export function getTileData(tiles: TilesSet, row: number, column: number) {
+export function getTileData(tiles: TilesSet, row: number, column: number): Tile | undefined {
   return tiles.get(`R${row}C${column}`);
 }
 
@@ -43,7 +43,7 @@ export function isColumnFull(tiles: TilesSet, column: number): boolean {
 
 // Helper to create a TilesSet with specific filled positions
 export function createTilesWithFilled(
-  positions: Array<{ row: number; column: number; color?: ColorName }>
+  positions: Array<{ row: number; column: number; color?: ColorName }>,
 ): TilesSet {
   const tiles = new Map<string, Tile>();
 
@@ -55,7 +55,7 @@ export function createTilesWithFilled(
         position,
         backgroundColor: 'grey',
         block: { isFilled: false, color: 'grey' },
-        activeAnimations: []
+        activeAnimations: [],
       };
       tiles.set(position, tile);
     }
@@ -68,7 +68,7 @@ export function createTilesWithFilled(
     if (tile) {
       tiles.set(position, {
         ...tile,
-        block: { isFilled: true, color: (pos.color || 'blue') as ColorName }
+        block: { isFilled: true, color: (pos.color || 'blue') as ColorName },
       });
     }
   }

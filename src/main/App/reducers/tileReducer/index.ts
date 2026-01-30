@@ -3,17 +3,17 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
+import { makeTileKey } from '../../Shared/gridConstants';
+import { getShapeGridPositions } from '../../Shared/shapeGeometry';
 import type { Tile, QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // safeBatchSave removed - persistence handled by PersistenceListener
 import { cleanupExpiredAnimations } from '../../utils/clearingAnimationUtils';
 import { checkGameOver } from '../../utils/gameOverUtils';
-import { makeTileKey } from '../../utils/gridConstants';
 import { performLineClearing } from '../../utils/lineClearingOrchestrator';
 import { checkMapCompletion } from '../../utils/mapCompletionUtils';
 import { generateSuperShape } from '../../utils/shapes/shapeGeneration';
 import { generateRandomShapeWithGrandpaMode } from '../../utils/shapes/shapeGenerationWithProbabilities';
-import { getShapeGridPositions } from '../../utils/shapes/shapeGeometry';
 import { detectSuperComboPattern } from '../../utils/shapes/shapePatterns';
 import { updateStats, incrementNoTurnStreak } from '../../utils/statsUtils';
 
@@ -32,7 +32,10 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       }
 
       // Get the positions where the shape would be placed
-      const shapePositions = getShapeGridPositions(state.dragState.selectedShape, placementLocation);
+      const shapePositions = getShapeGridPositions(
+        state.dragState.selectedShape,
+        placementLocation,
+      );
 
       // Update tiles with the placed shape (working with plain Tile objects)
       const newTiles = new Map(state.tiles);
@@ -126,7 +129,10 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         } else {
           // Generate shape using color probabilities (infinite mode only)
           // Apply grandpa mode to reduce Z and S shape frequency
-          newShapeData = generateRandomShapeWithGrandpaMode(state.queueColorProbabilities, state.grandpaMode);
+          newShapeData = generateRandomShapeWithGrandpaMode(
+            state.queueColorProbabilities,
+            state.grandpaMode,
+          );
         }
 
         // Wrap the new shape with a unique ID
@@ -146,20 +152,32 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const shapesAfterRemoval = animatingShapes.filter((_, index) => index !== removedIndex);
       const menusAfterRemoval = animatingRotationMenus.filter((_, index) => index !== removedIndex);
       // Extract only actual shapes (not purchasable slots) for game over check
-      const plainShapes = shapesAfterRemoval.filter((item) => item.type === 'shape').map((item) => (item as QueuedShape).shape);
+      const plainShapes = shapesAfterRemoval
+        .filter((item) => item.type === 'shape')
+        .map((item) => (item as QueuedShape).shape);
 
       // GAME OVER CHECK: Run on the FINAL state (correct 3 shapes after placement)
       // Infinite mode: Check if any shapes can be placed
       // Finite mode: Game over when queue is completely empty (no visible shapes and no hidden shapes)
       let isGameOver = false;
       if (state.gameMode === 'infinite') {
-        isGameOver = checkGameOver(lineClearResult.tiles, plainShapes, menusAfterRemoval, state.gameMode);
+        isGameOver = checkGameOver(
+          lineClearResult.tiles,
+          plainShapes,
+          menusAfterRemoval,
+          state.gameMode,
+        );
       } else if (state.queueMode === 'finite') {
         // In finite mode, check if queue is depleted
         const queueDepleted = shapesAfterRemoval.length === 0 && updatedHiddenShapes.length === 0;
 
         // Check if no moves are possible with remaining shapes
-        const noMovesPossible = checkGameOver(lineClearResult.tiles, plainShapes, menusAfterRemoval, state.gameMode);
+        const noMovesPossible = checkGameOver(
+          lineClearResult.tiles,
+          plainShapes,
+          menusAfterRemoval,
+          state.gameMode,
+        );
 
         // If queue is depleted OR no moves possible, check map completion
         if ((queueDepleted || noMovesPossible) && state.targetTiles) {
@@ -178,7 +196,9 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
             queueHiddenShapes: updatedHiddenShapes,
             shapesUsed: state.shapesUsed + 1,
             openRotationMenus: menusAfterRemoval,
-            newShapeAnimationStates: animatingAnimationStates.filter((_, index) => index !== removedIndex),
+            newShapeAnimationStates: animatingAnimationStates.filter(
+              (_, index) => index !== removedIndex,
+            ),
             shapeOptionBounds: new Array(shapesAfterRemoval.length).fill(null),
             mouseGridLocation: null,
             mapCompletionResult: {
@@ -404,9 +424,13 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
           // Check if this tile is on either diagonal of the 4x4 area
           // Ascending diagonal: (4,4), (5,5), (6,6), (7,7)
-          const isOnAscendingDiagonal = isInPatternRows && isInPatternCols && (row - 4) === (column - 4);
+          const isOnAscendingDiagonal = isInPatternRows
+            && isInPatternCols
+            && (row - 4) === (column - 4);
           // Descending diagonal: (4,7), (5,6), (6,5), (7,4)
-          const isOnDescendingDiagonal = isInPatternRows && isInPatternCols && (row + column) === 11;
+          const isOnDescendingDiagonal = isInPatternRows
+            && isInPatternCols
+            && (row + column) === 11;
 
           const isOnDiagonal = useAscending ? isOnAscendingDiagonal : isOnDescendingDiagonal;
 

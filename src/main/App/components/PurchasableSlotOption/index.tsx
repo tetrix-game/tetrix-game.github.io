@@ -1,8 +1,8 @@
 import './PurchasableSlotOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
-import { ANIMATION_TIMING } from '../../utils/animationConstants';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../contexts/TetrixContext';
+import { ANIMATION_TIMING } from '../../Shared/animationConstants';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Shared/TetrixContext';
 
 type PurchasableSlotOptionProps = {
   cost: number;
@@ -11,7 +11,12 @@ type PurchasableSlotOptionProps = {
   id?: string;
 };
 
-const PurchasableSlotOption = ({ cost, slotNumber, slotIndex, id }: PurchasableSlotOptionProps) => {
+const PurchasableSlotOption = ({
+  cost,
+  slotNumber,
+  slotIndex,
+  id,
+}: PurchasableSlotOptionProps): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const {
     removingShapeIndex,
@@ -26,7 +31,8 @@ const PurchasableSlotOption = ({ cost, slotNumber, slotIndex, id }: PurchasableS
   const slotId = id || `purchasable-slot-${slotIndex}`;
 
   // Track if bounds are currently null (need registration)
-  const boundsAreNull = shapeOptionBounds[slotIndex] === null || shapeOptionBounds[slotIndex] === undefined;
+  const boundsAreNull = shapeOptionBounds[slotIndex] === null
+    || shapeOptionBounds[slotIndex] === undefined;
 
   // Register bounds when component mounts or updates
   useEffect(() => {
@@ -54,13 +60,13 @@ const PurchasableSlotOption = ({ cost, slotNumber, slotIndex, id }: PurchasableS
         dispatch({ type: 'COMPLETE_SLOT_PURCHASE_REMOVAL' });
       }, ANIMATION_TIMING.REMOVAL_DURATION);
 
-      return () => clearTimeout(animationTimer);
+      return (): void => clearTimeout(animationTimer);
     }
   }, [removingShapeIndex, slotIndex, shapeRemovalAnimationState, dispatch]);
 
   const canAfford = score >= cost;
 
-  const handleClick = useCallback((e: React.MouseEvent) => {
+  const handleClick = useCallback((e: React.MouseEvent): void => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -80,7 +86,9 @@ const PurchasableSlotOption = ({ cost, slotNumber, slotIndex, id }: PurchasableS
   return (
     <div
       ref={containerRef}
-      className={`purchasable-slot-option ${canAfford ? 'affordable' : 'locked'} ${isAnimatingRemoval ? 'removing' : ''}`}
+      className={`purchasable-slot-option ${
+        canAfford ? 'affordable' : 'locked'
+      } ${isAnimatingRemoval ? 'removing' : ''}`}
       onClick={handleClick}
       id={slotId}
     >

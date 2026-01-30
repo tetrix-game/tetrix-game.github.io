@@ -3,9 +3,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { generateClearingAnimations } from '../main/App/utils/clearingAnimationUtils';
-import { createTilesWithFilled } from './testHelpers';
 import type { ClearedLine } from '../main/App/utils/lineUtils';
+
+import { createTilesWithFilled } from './testHelpers';
 
 describe('Quad clearing animations (beating heart)', () => {
   it('should generate row-quad animation when 4 rows are cleared', () => {
@@ -20,7 +22,7 @@ describe('Quad clearing animations (beating heart)', () => {
     expect(tile).toBeDefined();
     expect(tile?.activeAnimations).toBeDefined();
 
-    const quadAnim = tile?.activeAnimations?.find(anim => anim.type === 'row-quad');
+    const quadAnim = tile?.activeAnimations?.find((anim) => anim.type === 'row-quad');
     expect(quadAnim).toBeDefined();
     expect(quadAnim?.duration).toBeGreaterThan(0);
     expect(quadAnim?.beatCount).toBe(3); // Default beat count
@@ -38,7 +40,7 @@ describe('Quad clearing animations (beating heart)', () => {
     expect(tile).toBeDefined();
     expect(tile?.activeAnimations).toBeDefined();
 
-    const quadAnim = tile?.activeAnimations?.find(anim => anim.type === 'column-quad');
+    const quadAnim = tile?.activeAnimations?.find((anim) => anim.type === 'column-quad');
     expect(quadAnim).toBeDefined();
     expect(quadAnim?.duration).toBeGreaterThan(0);
     expect(quadAnim?.beatCount).toBe(3); // Default beat count
@@ -65,7 +67,7 @@ describe('Quad clearing animations (beating heart)', () => {
     });
 
     const tile = result.get('R1C5');
-    const quadAnim = tile?.activeAnimations?.find(anim => anim.type === 'row-quad');
+    const quadAnim = tile?.activeAnimations?.find((anim) => anim.type === 'row-quad');
 
     expect(quadAnim?.duration).toBe(2000);
     expect(quadAnim?.beatCount).toBe(5);
@@ -79,7 +81,7 @@ describe('Quad clearing animations (beating heart)', () => {
     const result = generateClearingAnimations(tiles, clearedRows, clearedColumns);
 
     const tile = result.get('R1C5');
-    const quadAnim = tile?.activeAnimations?.find(anim => anim.type === 'row-quad');
+    const quadAnim = tile?.activeAnimations?.find((anim) => anim.type === 'row-quad');
 
     expect(quadAnim).toBeUndefined();
   });
@@ -95,8 +97,8 @@ describe('Quad clearing animations (beating heart)', () => {
     const tile = result.get('R2C6');
     expect(tile).toBeDefined();
 
-    const rowQuadAnim = tile?.activeAnimations?.find(anim => anim.type === 'row-quad');
-    const colQuadAnim = tile?.activeAnimations?.find(anim => anim.type === 'column-quad');
+    const rowQuadAnim = tile?.activeAnimations?.find((anim) => anim.type === 'row-quad');
+    const colQuadAnim = tile?.activeAnimations?.find((anim) => anim.type === 'column-quad');
 
     expect(rowQuadAnim).toBeDefined();
     expect(colQuadAnim).toBeDefined();
@@ -113,10 +115,10 @@ describe('Quad clearing animations (beating heart)', () => {
     const animations = tile?.activeAnimations || [];
 
     // Should have all 4 row animation types
-    expect(animations.some(a => a.type === 'row-cw')).toBe(true);
-    expect(animations.some(a => a.type === 'row-double')).toBe(true);
-    expect(animations.some(a => a.type === 'row-triple')).toBe(true);
-    expect(animations.some(a => a.type === 'row-quad')).toBe(true);
+    expect(animations.some((a) => a.type === 'row-cw')).toBe(true);
+    expect(animations.some((a) => a.type === 'row-double')).toBe(true);
+    expect(animations.some((a) => a.type === 'row-triple')).toBe(true);
+    expect(animations.some((a) => a.type === 'row-quad')).toBe(true);
     expect(animations.length).toBe(4);
   });
 });

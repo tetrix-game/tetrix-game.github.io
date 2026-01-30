@@ -1,6 +1,6 @@
+import { GRID_SIZE } from '../../../Shared/gridConstants';
 import type { Shape, Location, TilesSet } from '../../../types/core';
 import type { GameMode } from '../../../types/gameState';
-import { GRID_SIZE } from '../../gridConstants';
 
 /**
  * Shape validation functions - Placement validation and collision detection
@@ -177,7 +177,10 @@ export function getInvalidBlocks(
         const gridCol = gridTopLeftLocation.column + shapeCol;
 
         // Check bounds (1-indexed)
-        const outOfBounds = gridRow < 1 || gridRow > GRID_SIZE || gridCol < 1 || gridCol > GRID_SIZE;
+        const outOfBounds = gridRow < 1
+          || gridRow > GRID_SIZE
+          || gridCol < 1
+          || gridCol > GRID_SIZE;
 
         // Check if position exists and is occupied using O(1) Map lookup
         let invalid = false;

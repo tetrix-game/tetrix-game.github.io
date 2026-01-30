@@ -15,13 +15,19 @@ type BlockVisualProps = {
   readonly showIcon?: boolean;
 };
 
-function BlockVisual({ isFilled, color, size, theme = 'gem', showIcon = true }: BlockVisualProps): JSX.Element {
+function BlockVisual({
+  isFilled,
+  color,
+  size,
+  theme = 'gem',
+  showIcon = true,
+}: BlockVisualProps): JSX.Element {
   // Don't render anything if the block is not filled
   if (!isFilled) {
     return <></>;
   }
 
-  const style: React.CSSProperties & Record<string, any> = {};
+  const style: React.CSSProperties & Record<string, string> = {};
   if (size !== undefined) {
     style['--block-border-width'] = `${size * 0.2}px`;
     style['--block-shadow-inset'] = `${size * 0.5}px`;

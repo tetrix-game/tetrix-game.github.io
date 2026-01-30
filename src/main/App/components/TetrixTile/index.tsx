@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
-import type { ColorName } from '../../types/core';
-import type { BlockTheme } from '../../types/theme';
 import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
 import { Shared_Tile } from '../../../Shared/Tile';
+import type { ColorName, TileAnimation } from '../../types/core';
+import type { BlockTheme } from '../../types/theme';
 import './TetrixTile.css';
 
 type TetrixTileProps = {
@@ -34,37 +34,37 @@ const TetrixTile = ({
   theme,
   showIcon,
   size,
-}: TetrixTileProps) => {
-  const [_tick, setTick] = useState(0);
+}: TetrixTileProps): JSX.Element => {
+  const [, setTick] = useState(0);
 
-  const activeAnimations = useMemo(() => {
+  const activeAnimations = useMemo((): TileAnimation[] => {
     try {
-      return JSON.parse(animationsJson);
-    } catch (e) {
+      return JSON.parse(animationsJson) as TileAnimation[];
+    } catch {
       return [];
     }
   }, [animationsJson]);
 
   // Force re-render on animation frame to track animation timing
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (!activeAnimations || activeAnimations.length === 0) {
       return;
     }
 
     let rafId: number;
-    const animate = () => {
+    const animate = (): void => {
       setTick((t) => t + 1);
       rafId = requestAnimationFrame(animate);
     };
     rafId = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(rafId);
+    return (): void => cancelAnimationFrame(rafId);
   }, [activeAnimations]);
 
   // Filter to only currently-playing animations
   const currentTime = performance.now();
   const playingAnimations = activeAnimations.filter(
-    (anim: any) => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration,
+    (anim) => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration,
   );
 
   return (
@@ -74,7 +74,7 @@ const TetrixTile = ({
       backgroundColor={backgroundColor as ColorName}
       className="tetrix-tile"
       // Pass data attributes for event delegation in parent
-      {...{ 'data-row': row, 'data-col': col } as any}
+      {...{ 'data-row': row, 'data-col': col } as React.HTMLAttributes<HTMLDivElement>}
     >
       <Shared_BlockVisual
         isFilled={blockIsFilled}
@@ -93,7 +93,7 @@ const TetrixTile = ({
         />
       )}
 
-      {playingAnimations.map((anim: any) => {
+      {playingAnimations.map((anim) => {
         const elapsed = currentTime - anim.startTime;
         const progress = Math.min(elapsed / anim.duration, 1);
 

@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
+
 import { initialState } from '../main/App/reducers';
 import type { TetrixReducerState } from '../main/App/types/gameState';
-import { generateRandomShapeWithProbabilities } from '../main/App/utils/shapes/shapeGenerationWithProbabilities';
 import { DEFAULT_COLOR_PROBABILITIES } from '../main/App/types/shapeQueue';
+import { generateRandomShapeWithProbabilities } from '../main/App/utils/shapes/shapeGenerationWithProbabilities';
 
 describe('Finite Queue Behavior', () => {
   it('should not add new shapes when hidden queue is empty in finite mode', () => {
@@ -34,7 +35,7 @@ describe('Finite Queue Behavior', () => {
 
   it('should add shapes from hidden queue when available in finite mode', () => {
     const hiddenShape = generateRandomShapeWithProbabilities(DEFAULT_COLOR_PROBABILITIES);
-    
+
     // Setup: Finite mode with shapes in hidden queue
     const state: TetrixReducerState = {
       ...initialState,
@@ -76,17 +77,15 @@ describe('Finite Queue Behavior', () => {
     const state: TetrixReducerState = {
       ...initialState,
       queueMode: 'finite',
-      queueHiddenShapes: Array(17).fill(null).map(() => 
-        generateRandomShapeWithProbabilities(DEFAULT_COLOR_PROBABILITIES)
-      ),
+      queueHiddenShapes: Array(17).fill(null).map(() =>
+        generateRandomShapeWithProbabilities(DEFAULT_COLOR_PROBABILITIES)),
       nextShapes: Array(3).fill(null).map(() =>
-        generateRandomShapeWithProbabilities(DEFAULT_COLOR_PROBABILITIES)
-      ),
+        generateRandomShapeWithProbabilities(DEFAULT_COLOR_PROBABILITIES)),
     };
 
     // Total remaining = hidden + visible
     const totalRemaining = state.queueHiddenShapes.length + state.nextShapes.length;
-    
+
     expect(totalRemaining).toBe(20); // 17 hidden + 3 visible
   });
 

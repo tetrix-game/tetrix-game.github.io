@@ -4,9 +4,9 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
+import { safeBatchSave } from '../../Shared/persistence';
 import type { QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { safeBatchSave } from '../../utils/persistence';
 import { generateRandomShape } from '../../utils/shapes/shapeGeneration';
 import { rotateShape, cloneShape } from '../../utils/shapes/shapeTransforms';
 import { resetNoTurnStreak } from '../../utils/statsUtils';
@@ -28,9 +28,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       // Save FULL queue to database - purchasable slots are first-class items
       if (state.gameMode !== 'hub') {
         safeBatchSave({ nextQueue: items, savedShape: newState.savedShape })
-          .catch((error: Error) => {
-            console.error('Failed to save shapes state:', error);
-          });
+          .catch((_error: Error) => {});
       }
 
       return newState;
@@ -58,9 +56,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       // Save FULL queue to database - purchasable slots are first-class items
       if (state.gameMode !== 'hub') {
         safeBatchSave({ nextQueue: enhancedShapes, savedShape: newState.savedShape })
-          .catch((error: Error) => {
-            console.error('Failed to save shapes state:', error);
-          });
+          .catch((_error: Error) => {});
       }
 
       return newState;
@@ -115,9 +111,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
           nextQueue: newShapes,
           savedShape: newState.savedShape,
           stats: newStats,
-        }).catch((error: Error) => {
-          console.error('Failed to save shapes state:', error);
-        });
+        }).catch((_error: Error) => {});
       }
 
       return newState;
@@ -144,9 +138,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       // Save FULL queue to database
       if (state.gameMode !== 'hub') {
         safeBatchSave({ nextQueue: updatedShapes, savedShape: newState.savedShape })
-          .catch((error: Error) => {
-            console.error('Failed to save shapes state:', error);
-          });
+          .catch((_error: Error) => {});
       }
 
       return newState;
@@ -171,7 +163,8 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       const updatedAnimationStates = state.newShapeAnimationStates.slice(0, -1);
 
       // If the currently selected shape is being removed, clear selection
-      const isRemovingSelectedShape = state.dragState.selectedShapeIndex === state.nextShapes.length - 1;
+      const isRemovingSelectedShape = state.dragState.selectedShapeIndex
+        === state.nextShapes.length - 1;
 
       const newDragState = isRemovingSelectedShape
         ? {
@@ -203,9 +196,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       // Save FULL queue to database
       if (state.gameMode !== 'hub') {
         safeBatchSave({ nextQueue: updatedShapes, savedShape: newState.savedShape })
-          .catch((error: Error) => {
-            console.error('Failed to save shapes state:', error);
-          });
+          .catch((_error: Error) => {});
       }
 
       return newState;
@@ -245,9 +236,15 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       const indexToRemove = state.removingShapeIndex;
 
       // Filter out the placed shape now that animation is complete
-      const finalShapes = state.nextShapes.filter((_, index) => index !== indexToRemove);
-      const finalRotationMenus = state.openRotationMenus.filter((_, index) => index !== indexToRemove);
-      const finalAnimationStates = state.newShapeAnimationStates.filter((_, index) => index !== indexToRemove);
+      const finalShapes = state.nextShapes.filter(
+        (_, index) => index !== indexToRemove,
+      );
+      const finalRotationMenus = state.openRotationMenus.filter(
+        (_, index) => index !== indexToRemove,
+      );
+      const finalAnimationStates = state.newShapeAnimationStates.filter(
+        (_, index) => index !== indexToRemove,
+      );
       const finalBounds = state.shapeOptionBounds.filter((_, index) => index !== indexToRemove);
 
       return {
@@ -324,9 +321,15 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       const indexToRemove = state.removingShapeIndex;
 
       // Filter out the purchased slot now that animation is complete
-      const finalItems = state.nextShapes.filter((_, index) => index !== indexToRemove);
-      const finalRotationMenus = state.openRotationMenus.filter((_, index) => index !== indexToRemove);
-      const finalAnimationStates = state.newShapeAnimationStates.filter((_, index) => index !== indexToRemove);
+      const finalItems = state.nextShapes.filter(
+        (_, index) => index !== indexToRemove,
+      );
+      const finalRotationMenus = state.openRotationMenus.filter(
+        (_, index) => index !== indexToRemove,
+      );
+      const finalAnimationStates = state.newShapeAnimationStates.filter(
+        (_, index) => index !== indexToRemove,
+      );
       const finalBounds = state.shapeOptionBounds.filter((_, index) => index !== indexToRemove);
 
       return {

@@ -3,17 +3,17 @@ import { useEffect, useState, useRef } from 'react';
 
 import { CallToActionPointer } from '../Pointer/CallToActionPointer';
 
-function FullScreenButton() {
+function FullScreenButton(): JSX.Element {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     // Check if running in standalone mode (PWA)
-    const checkStandalone = () => {
+    const checkStandalone = (): void => {
       const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
         || window.matchMedia('(display-mode: fullscreen)').matches
-        || (window.navigator as any).standalone === true;
+        || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
       setIsStandalone(isStandaloneMode);
     };
 
@@ -23,12 +23,12 @@ function FullScreenButton() {
     const standaloneQuery = window.matchMedia('(display-mode: standalone)');
     const fullscreenQuery = window.matchMedia('(display-mode: fullscreen)');
 
-    const handleChange = () => checkStandalone();
+    const handleChange = (): void => checkStandalone();
 
     if (standaloneQuery.addEventListener) {
       standaloneQuery.addEventListener('change', handleChange);
       fullscreenQuery.addEventListener('change', handleChange);
-      return () => {
+      return (): void => {
         standaloneQuery.removeEventListener('change', handleChange);
         fullscreenQuery.removeEventListener('change', handleChange);
       };
@@ -36,13 +36,13 @@ function FullScreenButton() {
     // Fallback for older browsers
     standaloneQuery.addListener(handleChange);
     fullscreenQuery.addListener(handleChange);
-    return () => {
+    return (): void => {
       standaloneQuery.removeListener(handleChange);
       fullscreenQuery.removeListener(handleChange);
     };
   }, []);
 
-  const goFullScreen = () => {
+  const goFullScreen = (): void => {
     // make the browser full screen
     const doc = document.documentElement;
     if (doc.requestFullscreen && !isFullScreen) {
@@ -51,8 +51,8 @@ function FullScreenButton() {
     }
   };
 
-  useEffect(() => {
-    const fullScreenChangeHandler = () => {
+  useEffect((): (() => void) => {
+    const fullScreenChangeHandler = (): void => {
       if (document.fullscreenElement) {
         setIsFullScreen(true);
       } else {
@@ -60,7 +60,7 @@ function FullScreenButton() {
       }
     };
     document.addEventListener('fullscreenchange', fullScreenChangeHandler);
-    return () => {
+    return (): void => {
       document.removeEventListener('fullscreenchange', fullScreenChangeHandler);
     };
   });

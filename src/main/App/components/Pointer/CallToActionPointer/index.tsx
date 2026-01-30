@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../../utils/persistence';
+import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../../Shared/persistence';
 import { Pointer, PointerProps } from '../index';
 import './CallToActionPointer.css';
 
@@ -34,7 +34,7 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
   label,
   timeout,
   ...pointerProps
-}) => {
+}): JSX.Element => {
   // Validate mandatory props
   if (!callKey) {
     throw new Error('CallToActionPointer requires a "callKey" prop');
@@ -49,8 +49,8 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissedForSession, setIsDismissedForSession] = useState(false);
 
-  useEffect(() => {
-    const checkVisibility = async () => {
+  useEffect((): void => {
+    const checkVisibility = async (): Promise<void> => {
       if (isDismissedForSession) {
         setIsVisible(false);
         return;
@@ -70,8 +70,7 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
         } else {
           setIsVisible(false);
         }
-      } catch (error) {
-        console.error('Failed to load call-to-action timestamp:', error);
+      } catch {
         // Default to showing on error
         setIsVisible(true);
       }
@@ -80,14 +79,14 @@ const CallToActionPointer: React.FC<CallToActionPointerProps> = ({
     checkVisibility();
   }, [callKey, timeout, isDismissedForSession]);
 
-  const handleDismiss = async () => {
+  const handleDismiss = async (): Promise<void> => {
     setIsDismissedForSession(true);
     setIsVisible(false);
 
     try {
       await saveCallToActionTimestamp(callKey, Date.now());
-    } catch (error) {
-      console.error('Failed to save call-to-action timestamp:', error);
+    } catch {
+      // Silently handle save failure
     }
   };
 

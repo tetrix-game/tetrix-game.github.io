@@ -1,7 +1,8 @@
-import { describe, test, expect, vi } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
+import { describe, test, expect, vi } from 'vitest';
+
 import { ShapeSelector } from '../main/App/components/ShapeSelector';
-import { TetrixProvider } from '../main/App/contexts/TetrixContext';
+import { TetrixProvider } from '../main/App/Shared/TetrixContext';
 
 // Mock the persistence utilities to avoid IndexedDB issues in tests
 vi.mock('../utils/persistenceUtils', () => ({
@@ -15,8 +16,8 @@ vi.mock('../utils/persistenceUtils', () => ({
         currentLevel: 1,
         queueSize: -1,
         shapesUsed: 0,
-      }
-    }
+      },
+    },
   }),
   safeBatchSave: vi.fn().mockResolvedValue(undefined),
   loadModifiers: vi.fn().mockResolvedValue({ status: 'success', data: [] }),
@@ -31,7 +32,7 @@ describe('ShapeSelector 4-Element Limit', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>
+      </TetrixProvider>,
     );
 
     // Wait for shapes to be populated
@@ -49,7 +50,7 @@ describe('ShapeSelector 4-Element Limit', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>
+      </TetrixProvider>,
     );
 
     await waitFor(() => {
@@ -62,7 +63,7 @@ describe('ShapeSelector 4-Element Limit', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>
+      </TetrixProvider>,
     );
 
     await waitFor(() => {

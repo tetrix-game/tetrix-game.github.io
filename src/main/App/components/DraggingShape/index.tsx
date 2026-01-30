@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { useGameSizing } from '../../hooks/useGameSizing';
-import { ANIMATION_TIMING } from '../../utils/animationConstants';
-import { getShapeBounds } from '../../utils/shapes/shapeGeometry';
 import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
-import { useSoundEffects } from '../../contexts/SoundEffectsContext';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
+import { ANIMATION_TIMING } from '../../Shared/animationConstants';
+import { getShapeBounds } from '../../Shared/shapeGeometry';
+import { useSoundEffects } from '../../Shared/SoundEffectsContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
+import { useGameSizing } from '../../Shared/useGameSizing';
 import './DraggingShape.css';
 
 /**
@@ -27,7 +27,7 @@ import './DraggingShape.css';
  * - Grid: Uses a fixed tile grid.
  * - DraggingShape: Interpolates between these two states.
  */
-export function DraggingShape() {
+export function DraggingShape(): JSX.Element | null {
   const {
     dragState,
     mousePosition,
@@ -83,7 +83,7 @@ export function DraggingShape() {
     }
 
     const startTime = performance.now();
-    const animate = (currentTime: number) => {
+    const animate = (currentTime: number): void => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / PICKUP_DURATION, 1);
       const eased = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
@@ -112,7 +112,7 @@ export function DraggingShape() {
     const startTime = performance.now();
     let soundTriggered = false;
 
-    const animate = (currentTime: number) => {
+    const animate = (currentTime: number): void => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / PLACING_DURATION, 1);
 
@@ -133,7 +133,14 @@ export function DraggingShape() {
       }
     };
     requestAnimationFrame(animate);
-  }, [dragState.phase, dragState.targetPosition, dispatch, playSound, PLACING_DURATION]);
+  }, [
+    dragState.phase,
+    dragState.targetPosition,
+    dispatch,
+    playSound,
+    PLACING_DURATION,
+    PLACEMENT_SOUND_DURATION,
+  ]);
 
   // Animate return
   useEffect(() => {
@@ -143,7 +150,7 @@ export function DraggingShape() {
     }
 
     const startTime = performance.now();
-    const animate = (currentTime: number) => {
+    const animate = (currentTime: number): void => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / RETURN_DURATION, 1);
       const eased = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
@@ -192,7 +199,7 @@ export function DraggingShape() {
 
   // Helper to calculate centering offset for a given cell size
   // This matches ShapeOption's logic: shifts children so the visual center aligns with container center
-  const getCenteringOffset = (cellSize: number, gap: number) => {
+  const getCenteringOffset = (cellSize: number, gap: number): { x: number; y: number } => {
     const bounds = getShapeBounds(shape);
     const cellWithGap = cellSize + gap;
     const shapeVisualCenterCol = bounds.minCol + (bounds.width - 1) / 2;

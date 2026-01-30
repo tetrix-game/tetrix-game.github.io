@@ -7,12 +7,17 @@ export interface SoundEffectsControlContextType {
   toggleEnabled: () => void;
 }
 
-export const SoundEffectsControlContext = createContext<SoundEffectsControlContextType | null>(null);
+export const SoundEffectsControlContext = createContext<
+  SoundEffectsControlContextType | null
+>(null);
 
-export const useSoundEffectsControl = () => {
+export const useSoundEffectsControl = (): SoundEffectsControlContextType => {
   const context = useContext(SoundEffectsControlContext);
   if (!context) {
-    throw new Error('useSoundEffectsControl must be used within a SoundEffectsControlContext.Provider');
+    throw new Error(
+      'useSoundEffectsControl must be used within a'
+        + ' SoundEffectsControlContext.Provider',
+    );
   }
   return context;
 };

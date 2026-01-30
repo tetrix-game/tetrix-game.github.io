@@ -17,8 +17,8 @@ const QueueIndicator: React.FC<QueueIndicatorProps> = ({
   mode,
   hiddenCount,
   onClick,
-}) => {
-  const handleClick = () => {
+}): JSX.Element => {
+  const handleClick = (): void => {
     if (mode === 'finite' && onClick) {
       onClick();
     }

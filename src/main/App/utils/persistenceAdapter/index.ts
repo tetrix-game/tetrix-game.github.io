@@ -5,13 +5,13 @@
  * Uses the CRUD pattern for IndexedDB operations.
  */
 
+import { APP_VERSION } from '../../config/version';
 import type {
   SavedGameState,
   GameSettingsPersistenceData,
   ModifiersPersistenceData,
   LoadResult,
 } from '../../types/persistence';
-import { APP_VERSION } from '../../config/version';
 import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../checksumUtils';
 import * as crud from '../indexedDBCrud';
 import { STORES } from '../indexedDBCrud';
@@ -44,7 +44,7 @@ export async function saveGameState(state: SavedGameState): Promise<void> {
   ]);
 
   if (DEBUG_PERSISTENCE_CHECKSUMS) {
-    console.log(`[Persistence] Saved game state with Root Hash: ${manifest.root.hash}`);
+    // Logging disabled
   }
 }
 
@@ -64,23 +64,18 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
       // User requirement: "Updating the game should reset all state to default state,
       // NEVER honoring the past state"
       if (!state.version || state.version !== APP_VERSION) {
-        console.warn(
-          `[Persistence] Version mismatch! Save version: ${state.version ?? 'unknown'}, App version: ${APP_VERSION}. Treating as corrupted.`
-        );
         return { status: 'not_found' }; // Treat as if no save exists
       }
 
       // REQUIRED FIELDS VALIDATION: All-or-nothing approach
       // If any required field is missing/invalid, treat the entire save as corrupted
-      const hasRequiredFields =
-        typeof state.score === 'number' &&
-        Array.isArray(state.tiles) &&
-        (Array.isArray(state.nextShapes) || Array.isArray(state.nextQueue)) &&
-        typeof state.lastUpdated === 'number' &&
-        state.stats !== null && state.stats !== undefined;
+      const hasRequiredFields = typeof state.score === 'number'
+        && Array.isArray(state.tiles)
+        && (Array.isArray(state.nextShapes) || Array.isArray(state.nextQueue))
+        && typeof state.lastUpdated === 'number'
+        && state.stats !== null && state.stats !== undefined;
 
       if (!hasRequiredFields) {
-        console.error('[Persistence] Save is missing required fields. Treating as corrupted.');
         return { status: 'not_found' }; // Treat as if no save exists
       }
 
@@ -118,32 +113,23 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
         const result = verifyChecksumManifest(sanitizedState, manifest);
 
         if (!result.isValid) {
-          console.error('%c[Persistence] CRITICAL DATA CORRUPTION!', 'color: red; font-weight: bold; font-size: 14px;');
-          console.error(`%cRoot Hash Mismatch! Expected: ${manifest.root.hash}`, 'color: red;');
-          console.group('%cCorruption Triage Report', 'color: orange;');
-          result.mismatches.forEach((mismatch) => {
-            console.error(`❌ Validation Failed at Node: ${mismatch}`);
-          });
-          console.groupEnd();
-
           // We DO NOT fix it. We report it.
           // The app will still load the data (to prevent crash), but the console is screaming.
         } else if (DEBUG_PERSISTENCE_CHECKSUMS) {
-          console.log(`%c[Persistence] Integrity Verified. Root: ${manifest.root.hash}`, 'color: green;');
+          // Logging disabled
         }
       } else {
-        console.warn('[Persistence] No checksum manifest found. This might be a legacy save.');
+        // No checksum manifest found
       }
 
       return { status: 'success', data: sanitizedState };
     }
 
     if (DEBUG_PERSISTENCE_CHECKSUMS) {
-      console.warn('[Persistence] No saved state found');
+      // Logging disabled
     }
     return { status: 'not_found' };
   } catch (error) {
-    console.error('Failed to load game state:', error);
     return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
@@ -178,7 +164,7 @@ export async function clearGameBoard(): Promise<void> {
   }
 
   if (DEBUG_PERSISTENCE_CHECKSUMS) {
-    console.log('[Persistence] Cleared game board (stats preserved)');
+    // Logging disabled
   }
 }
 
@@ -230,7 +216,6 @@ export async function loadSettings(): Promise<LoadResult<GameSettingsPersistence
     }
     return { status: 'not_found' };
   } catch (error) {
-    console.error('Failed to load settings:', error);
     return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
@@ -245,8 +230,20 @@ export async function updateSettings(
   const current = currentResult.status === 'success' ? currentResult.data : null;
 
   const updated: GameSettingsPersistenceData = {
-    music: current?.music || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
-    soundEffects: current?.soundEffects || { isMuted: false, volume: 100, isEnabled: true, lastUpdated: Date.now() },
+    music: current?.music
+      || {
+        isMuted: false,
+        volume: 100,
+        isEnabled: true,
+        lastUpdated: Date.now(),
+      },
+    soundEffects: current?.soundEffects
+      || {
+        isMuted: false,
+        volume: 100,
+        isEnabled: true,
+        lastUpdated: Date.now(),
+      },
     ...current,
     ...updates,
     lastUpdated: Date.now(),
@@ -276,7 +273,13 @@ export async function saveMusicSettings(
 /**
  * Load music settings
  */
-export async function loadMusicSettings(): Promise<LoadResult<{ isMuted: boolean; volume: number; isEnabled: boolean }>> {
+export async function loadMusicSettings(): Promise<
+  LoadResult<{
+    isMuted: boolean;
+    volume: number;
+    isEnabled: boolean;
+  }>
+> {
   const result = await loadSettings();
   if (result.status === 'success') {
     return { status: 'success', data: result.data.music };
@@ -307,7 +310,13 @@ export async function saveSoundEffectsSettings(
 /**
  * Load sound effects settings
  */
-export async function loadSoundEffectsSettings(): Promise<LoadResult<{ isMuted: boolean; volume: number; isEnabled: boolean }>> {
+export async function loadSoundEffectsSettings(): Promise<
+  LoadResult<{
+    isMuted: boolean;
+    volume: number;
+    isEnabled: boolean;
+  }>
+> {
   const result = await loadSettings();
   if (result.status === 'success') {
     return { status: 'success', data: result.data.soundEffects };
@@ -388,7 +397,6 @@ export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
     }
     return { status: 'not_found' };
   } catch (error) {
-    console.error('Failed to load modifiers:', error);
     return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
@@ -407,8 +415,8 @@ export async function clearAllDataAndReload(): Promise<void> {
   try {
     // STEP 1: Extract and preserve long-term statistics
     let preservedStats: {
-      allTime: any;
-      highScore: any;
+      allTime: unknown;
+      highScore: unknown;
       noTurnStreak: { allTimeBest: number };
     } | null = null;
 
@@ -423,10 +431,8 @@ export async function clearAllDataAndReload(): Promise<void> {
             allTimeBest: gameStateResult.data.stats.noTurnStreak.allTimeBest,
           },
         };
-        console.log('[Persistence] Preserved long-term stats before clearing data');
       }
-    } catch (error) {
-      console.warn('[Persistence] Could not extract stats before clearing:', error);
+    } catch {
       // Continue with clearing even if stats extraction fails
     }
 
@@ -483,14 +489,12 @@ export async function clearAllDataAndReload(): Promise<void> {
         };
 
         await saveGameState(freshGameState);
-        console.log('[Persistence] Successfully restored long-term stats after clearing');
-      } catch (error) {
-        console.error('[Persistence] Failed to restore stats after clearing:', error);
+      } catch {
         // Continue with reload even if restoration fails
       }
     }
-  } catch (error) {
-    console.error('Error clearing data:', error);
+  } catch {
+    // Error clearing data
   }
 
   // Force reload
@@ -528,7 +532,6 @@ export async function loadCallToActionTimestamp(callKey: string): Promise<LoadRe
     }
     return { status: 'not_found' };
   } catch (error) {
-    console.error('Failed to load call-to-action timestamp:', error);
     return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }

@@ -1,9 +1,21 @@
+import { getFilledBlocks } from '../../Shared/shapeGeometry';
 import type { Shape, TilesSet, ColorName } from '../../types/core';
 import {
-  generateIPiece, generateOPiece, generateTPiece, generateSPiece, generateZPiece, generateJPiece, generateLPiece,
-  generate3x3Piece, generate3x2Piece, generate5x1Piece, generate3x1Piece, generate2x1Piece, generate1x1Piece, generateEvenLPiece,
+  generateIPiece,
+  generateOPiece,
+  generateTPiece,
+  generateSPiece,
+  generateZPiece,
+  generateJPiece,
+  generateLPiece,
+  generate3x3Piece,
+  generate3x2Piece,
+  generate5x1Piece,
+  generate3x1Piece,
+  generate2x1Piece,
+  generate1x1Piece,
+  generateEvenLPiece,
 } from '../shapes/shapeGeneration';
-import { getFilledBlocks } from '../shapes/shapeGeometry';
 import { rotateShape } from '../shapes/shapeTransforms';
 
 // Simple seeded RNG (Linear Congruential Generator)
@@ -140,7 +152,13 @@ function calculateScore(
         for (const [dr, dc] of dirs) {
           const nr = r + dr;
           const nc = c + dc;
-          if (nr >= minRow && nr <= maxRow && nc >= minCol && nc <= maxCol && grid[nr][nc] !== null) {
+          if (
+            nr >= minRow
+            && nr <= maxRow
+            && nc >= minCol
+            && nc <= maxCol
+            && grid[nr][nc] !== null
+          ) {
             neighbors++;
           }
         }
@@ -166,7 +184,9 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
   // 1-indexed to 0-indexed for internal solver logic
   const gridHeight = 20; // Max height
   const gridWidth = 20; // Max width
-  const grid: (ColorName | null)[][] = Array(gridHeight).fill(null).map(() => Array(gridWidth).fill(null));
+  const grid: (ColorName | null)[][] = Array(gridHeight)
+    .fill(null)
+    .map(() => Array(gridWidth).fill(null));
 
   let minRow = gridHeight, maxRow = 0, minCol = gridWidth, maxCol = 0;
   let tileCount = 0;
@@ -230,7 +250,11 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
     }
 
     // Find all shapes that can cover targetR, targetC
-    const candidates: { shape: Shape, gridPos: { row: number, col: number }, variant: SolverShape }[] = [];
+    const candidates: {
+      shape: Shape;
+      gridPos: { row: number; col: number };
+      variant: SolverShape;
+    }[] = [];
 
     for (const variant of ALL_SHAPE_VARIANTS) {
       const shape = variant.shape;
@@ -278,7 +302,8 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
     // Limit candidates with seeded randomization to keep queue manageable
     const shuffledCandidates = rng.shuffle(candidates);
-    const limitedCandidates = shuffledCandidates.slice(0, 30); // Explore top 30 options
+    // Explore top 30 options
+    const limitedCandidates = shuffledCandidates.slice(0, 30);
 
     // Create new states for each candidate
     for (const candidate of limitedCandidates) {
@@ -303,7 +328,10 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
 
       const nextSolution: PartialSolution = {
         grid: nextGrid,
-        usedShapes: [...current.usedShapes, { shape: candidate.shape, gridPosition: candidate.gridPos }],
+        usedShapes: [
+          ...current.usedShapes,
+          { shape: candidate.shape, gridPosition: candidate.gridPos },
+        ],
         smallShapesUsed: nextSmallShapesUsed,
         score: 0, // Will be calculated below
       };

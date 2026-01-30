@@ -128,7 +128,7 @@ export function generateClearingAnimations(
   const newTiles = new Map(tiles);
 
   // Helper to create tile key
-  const makeTileKey = (row: number, column: number) => `R${row}C${column}`;
+  const makeTileKey = (row: number, column: number): string => `R${row}C${column}`;
 
   // Determine animation types based on count
   const rowCount = clearedRows.length;
@@ -302,7 +302,7 @@ export function generateFullBoardClearAnimation(
   const newTiles = new Map(tiles);
 
   // Helper to create tile key
-  const makeTileKey = (row: number, column: number) => `R${row}C${column}`;
+  const makeTileKey = (row: number, column: number): string => `R${row}C${column}`;
 
   // Apply column animations to all tiles
   // These start after the delay (which accounts for normal animations completing)
@@ -312,11 +312,17 @@ export function generateFullBoardClearAnimation(
       const tileData = newTiles.get(key);
       if (!tileData) continue;
 
-      const waveOffset = calculateWaveOffset(column - 1, finalConfig.fullBoardClear.columns.waveDelay);
+      const waveOffset = calculateWaveOffset(
+        column - 1,
+        finalConfig.fullBoardClear.columns.waveDelay,
+      );
       const animation: TileAnimation = {
         id: generateAnimationId(),
         type: 'full-board-columns',
-        startTime: baseStartTime + delayAfterNormalAnimations + finalConfig.fullBoardClear.columns.startDelay + waveOffset,
+        startTime: baseStartTime
+          + delayAfterNormalAnimations
+          + finalConfig.fullBoardClear.columns.startDelay
+          + waveOffset,
         duration: finalConfig.fullBoardClear.columns.duration,
       };
 
@@ -335,7 +341,10 @@ export function generateFullBoardClearAnimation(
       const animation: TileAnimation = {
         id: generateAnimationId(),
         type: 'full-board-rows',
-        startTime: baseStartTime + delayAfterNormalAnimations + finalConfig.fullBoardClear.rows.startDelay + waveOffset,
+        startTime: baseStartTime
+          + delayAfterNormalAnimations
+          + finalConfig.fullBoardClear.rows.startDelay
+          + waveOffset,
         duration: finalConfig.fullBoardClear.rows.duration,
       };
 

@@ -73,7 +73,11 @@ function isValidHexagonCoordinate(row: number, column: number, size: number): bo
   // Hexagon is like a diamond but with flatter top/bottom
   // This is a simplified version - true hexagonal grids need offset coordinates
   const maxDist = Math.floor(size / 2);
-  return rowDist <= maxDist && colDist <= maxDist && (rowDist + colDist) <= maxDist + Math.floor(size / 4);
+  return (
+    rowDist <= maxDist
+    && colDist <= maxDist
+    && (rowDist + colDist) <= maxDist + Math.floor(size / 4)
+  );
 }
 
 /**
@@ -166,14 +170,20 @@ export function setGridShape(config: Partial<GridShapeConfig>): void {
 
   // For diamond/circle shapes, recommend odd sizes for symmetry
   if ((GRID_SHAPE_CONFIG.shape === 'diamond' || GRID_SHAPE_CONFIG.shape === 'circle') && size % 2 === 0) {
-    console.warn(`${GRID_SHAPE_CONFIG.shape} shape works best with odd sizes. Consider using ${size + 1} instead of ${size}`);
+    // Shape works best with odd sizes
   }
 }
 
 /**
  * Get grid statistics for current shape
  */
-export function getGridShapeStats() {
+export function getGridShapeStats(): {
+  shape: GridShape;
+  size: number;
+  totalTiles: number;
+  boundingBox: string;
+  efficiency: string;
+} {
   const addresses = generateShapedGridAddresses(GRID_SHAPE_CONFIG);
   const { shape, size } = GRID_SHAPE_CONFIG;
 
@@ -221,7 +231,7 @@ export function createCrossShape(size: number): GridShapeConfig {
   return {
     shape: 'custom',
     size,
-    customValidator: (row: number, column: number) => {
+    customValidator: (row: number, column: number): boolean => {
       // Valid if in horizontal or vertical arm of cross
       const inHorizontalArm = Math.abs(row - center) <= armWidth;
       const inVerticalArm = Math.abs(column - center) <= armWidth;
@@ -239,7 +249,7 @@ export function createPlusShape(size: number): GridShapeConfig {
   return {
     shape: 'custom',
     size,
-    customValidator: (row: number, column: number) => {
+    customValidator: (row: number, column: number): boolean => {
       // Valid only on center row or center column
       return row === center || column === center;
     },

@@ -48,13 +48,27 @@ const Tile: React.FC<TileProps> = ({
       onMouseDown={onMouseDown}
       {...rest}
     >
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 0,
+        }}
+      >
         <Shared_TileSvg color={backgroundColor} />
       </div>
 
       {hasCustomBackground && backgroundColor && (
         <div className="tile-icon-background">
-          <Shared_ShapeIcon color={backgroundColor} size={20} opacity={0.3} useBorderLeftColor={true} />
+          <Shared_ShapeIcon
+            color={backgroundColor}
+            size={20}
+            opacity={0.3}
+            useBorderLeftColor={true}
+          />
         </div>
       )}
       {children}

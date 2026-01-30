@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { adjustLuminosity, BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../main/App/utils/colorUtils';
 
 describe('Color Utilities', () => {
@@ -42,7 +43,7 @@ describe('Color Utilities', () => {
 
     it('should have all seven colors in each palette', () => {
       const colorNames = ['grey', 'red', 'orange', 'yellow', 'green', 'blue', 'purple'];
-      
+
       for (const theme of ['dark', 'light', 'block-blast'] as const) {
         const palette = BLOCK_COLOR_PALETTES[theme];
         for (const colorName of colorNames) {
@@ -59,16 +60,16 @@ describe('Color Utilities', () => {
     it('should have correct luminosity adjustments for 3D effect', () => {
       const darkPalette = BLOCK_COLOR_PALETTES.dark;
       const redColor = darkPalette.red;
-      
+
       // Parse base color
       const [rBase] = redColor.bg.match(/\d+/g)!.map(Number);
-      
+
       // Parse border colors
       const [rTop] = redColor.borderTop.match(/\d+/g)!.map(Number);
       const [rLeft] = redColor.borderLeft.match(/\d+/g)!.map(Number);
       const [rRight] = redColor.borderRight.match(/\d+/g)!.map(Number);
       const [rBottom] = redColor.borderBottom.match(/\d+/g)!.map(Number);
-      
+
       // Top should be lighter than base
       expect(rTop).toBeGreaterThan(rBase);
       // Left should be lighter than base (but less than top)
@@ -84,24 +85,24 @@ describe('Color Utilities', () => {
   describe('blockPaletteToCssVars', () => {
     it('should generate CSS variables for a palette', () => {
       const cssVars = blockPaletteToCssVars(BLOCK_COLOR_PALETTES.dark);
-      
+
       // Should have 35 variables (7 colors × 5 properties each)
       expect(Object.keys(cssVars)).toHaveLength(35);
-      
+
       // Check some specific variables exist
       expect(cssVars).toHaveProperty('--color-red-bg');
       expect(cssVars).toHaveProperty('--color-red-border-top');
       expect(cssVars).toHaveProperty('--color-red-border-left');
       expect(cssVars).toHaveProperty('--color-red-border-right');
       expect(cssVars).toHaveProperty('--color-red-border-bottom');
-      
+
       expect(cssVars).toHaveProperty('--color-blue-bg');
       expect(cssVars).toHaveProperty('--color-purple-border-top');
     });
 
     it('should produce valid RGB color strings', () => {
       const cssVars = blockPaletteToCssVars(BLOCK_COLOR_PALETTES.light);
-      
+
       for (const value of Object.values(cssVars)) {
         expect(value).toMatch(/rgb\(\d+, \d+, \d+\)/);
       }

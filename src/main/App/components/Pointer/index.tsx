@@ -21,17 +21,17 @@ const Pointer: React.FC<PointerProps> = ({
   arrowLength = 100,
   offsetFromTarget = 60,
   children,
-}) => {
+}): JSX.Element | null => {
   const [targetPosition, setTargetPosition] = useState<Point | null>(null);
 
-  const screenCenter = useMemo(() => ({
+  const screenCenter = useMemo((): Point => ({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   }), []);
 
   // Calculate target position from ref
-  useEffect(() => {
-    const updatePosition = () => {
+  useEffect((): (() => void) | void => {
+    const updatePosition = (): void => {
       if (targetRef.current) {
         const rect = targetRef.current.getBoundingClientRect();
         setTargetPosition({
@@ -46,7 +46,7 @@ const Pointer: React.FC<PointerProps> = ({
       window.addEventListener('resize', updatePosition);
       window.addEventListener('scroll', updatePosition);
 
-      return () => {
+      return (): void => {
         window.removeEventListener('resize', updatePosition);
         window.removeEventListener('scroll', updatePosition);
       };

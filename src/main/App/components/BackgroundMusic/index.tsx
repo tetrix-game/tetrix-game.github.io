@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
-import { useMusicControl } from '../../contexts/MusicControlContext';
-import { useTetrixStateContext } from '../../contexts/TetrixContext';
+import { useMusicControl } from '../../Shared/MusicControlContext';
+import { useTetrixStateContext } from '../../Shared/TetrixContext';
 import './BackgroundMusic.css';
 
 // Per-track volume multipliers to normalize loudness across all BGM tracks
@@ -22,7 +22,7 @@ const TRACK_VOLUME_MULTIPLIERS: Record<string, number> = {
 // Base volume scale (0-1) - pleasant background music level
 const BASE_BGM_VOLUME = 0.5;
 
-const BackgroundMusic: React.FC = () => {
+const BackgroundMusic: React.FC = (): JSX.Element => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const currentTrackRef = useRef<string>('');
   const { hasPlacedFirstShape } = useTetrixStateContext();
@@ -47,7 +47,7 @@ const BackgroundMusic: React.FC = () => {
   ], []);
 
   // Trigger background music 1 second after first shape placement
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (hasPlacedFirstShape && !hasTriggeredFromShapeRef.current) {
       const timer = setTimeout(() => {
         hasTriggeredFromShapeRef.current = true;
@@ -68,13 +68,16 @@ const BackgroundMusic: React.FC = () => {
       const trackMultiplier = TRACK_VOLUME_MULTIPLIERS[currentTrackRef.current] ?? 1.0;
       const calculatedVolume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
       // Ensure volume is a valid finite number between 0 and 1
-      audio.volume = Number.isFinite(calculatedVolume) ? Math.max(0, Math.min(1, calculatedVolume)) : 0;
+      const finalVolume = Number.isFinite(calculatedVolume)
+        ? Math.max(0, Math.min(1, calculatedVolume))
+        : 0;
+      audio.volume = finalVolume;
     }
   }, [volume]);
 
   // Handle page visibility changes (app backgrounded/foregrounded)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
+  useEffect((): (() => void) => {
+    const handleVisibilityChange = (): void => {
       const audio = audioRef.current;
       if (!audio) return;
 
@@ -87,8 +90,8 @@ const BackgroundMusic: React.FC = () => {
       } else {
         // App is coming to foreground - resume if it was playing before
         if (wasPlayingBeforeHiddenRef.current && shouldPlayMusic && isEnabled && volume > 0) {
-          audio.play().catch((error) => {
-            console.log('Failed to resume music after visibility change:', error);
+          audio.play().catch((): void => {
+            // Silently handle play failure
           });
         }
       }
@@ -96,24 +99,24 @@ const BackgroundMusic: React.FC = () => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    return () => {
+    return (): void => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [shouldPlayMusic, isEnabled, volume]);
 
   // Set up audio and handle track changes
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     const audio = audioRef.current;
     if (!audio) return;
 
     // Function to get a random track
-    const getRandomTrack = () => {
+    const getRandomTrack = (): string => {
       const randomIndex = Math.floor(Math.random() * tracks.length);
       return tracks[randomIndex];
     };
 
     // Function to play a random track
-    const playRandomTrack = async () => {
+    const playRandomTrack = async (): Promise<void> => {
       if (shouldPlayMusic && isEnabled && volume > 0) {
         const track = getRandomTrack();
         currentTrackRef.current = track;
@@ -122,18 +125,21 @@ const BackgroundMusic: React.FC = () => {
         const trackMultiplier = TRACK_VOLUME_MULTIPLIERS[track] ?? 1.0;
         const calculatedVolume = (volume / 100) * BASE_BGM_VOLUME * trackMultiplier;
         // Ensure volume is a valid finite number between 0 and 1
-        audio.volume = Number.isFinite(calculatedVolume) ? Math.max(0, Math.min(1, calculatedVolume)) : 0;
+        const finalVolume = Number.isFinite(calculatedVolume)
+          ? Math.max(0, Math.min(1, calculatedVolume))
+          : 0;
+        audio.volume = finalVolume;
 
         try {
           await audio.play();
-        } catch (error) {
-          console.log('Auto-play was prevented by browser policy:', error);
+        } catch {
+          // Silently handle auto-play prevention
         }
       }
     };
 
     // Handle track ending to play another random track
-    const handleTrackEnd = () => {
+    const handleTrackEnd = (): void => {
       if (shouldPlayMusic && isEnabled && volume > 0) {
         playRandomTrack();
       }
@@ -150,7 +156,7 @@ const BackgroundMusic: React.FC = () => {
       audio.pause();
     }
 
-    return () => {
+    return (): void => {
       audio.removeEventListener('ended', handleTrackEnd);
     };
   }, [shouldPlayMusic, isEnabled, volume, tracks]);

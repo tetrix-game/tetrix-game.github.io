@@ -7,7 +7,7 @@ describe('Visibility Pause Behavior', () => {
   // - BackgroundMusic component resumes audio when document.hidden becomes false (if it was playing before)
   // - SoundEffectsContext suspends AudioContext when document.hidden becomes true
   // - SoundEffectsContext resumes AudioContext when document.hidden becomes false
-  
+
   // This ensures that audio stops when the app is backgrounded on mobile devices
   // and resumes when the app is brought back to the foreground
 
@@ -32,7 +32,7 @@ describe('Visibility Pause Behavior', () => {
   });
 
   it.skip('should resume AudioContext when app is foregrounded', () => {
-    // Functionality verified manually on mobile devices  
+    // Functionality verified manually on mobile devices
     // Implementation in SoundEffectsContext.tsx uses ctx.resume()
   });
 });

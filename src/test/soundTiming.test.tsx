@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
 import { DraggingShape } from '../main/App/components/DraggingShape';
-import { TetrixStateContext, TetrixDispatchContext } from '../main/App/contexts/TetrixContext';
-import type { TetrixReducerState } from '../main/App/types/gameState';
+import { ANIMATION_TIMING } from '../main/App/Shared/animationConstants';
+import { TetrixStateContext, TetrixDispatchContext } from '../main/App/Shared/TetrixContext';
 import type { DragPhase } from '../main/App/types/drag';
+import type { TetrixReducerState } from '../main/App/types/gameState';
 import { INITIAL_GAME_STATS } from '../main/App/types/stats';
-import { ANIMATION_TIMING } from '../main/App/utils/animationConstants';
 
 const mocks = vi.hoisted(() => ({
   playSound: vi.fn(),
@@ -14,11 +15,15 @@ const mocks = vi.hoisted(() => ({
 // Mock the sound effects module
 vi.mock('../components/SoundEffectsContext', () => ({
   playSound: mocks.playSound,
-  useSoundEffects: () => ({
+  useSoundEffects: (): {
+    playSound: typeof mocks.playSound;
+    setMuted: ReturnType<typeof vi.fn>;
+    isMuted: boolean;
+  } => ({
     playSound: mocks.playSound,
     setMuted: vi.fn(),
-    isMuted: false
-  })
+    isMuted: false,
+  }),
 }));
 
 const mockDispatch = vi.fn();
@@ -53,7 +58,7 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
     hoveredBlockPositions: [],
     invalidBlockPositions: [],
     placementStartPosition: null,
-    dragOffsets: null
+    dragOffsets: null,
   },
   shapeOptionBounds: [],
   openRotationMenus: [],
@@ -88,14 +93,14 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   isStatsOpen: false,
   isQueueOverlayOpen: false,
   insufficientFundsError: null,
-  initialDailyState: null
+  initialDailyState: null,
 });
 
 describe('Sound Timing in DraggingShape', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance', 'Date']
+      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance', 'Date'],
     });
   });
 
@@ -111,11 +116,12 @@ describe('Sound Timing in DraggingShape', () => {
         <TetrixDispatchContext.Provider value={mockDispatch}>
           <DraggingShape />
         </TetrixDispatchContext.Provider>
-      </TetrixStateContext.Provider>
+      </TetrixStateContext.Provider>,
     );
 
     // Calculate sound trigger time
-    const soundTriggerTime = ANIMATION_TIMING.PLACING_DURATION - ANIMATION_TIMING.PLACEMENT_SOUND_DURATION;
+    const soundTriggerTime =
+      ANIMATION_TIMING.PLACING_DURATION - ANIMATION_TIMING.PLACEMENT_SOUND_DURATION;
 
     // Fast-forward to the sound trigger point
     await act(async () => {
@@ -136,7 +142,7 @@ describe('Sound Timing in DraggingShape', () => {
         <TetrixDispatchContext.Provider value={mockDispatch}>
           <DraggingShape />
         </TetrixDispatchContext.Provider>
-      </TetrixStateContext.Provider>
+      </TetrixStateContext.Provider>,
     );
 
     // Fast-forward past the sound trigger point
@@ -156,7 +162,7 @@ describe('Sound Timing in DraggingShape', () => {
         <TetrixDispatchContext.Provider value={mockDispatch}>
           <DraggingShape />
         </TetrixDispatchContext.Provider>
-      </TetrixStateContext.Provider>
+      </TetrixStateContext.Provider>,
     );
 
     // Fast-forward to completion

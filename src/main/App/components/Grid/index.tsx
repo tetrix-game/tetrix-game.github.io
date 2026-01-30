@@ -1,11 +1,11 @@
 import './Grid.css';
 import { useRef, useEffect, useMemo } from 'react';
 
-import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
-import { useGameSizing } from '../../hooks/useGameSizing';
-import { GRID_SIZE } from '../../utils/gridConstants';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import { TetrixTile } from '../../components/TetrixTile';
+import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
+import { GRID_SIZE } from '../../Shared/gridConstants';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
+import { useGameSizing } from '../../Shared/useGameSizing';
 
 interface GridProps {
   width?: number; // Grid width in tiles (default: GRID_SIZE)
@@ -13,7 +13,7 @@ interface GridProps {
   pixelSize?: number; // Optional override for grid size in pixels
 }
 
-export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps) {
+export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps): JSX.Element {
   const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -31,17 +31,17 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
     : hookGridCellSize;
 
   // Periodically clean up expired animations
-  useEffect(() => {
-    const intervalId = setInterval(() => {
+  useEffect((): (() => void) => {
+    const intervalId = setInterval((): void => {
       dispatch({ type: 'CLEANUP_ANIMATIONS' });
     }, 1000); // Cleanup every second
 
-    return () => clearInterval(intervalId);
+    return (): void => clearInterval(intervalId);
   }, [dispatch]);
 
   // Handle escape key to cancel selection
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  useEffect((): (() => void) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       // Don't handle escape if debug editor is open
       if (e.key === 'Escape' && dragState.selectedShape && !isDebugMode) {
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
@@ -49,13 +49,13 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    return () => {
+    return (): void => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [dragState.selectedShape, dispatch, isDebugMode]);
 
   // Handle debug click via event delegation
-  const handleGridClick = (e: React.MouseEvent) => {
+  const handleGridClick = (e: React.MouseEvent): void => {
     if (!isDebugMode) return;
 
     const target = e.target as HTMLElement;
@@ -78,7 +78,7 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
   );
 
   // Generate all potential tile positions in the grid
-  const allPositions = useMemo(() => {
+  const allPositions = useMemo((): string[] => {
     const positions: string[] = [];
     for (let row = 1; row <= height; row++) {
       for (let col = 1; col <= width; col++) {
@@ -120,7 +120,6 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
           // Parse position to location
           const match = position.match(/R(\d+)C(\d+)/);
           if (!match) {
-            console.error(`Invalid position format: ${position}`);
             return null;
           }
           const row = parseInt(match[1]);

@@ -5,18 +5,18 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
+import { GRID_ADDRESSES, makeTileKey } from '../../Shared/gridConstants';
 import type { Tile, QueuedShape, Shape, ColorName } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // Persistence imports removed - handled by PersistenceListener
 import { DEFAULT_COLOR_PROBABILITIES } from '../../types/shapeQueue';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../../types/stats';
 import { checkGameOver } from '../../utils/gameOverUtils';
-import { GRID_ADDRESSES, makeTileKey } from '../../utils/gridConstants';
 import { checkMapCompletion } from '../../utils/mapCompletionUtils';
 import { updateStats } from '../../utils/statsUtils';
 
 // Helper function to create tiles Map using plain Tile objects
-const makeTiles = () => {
+const makeTiles = (): Map<string, Tile> => {
   const tiles = new Map<string, Tile>();
   for (const key of GRID_ADDRESSES) {
     // Parse the key to determine row and column
@@ -102,7 +102,10 @@ export const initialGameState = {
   grandpaMode: false,
 };
 
-export function gameStateReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
+export function gameStateReducer(
+  state: TetrixReducerState,
+  action: TetrixAction,
+): TetrixReducerState {
   switch (action.type) {
     case 'SET_LEVEL': {
       const { levelIndex } = action.value;
@@ -225,7 +228,16 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       let hasFilledTiles = false;
 
       if (Array.isArray(gameData.tiles)) {
-        gameData.tiles.forEach((tileData: any) => {
+        type TileDataFormat = {
+          location?: { row: number; column: number };
+          block?: { isFilled: boolean; color: ColorName };
+          tileBackgroundColor?: ColorName;
+          position?: string;
+          backgroundColor?: ColorName;
+          isFilled?: boolean;
+          color?: ColorName;
+        };
+        gameData.tiles.forEach((tileData: TileDataFormat) => {
           // Old format: has location and block properties
           if (tileData.location && tileData.block) {
             const position = makeTileKey(tileData.location.row, tileData.location.column);
@@ -271,7 +283,12 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         restoredUnlockedSlots = new Set(gameData.unlockedSlots);
       } else if (typeof gameData.unlockedSlots === 'number') {
         // Legacy: convert number to Set (assume slots 1 through N are unlocked)
-        restoredUnlockedSlots = new Set(Array.from({ length: gameData.unlockedSlots }, (_, i) => i + 1));
+        restoredUnlockedSlots = new Set(
+          Array.from(
+            { length: gameData.unlockedSlots },
+            (_, i) => i + 1,
+          ),
+        );
       } else {
         // Default: only slot 1 unlocked
         restoredUnlockedSlots = new Set([1]);
@@ -348,9 +365,17 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // Only check if there's actual game progress (prevents false positives on fresh state).
       let actuallyGameOver = false;
 
-      if (plainShapesForCheck.length > 0 && (hasFilledTiles || gameData.score > 0 || gameData.hasPlacedFirstShape)) {
+      if (
+        plainShapesForCheck.length > 0
+        && (hasFilledTiles || gameData.score > 0 || gameData.hasPlacedFirstShape)
+      ) {
         // Check if any moves are actually possible with the loaded state
-        actuallyGameOver = checkGameOver(tilesMap, plainShapesForCheck, loadedOpenRotationMenus, state.gameMode);
+        actuallyGameOver = checkGameOver(
+          tilesMap,
+          plainShapesForCheck,
+          loadedOpenRotationMenus,
+          state.gameMode,
+        );
       } else if (plainShapesForCheck.length === 0 && gameData.queueMode === 'finite') {
         // Finite mode with no shapes left is game over
         actuallyGameOver = true;
@@ -677,10 +702,23 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], []);
 
         // 3. Triple Row
-        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }], []);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }],
+          [],
+        );
 
         // 4. Quadruple Row
-        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }], []);
+        newStats = updateStats(
+          newStats,
+          [
+            { index: 1, color },
+            { index: 2, color },
+            { index: 3, color },
+            { index: 4, color },
+          ],
+          [],
+        );
 
         // 5. Single Column
         newStats = updateStats(newStats, [], [{ index: 1, color }]);
@@ -689,34 +727,75 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
         newStats = updateStats(newStats, [], [{ index: 1, color }, { index: 2, color }]);
 
         // 7. Triple Column
-        newStats = updateStats(newStats, [], [{ index: 1, color }, { index: 2, color }, { index: 3, color }]);
+        newStats = updateStats(
+          newStats,
+          [],
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }],
+        );
 
         // 8. Quadruple Column
-        newStats = updateStats(newStats, [], [{ index: 1, color }, { index: 2, color }, { index: 3, color }, { index: 4, color }]);
+        newStats = updateStats(
+          newStats,
+          [],
+          [
+            { index: 1, color },
+            { index: 2, color },
+            { index: 3, color },
+            { index: 4, color },
+          ],
+        );
 
         // 9. Double Row + Single Column
-        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }]);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }, { index: 2, color }],
+          [{ index: 1, color }],
+        );
 
         // 10. Triple Row + Single Column
-        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }], [{ index: 1, color }]);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }],
+          [{ index: 1, color }],
+        );
 
         // 11. Triple Row + Double Column
-        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }, { index: 3, color }], [{ index: 1, color }, { index: 2, color }]);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }],
+          [{ index: 1, color }, { index: 2, color }],
+        );
 
         // 12. Double Column + Single Row
-        newStats = updateStats(newStats, [{ index: 1, color }], [{ index: 1, color }, { index: 2, color }]);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }],
+          [{ index: 1, color }, { index: 2, color }],
+        );
 
         // 13. Triple Column + Double Row
-        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }, { index: 2, color }, { index: 3, color }]);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }, { index: 2, color }],
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }],
+        );
 
         // 14. Triple Column + Single Row
-        newStats = updateStats(newStats, [{ index: 1, color }], [{ index: 1, color }, { index: 2, color }, { index: 3, color }]);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }],
+          [{ index: 1, color }, { index: 2, color }, { index: 3, color }],
+        );
 
         // 15. 1x1 Square
         newStats = updateStats(newStats, [{ index: 1, color }], [{ index: 1, color }]);
 
         // 16. 2x2 Square
-        newStats = updateStats(newStats, [{ index: 1, color }, { index: 2, color }], [{ index: 1, color }, { index: 2, color }]);
+        newStats = updateStats(
+          newStats,
+          [{ index: 1, color }, { index: 2, color }],
+          [{ index: 1, color }, { index: 2, color }],
+        );
 
         // 17. 4x4 Legendary
         newStats = updateStats(

@@ -1,16 +1,22 @@
 import './ShapeSelector.css';
 import { useEffect, useMemo } from 'react';
 
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Shared/TetrixContext';
 import type { QueueItem, PurchasableSlot } from '../../types/core';
 import { generateRandomShape } from '../../utils/shapes/shapeGeneration';
 import { PurchasableSlotOption } from '../PurchasableSlotOption';
 import { ShapeOption } from '../ShapeOption';
 import { ShapeProducerViewport } from '../ShapeProducerViewport';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../contexts/TetrixContext';
 
 const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
-  const { nextShapes, removingShapeIndex, shapeRemovalAnimationState, queueMode, unlockedSlots } = useTetrixStateContext();
+  const {
+    nextShapes,
+    removingShapeIndex,
+    shapeRemovalAnimationState,
+    queueMode,
+    unlockedSlots,
+  } = useTetrixStateContext();
 
   // Create initial queue - shapes + purchasable slots based on which slots are unlocked
   const initialQueue = useMemo(() => {

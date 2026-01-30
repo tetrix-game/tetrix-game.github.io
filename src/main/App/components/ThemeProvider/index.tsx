@@ -4,9 +4,9 @@
 
 import React from 'react';
 
+import { useTetrixStateContext } from '../../Shared/TetrixContext';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../../utils/colorUtils';
 import { THEME_DEFINITIONS, themeToCssVars } from '../../utils/themeUtils';
-import { useTetrixStateContext } from '../../contexts/TetrixContext';
 
 type ThemeProviderProps = {
   children: React.ReactNode;

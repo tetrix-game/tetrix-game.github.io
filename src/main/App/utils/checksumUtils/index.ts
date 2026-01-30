@@ -44,18 +44,18 @@ function hashString(str: string): string {
  * Hashes a leaf value (raw data).
  * Uses JSON.stringify for deterministic serialization.
  */
-function hashLeaf(data: any): string {
+function hashLeaf(data: unknown): string {
   if (data === undefined) return 'undefined';
   if (data === null) return 'null';
   // Sort keys for deterministic object hashing
-  const str = JSON.stringify(data, (_key, value) => {
+  const str = JSON.stringify(data, (_key, value: unknown) => {
     if (value && typeof value === 'object' && !Array.isArray(value)) {
-      return Object.keys(value)
+      return Object.keys(value as Record<string, unknown>)
         .sort()
-        .reduce((sorted: any, k) => {
-          sorted[k] = value[k];
-          return sorted;
-        }, {});
+        .reduce((sorted: Record<string, unknown>, k) => ({
+          ...sorted,
+          [k]: (value as Record<string, unknown>)[k],
+        }), {});
     }
     return value;
   });
@@ -126,7 +126,10 @@ export function generateChecksumManifest(state: SavedGameState): ChecksumManifes
  * Verifies the data against the manifest.
  * Reconstructs the tree from data and compares it to the manifest.
  */
-export function verifyChecksumManifest(data: SavedGameState, manifest: ChecksumManifest): VerificationResult {
+export function verifyChecksumManifest(
+  data: SavedGameState,
+  manifest: ChecksumManifest,
+): VerificationResult {
   const mismatches: string[] = [];
 
   // 1. Re-generate the tree from the loaded data

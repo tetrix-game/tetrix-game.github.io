@@ -1,12 +1,14 @@
 /**
  * Grid Size Configuration Tests
- * 
+ *
  * Tests for dynamic grid size functionality, verifying that the grid can be
  * configured to different sizes beyond the default 10x10.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { GRID_SIZE, GRID_ADDRESSES, setGridSize, makeTileKey } from '../main/App/utils/gridConstants';
+
+import { GRID_SIZE, GRID_ADDRESSES, setGridSize, makeTileKey } from '../main/App/Shared/gridConstants';
+
 import { createTilesWithFilled } from './testHelpers';
 
 describe('Dynamic Grid Size', () => {

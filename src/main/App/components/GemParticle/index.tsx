@@ -45,7 +45,13 @@ const GemParticle: React.FC<GemParticleProps> = ({
 
   useEffect(() => {
     // Use initial props from ref to prevent animation restart on re-renders
-    const { startPosition: initialStart, velocity: initialVelocity, onComplete: initialOnComplete, delay: initialDelay, attractTo: target } = initialPropsRef.current;
+    const {
+      startPosition: initialStart,
+      velocity: initialVelocity,
+      onComplete: initialOnComplete,
+      delay: initialDelay,
+      attractTo: target,
+    } = initialPropsRef.current;
 
     // Store velocity in a ref so it can be updated during animation (for attraction)
     const currentVelocity = { x: initialVelocity.x, y: initialVelocity.y };
@@ -56,7 +62,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
       let lastFrameTime = performance.now();
       const currentPos = { ...initialStart };
 
-      const animate = (currentTime: number) => {
+      const animate = (currentTime: number): void => {
         if (!startTimeRef.current) return;
 
         const elapsed = (currentTime - startTimeRef.current) / 1000; // Convert to seconds
@@ -82,7 +88,7 @@ const GemParticle: React.FC<GemParticleProps> = ({
             setCurrentPosition(target);
             setOpacity(1);
             // Complete after a brief moment at the target
-            setTimeout(() => initialOnComplete(), 50);
+            setTimeout((): void => initialOnComplete(), 50);
             return;
           }
 
@@ -100,7 +106,9 @@ const GemParticle: React.FC<GemParticleProps> = ({
         } else {
           // Fall mode: standard physics with downward gravity
           currentPos.x = initialStart.x + currentVelocity.x * elapsed;
-          currentPos.y = initialStart.y + currentVelocity.y * elapsed + 0.5 * GRAVITY * elapsed * elapsed;
+          currentPos.y = initialStart.y
+            + currentVelocity.y * elapsed
+            + 0.5 * GRAVITY * elapsed * elapsed;
         }
 
         // Calculate opacity with fade in and fade out
@@ -125,12 +133,13 @@ const GemParticle: React.FC<GemParticleProps> = ({
       animationRef.current = requestAnimationFrame(animate);
     }, initialDelay);
 
-    return () => {
+    return (): void => {
       clearTimeout(startDelay);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - animation should only run once
 
   return (

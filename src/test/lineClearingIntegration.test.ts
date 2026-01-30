@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
+
 import { tetrixReducer, initialState } from '../main/App/reducers';
-import type { Shape } from '../main/App/types/core';
+import type { Shape, Tile } from '../main/App/types/core';
+
 import { getTileData } from './testHelpers';
 
 // Helper to count filled tiles in a row
-const countFilledInRow = (tiles: Map<string, any>, row: number): number => {
+const countFilledInRow = (tiles: Map<string, Tile>, row: number): number => {
   let count = 0;
   for (let col = 1; col <= 10; col++) {
     const tile = getTileData(tiles, row, col);
@@ -14,7 +16,7 @@ const countFilledInRow = (tiles: Map<string, any>, row: number): number => {
 };
 
 // Helper to count filled tiles in a column
-const countFilledInColumn = (tiles: Map<string, any>, column: number): number => {
+const countFilledInColumn = (tiles: Map<string, Tile>, column: number): number => {
   let count = 0;
   for (let row = 1; row <= 10; row++) {
     const tile = getTileData(tiles, row, column);
@@ -29,26 +31,26 @@ const createHorizontalLineShape = (): Shape => [
     { color: 'red', isFilled: false },
     { color: 'red', isFilled: false },
     { color: 'red', isFilled: false },
-    { color: 'red', isFilled: false }
+    { color: 'red', isFilled: false },
   ],
   [
     { color: 'red', isFilled: true },
     { color: 'red', isFilled: true },
     { color: 'red', isFilled: true },
-    { color: 'red', isFilled: true }
+    { color: 'red', isFilled: true },
   ],
   [
     { color: 'red', isFilled: false },
     { color: 'red', isFilled: false },
     { color: 'red', isFilled: false },
-    { color: 'red', isFilled: false }
+    { color: 'red', isFilled: false },
   ],
   [
     { color: 'red', isFilled: false },
     { color: 'red', isFilled: false },
     { color: 'red', isFilled: false },
-    { color: 'red', isFilled: false }
-  ]
+    { color: 'red', isFilled: false },
+  ],
 ];
 
 // Helper to create a simple vertical line shape (4 blocks in a column)
@@ -57,26 +59,26 @@ const createVerticalLineShape = (): Shape => [
     { color: 'blue', isFilled: false },
     { color: 'blue', isFilled: true },
     { color: 'blue', isFilled: false },
-    { color: 'blue', isFilled: false }
+    { color: 'blue', isFilled: false },
   ],
   [
     { color: 'blue', isFilled: false },
     { color: 'blue', isFilled: true },
     { color: 'blue', isFilled: false },
-    { color: 'blue', isFilled: false }
+    { color: 'blue', isFilled: false },
   ],
   [
     { color: 'blue', isFilled: false },
     { color: 'blue', isFilled: true },
     { color: 'blue', isFilled: false },
-    { color: 'blue', isFilled: false }
+    { color: 'blue', isFilled: false },
   ],
   [
     { color: 'blue', isFilled: false },
     { color: 'blue', isFilled: true },
     { color: 'blue', isFilled: false },
-    { color: 'blue', isFilled: false }
-  ]
+    { color: 'blue', isFilled: false },
+  ],
 ];
 
 // Helper to create a single block shape (in 4x4 grid)
@@ -85,26 +87,26 @@ const createSingleBlockShape = (): Shape => [
     { color: 'green', isFilled: false },
     { color: 'green', isFilled: false },
     { color: 'green', isFilled: false },
-    { color: 'green', isFilled: false }
+    { color: 'green', isFilled: false },
   ],
   [
     { color: 'green', isFilled: false },
     { color: 'green', isFilled: true },
     { color: 'green', isFilled: false },
-    { color: 'green', isFilled: false }
+    { color: 'green', isFilled: false },
   ],
   [
     { color: 'green', isFilled: false },
     { color: 'green', isFilled: false },
     { color: 'green', isFilled: false },
-    { color: 'green', isFilled: false }
+    { color: 'green', isFilled: false },
   ],
   [
     { color: 'green', isFilled: false },
     { color: 'green', isFilled: false },
     { color: 'green', isFilled: false },
-    { color: 'green', isFilled: false }
-  ]
+    { color: 'green', isFilled: false },
+  ],
 ];
 
 describe('Tetrix Reducer - Line Clearing Integration', () => {
@@ -125,7 +127,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: horizontalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -141,7 +143,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: horizontalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -158,7 +160,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -173,7 +175,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -198,7 +200,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Place vertical shapes to fill column 3
       const verticalShape = createVerticalLineShape();
 
-      // Place shapes at different rows to fill column 3 
+      // Place shapes at different rows to fill column 3
       // Vertical shape has blocks at col 1. To target col 3: col=2
       // First shape at row 1 (covers rows 1-4)
       state = {
@@ -208,11 +210,11 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: verticalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
-      // Second shape at row 5 (covers rows 5-8)  
+      // Second shape at row 5 (covers rows 5-8)
       state = {
         ...state,
         mouseGridLocation: { row: 5, column: 2 },
@@ -220,7 +222,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: verticalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -238,7 +240,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -253,7 +255,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -276,7 +278,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // We'll manually fill row 5 and column 5 except for the intersection point
       let state = initialState;
 
-      // Fill all of row 5 
+      // Fill all of row 5
       const horizontalShape = createHorizontalLineShape();
 
       // First shape at column 1 (covers columns 1-4)
@@ -287,7 +289,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: horizontalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -299,7 +301,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: horizontalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -312,7 +314,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -323,7 +325,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -342,7 +344,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: verticalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -354,7 +356,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: verticalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -366,7 +368,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -377,7 +379,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -403,7 +405,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: horizontalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -415,7 +417,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: horizontalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -427,7 +429,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -458,7 +460,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: verticalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -470,7 +472,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: verticalShape,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 
@@ -482,7 +484,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
           ...state.dragState,
           selectedShape: singleBlock,
           selectedShapeIndex: 0,
-        }
+        },
       };
       state = tetrixReducer(state, { type: 'COMPLETE_PLACEMENT' });
 

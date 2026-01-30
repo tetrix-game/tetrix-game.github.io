@@ -44,7 +44,7 @@ export function ScrollableMenu<T extends string = string>({
   onNavigate,
   onGlobalClick,
   initialPosition = { x: 20, y: 20 },
-}: ScrollableMenuProps<T>) {
+}: ScrollableMenuProps<T>): JSX.Element | null {
   // Dragging state
   const [position, setPosition] = useState(initialPosition);
   const [isDragging, setIsDragging] = useState(false);
@@ -52,7 +52,7 @@ export function ScrollableMenu<T extends string = string>({
   const paletteRef = useRef<HTMLDivElement>(null);
 
   // Mouse down - start dragging
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent): void => {
     if (!paletteRef.current) return;
 
     const rect = paletteRef.current.getBoundingClientRect();
@@ -64,50 +64,50 @@ export function ScrollableMenu<T extends string = string>({
   }, []);
 
   // Mouse move - drag
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (!isDragging) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent): void => {
       setPosition({
         x: e.clientX - dragOffset.x,
         y: e.clientY - dragOffset.y,
       });
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (): void => {
       setIsDragging(false);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
 
-    return () => {
+    return (): void => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, dragOffset]);
 
   // Handle mouse wheel
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (!isOpen) return;
 
-    const handleWheel = (e: WheelEvent) => {
+    const handleWheel = (e: WheelEvent): void => {
       e.preventDefault();
       const direction = e.deltaY > 0 ? 'forward' : 'backward';
       onNavigate(direction);
     };
 
     globalThis.addEventListener('wheel', handleWheel, { passive: false });
-    return () => {
+    return (): void => {
       globalThis.removeEventListener('wheel', handleWheel);
     };
   }, [isOpen, onNavigate]);
 
   // Handle keyboard shortcuts
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (!isOpen) return;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       // Always capture Tab, Space, and Escape when menu is open
       if (e.key === 'Tab' || e.key === 'Escape' || e.key === ' ') {
         e.preventDefault();
@@ -132,17 +132,17 @@ export function ScrollableMenu<T extends string = string>({
 
     // Use capture phase to ensure we get Tab before other handlers
     globalThis.addEventListener('keydown', handleKeyDown, { capture: true });
-    return () => {
+    return (): void => {
       globalThis.removeEventListener('keydown', handleKeyDown, { capture: true });
     };
   }, [isOpen, onClose, navMode, focusedSection, sections, onNavigate]);
 
   // Handle global click events (for tools that need to interact with the grid)
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (!isOpen || navMode !== 'submenu' || !onGlobalClick) return;
 
     globalThis.addEventListener('click', onGlobalClick);
-    return () => {
+    return (): void => {
       globalThis.removeEventListener('click', onGlobalClick);
     };
   }, [isOpen, navMode, onGlobalClick]);

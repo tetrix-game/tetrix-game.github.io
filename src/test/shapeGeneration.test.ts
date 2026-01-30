@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
+
+import { getFilledBlocks } from '../main/App/Shared/shapeGeometry';
 import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
-import { getFilledBlocks } from '../main/App/utils/shapes/shapeGeometry';
 
 describe('Updated Shape Generation', () => {
   it('should only generate 4-block shapes (in 4x4 grid)', () => {
@@ -76,7 +77,6 @@ describe('Updated Shape Generation', () => {
 
 // Helper function to convert shape to string pattern for comparison
 function shapeToPattern(shape: Array<Array<{ isFilled: boolean }>>): string {
-  return shape.map(row =>
-    row.map(block => block.isFilled ? '█' : '·').join('')
-  ).join('\n') + '\n';
+  return `${shape.map((row) =>
+    row.map((block) => block.isFilled ? '█' : '·').join('')).join('\n')}\n`;
 }

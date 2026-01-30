@@ -15,7 +15,7 @@ type ShapeProducerViewportProps = {
  * It intentionally does NOT know about game state, drag and drop, or shape logic.
  * Its only job is to maintain the "Producer Illusion" by being a fixed window.
  */
-const ShapeProducerViewport = ({ children, isLandscape, className = '' }: ShapeProducerViewportProps) => {
+const ShapeProducerViewport = ({ children, isLandscape, className = '' }: ShapeProducerViewportProps): JSX.Element => {
   return (
     <div
       className={`shape-producer-viewport ${isLandscape ? 'landscape' : 'portrait'} ${className}`}

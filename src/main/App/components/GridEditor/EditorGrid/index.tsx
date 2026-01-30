@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 
-import { EditorGridTile } from '../EditorGridTile';
 import { useGridEditor } from '../../../contexts/GridEditorContext';
+import { EditorGridTile } from '../EditorGridTile';
 import '../Grid.css'; // Reuse grid styles
 
-const EditorGrid: React.FC = () => {
+const EditorGrid: React.FC = (): JSX.Element => {
   const { state, addTile, removeTile } = useGridEditor();
   const { gridLayout, selectedColor, showGridDots } = state;
   const gridRef = useRef<HTMLDivElement>(null);
@@ -16,8 +16,8 @@ const EditorGrid: React.FC = () => {
   // Calculate cell size to fit screen
   const [cellSize, setCellSize] = useState(30);
 
-  useEffect(() => {
-    const updateSize = () => {
+  useEffect((): (() => void) => {
+    const updateSize = (): void => {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const padding = 40;
@@ -35,10 +35,10 @@ const EditorGrid: React.FC = () => {
 
     updateSize();
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    return (): void => window.removeEventListener('resize', updateSize);
   }, [gridLayout.width, gridLayout.height]);
 
-  const paintTile = (tileKey: string) => {
+  const paintTile = (tileKey: string): void => {
     if (state.currentTool === 'paint') {
       addTile(tileKey);
     } else if (state.currentTool === 'erase') {
@@ -46,7 +46,7 @@ const EditorGrid: React.FC = () => {
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent, tileKey: string) => {
+  const handleMouseDown = (e: React.MouseEvent, tileKey: string): void => {
     // Only left click
     if (e.button !== 0) return;
 
@@ -55,24 +55,24 @@ const EditorGrid: React.FC = () => {
     paintTile(tileKey);
   };
 
-  const handleMouseEnter = (_: React.MouseEvent, tileKey: string) => {
+  const handleMouseEnter = (_: React.MouseEvent, tileKey: string): void => {
     if (isPainting && lastPaintedTileRef.current !== tileKey) {
       lastPaintedTileRef.current = tileKey;
       paintTile(tileKey);
     }
   };
 
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
+  useEffect((): (() => void) => {
+    const handleGlobalMouseUp = (): void => {
       setIsPainting(false);
       lastPaintedTileRef.current = null;
     };
     window.addEventListener('mouseup', handleGlobalMouseUp);
-    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+    return (): void => window.removeEventListener('mouseup', handleGlobalMouseUp);
   }, []);
 
   // Generate positions
-  const positions = useMemo(() => {
+  const positions = useMemo((): string[] => {
     const pos = [];
     for (let row = 1; row <= gridLayout.height; row++) {
       for (let col = 1; col <= gridLayout.width; col++) {

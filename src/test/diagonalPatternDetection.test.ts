@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { detectSuperComboPattern } from '../main/App/utils/shapes/shapePatterns';
+
 import type { TilesSet, ColorName } from '../main/App/types/core';
+import { detectSuperComboPattern } from '../main/App/utils/shapes/shapePatterns';
+
 import { createTilesWithFilled } from './testHelpers';
 
 /**
@@ -25,7 +27,8 @@ describe('Diagonal Pattern Detection', () => {
       // Fill rows 4-7 (except diagonal)
       for (let row = 4; row <= 7; row++) {
         for (let col = 1; col <= 10; col++) {
-          const isOnDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4));
+          const isOnDiagonal =
+            row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4);
           if (!isOnDiagonal) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
           }
@@ -35,7 +38,8 @@ describe('Diagonal Pattern Detection', () => {
       // Fill columns 4-7 (except diagonal)
       for (let col = 4; col <= 7; col++) {
         for (let row = 1; row <= 10; row++) {
-          const isOnDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4));
+          const isOnDiagonal =
+            row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4);
           // Skip if already added or on diagonal
           const alreadyAdded = row >= 4 && row <= 7 && !isOnDiagonal;
           if (!isOnDiagonal && !alreadyAdded) {
@@ -55,7 +59,8 @@ describe('Diagonal Pattern Detection', () => {
       // Rows 1-4, columns 1-4
       for (let row = 1; row <= 4; row++) {
         for (let col = 1; col <= 10; col++) {
-          const isOnDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row - 1) === (col - 1));
+          const isOnDiagonal =
+            row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row - 1) === (col - 1);
           if (!isOnDiagonal) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
           }
@@ -64,7 +69,8 @@ describe('Diagonal Pattern Detection', () => {
 
       for (let col = 1; col <= 4; col++) {
         for (let row = 1; row <= 10; row++) {
-          const isOnDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row - 1) === (col - 1));
+          const isOnDiagonal =
+            row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row - 1) === (col - 1);
           const alreadyAdded = row >= 1 && row <= 4 && !isOnDiagonal;
           if (!isOnDiagonal && !alreadyAdded) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
@@ -95,7 +101,8 @@ describe('Diagonal Pattern Detection', () => {
       // Fill rows 4-7 (except descending diagonal)
       for (let row = 4; row <= 7; row++) {
         for (let col = 1; col <= 10; col++) {
-          const isOnDescendingDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row + col) === 11);
+          const isOnDescendingDiagonal =
+            row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row + col) === 11;
           if (!isOnDescendingDiagonal) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
           }
@@ -105,7 +112,8 @@ describe('Diagonal Pattern Detection', () => {
       // Fill columns 4-7 (except descending diagonal)
       for (let col = 4; col <= 7; col++) {
         for (let row = 1; row <= 10; row++) {
-          const isOnDescendingDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row + col) === 11);
+          const isOnDescendingDiagonal =
+            row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row + col) === 11;
           const alreadyAdded = row >= 4 && row <= 7 && !isOnDescendingDiagonal;
           if (!isOnDescendingDiagonal && !alreadyAdded) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
@@ -131,7 +139,8 @@ describe('Diagonal Pattern Detection', () => {
 
       for (let row = 1; row <= 4; row++) {
         for (let col = 1; col <= 10; col++) {
-          const isOnDescendingDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row + col) === 5);
+          const isOnDescendingDiagonal =
+            row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row + col) === 5;
           if (!isOnDescendingDiagonal) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
           }
@@ -140,7 +149,8 @@ describe('Diagonal Pattern Detection', () => {
 
       for (let col = 1; col <= 4; col++) {
         for (let row = 1; row <= 10; row++) {
-          const isOnDescendingDiagonal = (row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row + col) === 5);
+          const isOnDescendingDiagonal =
+            row >= 1 && row <= 4 && col >= 1 && col <= 4 && (row + col) === 5;
           const alreadyAdded = row >= 1 && row <= 4 && !isOnDescendingDiagonal;
           if (!isOnDescendingDiagonal && !alreadyAdded) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
@@ -188,7 +198,8 @@ describe('Diagonal Pattern Detection', () => {
       // Only fill some rows, not all required for the pattern
       for (let row = 4; row <= 5; row++) { // Only 2 rows instead of 4
         for (let col = 1; col <= 10; col++) {
-          const isOnDiagonal = (row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4));
+          const isOnDiagonal =
+            row >= 4 && row <= 7 && col >= 4 && col <= 7 && (row - 4) === (col - 4);
           if (!isOnDiagonal) {
             positions.push({ row, column: col, color: 'blue' as ColorName });
           }

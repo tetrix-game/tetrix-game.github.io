@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+
+import type { TilesSet, ColorName } from '../main/App/types/core';
 import {
   isRowFull,
   isColumnFull,
@@ -6,15 +8,15 @@ import {
   findFullColumns,
   clearRows,
   clearColumns,
-  clearFullLines
+  clearFullLines,
 } from '../main/App/utils/lineUtils';
-import type { TilesSet, ColorName } from '../main/App/types/core';
+
 import {
   createTilesWithFilled,
   getTileData,
   countFilledTiles,
   isRowFull as testIsRowFull,
-  isColumnFull as testIsColumnFull
+  isColumnFull as testIsColumnFull,
 } from './testHelpers';
 
 // Helper to create a full grid of empty tiles

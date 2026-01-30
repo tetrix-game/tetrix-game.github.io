@@ -1,11 +1,11 @@
 import './PurchasesContainer.css';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../contexts/TetrixContext';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Shared/TetrixContext';
 
 const PurchasesContainer = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const state = useTetrixStateContext();
 
-  const handleBuyTurnClockwise = () => {
+  const handleBuyTurnClockwise = (): void => {
     if (state.gameState !== 'playing') return;
 
     if (state.isTurningModeActive && state.turningDirection === 'cw') {
@@ -15,7 +15,7 @@ const PurchasesContainer = (): JSX.Element => {
     }
   };
 
-  const handleBuyTurnCounterClockwise = () => {
+  const handleBuyTurnCounterClockwise = (): void => {
     if (state.gameState !== 'playing') return;
 
     if (state.isTurningModeActive && state.turningDirection === 'ccw') {
@@ -25,7 +25,7 @@ const PurchasesContainer = (): JSX.Element => {
     }
   };
 
-  const handleBuyDoubleTurn = () => {
+  const handleBuyDoubleTurn = (): void => {
     if (state.gameState !== 'playing') return;
 
     if (state.isDoubleTurnModeActive) {

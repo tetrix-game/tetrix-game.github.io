@@ -1,13 +1,14 @@
-import { describe, test, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { Shared_ShapeIcon } from '../main/Shared/ShapeIcon';
+import { describe, test, expect } from 'vitest';
+
 import type { ColorName } from '../main/App/types/core';
+import { Shared_ShapeIcon } from '../main/Shared/ShapeIcon';
 
 describe('ShapeIcon Component', () => {
   const colors: ColorName[] = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey'];
 
   test('should render an icon for each color', () => {
-    colors.forEach(color => {
+    colors.forEach((color) => {
       const { container } = render(<Shared_ShapeIcon color={color} />);
       const svg = container.querySelector('svg');
       expect(svg).toBeTruthy();

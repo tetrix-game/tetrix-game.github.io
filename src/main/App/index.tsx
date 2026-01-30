@@ -10,12 +10,12 @@ import { ThemeProvider } from './components/ThemeProvider';
 import { ToastOverlay } from './components/ToastOverlay';
 import { UpdateNotification } from './components/UpdateNotification';
 import { GridEditorProvider } from './contexts/GridEditorContext';
-import { MusicControlProvider } from './contexts/MusicControlContext';
-import { SoundEffectsProvider } from './contexts/SoundEffectsContext';
-import { TetrixProvider } from './contexts/TetrixContext';
 import { usePointerTracking } from './hooks/usePointerTracking';
 import { useShapePlacement } from './hooks/useShapePlacement';
 import { useUpdateNotification } from './hooks/useUpdateNotification';
+import { MusicControlProvider } from './Shared/MusicControlContext';
+import { SoundEffectsProvider } from './Shared/SoundEffectsContext';
+import { TetrixProvider } from './Shared/TetrixContext';
 
 import './App.css';
 

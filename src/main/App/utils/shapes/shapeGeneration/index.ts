@@ -24,7 +24,7 @@ function createFilledBlock(color: ColorName): Block {
  */
 export function generateIPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -39,7 +39,7 @@ export function generateIPiece(color: ColorName): Shape {
  */
 export function generateOPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -54,7 +54,7 @@ export function generateOPiece(color: ColorName): Shape {
  */
 export function generateTPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -69,7 +69,7 @@ export function generateTPiece(color: ColorName): Shape {
  */
 export function generateSPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -84,7 +84,7 @@ export function generateSPiece(color: ColorName): Shape {
  */
 export function generateZPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -99,7 +99,7 @@ export function generateZPiece(color: ColorName): Shape {
  */
 export function generateJPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -114,7 +114,7 @@ export function generateJPiece(color: ColorName): Shape {
  */
 export function generateLPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -129,7 +129,7 @@ export function generateLPiece(color: ColorName): Shape {
  */
 export function generate3x3Piece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -144,7 +144,7 @@ export function generate3x3Piece(color: ColorName): Shape {
  */
 export function generate3x2Piece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -174,7 +174,7 @@ export function generate3x2Piece(color: ColorName): Shape {
  */
 export function generate5x1Piece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   // 5x5 grid to accommodate rotation
   return [
@@ -191,7 +191,7 @@ export function generate5x1Piece(color: ColorName): Shape {
  */
 export function generate3x1Piece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -206,7 +206,7 @@ export function generate3x1Piece(color: ColorName): Shape {
  */
 export function generate2x1Piece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -221,7 +221,7 @@ export function generate2x1Piece(color: ColorName): Shape {
  */
 export function generate1x1Piece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -236,7 +236,7 @@ export function generate1x1Piece(color: ColorName): Shape {
  */
 export function generateEvenLPiece(color: ColorName): Shape {
   const _ = createEmptyBlock;
-  const X = () => createFilledBlock(color);
+  const X = (): Block => createFilledBlock(color);
 
   return [
     [_(), _(), _(), _()],
@@ -251,8 +251,8 @@ export function generateEvenLPiece(color: ColorName): Shape {
  */
 export function generateSuperShape(): Shape {
   const color = makeRandomColor();
-  const _ = () => ({ color: makeRandomColor(), isFilled: false });
-  const X = () => ({ color, isFilled: true });
+  const _ = (): Block => ({ color: makeRandomColor(), isFilled: false });
+  const X = (): Block => ({ color, isFilled: true });
 
   // Create diagonal pattern with random orientation
   const baseTemplate = [
@@ -290,8 +290,8 @@ export function generateSuperShape(): Shape {
  */
 export function generateRandomShape(): Shape {
   const color = makeRandomColor();
-  const _ = () => ({ color: makeRandomColor(), isFilled: false }); // empty block
-  const X = () => ({ color, isFilled: true }); // filled block
+  const _ = (): Block => ({ color: makeRandomColor(), isFilled: false }); // empty block
+  const X = (): Block => ({ color, isFilled: true }); // filled block
 
   // Define base shape templates and their unique rotation counts
   const shapeTemplates: Array<{ template: Shape; rotations: number }> = [

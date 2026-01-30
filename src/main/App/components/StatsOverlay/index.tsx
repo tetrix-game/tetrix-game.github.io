@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { Shared_Overlay } from '../../../Shared/Overlay';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
 import { ColorName } from '../../types/core';
 import { StatCategory } from '../../types/stats';
-import { Shared_Overlay } from '../../../Shared/Overlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import './StatsOverlay.css';
 
 interface StatsOverlayProps {
@@ -83,16 +83,16 @@ const CATEGORY_LABELS: Record<StatCategory, string> = {
 
 const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
 
-const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
+const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }): JSX.Element => {
   const { stats, gameState } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
 
-  const handleNewGame = () => {
+  const handleNewGame = (): void => {
     dispatch({ type: 'RESET_GAME' });
     onClose();
   };
 
-  const renderNoTurnStreak = () => {
+  const renderNoTurnStreak = (): JSX.Element => {
     const { current, bestInGame, allTimeBest } = stats.noTurnStreak;
 
     // Highlight if current equals or exceeds best in game
@@ -115,7 +115,7 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }) => {
     );
   };
 
-  const renderStatRow = (category: StatCategory) => {
+  const renderStatRow = (category: StatCategory): JSX.Element | null => {
     const allTime = stats.allTime[category];
     const highScore = stats.highScore[category];
     const current = stats.current[category];

@@ -50,24 +50,24 @@ const Overlay: React.FC<Shared_OverlayProps> = ({
   blur = true,
   ariaLabel,
   ariaLabelledBy,
-}) => {
+}): JSX.Element | null => {
   // Handle Escape key
-  React.useEffect(() => {
+  React.useEffect((): (() => void) | void => {
     if (!isOpen || !onEscapeKey) return;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
         onEscapeKey();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return (): void => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onEscapeKey]);
 
   if (!isOpen) return null;
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
+  const handleBackdropClick = (e: React.MouseEvent): void => {
     if (e.target === e.currentTarget && onBackdropClick) {
       onBackdropClick();
     }

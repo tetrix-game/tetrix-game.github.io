@@ -1,15 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 
-import { useVisualError } from '../../hooks/useVisualError';
-import { formatScore } from '../../utils/scoringUtils';
 import { Shared_BlueGemIcon } from '../../../Shared/BlueGemIcon';
+import { useVisualError } from '../../hooks/useVisualError';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
+import { formatScore } from '../../utils/scoringUtils';
 import { ErrorPointer } from '../Pointer/ErrorPointer';
 import { StatsOverlay } from '../StatsOverlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
 import '../../styles/feedback.css';
 import './ScoreDisplay.css';
 
-const ScoreDisplay: React.FC = () => {
+const ScoreDisplay: React.FC = (): JSX.Element => {
   const { score, gameState, isStatsOpen, insufficientFundsError } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
@@ -21,9 +21,9 @@ const ScoreDisplay: React.FC = () => {
   const isArrowVisible = useVisualError(insufficientFundsError, 2500);
 
   // Update gem icon position whenever it changes (for GemShower particle physics)
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (gemIconRef.current) {
-      const updatePosition = () => {
+      const updatePosition = (): void => {
         const rect = gemIconRef.current?.getBoundingClientRect();
         if (rect) {
           const position = {
@@ -40,15 +40,15 @@ const ScoreDisplay: React.FC = () => {
       // Update on mount and when window resizes
       updatePosition();
       window.addEventListener('resize', updatePosition);
-      return () => window.removeEventListener('resize', updatePosition);
+      return (): void => window.removeEventListener('resize', updatePosition);
     }
   }, [dispatch]);
 
-  const handleOpenStats = () => {
+  const handleOpenStats = (): void => {
     dispatch({ type: 'OPEN_STATS' });
   };
 
-  const handleCloseStats = () => {
+  const handleCloseStats = (): void => {
     dispatch({ type: 'CLOSE_STATS' });
   };
 

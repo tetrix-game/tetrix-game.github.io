@@ -1,10 +1,10 @@
 import './ShapeOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
+import { ANIMATION_TIMING } from '../../Shared/animationConstants';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Shared/TetrixContext';
 import type { Shape } from '../../types/core';
-import { ANIMATION_TIMING } from '../../utils/animationConstants';
 import { ShapeDisplay } from '../ShapeDisplay';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../contexts/TetrixContext';
 
 type ShapeOptionProps = {
   shape: Shape;
@@ -12,7 +12,7 @@ type ShapeOptionProps = {
   id?: string;
 };
 
-const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
+const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const {
     dragState,
@@ -34,7 +34,8 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
   const shapeId = id || `shape-option-${shapeIndex}`;
 
   // Track if bounds are currently null (need registration)
-  const boundsAreNull = shapeOptionBounds[shapeIndex] === null || shapeOptionBounds[shapeIndex] === undefined;
+  const boundsAreNull = shapeOptionBounds[shapeIndex] === null
+    || shapeOptionBounds[shapeIndex] === undefined;
 
   // Register bounds when component mounts or updates
   // Re-register when shape changes (e.g., after rotation or queue updates)
@@ -66,11 +67,11 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
         dispatch({ type: 'COMPLETE_SHAPE_REMOVAL' });
       }, ANIMATION_TIMING.REMOVAL_DURATION);
 
-      return () => clearTimeout(animationTimer);
+      return (): void => clearTimeout(animationTimer);
     }
   }, [removingShapeIndex, shapeIndex, shapeRemovalAnimationState, dispatch]);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent): void => {
     e.preventDefault();
 
     // Don't handle events during animation
@@ -168,7 +169,18 @@ const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps) => {
         shapeIndex,
       },
     });
-  }, [dispatch, shapeIndex, dragState.selectedShapeIndex, isTurningModeActive, turningDirection, isDoubleTurnModeActive, isAnimatingRemoval, score, shape, shapeId]);
+  }, [
+    dispatch,
+    shapeIndex,
+    dragState.selectedShapeIndex,
+    isTurningModeActive,
+    turningDirection,
+    isDoubleTurnModeActive,
+    isAnimatingRemoval,
+    score,
+    shape,
+    shapeId,
+  ]);
 
   const isSelected = dragState.sourceId === shapeId || dragState.selectedShapeIndex === shapeIndex;
 

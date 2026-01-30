@@ -1,4 +1,4 @@
-import type { Shape, Block, Location } from '../../../types/core';
+import type { Shape, Block, Location } from '../../types/core';
 
 /**
  * Shape geometry functions - Calculate bounds, centers, and anchor points
@@ -143,7 +143,6 @@ export function mousePositionToGridLocation(
 
   // When shape is provided, precomputedOffsets are REQUIRED
   if (shape && !precomputedOffsets) {
-    console.error('mousePositionToGridLocation called with shape but no precomputedOffsets - this is a logic error');
     return null;
   }
 

@@ -1,17 +1,19 @@
 /**
  * Full Board Clear Tests
- * 
+ *
  * Tests for the full board clear feature that awards 300 bonus points
  * when clearing lines results in an empty board (all 100 tiles cleared).
  * Animation sequence: normal line animations play first, then full board animations (columns → rows)
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { isGridCompletelyEmpty } from '../main/App/utils/lineUtils';
-import { generateFullBoardClearAnimation } from '../main/App/utils/clearingAnimationUtils';
+
 import { tileReducer } from '../main/App/reducers/tileReducer';
-import { makeTileKey } from '../main/App/utils/gridConstants';
+import { makeTileKey } from '../main/App/Shared/gridConstants';
 import type { TetrixReducerState } from '../main/App/types/gameState';
+import { generateFullBoardClearAnimation } from '../main/App/utils/clearingAnimationUtils';
+import { isGridCompletelyEmpty } from '../main/App/utils/lineUtils';
+
 import { createTilesWithFilled } from './testHelpers';
 
 describe('Full Board Clear - isGridCompletelyEmpty', () => {
@@ -70,7 +72,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
       expect(tile.activeAnimations).toBeDefined();
       expect(tile.activeAnimations.length).toBe(2);
 
-      const types = tile.activeAnimations.map(a => a.type);
+      const types = tile.activeAnimations.map((a) => a.type);
       expect(types).toContain('full-board-columns');
       expect(types).toContain('full-board-rows');
     }
@@ -92,8 +94,8 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     const tile11 = animatedTiles.get(makeTileKey(1, 1));
     expect(tile11?.activeAnimations).toBeDefined();
 
-    const columnAnim = tile11!.activeAnimations!.find(a => a.type === 'full-board-columns');
-    const rowAnim = tile11!.activeAnimations!.find(a => a.type === 'full-board-rows');
+    const columnAnim = tile11!.activeAnimations!.find((a) => a.type === 'full-board-columns');
+    const rowAnim = tile11!.activeAnimations!.find((a) => a.type === 'full-board-rows');
 
     expect(columnAnim).toBeDefined();
     expect(rowAnim).toBeDefined();
@@ -123,7 +125,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     // Check column wave progression
     for (let column = 1; column <= 10; column++) {
       const tile = animatedTiles.get(makeTileKey(5, column)); // Check row 5 across all columns
-      const columnAnim = tile!.activeAnimations!.find(a => a.type === 'full-board-columns');
+      const columnAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-columns');
 
       const expectedStartTime = baseStartTime + delayAfterNormal + (column - 1) * waveDelay;
       expect(columnAnim!.startTime).toBe(expectedStartTime);
@@ -149,9 +151,10 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     // Check row wave progression
     for (let row = 1; row <= 10; row++) {
       const tile = animatedTiles.get(makeTileKey(row, 5)); // Check column 5 across all rows
-      const rowAnim = tile!.activeAnimations!.find(a => a.type === 'full-board-rows');
+      const rowAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-rows');
 
-      const expectedStartTime = baseStartTime + delayAfterNormal + rowStartDelay + (row - 1) * rowWaveDelay;
+      const expectedStartTime =
+        baseStartTime + delayAfterNormal + rowStartDelay + (row - 1) * rowWaveDelay;
       expect(rowAnim!.startTime).toBe(expectedStartTime);
     }
   });
@@ -354,7 +357,7 @@ describe('Full Board Clear - Reducer Integration', () => {
           position,
           backgroundColor: 'grey',
           block: { isFilled: false, color: 'grey' },
-          activeAnimations: []
+          activeAnimations: [],
         });
       }
     }
@@ -369,7 +372,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         if (tile) {
           mockInitialState.tiles.set(position, {
             ...tile,
-            block: { isFilled: true, color: 'blue' }
+            block: { isFilled: true, color: 'blue' },
           });
         }
       }
@@ -380,7 +383,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         if (tile) {
           mockInitialState.tiles.set(position, {
             ...tile,
-            block: { isFilled: true, color: 'blue' }
+            block: { isFilled: true, color: 'blue' },
           });
         }
       }
@@ -420,7 +423,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         // 2 for full board clear (columns, rows)
         expect(tile.activeAnimations.length).toBe(10);
 
-        const types = tile.activeAnimations.map(a => a.type);
+        const types = tile.activeAnimations.map((a) => a.type);
         expect(types).toContain('full-board-columns');
         expect(types).toContain('full-board-rows');
       }
@@ -439,7 +442,7 @@ describe('Full Board Clear - Reducer Integration', () => {
         position: pos,
         backgroundColor: 'grey',
         block: { isFilled: true, color: 'blue' },
-        activeAnimations: []
+        activeAnimations: [],
       });
     }
 
@@ -453,7 +456,7 @@ describe('Full Board Clear - Reducer Integration', () => {
       position: pos,
       backgroundColor: 'grey',
       block: { isFilled: true, color: 'red' },
-      activeAnimations: []
+      activeAnimations: [],
     });
 
     // Place shape at R1C10 (from default dragState)
@@ -464,7 +467,7 @@ describe('Full Board Clear - Reducer Integration', () => {
     const result = tileReducer(mockInitialState, { type: 'COMPLETE_PLACEMENT' });
 
     // Should NOT award 300 bonus
-    // Score for 1 row: 10 (tiles) * 1 (row) = 10? 
+    // Score for 1 row: 10 (tiles) * 1 (row) = 10?
     // Let's check scoringUtils.ts: (rows + cols + (rows * cols * 2)) * multiplier?
     // Actually currencyUtils.ts says: (rows)² + (columns)² + (rows × columns × 2)
     // Here rows=1, cols=0.
@@ -489,8 +492,8 @@ describe('Full Board Clear - Animation Config', () => {
     const animatedTiles = generateFullBoardClearAnimation(tiles);
 
     const tile = animatedTiles.get(makeTileKey(1, 1));
-    const columnAnim = tile!.activeAnimations!.find(a => a.type === 'full-board-columns');
-    const rowAnim = tile!.activeAnimations!.find(a => a.type === 'full-board-rows');
+    const columnAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-columns');
+    const rowAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-rows');
 
     // Check default durations (800ms each)
     expect(columnAnim!.duration).toBe(800);
@@ -511,7 +514,7 @@ describe('Full Board Clear - Animation Config', () => {
     });
 
     const tile = animatedTiles.get(makeTileKey(1, 1));
-    const columnAnim = tile!.activeAnimations!.find(a => a.type === 'full-board-columns');
+    const columnAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-columns');
 
     expect(columnAnim!.duration).toBe(customDuration);
   });

@@ -1,4 +1,7 @@
-import { useReducer, useEffect, useState } from 'react';
+import { useReducer, useEffect, useState, createContext, useContext } from 'react';
+
+import { initialState, tetrixReducer } from '../../reducers';
+import type { TetrixDispatch, TetrixReducerState } from '../../types/gameState';
 import type { ThemeName, BlockTheme } from '../../types/theme';
 import {
   loadModifiers,
@@ -7,40 +10,38 @@ import {
   clearAllDataAndReload,
   loadGameState,
   loadSettingsData,
-} from '../../utils/persistence';
-import { initialState, tetrixReducer } from '../../reducers';
-import { createContext, useContext } from 'react';
-import type { TetrixDispatch, TetrixReducerState } from '../../types/gameState';
+} from '../persistence';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
-export function TetrixProvider({ children }: { readonly children: React.ReactNode }) {
+export function TetrixProvider({ children }: { readonly children: React.ReactNode }): JSX.Element {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
 
   // Load saved game state on startup
-  useEffect(() => {
-    const loadSavedData = async () => {
+  useEffect((): void => {
+    const loadSavedData = async (): Promise<void> => {
       setInitState('LOADING');
       try {
         // Ensure DB is healthy before trying to load anything
         await initializePersistence();
 
-        const [unlockedModifiersResult, savedThemeResult, gameStateData, settings] = await Promise.all([
-          loadModifiers().catch((err: Error) => {
-            console.error('Error loading modifiers:', err);
-            return { status: 'error', error: err } as const;
+        const [
+          unlockedModifiersResult,
+          savedThemeResult,
+          gameStateData,
+          settings,
+        ] = await Promise.all([
+          loadModifiers().catch((_err: Error) => {
+            return { status: 'error', error: _err } as const;
           }),
-          loadTheme().catch((err: Error) => {
-            console.error('Error loading theme:', err);
+          loadTheme().catch((_err: Error) => {
             return null;
           }),
-          loadGameState().catch((err: Error) => {
-            console.error('Error loading game state:', err);
+          loadGameState().catch((_err: Error) => {
             return null;
           }),
-          loadSettingsData().catch((err: Error) => {
-            console.error('Error loading settings:', err);
-            return { status: 'error', error: err } as const;
+          loadSettingsData().catch((_err: Error) => {
+            return { status: 'error', error: _err } as const;
           }),
         ]);
 
@@ -110,7 +111,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
           const hasProgress = gameStateData.score > 0
             || gameStateData.hasPlacedFirstShape
             || gameStateData.shapesUsed > 0
-            || gameStateData.tiles.some((t: any) => t.isFilled);
+            || gameStateData.tiles.some((t: { isFilled?: boolean }) => t.isFilled);
 
           // Always load if there's progress, regardless of tiles.length
           // Even an empty or partial save should be loaded if it has progress
@@ -129,8 +130,7 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
         // Signal that initialization is complete
         dispatch({ type: 'INITIALIZATION_COMPLETE' });
         setInitState('READY');
-      } catch (error) {
-        console.error('Failed to load saved game state:', error);
+      } catch {
         setInitState('FAILURE');
       }
     };
@@ -225,14 +225,14 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
 }
 export const TetrixStateContext = createContext<TetrixReducerState | null>(null);
 export const TetrixDispatchContext = createContext<TetrixDispatch | null>(null);
-export function useTetrixStateContext() {
+export function useTetrixStateContext(): TetrixReducerState {
   const context = useContext(TetrixStateContext);
   if (!context) {
     throw new Error('useTetrixStateContext must be used within a TetrixStateProvider');
   }
   return context;
 }
-export function useTetrixDispatchContext() {
+export function useTetrixDispatchContext(): TetrixDispatch {
   const context = useContext(TetrixDispatchContext);
   if (!context) {
     throw new Error('useTetrixDispatchContext must be used within a TetrixDispatchProvider');

@@ -1,12 +1,13 @@
 import { useMemo, useCallback } from 'react';
 
+import { useMusicControl } from '../../Shared/MusicControlContext';
+import { useSoundEffects } from '../../Shared/SoundEffectsContext';
+import { useTetrixStateContext } from '../../Shared/TetrixContext';
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { BackgroundMusic } from '../BackgroundMusic';
 import { ScoreDisplay } from '../ScoreDisplay';
 import { SettingsOverlay } from '../SettingsOverlay';
-import { useSoundEffects } from '../../contexts/SoundEffectsContext';
-import { useTetrixStateContext } from '../../contexts/TetrixContext';
-import { useMusicControl } from '../../contexts/MusicControlContext';
+
 import { SoundEffectsControlContext } from './SoundEffectsControlContext';
 import './Header.css';
 

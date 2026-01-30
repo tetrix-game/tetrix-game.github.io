@@ -10,11 +10,11 @@ interface BlockSvgProps {
 
 const THEME_VIEWBOX_SIZE = 100;
 
-const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', className }) => {
+const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', className }): JSX.Element => {
   // Helper to get CSS variable names
-  const getVar = (suffix: string, fallback: string) => `var(--color-${color}-${suffix}, ${fallback})`;
+  const getVar = (suffix: string, fallback: string): string => `var(--color-${color}-${suffix}, ${fallback})`;
 
-  const renderGem = () => {
+  const renderGem = (): JSX.Element => {
     const borderSize = 20;
     const size = THEME_VIEWBOX_SIZE;
     const innerSize = size - (borderSize * 2);
@@ -46,7 +46,7 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
     );
   };
 
-  const renderSimple = () => {
+  const renderSimple = (): JSX.Element => {
     const bg = getVar('bg', color);
     return (
       <rect
@@ -60,7 +60,7 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
     );
   };
 
-  const renderPixel = () => {
+  const renderPixel = (): JSX.Element => {
     // 8x8 grid for chunkier pixels
     const gridSize = 8;
     const pixelSize = THEME_VIEWBOX_SIZE / gridSize;
@@ -104,13 +104,14 @@ const BlockSvgInner: React.FC<BlockSvgProps> = ({ color, theme = 'gem', classNam
     return <g>{pixels}</g>;
   };
 
-  const content = useMemo(() => {
+  const content = useMemo((): JSX.Element => {
     switch (theme) {
       case 'simple': return renderSimple();
       case 'pixel': return renderPixel();
       case 'gem':
       default: return renderGem();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme, color]);
 
   return (

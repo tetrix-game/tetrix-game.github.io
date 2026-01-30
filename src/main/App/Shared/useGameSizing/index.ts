@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-import { GRID_SIZE, GRID_GAP } from '../../utils/gridConstants';
+import { GRID_SIZE, GRID_GAP } from '../gridConstants';
 
 export interface GameSizing {
   gridSize: number;
@@ -20,15 +20,18 @@ export interface GameSizing {
  * - Button size can be scaled by user preference (0.5x to 1.5x)
  */
 export const useGameSizing = (buttonSizeMultiplier: number = 1.0): GameSizing => {
-  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
-  useEffect(() => {
-    const handleResize = () => {
+  useEffect((): (() => void) => {
+    const handleResize = (): void => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return (): void => window.removeEventListener('resize', handleResize);
   }, []);
 
   const sizing = useMemo(() => {

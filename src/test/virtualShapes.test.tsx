@@ -1,7 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi } from 'vitest';
-import { TetrixProvider } from '../main/App/contexts/TetrixContext';
+
 import { ShapeSelector } from '../main/App/components/ShapeSelector';
+import { TetrixProvider } from '../main/App/Shared/TetrixContext';
 
 // Mock the persistence utilities to avoid IndexedDB issues in tests
 vi.mock('../utils/persistenceUtils', () => ({
@@ -19,8 +20,8 @@ vi.mock('../utils/persistenceUtils', () => ({
         currentLevel: 1,
         queueSize: -1,
         shapesUsed: 0,
-      }
-    }
+      },
+    },
   }),
   safeBatchSave: vi.fn().mockResolvedValue(undefined),
   loadModifiers: vi.fn().mockResolvedValue({ status: 'success', data: [] }),
@@ -35,7 +36,7 @@ describe('Unified Shape Queue Management', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>
+      </TetrixProvider>,
     );
 
     // Wait for shapes to be populated
@@ -61,7 +62,7 @@ describe('Unified Shape Queue Management', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>
+      </TetrixProvider>,
     );
 
     // Wait for shapes to be populated
@@ -80,7 +81,7 @@ describe('Unified Shape Queue Management', () => {
     const { container } = render(
       <TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>
+      </TetrixProvider>,
     );
 
     // Wait for shapes to be populated
@@ -89,12 +90,12 @@ describe('Unified Shape Queue Management', () => {
       expect(shapeContainers.length).toBe(3);
     });
 
-    // Initially 3 shapes should be rendered  
+    // Initially 3 shapes should be rendered
     const shapeSelector = container.querySelector('.shape-selector') as HTMLElement;
     expect(shapeSelector).toBeTruthy();
     expect(container.querySelectorAll('.shape-container').length).toBe(3);
 
-    // The unified state management means that nextShapes.length controls 
+    // The unified state management means that nextShapes.length controls
     // the number of rendered containers. This validates single source of truth.
     const containers = container.querySelectorAll('.shape-container');
     expect(containers.length).toBe(3); // Default shape count
@@ -102,9 +103,9 @@ describe('Unified Shape Queue Management', () => {
     // Verify all containers contain actual shapes (not empty divs)
     for (const container of containers) {
       // Check for shape-specific elements inside each container
-      const hasShapeContent = container.querySelector('div[style*="display"]') ||
-        container.querySelector('.shape-option') ||
-        container.childElementCount > 0;
+      const hasShapeContent = container.querySelector('div[style*="display"]')
+        || container.querySelector('.shape-option')
+        || container.childElementCount > 0;
       expect(hasShapeContent).toBeTruthy();
     }
   });

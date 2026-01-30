@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type { Block, ColorName, Location } from '../../../types/core';
 import { Shared_BlockVisual } from '../../../../Shared/BlockVisual';
 import { Shared_Tile } from '../../../../Shared/Tile';
+import type { Block, ColorName, Location } from '../../../types/core';
 import './EditorGridTile.css';
 
 type EditorGridTileProps = {

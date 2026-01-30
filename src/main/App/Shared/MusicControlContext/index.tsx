@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { loadMusicSettings, saveMusicSettings } from '../../utils/persistence';
+
+import { loadMusicSettings, saveMusicSettings } from '../persistence';
 
 export interface MusicControlContextType {
   volume: number;
@@ -14,14 +15,16 @@ export interface MusicControlContextType {
   isWaitingForInteraction: boolean;
 }
 const MusicControlContext = createContext<MusicControlContextType | null>(null);
-export const useMusicControl = () => {
+export const useMusicControl = (): MusicControlContextType => {
   const context = useContext(MusicControlContext);
   if (!context) {
     throw new Error('useMusicControl must be used within a MusicControlContext.Provider');
   }
   return context;
 };
-export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const MusicControlProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }): JSX.Element => {
   const [volume, setVolumeState] = useState(100);
   const [isEnabled, setIsEnabled] = useState(true);
   const [shouldPlayMusic, setShouldPlayMusic] = useState(false);
@@ -30,8 +33,8 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const hasUserInteractedRef = useRef(false);
 
   // Detect user interaction to unlock audio
-  useEffect(() => {
-    const handleUserInteraction = () => {
+  useEffect((): (() => void) => {
+    const handleUserInteraction = (): void => {
       if (!hasUserInteractedRef.current) {
         hasUserInteractedRef.current = true;
         setIsAudioUnlocked(true);
@@ -44,7 +47,7 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
       document.addEventListener(event, handleUserInteraction, { once: true, passive: true });
     });
 
-    return () => {
+    return (): void => {
       events.forEach((event) => {
         document.removeEventListener(event, handleUserInteraction);
       });
@@ -52,20 +55,20 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   // Load music settings from IndexedDB on mount
-  useEffect(() => {
-    const loadSettings = async () => {
+  useEffect((): void => {
+    const loadSettings = async (): Promise<void> => {
       try {
         const settings = await loadMusicSettings();
 
         // Validate volume is a finite number, default to 100 if invalid
-        const validVolume = Number.isFinite(settings.volume) && settings.volume >= 0 && settings.volume <= 100
-          ? settings.volume
-          : 100;
+        const isValidVolume = Number.isFinite(settings.volume)
+          && settings.volume >= 0
+          && settings.volume <= 100;
+        const validVolume = isValidVolume ? settings.volume : 100;
 
         setVolumeState(validVolume);
         setIsEnabled(settings.isEnabled);
-      } catch (error) {
-        console.error('Unexpected error loading music settings:', error);
+      } catch {
         setIsEnabled(true);
         setVolumeState(100);
       } finally {
@@ -81,8 +84,7 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setVolumeState(clampedVolume);
 
     // Save to IndexedDB (primary storage)
-    saveMusicSettings(!isEnabled, clampedVolume, isEnabled).catch((error: Error) => {
-      console.error('Failed to save music volume to IndexedDB:', error);
+    saveMusicSettings(!isEnabled, clampedVolume, isEnabled).catch((_error: Error) => {
     });
   }, [isEnabled]);
 
@@ -96,13 +98,11 @@ export const MusicControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
 
     // Save to IndexedDB (primary storage)
-    saveMusicSettings(!newEnabledState, volume, newEnabledState).catch((error: Error) => {
-      console.error('Failed to save music enabled state to IndexedDB:', error);
+    saveMusicSettings(!newEnabledState, volume, newEnabledState).catch((_error: Error) => {
       // Fallback to localStorage
       try {
         localStorage.setItem('tetrix-music-muted', JSON.stringify(!newEnabledState));
-      } catch (localError) {
-        console.error('Failed to save music mute preference to localStorage:', localError);
+      } catch {
       }
     });
   }, [isEnabled, volume]);

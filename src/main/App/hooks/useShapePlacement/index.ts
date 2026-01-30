@@ -1,20 +1,20 @@
 import { useEffect, useRef } from 'react';
 
-import { useSoundEffects } from '../../contexts/SoundEffectsContext';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../contexts/TetrixContext';
-import { GRID_SIZE } from '../../utils/gridConstants';
-import { mousePositionToGridLocation } from '../../utils/shapes/shapeGeometry';
+import { GRID_SIZE } from '../../Shared/gridConstants';
+import { mousePositionToGridLocation } from '../../Shared/shapeGeometry';
+import { useSoundEffects } from '../../Shared/SoundEffectsContext';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
 import { isValidPlacement } from '../../utils/shapes/shapeValidation';
 
-export const useShapePlacement = () => {
+export const useShapePlacement = (): void => {
   const { gameMode, dragState, tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { playSound } = useSoundEffects();
   const gridRef = useRef<HTMLElement | null>(null);
 
   // Global pointerup handler - consolidates all placement/return logic
-  useEffect(() => {
-    const handleGlobalPointerUp = (e: PointerEvent) => {
+  useEffect((): (() => void) => {
+    const handleGlobalPointerUp = (e: PointerEvent): void => {
       // Only handle if a shape is being dragged
       if (!dragState.selectedShape) return;
 
@@ -34,7 +34,6 @@ export const useShapePlacement = () => {
       const offsets = dragState.dragOffsets;
       if (!offsets) {
         // No offsets means SELECT_SHAPE didn't properly calculate them
-        console.error('dragOffsets not available - this indicates a logic error in SELECT_SHAPE');
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
       }
@@ -56,7 +55,10 @@ export const useShapePlacement = () => {
       );
 
       // If location is null or placement is invalid, return the shape
-      if (location === null || !isValidPlacement(dragState.selectedShape, location, tiles, gameMode)) {
+      if (
+        location === null
+        || !isValidPlacement(dragState.selectedShape, location, tiles, gameMode)
+      ) {
         playSound('invalid_placement');
         dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
         return;
@@ -74,7 +76,7 @@ export const useShapePlacement = () => {
 
     document.addEventListener('pointerup', handleGlobalPointerUp);
 
-    return () => {
+    return (): void => {
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
   }, [dispatch, dragState.selectedShape, dragState.dragOffsets, tiles, playSound, gameMode]);

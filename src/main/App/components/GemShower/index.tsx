@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
+import { useTetrixStateContext } from '../../Shared/TetrixContext';
 import { GemParticle } from '../GemParticle';
-import { useTetrixStateContext } from '../../contexts/TetrixContext';
 import './GemShower.css';
 
 interface GemData {
@@ -24,7 +24,49 @@ const GemShower: React.FC = () => {
     y: window.innerHeight / 2,
   }), []);
 
-  const gemIconOrigin = useMemo(() => gemIconPosition, [gemIconPosition]);
+  const gemIconOrigin = useMemo((): { x: number; y: number } => gemIconPosition, [gemIconPosition]);
+
+  const generateGems = useCallback((
+    gemCount: number,
+    origin: { x: number; y: number },
+    isGainingPoints: boolean,
+    useLargeGems: boolean = false,
+  ): GemData[] => {
+    const gems: GemData[] = [];
+    const delayIncrement = 10; // Stagger each gem by 10ms
+    let currentDelay = 0;
+
+    for (let i = 0; i < gemCount; i++) {
+      let velocityX: number;
+      let velocityY: number;
+
+      if (isGainingPoints) {
+        // Gaining points: 360-degree explosion with random velocities
+        const angle = Math.random() * 2 * Math.PI; // Random angle in full 360 degrees
+        const baseSpeed = 150 + Math.random() * 250; // Random speed between 150-400 px/s
+
+        velocityX = baseSpeed * Math.cos(angle);
+        velocityY = baseSpeed * Math.sin(angle);
+      } else {
+        // Losing points: gems fall downward from gem icon with slight horizontal drift
+        velocityX = (Math.random() * 3 - 1.5) * 60; // Random drift between -90 and 90 px/s
+        velocityY = 0; // Gravity will pull them down
+      }
+
+      gems.push({
+        id: `gem-${i}-${Date.now()}-${Math.random()}`,
+        startPosition: { ...origin },
+        velocity: { x: velocityX, y: velocityY },
+        delay: currentDelay,
+        size: useLargeGems ? 80 : 40, // 80px for large gems, 40px for normal gems
+        attractTo: isGainingPoints ? gemIconOrigin : undefined, // Attract to gem icon when gaining
+      });
+
+      currentDelay += delayIncrement;
+    }
+
+    return gems;
+  }, [gemIconOrigin]);
 
   // Score change detection
   useEffect(() => {
@@ -65,51 +107,10 @@ const GemShower: React.FC = () => {
     setGems((prevGems) => [...prevGems, ...coinsToSpawn]);
 
     lastScoreRef.current = score;
-  }, [score, centerScreenPosition, gemIconOrigin]);
+  }, [score, centerScreenPosition, gemIconOrigin, generateGems]);
 
-  const generateGems = (
-    gemCount: number,
-    origin: { x: number; y: number },
-    isGainingPoints: boolean,
-    useLargeGems: boolean = false,
-  ): GemData[] => {
-    const gems: GemData[] = [];
-    const delayIncrement = 10; // Stagger each gem by 10ms
-    let currentDelay = 0;
 
-    for (let i = 0; i < gemCount; i++) {
-      let velocityX: number;
-      let velocityY: number;
-
-      if (isGainingPoints) {
-        // Gaining points: 360-degree explosion with random velocities
-        const angle = Math.random() * 2 * Math.PI; // Random angle in full 360 degrees
-        const baseSpeed = 150 + Math.random() * 250; // Random speed between 150-400 px/s
-
-        velocityX = baseSpeed * Math.cos(angle);
-        velocityY = baseSpeed * Math.sin(angle);
-      } else {
-        // Losing points: gems fall downward from gem icon with slight horizontal drift
-        velocityX = (Math.random() * 3 - 1.5) * 60; // Random drift between -90 and 90 px/s
-        velocityY = 0; // Gravity will pull them down
-      }
-
-      gems.push({
-        id: `gem-${i}-${Date.now()}-${Math.random()}`,
-        startPosition: { ...origin },
-        velocity: { x: velocityX, y: velocityY },
-        delay: currentDelay,
-        size: useLargeGems ? 80 : 40, // 80px for large gems, 40px for normal gems
-        attractTo: isGainingPoints ? gemIconOrigin : undefined, // Attract to gem icon when gaining
-      });
-
-      currentDelay += delayIncrement;
-    }
-
-    return gems;
-  };
-
-  const handleGemComplete = (gemId: string) => {
+  const handleGemComplete = (gemId: string): void => {
     setGems((prevGems) => prevGems.filter((gem) => gem.id !== gemId));
   };
 

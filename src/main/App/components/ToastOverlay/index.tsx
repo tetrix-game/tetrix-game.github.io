@@ -6,11 +6,11 @@ interface ToastMessage {
   text: string;
 }
 
-const ToastOverlay: React.FC = () => {
+const ToastOverlay: React.FC = (): JSX.Element => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  useEffect(() => {
-    const handleShowToast = (event: CustomEvent<{ message: string }>) => {
+  useEffect((): (() => void) => {
+    const handleShowToast = (event: CustomEvent<{ message: string }>): void => {
       const newToast = {
         id: Date.now(),
         text: event.detail.message,
@@ -19,15 +19,15 @@ const ToastOverlay: React.FC = () => {
       setToasts((prev) => [...prev, newToast]);
 
       // Remove toast after 3 seconds
-      setTimeout(() => {
+      setTimeout((): void => {
         setToasts((prev) => prev.filter((t) => t.id !== newToast.id));
       }, 3000);
     };
 
-    window.addEventListener('tetrix-show-toast' as any, handleShowToast as any);
+    window.addEventListener('tetrix-show-toast', handleShowToast as EventListener);
 
-    return () => {
-      window.removeEventListener('tetrix-show-toast' as any, handleShowToast as any);
+    return (): void => {
+      window.removeEventListener('tetrix-show-toast', handleShowToast as EventListener);
     };
   }, []);
 

@@ -1,15 +1,15 @@
 import './ShapeQueue.css';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../../Shared/TetrixContext';
 import { QueueIndicator } from '../QueueIndicator';
 import { QueueOverlay } from '../QueueOverlay';
 import { ShapeSelector } from '../ShapeSelector';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../contexts/TetrixContext';
 
 const ShapeQueue = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const { queueMode, queueHiddenShapes, isQueueOverlayOpen, nextShapes } = useTetrixStateContext();
 
   // Handle queue indicator click
-  const handleQueueIndicatorClick = () => {
+  const handleQueueIndicatorClick = (): void => {
     dispatch({ type: 'TOGGLE_QUEUE_OVERLAY' });
   };
 

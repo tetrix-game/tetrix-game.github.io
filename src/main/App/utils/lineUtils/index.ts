@@ -210,12 +210,12 @@ export function clearFullLines(tiles: TilesSet): {
   const fullRows = findFullRows(tiles);
   const fullColumns = findFullColumns(tiles);
 
-  const clearedRowsWithColor = fullRows.map((row) => ({
+  const clearedRowsWithColor = fullRows.map((row): ClearedLine => ({
     index: row,
     color: getLineColor(tiles, row, true),
   }));
 
-  const clearedColumnsWithColor = fullColumns.map((col) => ({
+  const clearedColumnsWithColor = fullColumns.map((col): ClearedLine => ({
     index: col,
     color: getLineColor(tiles, col, false),
   }));

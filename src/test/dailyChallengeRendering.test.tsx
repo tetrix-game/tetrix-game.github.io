@@ -1,16 +1,17 @@
 /**
  * Tests for daily challenge grid rendering
- * 
+ *
  * In daily challenge mode, only tiles that exist in the tiles Map should be rendered.
  * Out-of-bounds areas (missing tiles) should not render at all.
  */
 
-import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { Grid } from '../main/Shared/Grid';
+import { describe, it, expect } from 'vitest';
+
 import { TetrixStateContext, TetrixDispatchContext } from '../main/App/contexts/TetrixContext';
-import type { TetrixReducerState, TetrixDispatch } from '../main/App/types/gameState';
 import { initialState } from '../main/App/reducers';
+import type { TetrixReducerState, TetrixDispatch } from '../main/App/types/gameState';
+import { Grid } from '../main/Shared/Grid';
 
 describe('Daily Challenge Grid Rendering', () => {
   const mockDispatch: TetrixDispatch = () => {};
@@ -27,7 +28,7 @@ describe('Daily Challenge Grid Rendering', () => {
         <TetrixStateContext.Provider value={state}>
           <Grid width={10} height={10} />
         </TetrixStateContext.Provider>
-      </TetrixDispatchContext.Provider>
+      </TetrixDispatchContext.Provider>,
     );
 
     // Should render 100 tiles (10x10 grid)
@@ -39,12 +40,12 @@ describe('Daily Challenge Grid Rendering', () => {
     // Create state for daily challenge with partial grid
     // Only include center 4 tiles: R5C5, R5C6, R6C5, R6C6
     const partialTiles = new Map();
-    ['R5C5', 'R5C6', 'R6C5', 'R6C6'].forEach(position => {
+    ['R5C5', 'R5C6', 'R6C5', 'R6C6'].forEach((position) => {
       partialTiles.set(position, {
         position,
         backgroundColor: 'blue' as const,
         block: { isFilled: false, color: 'grey' as const },
-        activeAnimations: []
+        activeAnimations: [],
       });
     });
 
@@ -59,7 +60,7 @@ describe('Daily Challenge Grid Rendering', () => {
         <TetrixStateContext.Provider value={state}>
           <Grid width={10} height={10} />
         </TetrixStateContext.Provider>
-      </TetrixDispatchContext.Provider>
+      </TetrixDispatchContext.Provider>,
     );
 
     // Should only render 4 tiles (the ones in the tiles Map)
@@ -77,13 +78,13 @@ describe('Daily Challenge Grid Rendering', () => {
       'R6C4', 'R6C5', 'R6C6', 'R6C7', // Second to last row
       'R7C5', 'R7C6', // Bottom row
     ];
-    
-    positions.forEach(position => {
+
+    positions.forEach((position) => {
       diamondTiles.set(position, {
         position,
         backgroundColor: 'red' as const,
         block: { isFilled: false, color: 'grey' as const },
-        activeAnimations: []
+        activeAnimations: [],
       });
     });
 
@@ -98,7 +99,7 @@ describe('Daily Challenge Grid Rendering', () => {
         <TetrixStateContext.Provider value={state}>
           <Grid width={10} height={10} />
         </TetrixStateContext.Provider>
-      </TetrixDispatchContext.Provider>
+      </TetrixDispatchContext.Provider>,
     );
 
     // Should only render diamond tiles (18 total)

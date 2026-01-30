@@ -1,10 +1,10 @@
 import './ShapeDisplay.css';
 import { useMemo, useRef, useEffect, useState } from 'react';
 
+import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
+import { getShapeBounds } from '../../Shared/shapeGeometry';
 import type { Shape } from '../../types/core';
 import type { BlockTheme } from '../../types/theme';
-import { getShapeBounds } from '../../utils/shapes/shapeGeometry';
-import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
 
 type ShapeDisplayProps = {
   shape: Shape;
@@ -30,13 +30,13 @@ const ShapeDisplay = ({
   className = '',
   theme,
   showIcon = true,
-}: ShapeDisplayProps) => {
+}: ShapeDisplayProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(0);
 
   // Calculate cell size based on container dimensions
-  useEffect(() => {
-    const updateSize = () => {
+  useEffect((): (() => void) => {
+    const updateSize = (): void => {
       if (!containerRef.current) return;
 
       const container = containerRef.current;
@@ -61,7 +61,7 @@ const ShapeDisplay = ({
       resizeObserver.observe(containerRef.current);
     }
 
-    return () => resizeObserver.disconnect();
+    return (): void => resizeObserver.disconnect();
   }, [cellGap, containerPadding]);
 
   // Calculate centering offset for shapes with odd dimensions
@@ -108,7 +108,13 @@ const ShapeDisplay = ({
             key={`${rowIndex}-${colIndex}`}
             className="shape-display-tile"
           >
-            <Shared_BlockVisual isFilled={block.isFilled} color={block.color} size={cellSize} theme={theme} showIcon={showIcon} />
+            <Shared_BlockVisual
+              isFilled={block.isFilled}
+              color={block.color}
+              size={cellSize}
+              theme={theme}
+              showIcon={showIcon}
+            />
           </div>
         ))
       ))}

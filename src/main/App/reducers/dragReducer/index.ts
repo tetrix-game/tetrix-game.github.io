@@ -4,9 +4,9 @@
  *          RETURN_SHAPE_TO_SELECTOR, COMPLETE_RETURN, CLEAR_SELECTION
  */
 
+import { ANIMATION_TIMING } from '../../Shared/animationConstants';
+import { getShapeGridPositions, getShapeVisualOffset } from '../../Shared/shapeGeometry';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { ANIMATION_TIMING } from '../../utils/animationConstants';
-import { getShapeGridPositions, getShapeVisualOffset } from '../../utils/shapes/shapeGeometry';
 
 export function dragReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {
@@ -221,10 +221,12 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
         return {
           ...state,
           mouseGridLocation: location,
-          mousePosition: position ?? state.mousePosition ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+          mousePosition: position
+            ?? state.mousePosition
+            ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 },
           gridTileSize: tileSize ?? state.gridTileSize ?? null,
           gridBounds: gridBounds ?? state.gridBounds ?? null,
-          // Keep existing drag state exactly as is to preserve the placement visualization
+          // Keep existing drag state exactly as is to preserve placement visualization
           dragState: state.dragState,
         };
       }
@@ -238,17 +240,32 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       const invalidBlockPositions = invalidBlocks ?? [];
 
       // Transition from picking-up to dragging after pickup animation completes
-      const shouldTransitionToDragging = state.dragState.phase === 'picking-up' && state.dragState.startTime
-        && (performance.now() - state.dragState.startTime > ANIMATION_TIMING.PICKUP_DURATION);
+      const shouldTransitionToDragging = state.dragState.phase === 'picking-up'
+        && state.dragState.startTime
+        && (performance.now() - state.dragState.startTime
+          > ANIMATION_TIMING.PICKUP_DURATION);
 
       const newDragState = shouldTransitionToDragging
-        ? { ...state.dragState, phase: 'dragging' as const, hoveredBlockPositions, invalidBlockPositions, isValidPlacement: isValid ?? false }
-        : { ...state.dragState, hoveredBlockPositions, invalidBlockPositions, isValidPlacement: isValid ?? false };
+        ? {
+          ...state.dragState,
+          phase: 'dragging' as const,
+          hoveredBlockPositions,
+          invalidBlockPositions,
+          isValidPlacement: isValid ?? false,
+        }
+        : {
+          ...state.dragState,
+          hoveredBlockPositions,
+          invalidBlockPositions,
+          isValidPlacement: isValid ?? false,
+        };
 
       return {
         ...state,
         mouseGridLocation: location,
-        mousePosition: position ?? state.mousePosition ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+        mousePosition: position
+          ?? state.mousePosition
+          ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 },
         gridTileSize: tileSize ?? state.gridTileSize ?? null,
         gridBounds: gridBounds ?? state.gridBounds ?? null,
         dragState: newDragState,
@@ -325,8 +342,12 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Convert grid coordinates to pixel coordinates
       // For 1-indexed column C, the tile's left edge is at: gridBounds.left + (C - 1) * tileWithGap
       // The tile's center is at: left edge + TILE_SIZE / 2
-      const targetCellCenterX = currentGridBounds.left + (centerCol - 1) * tileWithGap + TILE_SIZE / 2;
-      const targetCellCenterY = currentGridBounds.top + (centerRow - 1) * tileWithGap + TILE_SIZE / 2;
+      const targetCellCenterX = currentGridBounds.left
+        + (centerCol - 1) * tileWithGap
+        + TILE_SIZE / 2;
+      const targetCellCenterY = currentGridBounds.top
+        + (centerRow - 1) * tileWithGap
+        + TILE_SIZE / 2;
 
       // Store where the shape currently IS (before updating mousePosition)
       // This is critical - the shape is visually at state.mousePosition during dragging,

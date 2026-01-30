@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
+
 import type { ColorName } from '../../types/core';
 
 export type GridEditorTool = 'paint' | 'erase' | 'none';
@@ -63,7 +64,7 @@ function createDefaultGridLayout(): GridLayout {
     tileBackgrounds,
   };
 }
-export function GridEditorProvider({ children }: Readonly<{ children: ReactNode }>) {
+export function GridEditorProvider({ children }: Readonly<{ children: ReactNode }>): JSX.Element {
   const [state, setState] = useState<GridEditorState>({
     isEditorOpen: false,
     currentTool: 'none',
@@ -75,7 +76,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     lastActiveSection: 'brush',
   });
 
-  const openEditor = () => {
+  const openEditor = (): void => {
     setState((prev) => ({
       ...prev,
       isEditorOpen: true,
@@ -85,7 +86,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     }));
   };
 
-  const closeEditor = () => {
+  const closeEditor = (): void => {
     setState((prev) => ({
       ...prev,
       isEditorOpen: false,
@@ -93,25 +94,25 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     }));
   };
 
-  const hideInstructions = () => {
+  const hideInstructions = (): void => {
     setState((prev) => ({
       ...prev,
       showInstructions: false,
     }));
   };
 
-  const toggleGridDots = () => {
+  const toggleGridDots = (): void => {
     setState((prev) => ({
       ...prev,
       showGridDots: !prev.showGridDots,
     }));
   };
 
-  const setTool = (tool: GridEditorTool) => {
+  const setTool = (tool: GridEditorTool): void => {
     setState((prev) => ({ ...prev, currentTool: tool }));
   };
 
-  const setColor = (color: ColorName | 'eraser') => {
+  const setColor = (color: ColorName | 'eraser'): void => {
     setState((prev) => ({
       ...prev,
       selectedColor: color,
@@ -119,11 +120,11 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     }));
   };
 
-  const setLastActiveSection = (section: SectionType) => {
+  const setLastActiveSection = (section: SectionType): void => {
     setState((prev) => ({ ...prev, lastActiveSection: section }));
   };
 
-  const cycleColor = (direction: 'forward' | 'backward') => {
+  const cycleColor = (direction: 'forward' | 'backward'): void => {
     setState((prev) => {
       const currentIndex = COLOR_ORDER.indexOf(prev.selectedColor);
       let newIndex: number;
@@ -143,7 +144,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     });
   };
 
-  const setGridWidth = (width: number) => {
+  const setGridWidth = (width: number): void => {
     const clampedWidth = Math.max(2, Math.min(20, width));
     setState((prev) => {
       const newTiles = new Set<string>();
@@ -175,7 +176,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     });
   };
 
-  const setGridHeight = (height: number) => {
+  const setGridHeight = (height: number): void => {
     const clampedHeight = Math.max(2, Math.min(20, height));
     setState((prev) => {
       const newTiles = new Set<string>();
@@ -207,7 +208,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     });
   };
 
-  const adjustGridWidth = (delta: number) => {
+  const adjustGridWidth = (delta: number): void => {
     setState((prev) => {
       const newWidth = Math.max(2, Math.min(20, prev.gridLayout.width + delta));
       if (newWidth === prev.gridLayout.width) return prev;
@@ -240,7 +241,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     });
   };
 
-  const adjustGridHeight = (delta: number) => {
+  const adjustGridHeight = (delta: number): void => {
     setState((prev) => {
       const newHeight = Math.max(2, Math.min(20, prev.gridLayout.height + delta));
       if (newHeight === prev.gridLayout.height) return prev;
@@ -273,7 +274,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     });
   };
 
-  const addTile = (key: string) => {
+  const addTile = (key: string): void => {
     setState((prev) => {
       const newTiles = new Set(prev.gridLayout.tiles);
       newTiles.add(key);
@@ -293,7 +294,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     });
   };
 
-  const removeTile = (key: string) => {
+  const removeTile = (key: string): void => {
     setState((prev) => {
       const newTiles = new Set(prev.gridLayout.tiles);
       newTiles.delete(key);
@@ -310,7 +311,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     });
   };
 
-  const clearAllTiles = () => {
+  const clearAllTiles = (): void => {
     setState((prev) => ({
       ...prev,
       gridLayout: {
@@ -321,7 +322,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     }));
   };
 
-  const importGridLayout = (layout: GridLayout) => {
+  const importGridLayout = (layout: GridLayout): void => {
     setState((prev) => ({
       ...prev,
       gridLayout: {
@@ -333,7 +334,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     }));
   };
 
-  const cycleActiveSection = useCallback((direction: 'forward' | 'backward') => {
+  const cycleActiveSection = useCallback((direction: 'forward' | 'backward'): void => {
     const delta = direction === 'forward' ? 1 : -1;
     setState((prev) => {
       switch (prev.lastActiveSection) {
@@ -398,7 +399,9 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
           };
         }
         case 'brush': {
-          const newColorIndex = (COLOR_ORDER.indexOf(prev.selectedColor) + delta + COLOR_ORDER.length) % COLOR_ORDER.length;
+          const newColorIndex = (
+            COLOR_ORDER.indexOf(prev.selectedColor) + delta + COLOR_ORDER.length
+          ) % COLOR_ORDER.length;
           const newColor = COLOR_ORDER[newColorIndex];
           return {
             ...prev,
@@ -449,7 +452,7 @@ export function GridEditorProvider({ children }: Readonly<{ children: ReactNode 
     </GridEditorContext.Provider>
   );
 }
-export function useGridEditor() {
+export function useGridEditor(): GridEditorContextValue {
   const context = useContext(GridEditorContext);
   if (!context) {
     throw new Error('useGridEditor must be used within a GridEditorProvider');

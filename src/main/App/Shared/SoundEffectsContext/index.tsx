@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../../utils/persistence';
+
+import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../persistence';
 
 export type SoundEffect = | 'click_into_place'
   | 'game_over'
@@ -26,8 +27,6 @@ let modulePlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | 
 export function playSound(soundEffect: SoundEffect, startTime?: number): void {
   if (modulePlaySound) {
     modulePlaySound(soundEffect, startTime);
-  } else {
-    console.warn('SoundEffectsProvider not initialized yet');
   }
 }
 interface SoundEffectsContextValue {
@@ -38,7 +37,9 @@ interface SoundEffectsContextValue {
   isEnabled: boolean;
 }
 const SoundEffectsContext = createContext<SoundEffectsContextValue | undefined>(undefined);
-export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SoundEffectsProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }): JSX.Element => {
   const [volume, setVolumeState] = useState(100);
   const [isEnabled, setIsEnabledState] = useState(true);
   const audioBuffersRef = useRef<Map<SoundEffect, AudioBuffer>>(new Map());
@@ -46,9 +47,11 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const hasUserInteractedRef = useRef(false);
 
   // Initialize AudioContext and load sounds
-  useEffect(() => {
-    const initAudio = async () => {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  useEffect((): void => {
+    const initAudio = async (): Promise<void> => {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioContextClass) return;
 
       const ctx = new AudioContextClass();
@@ -72,8 +75,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
           const arrayBuffer = await response.arrayBuffer();
           const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
           audioBuffersRef.current.set(soundName as SoundEffect, audioBuffer);
-        } catch (error) {
-          console.error(`Failed to load sound ${soundName}:`, error);
+        } catch {
         }
       }
     };
@@ -82,8 +84,8 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   // Initialize user interaction detection
-  useEffect(() => {
-    const handleUserInteraction = () => {
+  useEffect((): (() => void) => {
+    const handleUserInteraction = (): void => {
       hasUserInteractedRef.current = true;
 
       if (audioContextRef.current?.state === 'suspended') {
@@ -97,15 +99,15 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     document.addEventListener('click', handleUserInteraction, { once: true });
     document.addEventListener('keydown', handleUserInteraction, { once: true });
 
-    return () => {
+    return (): void => {
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('keydown', handleUserInteraction);
     };
   }, []);
 
   // Handle page visibility changes (app backgrounded/foregrounded)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
+  useEffect((): (() => void) => {
+    const handleVisibilityChange = (): void => {
       const ctx = audioContextRef.current;
       if (!ctx) return;
 
@@ -124,26 +126,26 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    return () => {
+    return (): void => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
   // Load volume and enabled state from DB on mount
-  useEffect(() => {
-    const loadSettings = async () => {
+  useEffect((): void => {
+    const loadSettings = async (): Promise<void> => {
       try {
         const settings = await loadSoundEffectsSettings();
 
         // Validate volume is a finite number, default to 100 if invalid
-        const validVolume = Number.isFinite(settings.volume) && settings.volume >= 0 && settings.volume <= 100
-          ? settings.volume
-          : 100;
+        const isValidVolume = Number.isFinite(settings.volume)
+          && settings.volume >= 0
+          && settings.volume <= 100;
+        const validVolume = isValidVolume ? settings.volume : 100;
 
         setVolumeState(validVolume);
         setIsEnabledState(settings.isEnabled);
-      } catch (error) {
-        console.error('Unexpected error loading sound effects settings:', error);
+      } catch {
         setIsEnabledState(true);
         setVolumeState(100);
       }
@@ -152,7 +154,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     loadSettings();
   }, []);
 
-  const playHeartbeat = useCallback((startTime: number) => {
+  const playHeartbeat = useCallback((startTime: number): void => {
     const ctx = audioContextRef.current;
     if (!ctx) return;
 
@@ -192,7 +194,7 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     osc2.stop(t2 + 0.25);
   }, []);
 
-  const playSound = useCallback((soundEffect: SoundEffect, scheduleTime?: number) => {
+  const playSound = useCallback((soundEffect: SoundEffect, scheduleTime?: number): void => {
     // Don't play if user hasn't interacted yet
     if (!hasUserInteractedRef.current) {
       return;
@@ -227,7 +229,10 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const gainNode = ctx.createGain();
       const calculatedGain = (volume / 100) * BASE_SOUND_EFFECTS_VOLUME * soundMultiplier;
       // Ensure gain is a valid finite number between 0 and 1
-      gainNode.gain.value = Number.isFinite(calculatedGain) ? Math.max(0, Math.min(1, calculatedGain)) : 0;
+      const finalGain = Number.isFinite(calculatedGain)
+        ? Math.max(0, Math.min(1, calculatedGain))
+        : 0;
+      gainNode.gain.value = finalGain;
 
       source.connect(gainNode);
       gainNode.connect(ctx.destination);
@@ -237,49 +242,43 @@ export const SoundEffectsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const startTime = ctx.currentTime + Math.max(0, delay / 1000);
 
       source.start(startTime);
-    } else {
-      console.warn(`Sound effect '${soundEffect}' not found or context not ready`);
     }
   }, [isEnabled, volume, playHeartbeat]);
 
   // Register this playSound function at module level
   // so reducer and other non-React code can benefit from fast playback
-  useEffect(() => {
+  useEffect((): (() => void) => {
     modulePlaySound = playSound;
-    return () => {
+    return (): void => {
       modulePlaySound = null;
     };
   }, [playSound]);
 
-  const setVolume = useCallback((newVolume: number) => {
+  const setVolume = useCallback((newVolume: number): void => {
     const clampedVolume = Math.max(0, Math.min(100, newVolume));
     // Update React state immediately (synchronous)
     setVolumeState(clampedVolume);
 
     // Save to DB in background (async, non-blocking)
-    saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch((error) => {
-      console.error('Failed to save sound effects volume:', error);
+    saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch((_error): void => {
       // Fallback to localStorage
       try {
         localStorage.setItem('tetrix-soundeffects-volume', JSON.stringify(clampedVolume));
-      } catch (e) {
-        console.error('Failed to save to localStorage:', e);
+      } catch {
       }
     });
   }, [isEnabled]);
 
-  const setEnabled = useCallback((enabled: boolean) => {
+  const setEnabled = useCallback((enabled: boolean): void => {
     // Update React state immediately (synchronous)
     setIsEnabledState(enabled);
 
     // Save to DB in background (async, non-blocking)
-    saveSoundEffectsSettings(!enabled, volume, enabled).catch((error) => {
-      console.error('Failed to save sound effects enabled state:', error);
+    saveSoundEffectsSettings(!enabled, volume, enabled).catch((_error): void => {
       // Fallback to localStorage
       try {
         localStorage.setItem('tetrix-soundeffects-muted', JSON.stringify(!enabled));
-      } catch (e) {
-        console.error('Failed to save to localStorage:', e);
+      } catch {
       }
     });
   }, [volume]);

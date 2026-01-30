@@ -28,7 +28,7 @@ import {
   initializePersistence,
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,
-} from '../persistenceAdapter';
+} from '../../utils/persistenceAdapter';
 
 // Re-export the main functions
 export {
@@ -201,7 +201,7 @@ export async function safeBatchSave(data: {
 
   try {
     await updateGameStateAdapter(updateData);
-  } catch (error) {
+  } catch {
     // If no state exists yet, create it
     await saveGameState({
       score: data.score ?? 0,

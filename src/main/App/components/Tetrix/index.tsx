@@ -1,10 +1,10 @@
 import './Tetrix.css';
+import { useTetrixStateContext } from '../../Shared/TetrixContext';
 import { GameControlsPanel } from '../GameControlsPanel';
 import { GameOverOverlay } from '../GameOverOverlay';
 import { GemShower } from '../GemShower';
 import { Grid } from '../Grid';
 import { MapCompletionOverlay } from '../MapCompletionOverlay';
-import { useTetrixStateContext } from '../../contexts/TetrixContext';
 
 const Tetrix: React.FC = () => {
   const { gameState, gameMode, isStatsOpen, mapCompletionResult } = useTetrixStateContext();

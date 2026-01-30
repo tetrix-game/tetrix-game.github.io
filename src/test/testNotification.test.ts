@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { tetrixReducer, initialState } from '../main/App/reducers';
 import type { ScoreData } from '../main/App/types/scoring';
 
@@ -7,12 +8,12 @@ describe('Test Notification Functionality', () => {
     const scoreData: ScoreData = {
       rowsCleared: 0,
       columnsCleared: 0,
-      pointsEarned: 100
+      pointsEarned: 100,
     };
 
     const action = {
       type: 'ADD_SCORE' as const,
-      value: { scoreData }
+      value: { scoreData },
     };
 
     const newState = tetrixReducer(initialState, action);
@@ -31,9 +32,9 @@ describe('Test Notification Functionality', () => {
         scoreData: {
           rowsCleared: 0,
           columnsCleared: 0,
-          pointsEarned: 50
-        }
-      }
+          pointsEarned: 50,
+        },
+      },
     });
     expect(state.score).toBe(50);
 
@@ -44,9 +45,9 @@ describe('Test Notification Functionality', () => {
         scoreData: {
           rowsCleared: 0,
           columnsCleared: 0,
-          pointsEarned: 75
-        }
-      }
+          pointsEarned: 75,
+        },
+      },
     });
     expect(state.score).toBe(125);
   });
@@ -60,9 +61,9 @@ describe('Test Notification Functionality', () => {
         scoreData: {
           rowsCleared: 0,
           columnsCleared: 0,
-          pointsEarned: largeAmount
-        }
-      }
+          pointsEarned: largeAmount,
+        },
+      },
     };
 
     const newState = tetrixReducer(initialState, action);

@@ -10,7 +10,7 @@
  * - Detecting full board clears
  */
 
-import { playSound } from '../../contexts/SoundEffectsContext';
+import { playSound } from '../../Shared/SoundEffectsContext';
 import type { TilesSet } from '../../types/core';
 import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../lineUtils';
@@ -46,11 +46,30 @@ export interface LineClearingResult {
 /**
  * Helper function to play line clear sound effects
  */
-function playLineClearSounds(clearedRows: number[], clearedColumns: number[], baseStartTime: number) {
-  const scheduleSound = (count: number, type: 'rows' | 'columns') => {
-    if (count >= 1) playSound('clear_combo_1', baseStartTime + CLEARING_ANIMATION_CONFIG[type].single.startDelay);
-    if (count >= 2) playSound('clear_combo_2', baseStartTime + CLEARING_ANIMATION_CONFIG[type].double.startDelay);
-    if (count >= 3) playSound('clear_combo_3', baseStartTime + CLEARING_ANIMATION_CONFIG[type].triple.startDelay);
+function playLineClearSounds(
+  clearedRows: number[],
+  clearedColumns: number[],
+  baseStartTime: number,
+): void {
+  const scheduleSound = (count: number, type: 'rows' | 'columns'): void => {
+    if (count >= 1) {
+      playSound(
+        'clear_combo_1',
+        baseStartTime + CLEARING_ANIMATION_CONFIG[type].single.startDelay,
+      );
+    }
+    if (count >= 2) {
+      playSound(
+        'clear_combo_2',
+        baseStartTime + CLEARING_ANIMATION_CONFIG[type].double.startDelay,
+      );
+    }
+    if (count >= 3) {
+      playSound(
+        'clear_combo_3',
+        baseStartTime + CLEARING_ANIMATION_CONFIG[type].triple.startDelay,
+      );
+    }
     if (count >= 4) {
       const quadStart = baseStartTime + CLEARING_ANIMATION_CONFIG[type].quad.startDelay;
       playSound('clear_combo_4', quadStart);
@@ -75,36 +94,44 @@ function calculateNormalAnimationEndTime(rowCount: number, columnCount: number):
 
   // Check row animations
   if (rowCount >= 4) {
-    const quadEnd = CLEARING_ANIMATION_CONFIG.rows.quad.startDelay + CLEARING_ANIMATION_CONFIG.rows.quad.duration;
+    const quadEnd = CLEARING_ANIMATION_CONFIG.rows.quad.startDelay
+      + CLEARING_ANIMATION_CONFIG.rows.quad.duration;
     maxEndTime = Math.max(maxEndTime, quadEnd);
   } else if (rowCount >= 3) {
-    const tripleEnd = CLEARING_ANIMATION_CONFIG.rows.triple.startDelay + CLEARING_ANIMATION_CONFIG.rows.triple.duration
+    const tripleEnd = CLEARING_ANIMATION_CONFIG.rows.triple.startDelay
+      + CLEARING_ANIMATION_CONFIG.rows.triple.duration
       + (9 * CLEARING_ANIMATION_CONFIG.rows.triple.waveDelay);
     maxEndTime = Math.max(maxEndTime, tripleEnd);
   } else if (rowCount >= 2) {
-    const doubleEnd = CLEARING_ANIMATION_CONFIG.rows.double.startDelay + CLEARING_ANIMATION_CONFIG.rows.double.duration
+    const doubleEnd = CLEARING_ANIMATION_CONFIG.rows.double.startDelay
+      + CLEARING_ANIMATION_CONFIG.rows.double.duration
       + (9 * CLEARING_ANIMATION_CONFIG.rows.double.waveDelay);
     maxEndTime = Math.max(maxEndTime, doubleEnd);
   } else if (rowCount >= 1) {
-    const singleEnd = CLEARING_ANIMATION_CONFIG.rows.single.startDelay + CLEARING_ANIMATION_CONFIG.rows.single.duration
+    const singleEnd = CLEARING_ANIMATION_CONFIG.rows.single.startDelay
+      + CLEARING_ANIMATION_CONFIG.rows.single.duration
       + (9 * CLEARING_ANIMATION_CONFIG.rows.single.waveDelay);
     maxEndTime = Math.max(maxEndTime, singleEnd);
   }
 
   // Check column animations
   if (columnCount >= 4) {
-    const quadEnd = CLEARING_ANIMATION_CONFIG.columns.quad.startDelay + CLEARING_ANIMATION_CONFIG.columns.quad.duration;
+    const quadEnd = CLEARING_ANIMATION_CONFIG.columns.quad.startDelay
+      + CLEARING_ANIMATION_CONFIG.columns.quad.duration;
     maxEndTime = Math.max(maxEndTime, quadEnd);
   } else if (columnCount >= 3) {
-    const tripleEnd = CLEARING_ANIMATION_CONFIG.columns.triple.startDelay + CLEARING_ANIMATION_CONFIG.columns.triple.duration
+    const tripleEnd = CLEARING_ANIMATION_CONFIG.columns.triple.startDelay
+      + CLEARING_ANIMATION_CONFIG.columns.triple.duration
       + (9 * CLEARING_ANIMATION_CONFIG.columns.triple.waveDelay);
     maxEndTime = Math.max(maxEndTime, tripleEnd);
   } else if (columnCount >= 2) {
-    const doubleEnd = CLEARING_ANIMATION_CONFIG.columns.double.startDelay + CLEARING_ANIMATION_CONFIG.columns.double.duration
+    const doubleEnd = CLEARING_ANIMATION_CONFIG.columns.double.startDelay
+      + CLEARING_ANIMATION_CONFIG.columns.double.duration
       + (9 * CLEARING_ANIMATION_CONFIG.columns.double.waveDelay);
     maxEndTime = Math.max(maxEndTime, doubleEnd);
   } else if (columnCount >= 1) {
-    const singleEnd = CLEARING_ANIMATION_CONFIG.columns.single.startDelay + CLEARING_ANIMATION_CONFIG.columns.single.duration
+    const singleEnd = CLEARING_ANIMATION_CONFIG.columns.single.startDelay
+      + CLEARING_ANIMATION_CONFIG.columns.single.duration
       + (9 * CLEARING_ANIMATION_CONFIG.columns.single.waveDelay);
     maxEndTime = Math.max(maxEndTime, singleEnd);
   }

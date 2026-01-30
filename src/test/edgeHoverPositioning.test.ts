@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { mousePositionToGridLocation } from '../main/App/utils/shapes/shapeGeometry';
+
+import { mousePositionToGridLocation } from '../main/App/Shared/shapeGeometry';
 import type { Shape, Block } from '../main/App/types/core';
 
 describe('Edge Hover Positioning', () => {
@@ -10,7 +11,7 @@ describe('Edge Hover Positioning', () => {
     mockGridElement = document.createElement('div');
 
     // Mock getBoundingClientRect to return a 500x500 grid starting at (100, 100)
-    mockGridElement.getBoundingClientRect = () => ({
+    mockGridElement.getBoundingClientRect = (): DOMRect => ({
       left: 100,
       top: 100,
       right: 600,
@@ -19,7 +20,7 @@ describe('Edge Hover Positioning', () => {
       height: 500,
       x: 100,
       y: 100,
-      toJSON: () => { },
+      toJSON: (): string => '',
     });
   });
 
@@ -28,8 +29,8 @@ describe('Edge Hover Positioning', () => {
     isFilled,
   });
 
-  const _ = () => createBlock(false);
-  const X = () => createBlock(true);
+  const _ = (): Block => createBlock(false);
+  const X = (): Block => createBlock(true);
 
   it('should detect edge tile (column 1) when hovering on outer half', () => {
     // Create a vertical I-piece (4x1)
@@ -103,7 +104,7 @@ describe('Edge Hover Positioning', () => {
         gridOffsetY,
         tileSize: TILE_SIZE,
         gridGap: GRID_GAP,
-      }
+      },
     );
 
     // With the current Math.round() implementation:
@@ -181,7 +182,7 @@ describe('Edge Hover Positioning', () => {
           gridOffsetY,
           tileSize: TILE_SIZE,
           gridGap: GRID_GAP,
-        }
+        },
       );
 
       expect(location, `Failed at ${desc} (y=${y})`).not.toBeNull();

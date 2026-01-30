@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { checkMapCompletion, createTargetTilesSet } from '../main/App/utils/mapCompletionUtils';
+
 import type { TilesSet, Tile } from '../main/App/types/core';
+import { checkMapCompletion, createTargetTilesSet } from '../main/App/utils/mapCompletionUtils';
 
 describe('Map Completion Utils', () => {
   const createTile = (
     position: string,
     backgroundColor: 'grey' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple',
     blockColor: 'grey' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple',
-    isFilled: boolean
+    isFilled: boolean,
   ): Tile => ({
     position,
     backgroundColor,

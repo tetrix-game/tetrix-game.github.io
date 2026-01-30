@@ -3,10 +3,13 @@
  * Actions: ADD_SCORE, SHOW_COIN_DISPLAY, HIDE_COIN_DISPLAY, SPEND_COIN, UPDATE_GEM_ICON_POSITION
  */
 
+import { safeBatchSave } from '../../Shared/persistence';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { safeBatchSave } from '../../utils/persistence';
 
-export function scoringReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
+export function scoringReducer(
+  state: TetrixReducerState,
+  action: TetrixAction,
+): TetrixReducerState {
   switch (action.type) {
     case 'ADD_SCORE': {
       const { scoreData, mousePosition: clickPosition } = action.value;
@@ -15,9 +18,7 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
       // Save updated score
       if (state.gameMode !== 'hub') {
         safeBatchSave({ score: newScore })
-          .catch((error: Error) => {
-            console.error('Failed to save score:', error);
-          });
+          .catch((_error: Error) => {});
       }
 
       return {
@@ -62,9 +63,7 @@ export function scoringReducer(state: TetrixReducerState, action: TetrixAction):
       // Save updated score
       if (state.gameMode !== 'hub') {
         safeBatchSave({ score: newScore })
-          .catch((error: Error) => {
-            console.error('Failed to save score:', error);
-          });
+          .catch((_error: Error) => {});
       }
 
       return {

@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { getShapeGridPositions } from '../main/App/utils/shapes/shapeGeometry';
-import { canPlaceShape } from '../main/App/utils/shapes/shapeValidation';
+
+import { getShapeGridPositions } from '../main/App/Shared/shapeGeometry';
 import type { Shape, Location } from '../main/App/types/core';
+import { canPlaceShape } from '../main/App/utils/shapes/shapeValidation';
+
 import { createTilesWithFilled } from './testHelpers';
 
 // Helper to create test shapes (4x4 grid format)
@@ -11,26 +13,26 @@ const createLShape = (): Shape => {
       { color: 'blue', isFilled: false },
       { color: 'blue', isFilled: true },
       { color: 'blue', isFilled: false },
-      { color: 'blue', isFilled: false }
+      { color: 'blue', isFilled: false },
     ],
     [
       { color: 'blue', isFilled: false },
       { color: 'blue', isFilled: true },
       { color: 'blue', isFilled: false },
-      { color: 'blue', isFilled: false }
+      { color: 'blue', isFilled: false },
     ],
     [
       { color: 'blue', isFilled: false },
       { color: 'blue', isFilled: true },
       { color: 'blue', isFilled: true },
-      { color: 'blue', isFilled: false }
+      { color: 'blue', isFilled: false },
     ],
     [
       { color: 'blue', isFilled: false },
       { color: 'blue', isFilled: false },
       { color: 'blue', isFilled: false },
-      { color: 'blue', isFilled: false }
-    ]
+      { color: 'blue', isFilled: false },
+    ],
   ];
 };
 
@@ -40,26 +42,26 @@ const createSquareShape = (): Shape => {
       { color: 'red', isFilled: false },
       { color: 'red', isFilled: true },
       { color: 'red', isFilled: true },
-      { color: 'red', isFilled: false }
+      { color: 'red', isFilled: false },
     ],
     [
       { color: 'red', isFilled: false },
       { color: 'red', isFilled: true },
       { color: 'red', isFilled: true },
-      { color: 'red', isFilled: false }
+      { color: 'red', isFilled: false },
     ],
     [
       { color: 'red', isFilled: false },
       { color: 'red', isFilled: false },
       { color: 'red', isFilled: false },
-      { color: 'red', isFilled: false }
+      { color: 'red', isFilled: false },
     ],
     [
       { color: 'red', isFilled: false },
       { color: 'red', isFilled: false },
       { color: 'red', isFilled: false },
-      { color: 'red', isFilled: false }
-    ]
+      { color: 'red', isFilled: false },
+    ],
   ];
 };
 
@@ -82,8 +84,8 @@ describe('Shape Hover Effect - Unit Tests', () => {
       const positions = getShapeGridPositions(shape, centerLocation);
 
       // Extract row and column values
-      const rows = positions.map(p => p.location.row);
-      const cols = positions.map(p => p.location.column);
+      const rows = positions.map((p) => p.location.row);
+      const cols = positions.map((p) => p.location.column);
 
       // All positions should be reasonably close to the center location
       // With 4x4 shapes, the positions can vary more
@@ -103,7 +105,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
       const centerLocation: Location = { row: 5, column: 5 };
 
       const positions = getShapeGridPositions(shape, centerLocation);
-      const positionStrings = positions.map(p => `${p.location.row},${p.location.column}`);
+      const positionStrings = positions.map((p) => `${p.location.row},${p.location.column}`);
       const uniquePositions = new Set(positionStrings);
 
       // All positions should be unique
@@ -125,7 +127,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
       // (the shape should maintain its form, just be translated)
       const offset = {
         row: location2.row - location1.row,
-        column: location2.column - location1.column
+        column: location2.column - location1.column,
       };
 
       // Each position in positions2 should be positions1 + offset
@@ -203,18 +205,18 @@ describe('Shape Hover Effect - Unit Tests', () => {
       // Calculate center of mass for both
       const center1 = {
         row: pos1.reduce((sum, p) => sum + p.location.row, 0) / pos1.length,
-        column: pos1.reduce((sum, p) => sum + p.location.column, 0) / pos1.length
+        column: pos1.reduce((sum, p) => sum + p.location.column, 0) / pos1.length,
       };
 
       const center2 = {
         row: pos2.reduce((sum, p) => sum + p.location.row, 0) / pos2.length,
-        column: pos2.reduce((sum, p) => sum + p.location.column, 0) / pos2.length
+        column: pos2.reduce((sum, p) => sum + p.location.column, 0) / pos2.length,
       };
 
       // The offset between centers should match the offset between hover locations
       const centerOffset = {
         row: center2.row - center1.row,
-        column: center2.column - center1.column
+        column: center2.column - center1.column,
       };
 
       expect(Math.abs(centerOffset.row - 5)).toBeLessThanOrEqual(0.5); // 8 - 3 = 5
@@ -237,7 +239,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
       // a half-sized version should be centered at tile (5,5)'s center
 
       expect(positions.length).toBe(4); // Square has 4 blocks
-      expect(positions.every(p => p.block.isFilled)).toBe(true);
+      expect(positions.every((p) => p.block.isFilled)).toBe(true);
     });
   });
 
@@ -248,7 +250,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
 
       const previewPositions = getShapeGridPositions(shape, hoverLocation);
       const previewSet = new Set(
-        previewPositions.map(p => `${p.location.row},${p.location.column}`)
+        previewPositions.map((p) => `${p.location.row},${p.location.column}`),
       );
 
       // Only these exact positions should be marked as preview (during settling phase only)
@@ -264,7 +266,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
       }
 
       // 96 tiles (100 - 4) should NOT be in the preview set
-      const nonPreviewTiles = allPossibleTiles.filter(tile => !previewSet.has(tile));
+      const nonPreviewTiles = allPossibleTiles.filter((tile) => !previewSet.has(tile));
       expect(nonPreviewTiles.length).toBe(96);
     });
 
@@ -304,7 +306,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
 
       const previewPositions = getShapeGridPositions(shape, hoverLocation);
       const previewSet = new Set(
-        previewPositions.map(p => `${p.location.row},${p.location.column}`)
+        previewPositions.map((p) => `${p.location.row},${p.location.column}`),
       );
 
       // Simulate tile data - some filled, some empty
@@ -318,7 +320,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
       const isPreviewForFilled = previewSet.has(filledTileKey) && !filledTile.isFilled;
       expect(isPreviewForFilled).toBe(false); // Should NOT be preview because tile is filled
 
-      // Test empty tile that's in preview position  
+      // Test empty tile that's in preview position
       const emptyTileKey = `${emptyTile.row},${emptyTile.column}`;
       const isPreviewForEmpty = previewSet.has(emptyTileKey) && !emptyTile.isFilled;
       expect(isPreviewForEmpty).toBe(true); // SHOULD be preview because tile is empty
@@ -330,7 +332,7 @@ describe('Shape Hover Effect - Unit Tests', () => {
 
       const previewPositions = getShapeGridPositions(shape, hoverLocation);
       const previewSet = new Set(
-        previewPositions.map(p => `${p.location.row},${p.location.column}`)
+        previewPositions.map((p) => `${p.location.row},${p.location.column}`),
       );
 
       // Check all 100 tiles
@@ -342,9 +344,8 @@ describe('Shape Hover Effect - Unit Tests', () => {
           // During settling phase, isHovered is true for tiles in previewSet
           // During normal dragging, DraggingShape shows the preview (not grid tiles)
           if (isInPreviewSet) {
-            const matchingPosition = previewPositions.find(p =>
-              p.location.row === row && p.location.column === col
-            );
+            const matchingPosition = previewPositions.find((p) =>
+              p.location.row === row && p.location.column === col);
             expect(matchingPosition).toBeDefined();
           }
         }
@@ -379,10 +380,10 @@ describe('Shape Hover Effect - Unit Tests', () => {
 
       // BETTER APPROACH: Create a Map for O(1) lookup of both key AND block
       const previewMap = new Map(
-        previewPositions.map(p => [
+        previewPositions.map((p) => [
           `${p.location.row},${p.location.column}`,
-          p.block
-        ])
+          p.block,
+        ]),
       );
 
       // Verify the Map works correctly

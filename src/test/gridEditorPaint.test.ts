@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { GridEditorProvider, useGridEditor } from '../main/App/components/GridEditorContext';
+import { describe, it, expect } from 'vitest';
+
+import { GridEditorProvider, useGridEditor } from '../main/App/contexts/GridEditorContext';
 
 describe('Grid Editor Paint Functionality', () => {
   it('should add tiles individually when painting', () => {

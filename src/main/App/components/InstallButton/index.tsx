@@ -8,46 +8,44 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
-const InstallButton: React.FC = () => {
+const InstallButton: React.FC = (): JSX.Element | null => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
-  useEffect(() => {
+  useEffect((): (() => void) => {
     // Check if iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as Window & { MSStream?: unknown }).MSStream;
     setIsIOS(isIOSDevice);
 
-    const handleBeforeInstallPrompt = (e: Event) => {
+    const handleBeforeInstallPrompt = (e: Event): void => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       // Stash the event so it can be triggered later.
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      console.log('Captured beforeinstallprompt event');
     };
 
-    const handleAppInstalled = () => {
+    const handleAppInstalled = (): void => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-      console.log('PWA was installed');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
     // Check if already installed (standalone mode)
-    if (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone) {
+    if (window.matchMedia('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone) {
       setIsInstalled(true);
     }
 
-    return () => {
+    return (): void => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
-  const handleInstallClick = async () => {
+  const handleInstallClick = async (): Promise<void> => {
     if (isIOS) {
       setShowIOSInstructions(true);
       return;
@@ -59,8 +57,7 @@ const InstallButton: React.FC = () => {
     deferredPrompt.prompt();
 
     // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to the install prompt: ${outcome}`);
+    await deferredPrompt.userChoice;
 
     // We've used the prompt, and can't use it again, throw it away
     setDeferredPrompt(null);

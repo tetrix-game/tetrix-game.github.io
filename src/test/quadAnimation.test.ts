@@ -4,8 +4,8 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { generateClearingAnimations } from '../main/App/utils/clearingAnimationUtils';
-import type { ClearedLine } from '../main/App/utils/lineUtils';
+import { generateClearingAnimations } from '../main/App/Shared/Shared_clearingAnimationUtils';
+import type { ClearedLine } from '../main/App/Shared/Shared_lineUtils';
 
 import { createTilesWithFilled } from './testHelpers';
 

@@ -170,3 +170,9 @@ export function verifyChecksumManifest(
 
   return { isValid: false, mismatches };
 }
+
+// Facade export to match folder name
+export const Shared_checksumUtils = {
+  generateChecksumManifest,
+  verifyChecksumManifest,
+};

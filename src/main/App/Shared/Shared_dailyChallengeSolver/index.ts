@@ -15,8 +15,8 @@ import {
   generate2x1Piece,
   generate1x1Piece,
   generateEvenLPiece,
-} from '../shapes/shapeGeneration';
-import { rotateShape } from '../shapes/shapeTransforms';
+} from '../Shared_shapeGeneration';
+import { rotateShape } from '../Shared_shapeTransforms';
 
 // Simple seeded RNG (Linear Congruential Generator)
 class SeededRNG {
@@ -359,3 +359,8 @@ export function solveDailyChallenge(tiles: TilesSet, seed: number): SolvedShape[
   // If we exhausted iterations, return null (no solution found)
   return null;
 }
+
+// Facade export to match folder name
+export const Shared_dailyChallengeSolver = {
+  solveDailyChallenge,
+};

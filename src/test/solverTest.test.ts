@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import type { TilesSet } from '../main/App/types/core';
-import { solveDailyChallenge } from '../main/App/utils/dailyChallengeSolver';
+import { solveDailyChallenge } from '../main/App/Shared/Shared_dailyChallengeSolver';
 
 describe('solveDailyChallenge', () => {
   it('should solve a simple 2x2 grid', () => {

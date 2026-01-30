@@ -11,9 +11,9 @@ import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // Persistence imports removed - handled by PersistenceListener
 import { DEFAULT_COLOR_PROBABILITIES } from '../../types/shapeQueue';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../../types/stats';
-import { checkGameOver } from '../../utils/gameOverUtils';
-import { checkMapCompletion } from '../../utils/mapCompletionUtils';
-import { updateStats } from '../../utils/statsUtils';
+import { checkGameOver } from '../../Shared/Shared_gameOverUtils';
+import { checkMapCompletion } from '../../Shared/Shared_mapCompletionUtils';
+import { updateStats } from '../../Shared/Shared_statsUtils';
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = (): Map<string, Tile> => {

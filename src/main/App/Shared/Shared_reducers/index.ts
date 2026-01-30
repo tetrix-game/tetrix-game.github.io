@@ -47,3 +47,9 @@ export function tetrixReducer(state: TetrixReducerState, action: TetrixAction): 
 
   return newState;
 }
+
+// Facade export to match folder name
+export const Shared_reducers = {
+  initialState,
+  tetrixReducer,
+};

@@ -385,3 +385,10 @@ export function cleanupExpiredAnimations(
 
   return hasChanges ? newTiles : tiles;
 }
+
+// Facade export to match folder name
+export const Shared_clearingAnimationUtils = {
+  generateClearingAnimations,
+  generateFullBoardClearAnimation,
+  cleanupExpiredAnimations,
+};

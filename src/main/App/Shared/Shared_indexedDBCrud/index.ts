@@ -410,3 +410,9 @@ export function closeDatabase(): void {
     dbConnection = null;
   }
 }
+
+// Facade export to match folder name
+export const Shared_indexedDBCrud = {
+  STORES,
+  closeDatabase,
+};

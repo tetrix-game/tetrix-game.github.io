@@ -220,3 +220,8 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
     isFullBoardClear,
   };
 }
+
+// Facade export to match folder name
+export const Shared_lineClearingOrchestrator = {
+  performLineClearing,
+};

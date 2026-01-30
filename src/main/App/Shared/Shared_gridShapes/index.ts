@@ -289,3 +289,15 @@ export function visualizeGridShape(config?: GridShapeConfig): string {
 
   return lines.join('\n');
 }
+
+// Facade export to match folder name
+export const Shared_gridShapes = {
+  isValidGridCoordinate,
+  generateShapedGridAddresses,
+  setGridShape,
+  getGridShapeStats,
+  GRID_SHAPE_PRESETS,
+  createCrossShape,
+  createPlusShape,
+  visualizeGridShape,
+};

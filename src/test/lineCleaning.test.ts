@@ -9,7 +9,7 @@ import {
   clearRows,
   clearColumns,
   clearFullLines,
-} from '../main/App/utils/lineUtils';
+} from '../main/App/Shared/Shared_lineUtils';
 
 import {
   createTilesWithFilled,

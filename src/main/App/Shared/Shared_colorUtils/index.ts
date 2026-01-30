@@ -197,3 +197,10 @@ export function blockPaletteToCssVars(palette: BlockColorPalette): Record<string
 
   return cssVars;
 }
+
+// Facade export to match folder name
+export const Shared_colorUtils = {
+  adjustLuminosity,
+  blockPaletteToCssVars,
+  BLOCK_COLOR_PALETTES,
+};

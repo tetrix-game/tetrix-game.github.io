@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { tetrixReducer } from '../main/App/Shared/Shared_reducers';
 import type { TetrixReducerState } from '../main/App/types/gameState';
-import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
+import { generateRandomShape } from '../main/App/Shared/Shared_shapes/shapeGeneration';
 
 describe('Drag and Drop Return to Selector', () => {
   it('should trigger return animation when RETURN_SHAPE_TO_SELECTOR is dispatched during dragging phase', () => {

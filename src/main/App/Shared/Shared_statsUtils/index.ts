@@ -196,3 +196,10 @@ export function resetNoTurnStreak(currentStats: StatsPersistenceData): StatsPers
   newStats.noTurnStreak.current = 0;
   return newStats;
 }
+
+// Facade export to match folder name
+export const Shared_statsUtils = {
+  updateStats,
+  incrementNoTurnStreak,
+  resetNoTurnStreak,
+};

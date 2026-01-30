@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { adjustLuminosity, BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../main/App/utils/colorUtils';
+import { adjustLuminosity, BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../main/App/Shared/Shared_colorUtils';
 
 describe('Color Utilities', () => {
   describe('adjustLuminosity', () => {

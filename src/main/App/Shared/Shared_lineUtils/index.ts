@@ -231,3 +231,15 @@ export function clearFullLines(tiles: TilesSet): {
     totalLinesCleared: fullRows.length + fullColumns.length,
   };
 }
+
+// Facade export to match folder name
+export const Shared_lineUtils = {
+  isRowFull,
+  isColumnFull,
+  findFullRows,
+  findFullColumns,
+  clearRows,
+  clearColumns,
+  isGridCompletelyEmpty,
+  clearFullLines,
+};

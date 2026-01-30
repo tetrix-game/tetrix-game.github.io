@@ -86,3 +86,10 @@ export function getScoreMessage(scoreData: ScoreData): string {
 
   return `Cleared ${clearedText}! +${pointsEarned} ${pointText}`;
 }
+
+// Facade export to match folder name
+export const Shared_scoringUtils = {
+  calculateScore,
+  formatScore,
+  getScoreMessage,
+};

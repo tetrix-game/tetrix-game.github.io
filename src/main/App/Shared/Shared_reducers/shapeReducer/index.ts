@@ -7,9 +7,9 @@
 import { safeBatchSave } from '../../Shared/persistence';
 import type { QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { generateRandomShape } from '../../utils/shapes/shapeGeneration';
-import { rotateShape, cloneShape } from '../../utils/shapes/shapeTransforms';
-import { resetNoTurnStreak } from '../../utils/statsUtils';
+import { generateRandomShape } from '../../Shared/Shared_shapes/shapeGeneration';
+import { rotateShape, cloneShape } from '../../Shared/Shared_shapes/shapeTransforms';
+import { resetNoTurnStreak } from '../../Shared/Shared_statsUtils';
 
 export function shapeReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {

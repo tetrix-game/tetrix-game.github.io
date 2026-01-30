@@ -102,3 +102,9 @@ export function themeToCssVars(
     '--theme-animation-color': themeName === 'light' ? 'rgba(100, 100, 100, 0.55)' : 'rgba(255, 255, 255, 0.55)',
   };
 }
+
+// Facade export to match folder name
+export const Shared_themeUtils = {
+  THEME_DEFINITIONS,
+  themeToCssVars,
+};

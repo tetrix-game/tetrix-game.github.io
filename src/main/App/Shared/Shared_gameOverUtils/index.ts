@@ -1,7 +1,7 @@
 import type { Shape, TilesSet } from '../../types/core';
 import type { GameMode } from '../../types/gameState';
-import { rotateShape } from '../shapes/shapeTransforms';
-import { isValidPlacement } from '../shapes/shapeValidation';
+import { rotateShape } from '../Shared_shapeTransforms';
+import { isValidPlacement } from '../Shared_shapeValidation';
 
 /**
  * Check if the game is over (no valid moves left)
@@ -60,3 +60,8 @@ export function checkGameOver(
 
   return true; // No valid moves found for any shape in any rotation
 }
+
+// Facade export to match folder name
+export const Shared_gameOverUtils = {
+  checkGameOver,
+};

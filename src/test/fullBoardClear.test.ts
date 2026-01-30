@@ -12,8 +12,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { makeTileKey } from '../main/App/Shared/Shared_gridConstants';
 import { tileReducer } from '../main/App/Shared/Shared_reducers/tileReducer';
 import type { TetrixReducerState } from '../main/App/types/gameState';
-import { generateFullBoardClearAnimation } from '../main/App/utils/clearingAnimationUtils';
-import { isGridCompletelyEmpty } from '../main/App/utils/lineUtils';
+import { generateFullBoardClearAnimation } from '../main/App/Shared/Shared_clearingAnimationUtils';
+import { isGridCompletelyEmpty } from '../main/App/Shared/Shared_lineUtils';
 
 import { createTilesWithFilled } from './testHelpers';
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { useGridEditor } from '../../contexts/GridEditorProvider';
-import { solveDailyChallenge } from '../../utils/dailyChallengeSolver';
+import { solveDailyChallenge } from '../../Shared/Shared_dailyChallengeSolver';
 import { ScrollableMenu, type MenuSectionConfig } from '../ScrollableMenu';
 
 import { ColorBrushSubmenu } from './ColorBrushSubmenu';

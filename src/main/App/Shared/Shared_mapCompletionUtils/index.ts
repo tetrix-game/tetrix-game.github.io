@@ -94,3 +94,9 @@ export function checkMapCompletion(
 export function createTargetTilesSet(tilePositions: string[]): Set<string> {
   return new Set(tilePositions);
 }
+
+// Facade export to match folder name
+export const Shared_mapCompletionUtils = {
+  checkMapCompletion,
+  createTargetTilesSet,
+};

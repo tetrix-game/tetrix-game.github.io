@@ -16,7 +16,7 @@ import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvi
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { THEMES, BLOCK_THEMES } from '../../types/theme';
 import type { ThemeName, BlockTheme } from '../../types/theme';
-import { generateShapesWithProbabilities } from '../../utils/shapes/shapeGenerationWithProbabilities';
+import { generateShapesWithProbabilities } from '../../Shared/Shared_shapes/shapeGenerationWithProbabilities';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { InstallButton } from '../InstallButton';
 import './SettingsOverlay.css';

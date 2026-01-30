@@ -14,7 +14,7 @@ import { Shared_core } from '../../types/core';
 import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../Shared_clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../Shared_lineUtils';
 import { calculateScore } from '../scoringUtils';
-import { Shared_playSound } from '../Shared_SoundEffectsProvider/Shared_playSound';
+import { Shared_playSound } from '../Shared_playSound';
 
 type TilesSet = Shared_core['TilesSet'];
 

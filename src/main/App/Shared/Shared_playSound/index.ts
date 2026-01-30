@@ -1,4 +1,4 @@
-import type { SoundEffect } from './types';
+import type { SoundEffect } from '../Shared_SoundEffectsProvider/types';
 
 const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
   click_into_place: 1.0, // -27.4 dB mean, reference level

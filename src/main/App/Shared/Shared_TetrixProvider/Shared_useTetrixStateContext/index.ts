@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import type { TetrixReducerState } from '../../types/gameState';
-import { Shared_TetrixStateContext } from '../Shared_TetrixStateContext';
+import { Shared_TetrixStateContext } from './Shared_TetrixStateContext';
 
 export function Shared_useTetrixStateContext(): TetrixReducerState {
   const context = useContext(Shared_TetrixStateContext);

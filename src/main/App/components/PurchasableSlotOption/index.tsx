@@ -2,8 +2,8 @@ import './PurchasableSlotOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
 import { Shared_animationConstants } from '../../Shared/Shared_animationConstants';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 
 const { ANIMATION_TIMING } = Shared_animationConstants;
 
@@ -20,13 +20,13 @@ export const PurchasableSlotOption = ({
   slotIndex,
   id,
 }: PurchasableSlotOptionProps): JSX.Element => {
-  const dispatch = Shared_useTetrixDispatchContext();
+  const dispatch = useTetrixDispatchContext();
   const {
     removingShapeIndex,
     shapeRemovalAnimationState,
     shapeOptionBounds,
     score,
-  } = Shared_useTetrixStateContext();
+  } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === slotIndex && shapeRemovalAnimationState === 'removing';
 

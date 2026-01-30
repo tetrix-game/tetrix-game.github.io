@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { Shared_useGameSizing } from '../../Shared/Shared_useGameSizing';
 import { PurchasesContainer } from '../PurchasesContainer';
 import { ShapeQueue } from '../ShapeQueue';
 import './GameControlsPanel.css';
 
 export const GameControlsPanel: React.FC = () => {
-  const { buttonSizeMultiplier } = Shared_useTetrixStateContext();
+  const { buttonSizeMultiplier } = useTetrixStateContext();
   const { gameControlsButtonSize } = Shared_useGameSizing(buttonSizeMultiplier);
 
   return (

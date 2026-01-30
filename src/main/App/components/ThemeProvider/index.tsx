@@ -5,7 +5,7 @@
 import React from 'react';
 
 import { Shared_colorUtils } from '../../Shared/Shared_colorUtils';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { Shared_themeUtils } from '../../Shared/Shared_themeUtils';
 
 const { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } = Shared_colorUtils;
@@ -19,7 +19,7 @@ type ThemeProviderProps = {
  * Component that applies theme-specific CSS custom properties to its children
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const { currentTheme } = Shared_useTetrixStateContext();
+  const { currentTheme } = useTetrixStateContext();
 
   // Get theme definitions
   const theme = THEME_DEFINITIONS[currentTheme];

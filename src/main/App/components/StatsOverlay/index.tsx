@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { Shared_Overlay } from '../../../Shared/Overlay';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import type { ColorName } from '../../Shared/Shared_types';
 import type { StatCategory } from '../../Shared/Shared_types';
 import './StatsOverlay.css';
@@ -85,8 +85,8 @@ const CATEGORY_LABELS: Record<StatCategory, string> = {
 const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];
 
 export const StatsOverlay: React.FC<StatsOverlayProps> = ({ onClose }): JSX.Element => {
-  const { stats, gameState } = Shared_useTetrixStateContext();
-  const dispatch = Shared_useTetrixDispatchContext();
+  const { stats, gameState } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
 
   const handleNewGame = (): void => {
     dispatch({ type: 'RESET_GAME' });

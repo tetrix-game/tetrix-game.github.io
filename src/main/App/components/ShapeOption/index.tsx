@@ -2,8 +2,8 @@ import './ShapeOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
 import { Shared_animationConstants } from '../../Shared/Shared_animationConstants';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import type { Shape } from '../../Shared/Shared_types';
 import { ShapeDisplay } from '../ShapeDisplay';
 
@@ -16,7 +16,7 @@ type ShapeOptionProps = {
 };
 
 export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.Element => {
-  const dispatch = Shared_useTetrixDispatchContext();
+  const dispatch = useTetrixDispatchContext();
   const {
     dragState,
     isTurningModeActive,
@@ -29,7 +29,7 @@ export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.El
     blockTheme,
     showBlockIcons,
     gameMode,
-  } = Shared_useTetrixStateContext();
+  } = useTetrixStateContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimatingRemoval = removingShapeIndex === shapeIndex && shapeRemovalAnimationState === 'removing';
 

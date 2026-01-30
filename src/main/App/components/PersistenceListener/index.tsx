@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { safeBatchSave, saveTheme, saveBlockTheme } from '../../Shared/Shared_persistence';
 import { Shared_persistenceAdapter } from '../../Shared/Shared_persistenceAdapter';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { core } from '../../Shared/Shared_types';
 
 const { updateSettings, saveModifiers, clearGameBoard } = Shared_persistenceAdapter;
@@ -19,7 +19,7 @@ const { tilesToArray } = core;
  * - Saving happens here whenever relevant state changes
  */
 export const PersistenceListener = (): null => {
-  const state = Shared_useTetrixStateContext();
+  const state = useTetrixStateContext();
   const {
     gameState,
     gameMode,

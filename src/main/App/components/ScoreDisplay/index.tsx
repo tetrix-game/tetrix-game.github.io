@@ -3,16 +3,16 @@ import React, { useRef, useEffect } from 'react';
 import { Shared_BlueGemIcon } from '../../../Shared/BlueGemIcon';
 import { useVisualError } from '../../hooks/useVisualError';
 import { formatScore } from '../../Shared/Shared_scoringUtils';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { ErrorPointer } from '../Pointer/ErrorPointer';
 import { StatsOverlay } from '../StatsOverlay';
 import '../../styles/feedback.css';
 import './ScoreDisplay.css';
 
 export const ScoreDisplay: React.FC = (): JSX.Element => {
-  const { score, gameState, isStatsOpen, insufficientFundsError } = Shared_useTetrixStateContext();
-  const dispatch = Shared_useTetrixDispatchContext();
+  const { score, gameState, isStatsOpen, insufficientFundsError } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
 
   // Use the reusable hook for error pulsing

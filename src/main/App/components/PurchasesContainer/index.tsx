@@ -1,10 +1,10 @@
 import './PurchasesContainer.css';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 
 export const PurchasesContainer = (): JSX.Element => {
-  const dispatch = Shared_useTetrixDispatchContext();
-  const state = Shared_useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
+  const state = useTetrixStateContext();
 
   const handleBuyTurnClockwise = (): void => {
     if (state.gameState !== 'playing') return;

@@ -1,4 +1,48 @@
-import { useReducer, useEffect, useState, createContext, useContext } from 'react';
+#!/bin/bash
+set -e
+
+echo "=== Phase 2: Flatten TetrixProvider ==="
+
+cd src/main/App/Shared/Shared_TetrixProvider
+
+# Create new flat hook files
+echo "Creating flat hook files..."
+
+cat > useTetrixDispatchContext.ts << 'EOF'
+import { useContext } from 'react';
+
+import type { TetrixDispatch } from '../../Shared_types';
+
+import { TetrixDispatchContext } from './index';
+
+export function useTetrixDispatchContext(): TetrixDispatch {
+  const context = useContext(TetrixDispatchContext);
+  if (!context) {
+    throw new Error('useTetrixDispatchContext must be used within a Shared_TetrixProvider');
+  }
+  return context;
+}
+EOF
+
+cat > useTetrixStateContext.ts << 'EOF'
+import { useContext } from 'react';
+
+import type { TetrixReducerState } from '../../Shared_types';
+
+import { TetrixStateContext } from './index';
+
+export function useTetrixStateContext(): TetrixReducerState {
+  const context = useContext(TetrixStateContext);
+  if (!context) {
+    throw new Error('useTetrixStateContext must be used within a Shared_TetrixProvider');
+  }
+  return context;
+}
+EOF
+
+# Update index.tsx to inline contexts and export hooks
+cat > index.tsx << 'EOF'
+import { useReducer, useEffect, useState, createContext } from 'react';
 
 import type { ThemeName, BlockTheme, TetrixReducerState, TetrixDispatch } from '../../Shared_types';
 import {
@@ -12,25 +56,8 @@ import { initialState, tetrixReducer } from '../Shared_reducers';
 const { loadModifiers, initializePersistence, clearAllDataAndReload } = Shared_persistenceAdapter;
 
 // Inline context definitions
-const TetrixDispatchContext = createContext<TetrixDispatch | null>(null);
-const TetrixStateContext = createContext<TetrixReducerState | null>(null);
-
-// Hook implementations (no Shared_ prefix - internal to this module)
-export function useTetrixDispatchContext(): TetrixDispatch {
-  const context = useContext(TetrixDispatchContext);
-  if (!context) {
-    throw new Error('useTetrixDispatchContext must be used within a Shared_TetrixProvider');
-  }
-  return context;
-}
-
-export function useTetrixStateContext(): TetrixReducerState {
-  const context = useContext(TetrixStateContext);
-  if (!context) {
-    throw new Error('useTetrixStateContext must be used within a Shared_TetrixProvider');
-  }
-  return context;
-}
+export const TetrixDispatchContext = createContext<TetrixDispatch | null>(null);
+export const TetrixStateContext = createContext<TetrixReducerState | null>(null);
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
 export function Shared_TetrixProvider(
@@ -245,3 +272,15 @@ export function Shared_TetrixProvider(
     </TetrixStateContext.Provider>
   );
 }
+
+// Re-export hooks for external use
+export { useTetrixDispatchContext } from './useTetrixDispatchContext';
+export { useTetrixStateContext } from './useTetrixStateContext';
+EOF
+
+# Remove nested directories
+echo "Removing nested directories..."
+rm -rf Shared_useTetrixDispatchContext
+rm -rf Shared_useTetrixStateContext
+
+echo "Phase 2 complete!"

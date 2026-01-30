@@ -4,8 +4,8 @@ import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
 import { Shared_animationConstants } from '../../Shared/Shared_animationConstants';
 import { Shared_shapeGeometry } from '../../Shared/Shared_shapeGeometry';
 import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { Shared_useGameSizing } from '../../Shared/Shared_useGameSizing';
 import './DraggingShape.css';
 
@@ -35,9 +35,9 @@ export function DraggingShape(): JSX.Element | null {
     blockTheme,
     showBlockIcons,
     gameMode,
-  } = Shared_useTetrixStateContext();
+  } = useTetrixStateContext();
 
-  const dispatch = Shared_useTetrixDispatchContext();
+  const dispatch = useTetrixDispatchContext();
   const { playSound } = Shared_useSoundEffects();
   const [pickupProgress, setPickupProgress] = useState(0);
   const [placingProgress, setPlacingProgress] = useState(0);

@@ -1,18 +1,18 @@
 import './ShapeQueue.css';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { QueueIndicator } from '../QueueIndicator';
 import { QueueOverlay } from '../QueueOverlay';
 import { ShapeSelector } from '../ShapeSelector';
 
 export const ShapeQueue = (): JSX.Element => {
-  const dispatch = Shared_useTetrixDispatchContext();
+  const dispatch = useTetrixDispatchContext();
   const {
     queueMode,
     queueHiddenShapes,
     isQueueOverlayOpen,
     nextShapes,
-  } = Shared_useTetrixStateContext();
+  } = useTetrixStateContext();
 
   // Handle queue indicator click
   const handleQueueIndicatorClick = (): void => {

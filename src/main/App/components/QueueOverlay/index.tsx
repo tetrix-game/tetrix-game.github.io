@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Shared_Overlay } from '../../../Shared/Overlay';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import type { Shape } from '../../Shared/Shared_types';
 import { ShapeDisplay } from '../ShapeDisplay';
 import './QueueOverlay.css';
@@ -21,7 +21,7 @@ export const QueueOverlay: React.FC<QueueOverlayProps> = ({
   hiddenShapes,
   onClose,
 }) => {
-  const { blockTheme, showBlockIcons, gameMode } = Shared_useTetrixStateContext();
+  const { blockTheme, showBlockIcons, gameMode } = useTetrixStateContext();
 
   return (
     <Shared_Overlay

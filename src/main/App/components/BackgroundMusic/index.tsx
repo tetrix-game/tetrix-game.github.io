@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { Shared_useMusicControl } from '../../Shared/Shared_useMusicControl';
 import './BackgroundMusic.css';
 
@@ -25,7 +25,7 @@ const BASE_BGM_VOLUME = 0.5;
 export const BackgroundMusic: React.FC = (): JSX.Element => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const currentTrackRef = useRef<string>('');
-  const { hasPlacedFirstShape } = Shared_useTetrixStateContext();
+  const { hasPlacedFirstShape } = useTetrixStateContext();
   const { isEnabled, volume, shouldPlayMusic, triggerAutoplay } = Shared_useMusicControl();
 
   // Track if we've already triggered autoplay from first shape

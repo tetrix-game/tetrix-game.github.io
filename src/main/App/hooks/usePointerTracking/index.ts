@@ -3,14 +3,14 @@ import { useEffect, useRef } from 'react';
 import { Shared_gridConstants } from '../../Shared/Shared_gridConstants';
 import { mousePositionToGridLocation } from '../../Shared/Shared_shapeGeometry';
 import { isValidPlacement, getInvalidBlocks } from '../../Shared/Shared_shapeValidation';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 
 const { GRID_SIZE } = Shared_gridConstants;
 
 export const usePointerTracking = (): void => {
-  const { gameMode, dragState, gridTileSize, gridBounds, tiles } = Shared_useTetrixStateContext();
-  const dispatch = Shared_useTetrixDispatchContext();
+  const { gameMode, dragState, gridTileSize, gridBounds, tiles } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLElement | null>(null);
 
   // Global mouse/pointer tracking for DraggingShape

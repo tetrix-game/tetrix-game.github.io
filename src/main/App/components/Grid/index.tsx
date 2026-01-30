@@ -4,8 +4,8 @@ import { useRef, useEffect, useMemo } from 'react';
 import { TetrixTile } from '../../components/TetrixTile';
 import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
 import { Shared_gridConstants } from '../../Shared/Shared_gridConstants';
-import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider';
+import { useTetrixStateContext } from '../../Shared/Shared_TetrixProvider';
 import { Shared_useGameSizing } from '../../Shared/Shared_useGameSizing';
 
 const { GRID_SIZE } = Shared_gridConstants;
@@ -17,8 +17,8 @@ interface GridProps {
 }
 
 export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps): JSX.Element {
-  const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = Shared_useTetrixStateContext();
-  const dispatch = Shared_useTetrixDispatchContext();
+  const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const {
     gridSize: hookGridSize,

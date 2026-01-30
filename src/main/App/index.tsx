@@ -9,11 +9,13 @@ import { Tetrix } from './components/Tetrix';
 import { ThemeProvider } from './components/ThemeProvider';
 import { ToastOverlay } from './components/ToastOverlay';
 import { UpdateNotification } from './components/UpdateNotification';
-import { GridEditorProvider } from './contexts/GridEditorContext';
+import { GridEditorProvider } from './contexts/GridEditorProvider';
 import { usePointerTracking } from './hooks/usePointerTracking';
 import { useShapePlacement } from './hooks/useShapePlacement';
 import { useUpdateNotification } from './hooks/useUpdateNotification';
-import { Shared_MusicControlProvider, Shared_SoundEffectsProvider, Shared_TetrixProvider } from './Shared';
+import { Shared_MusicControlProvider } from './Shared/Shared_MusicControlProvider';
+import { Shared_SoundEffectsProvider } from './Shared/Shared_SoundEffectsProvider';
+import { Shared_TetrixProvider } from './Shared/Shared_TetrixProvider';
 
 import './App.css';
 

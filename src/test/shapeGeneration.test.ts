@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { getFilledBlocks } from '../main/App/Shared';
+import { getFilledBlocks } from '../main/App/Shared/shapeGeometry';
 import { generateRandomShape } from '../main/App/utils/shapes/shapeGeneration';
 
 describe('Updated Shape Generation', () => {

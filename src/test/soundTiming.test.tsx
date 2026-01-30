@@ -2,7 +2,9 @@ import { render, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { DraggingShape } from '../main/App/components/DraggingShape';
-import { ANIMATION_TIMING, Shared_TetrixStateContext, Shared_TetrixDispatchContext } from '../main/App/Shared';
+import { ANIMATION_TIMING } from '../main/App/Shared/animationConstants';
+import { Shared_TetrixStateContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_TetrixStateContext';
+import { Shared_TetrixDispatchContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_TetrixDispatchContext';
 import type { DragPhase } from '../main/App/types/drag';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 import { INITIAL_GAME_STATS } from '../main/App/types/stats';
@@ -99,7 +101,16 @@ describe('Sound Timing in DraggingShape', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance', 'Date'],
+      toFake: [
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'requestAnimationFrame',
+        'cancelAnimationFrame',
+        'performance',
+        'Date',
+      ],
     });
   });
 
@@ -119,8 +130,8 @@ describe('Sound Timing in DraggingShape', () => {
     );
 
     // Calculate sound trigger time
-    const soundTriggerTime =
-      ANIMATION_TIMING.PLACING_DURATION - ANIMATION_TIMING.PLACEMENT_SOUND_DURATION;
+    const soundTriggerTime = ANIMATION_TIMING.PLACING_DURATION
+      - ANIMATION_TIMING.PLACEMENT_SOUND_DURATION;
 
     // Fast-forward to the sound trigger point
     await act(async () => {

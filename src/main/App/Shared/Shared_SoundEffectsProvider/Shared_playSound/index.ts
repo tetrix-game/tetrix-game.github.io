@@ -22,7 +22,9 @@ export function Shared_playSound(soundEffect: SoundEffect, startTime?: number): 
   }
 }
 
-export function registerPlaySound(playSound: (soundEffect: SoundEffect, startTime?: number) => void): void {
+export function registerPlaySound(
+  playSound: (soundEffect: SoundEffect, startTime?: number) => void,
+): void {
   modulePlaySound = playSound;
 }
 

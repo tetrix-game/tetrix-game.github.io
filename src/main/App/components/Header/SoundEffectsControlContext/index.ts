@@ -16,7 +16,7 @@ export const useSoundEffectsControl = (): SoundEffectsControlContextType => {
   if (!context) {
     throw new Error(
       'useSoundEffectsControl must be used within a'
-        + ' SoundEffectsControlContext.Provider',
+      + ' SoundEffectsControlContext.Provider',
     );
   }
   return context;

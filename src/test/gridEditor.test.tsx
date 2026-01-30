@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, it, expect } from 'vitest';
 
-import { GridEditorProvider, useGridEditor } from '../main/App/contexts/GridEditorContext';
+import { GridEditorProvider, useGridEditor } from '../main/App/contexts/GridEditorProvider';
 
 // Wrapper component for hooks that need GridEditorProvider
 const wrapper = ({ children }: { children: ReactNode }): JSX.Element => (

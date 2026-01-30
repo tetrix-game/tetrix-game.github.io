@@ -1,6 +1,10 @@
 import { useEffect, useRef } from 'react';
 
-import { GRID_SIZE, mousePositionToGridLocation, Shared_useSoundEffects, Shared_useTetrixStateContext, Shared_useTetrixDispatchContext } from '../../Shared';
+import { GRID_SIZE } from '../../Shared/gridConstants';
+import { mousePositionToGridLocation } from '../../Shared/shapeGeometry';
+import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { isValidPlacement } from '../../utils/shapes/shapeValidation';
 
 export const useShapePlacement = (): void => {

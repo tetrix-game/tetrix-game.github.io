@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
-import { Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { GemParticle } from '../GemParticle';
 import './GemShower.css';
 
@@ -108,7 +108,6 @@ const GemShower: React.FC = () => {
 
     lastScoreRef.current = score;
   }, [score, centerScreenPosition, gemIconOrigin, generateGems]);
-
 
   const handleGemComplete = (gemId: string): void => {
     setGems((prevGems) => prevGems.filter((gem) => gem.id !== gemId));

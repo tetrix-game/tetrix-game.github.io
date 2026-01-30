@@ -1,5 +1,4 @@
-export type SoundEffect =
-  | 'click_into_place'
+export type SoundEffect = | 'click_into_place'
   | 'game_over'
   | 'pickup_shape'
   | 'invalid_placement'

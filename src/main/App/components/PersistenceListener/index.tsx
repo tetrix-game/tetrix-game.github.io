@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme, clearGameBoard, Shared_useTetrixStateContext } from '../../Shared';
+import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme, clearGameBoard } from '../../Shared/persistence';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { tilesToArray } from '../../types/core';
 import { updateSettings } from '../../utils/persistenceAdapter';
 

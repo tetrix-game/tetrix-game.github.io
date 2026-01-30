@@ -1,6 +1,8 @@
 import { useMemo, useCallback } from 'react';
 
-import { Shared_useMusicControl, Shared_useSoundEffects, Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
+import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { BackgroundMusic } from '../BackgroundMusic';
 import { ScoreDisplay } from '../ScoreDisplay';

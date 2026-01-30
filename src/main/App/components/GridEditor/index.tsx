@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { useGridEditor } from '../../contexts/GridEditorContext';
+import { useGridEditor } from '../../contexts/GridEditorProvider';
 import { solveDailyChallenge } from '../../utils/dailyChallengeSolver';
 import { ScrollableMenu, type MenuSectionConfig } from '../ScrollableMenu';
 

@@ -1,5 +1,6 @@
 import './ShapeQueue.css';
-import { Shared_useTetrixDispatchContext, Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { QueueIndicator } from '../QueueIndicator';
 import { QueueOverlay } from '../QueueOverlay';
 import { ShapeSelector } from '../ShapeSelector';

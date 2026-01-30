@@ -3,7 +3,10 @@ import { useRef, useEffect, useMemo } from 'react';
 
 import { TetrixTile } from '../../components/TetrixTile';
 import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
-import { GRID_SIZE, Shared_useTetrixStateContext, Shared_useTetrixDispatchContext, Shared_useGameSizing } from '../../Shared';
+import { GRID_SIZE } from '../../Shared/gridConstants';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useGameSizing } from '../../Shared/Shared_useGameSizing';
 
 interface GridProps {
   width?: number; // Grid width in tiles (default: GRID_SIZE)

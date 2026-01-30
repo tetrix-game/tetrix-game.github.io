@@ -1,6 +1,5 @@
 import { useReducer, useEffect, useState } from 'react';
 
-import { initialState, tetrixReducer } from '../Shared_tetrixReducer';
 import type { ThemeName, BlockTheme } from '../../types/theme';
 import {
   loadModifiers,
@@ -10,11 +9,15 @@ import {
   loadGameState,
   loadSettingsData,
 } from '../persistence';
+import { initialState, tetrixReducer } from '../Shared_tetrixReducer';
 
-import { Shared_TetrixStateContext, Shared_TetrixDispatchContext } from './contexts/';
+import { Shared_TetrixDispatchContext } from './Shared_TetrixDispatchContext/';
+import { Shared_TetrixStateContext } from './Shared_TetrixStateContext/';
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
-export function Shared_TetrixProvider({ children }: { readonly children: React.ReactNode }): JSX.Element {
+export function Shared_TetrixProvider(
+  { children }: { readonly children: React.ReactNode },
+): JSX.Element {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
 

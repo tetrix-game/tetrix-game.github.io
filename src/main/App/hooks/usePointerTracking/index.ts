@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 
-import { GRID_SIZE, mousePositionToGridLocation, Shared_useTetrixStateContext, Shared_useTetrixDispatchContext } from '../../Shared';
+import { GRID_SIZE } from '../../Shared/gridConstants';
+import { mousePositionToGridLocation } from '../../Shared/shapeGeometry';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { isValidPlacement, getInvalidBlocks } from '../../utils/shapes/shapeValidation';
 
 export const usePointerTracking = (): void => {

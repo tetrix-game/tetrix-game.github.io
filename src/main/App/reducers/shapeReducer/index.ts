@@ -4,7 +4,7 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
-import { safeBatchSave } from '../../Shared';
+import { safeBatchSave } from '../../Shared/persistence';
 import type { QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 import { generateRandomShape } from '../../utils/shapes/shapeGeneration';

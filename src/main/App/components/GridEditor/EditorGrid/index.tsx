@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 
-import { useGridEditor } from '../../../contexts/GridEditorContext';
+import { useGridEditor } from '../../../contexts/GridEditorProvider';
 import { EditorGridTile } from '../EditorGridTile';
 import '../Grid.css'; // Reuse grid styles
 

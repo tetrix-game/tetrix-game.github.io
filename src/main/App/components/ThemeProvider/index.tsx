@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import { Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../../utils/colorUtils';
 import { THEME_DEFINITIONS, themeToCssVars } from '../../utils/themeUtils';
 

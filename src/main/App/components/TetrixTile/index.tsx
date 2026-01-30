@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
-import { Shared_BlockVisual, Shared_Tile } from '../../../Shared';
+import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
+import { Shared_Tile } from '../../../Shared/Tile';
 import type { ColorName, TileAnimation } from '../../types/core';
 import type { BlockTheme } from '../../types/theme';
 import './TetrixTile.css';

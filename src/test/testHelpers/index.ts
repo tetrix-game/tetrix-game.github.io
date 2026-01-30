@@ -1,4 +1,4 @@
-import { GRID_SIZE } from '../../main/App/Shared';
+import { GRID_SIZE } from '../../main/App/Shared/gridConstants';
 import type { TilesSet, ColorName, Tile } from '../../main/types';
 
 /**
@@ -75,3 +75,12 @@ export function createTilesWithFilled(
 
   return tiles;
 }
+
+// Default export to match folder name
+export const testHelpers = {
+  getTileData,
+  countFilledTiles,
+  isRowFull,
+  isColumnFull,
+  createTilesWithFilled,
+};

@@ -1,5 +1,6 @@
 import './PurchasesContainer.css';
-import { Shared_useTetrixDispatchContext, Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 
 const PurchasesContainer = (): JSX.Element => {
   const dispatch = Shared_useTetrixDispatchContext();

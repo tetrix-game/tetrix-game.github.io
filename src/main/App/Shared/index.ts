@@ -9,27 +9,23 @@
 
 // Music Control Provider
 export { Shared_MusicControlProvider } from './Shared_MusicControlProvider';
-export { Shared_useMusicControl } from './Shared_MusicControlProvider/hooks';
+export { Shared_useMusicControl } from './Shared_MusicControlProvider/Shared_useMusicControl';
 export type { Shared_MusicControlContextType } from './Shared_MusicControlProvider/types';
-export { Shared_MusicControlContext } from './Shared_MusicControlProvider/contexts';
+export { Shared_MusicControlContext } from './Shared_MusicControlProvider/Shared_MusicControlContext';
 
 // Sound Effects Provider
 export { Shared_SoundEffectsProvider } from './Shared_SoundEffectsProvider';
-export { Shared_useSoundEffects } from './Shared_SoundEffectsProvider/hooks';
+export { Shared_useSoundEffects } from './Shared_SoundEffectsProvider/Shared_useSoundEffects';
 export { Shared_playSound } from './Shared_SoundEffectsProvider/constants';
 export type { Shared_SoundEffectsContextValue, SoundEffect } from './Shared_SoundEffectsProvider/types';
-export { Shared_SoundEffectsContext } from './Shared_SoundEffectsProvider/contexts';
+export { Shared_SoundEffectsContext } from './Shared_SoundEffectsProvider/Shared_SoundEffectsContext';
 
 // Tetrix Provider
 export { Shared_TetrixProvider } from './Shared_TetrixProvider';
-export {
-  Shared_useTetrixStateContext,
-  Shared_useTetrixDispatchContext,
-} from './Shared_TetrixProvider/hooks';
-export {
-  Shared_TetrixStateContext,
-  Shared_TetrixDispatchContext,
-} from './Shared_TetrixProvider/contexts';
+export { Shared_useTetrixStateContext } from './Shared_TetrixProvider/Shared_useTetrixStateContext';
+export { Shared_useTetrixDispatchContext } from './Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+export { Shared_TetrixStateContext } from './Shared_TetrixProvider/Shared_TetrixStateContext';
+export { Shared_TetrixDispatchContext } from './Shared_TetrixProvider/Shared_TetrixDispatchContext';
 
 // ============================================================================
 // HOOKS

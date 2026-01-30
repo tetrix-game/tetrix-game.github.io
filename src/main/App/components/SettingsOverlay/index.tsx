@@ -9,8 +9,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { APP_VERSION } from '../../../version';
-import { useGridEditor } from '../../contexts/GridEditorContext';
-import { Shared_useMusicControl, loadDebugSettings, saveDebugSettings, Shared_useTetrixDispatchContext, Shared_useTetrixStateContext } from '../../Shared';
+import { useGridEditor } from '../../contexts/GridEditorProvider';
+import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
+import { loadDebugSettings, saveDebugSettings } from '../../Shared/persistence';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { THEMES, BLOCK_THEMES } from '../../types/theme';
 import type { ThemeName, BlockTheme } from '../../types/theme';
 import { generateShapesWithProbabilities } from '../../utils/shapes/shapeGenerationWithProbabilities';

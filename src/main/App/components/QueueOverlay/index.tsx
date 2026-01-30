@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Shared_Overlay } from '../../../Shared';
-import { Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_Overlay } from '../../../Shared/Overlay';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import type { Shape } from '../../types/core';
 import { ShapeDisplay } from '../ShapeDisplay';
 import './QueueOverlay.css';

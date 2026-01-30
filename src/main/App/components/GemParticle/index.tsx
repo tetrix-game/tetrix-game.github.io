@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import { Shared_BlueGemIcon } from '../../../Shared';
+import { Shared_BlueGemIcon } from '../../../Shared/BlueGemIcon';
 import './GemParticle.css';
 
 interface GemParticleProps {

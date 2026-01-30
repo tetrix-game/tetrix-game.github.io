@@ -1,7 +1,8 @@
 import './ShapeSelector.css';
 import { useEffect, useMemo } from 'react';
 
-import { Shared_useTetrixDispatchContext, Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import type { QueueItem, PurchasableSlot } from '../../types/core';
 import { generateRandomShape } from '../../utils/shapes/shapeGeneration';
 import { PurchasableSlotOption } from '../PurchasableSlotOption';

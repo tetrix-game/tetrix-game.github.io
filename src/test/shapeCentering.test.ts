@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { getShapeBounds } from '../main/App/Shared';
+import { getShapeBounds } from '../main/App/Shared/shapeGeometry';
 import type { Shape, Block } from '../main/App/types/core';
 
 describe('Shape Centering', () => {

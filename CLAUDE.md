@@ -89,6 +89,38 @@ dispatch({ type: 'PLACE_SHAPE', value: { location } });
 3. **Test grid operations** at boundary conditions (R1C1, R10C10)
 4. **Consider persistence** - will this state need to be saved/loaded?
 
+## ESLint Architecture Rules
+
+This project uses custom ESLint architecture plugin rules that enforce structural conventions. **IMPORTANT:** Error messages from these rules are written as step-by-step instructions for fixing the violations. Always read and follow the error message guidance.
+
+### Key Architecture Rules
+
+1. **`architecture/folder-export-must-match`** - React folders with declarations must be named after their exported symbol
+   - Example: A folder exporting `Shared_MusicControlContext` must be named `Shared_MusicControlContext/`, not `contexts/`
+   - For multiple exports, create separate folders for each
+   - Error messages specify exactly what the folder should export or be named
+
+2. **`architecture/import-from-sibling-directory-or-shared`** - Enforce proper import hierarchy
+   - Modules should import from siblings or the Shared directory
+   - Error messages tell you the correct import path
+
+3. **`architecture/no-reexports`** - Prevent re-exporting from index files
+   - Declare exports directly or import from the source
+   - Helps maintain clear dependency graphs
+
+4. **`architecture/shared-must-be-multi-imported`** - Shared components must be imported from 2+ files
+   - Ensures components in `src/Shared/` are actually shared
+   - **Test files are excluded** - imports from `src/test/` or `*.test.ts(x)` don't count
+   - Only runs in CI mode (`npm run lint:ci`)
+
+### Fixing Architecture Violations
+
+When you encounter an architecture error:
+1. **Read the error message completely** - it contains fix instructions
+2. **Follow the suggested action** (rename folder, move file, change import)
+3. **Update all import paths** that reference the moved/renamed module
+4. **Run `npm run lint:ci`** to verify the fix
+
 ## Testing
 ```bash
 npm run test          # Run Vitest tests

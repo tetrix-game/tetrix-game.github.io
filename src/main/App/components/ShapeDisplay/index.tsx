@@ -1,8 +1,8 @@
 import './ShapeDisplay.css';
 import { useMemo, useRef, useEffect, useState } from 'react';
 
-import { Shared_BlockVisual } from '../../../Shared';
-import { getShapeBounds } from '../../Shared';
+import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
+import { getShapeBounds } from '../../Shared/shapeGeometry';
 import type { Shape } from '../../types/core';
 import type { BlockTheme } from '../../types/theme';
 

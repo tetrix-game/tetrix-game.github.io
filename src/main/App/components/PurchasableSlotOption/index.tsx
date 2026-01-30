@@ -1,7 +1,9 @@
 import './PurchasableSlotOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
-import { ANIMATION_TIMING, Shared_useTetrixDispatchContext, Shared_useTetrixStateContext } from '../../Shared';
+import { ANIMATION_TIMING } from '../../Shared/animationConstants';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 
 type PurchasableSlotOptionProps = {
   cost: number;

@@ -3,13 +3,14 @@
  *
  * Tests for the full board clear feature that awards 300 bonus points
  * when clearing lines results in an empty board (all 100 tiles cleared).
- * Animation sequence: normal line animations play first, then full board animations (columns → rows)
+ * Animation sequence: normal line animations play first, then full board
+ * animations (columns → rows)
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { tileReducer } from '../main/App/reducers/tileReducer';
-import { makeTileKey } from '../main/App/Shared';
+import { makeTileKey } from '../main/App/Shared/gridConstants';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 import { generateFullBoardClearAnimation } from '../main/App/utils/clearingAnimationUtils';
 import { isGridCompletelyEmpty } from '../main/App/utils/lineUtils';
@@ -153,8 +154,8 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
       const tile = animatedTiles.get(makeTileKey(row, 5)); // Check column 5 across all rows
       const rowAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-rows');
 
-      const expectedStartTime =
-        baseStartTime + delayAfterNormal + rowStartDelay + (row - 1) * rowWaveDelay;
+      const expectedStartTime = baseStartTime + delayAfterNormal + rowStartDelay
+        + (row - 1) * rowWaveDelay;
       expect(rowAnim!.startTime).toBe(expectedStartTime);
     }
   });

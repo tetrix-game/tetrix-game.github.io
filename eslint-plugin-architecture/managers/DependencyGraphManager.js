@@ -13,6 +13,29 @@
 
 import path from 'path';
 
+/**
+ * Check if a file is a test file and should be excluded from dependency tracking
+ * @param {string} filePath - Absolute path to the file
+ * @returns {boolean} - True if this is a test file
+ */
+const isTestFile = (filePath) => {
+  if (!filePath) return false;
+  const normalized = path.normalize(filePath);
+
+  // Check if file is in src/test/ directory
+  if (normalized.includes(path.join('src', 'test'))) {
+    return true;
+  }
+
+  // Check if file matches *.test.ts or *.test.tsx pattern
+  const basename = path.basename(filePath);
+  if (basename.endsWith('.test.ts') || basename.endsWith('.test.tsx')) {
+    return true;
+  }
+
+  return false;
+};
+
 class DependencyGraphManager {
   constructor() {
     // Import tracking: resolved path -> Set of importing files
@@ -118,6 +141,11 @@ class DependencyGraphManager {
    * @param {string} resolvedPath - Absolute path of the imported module
    */
   trackImport(importingFile, resolvedPath) {
+    // Skip test files - they don't count as real dependencies
+    if (isTestFile(importingFile)) {
+      return;
+    }
+
     if (!this.importGraph.has(resolvedPath)) {
       this.importGraph.set(resolvedPath, new Set());
     }
@@ -131,6 +159,11 @@ class DependencyGraphManager {
    * @param {string} importingFile - Absolute path of the importing file
    */
   trackSharedImport(componentName, importingFile) {
+    // Skip test files - they don't count toward the "multi-imported" requirement
+    if (isTestFile(importingFile)) {
+      return;
+    }
+
     if (!this.sharedImports.has(componentName)) {
       this.sharedImports.set(componentName, new Set());
     }

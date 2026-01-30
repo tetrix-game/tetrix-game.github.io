@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { Shared_BlockVisual } from '../../../Shared';
-import { ANIMATION_TIMING, getShapeBounds, Shared_useSoundEffects, Shared_useTetrixStateContext, Shared_useTetrixDispatchContext, Shared_useGameSizing } from '../../Shared';
+import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
+import { ANIMATION_TIMING } from '../../Shared/animationConstants';
+import { getShapeBounds } from '../../Shared/shapeGeometry';
+import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
+import { Shared_useGameSizing } from '../../Shared/Shared_useGameSizing';
 import './DraggingShape.css';
 
 /**

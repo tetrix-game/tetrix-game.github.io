@@ -1,5 +1,5 @@
 import './Tetrix.css';
-import { Shared_useTetrixStateContext } from '../../Shared';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { GameControlsPanel } from '../GameControlsPanel';
 import { GameOverOverlay } from '../GameOverOverlay';
 import { GemShower } from '../GemShower';

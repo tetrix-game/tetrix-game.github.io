@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import { loadMusicSettings, saveMusicSettings } from '../persistence';
 
-import { Shared_MusicControlContext } from './contexts/';
+import { Shared_MusicControlContext } from './Shared_useMusicControl/Shared_MusicControlContext/';
 
 export const Shared_MusicControlProvider: React.FC<{
   children: React.ReactNode;
@@ -85,6 +85,7 @@ export const Shared_MusicControlProvider: React.FC<{
       try {
         localStorage.setItem('tetrix-music-muted', JSON.stringify(!newEnabledState));
       } catch {
+        // Ignore localStorage errors (might be disabled or full)
       }
     });
   }, [isEnabled, volume]);

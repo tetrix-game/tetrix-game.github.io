@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../persistence';
 
-import { SOUND_VOLUME_MULTIPLIERS, BASE_SOUND_EFFECTS_VOLUME, registerPlaySound, unregisterPlaySound } from './constants/';
-import { Shared_SoundEffectsContext } from './contexts/';
+import { SOUND_VOLUME_MULTIPLIERS, BASE_SOUND_EFFECTS_VOLUME, registerPlaySound, unregisterPlaySound } from './Shared_playSound/';
+import { Shared_SoundEffectsContext } from './Shared_useSoundEffects/Shared_SoundEffectsContext/';
 import type { SoundEffect, Shared_SoundEffectsContextValue } from './types/';
 
 export const Shared_SoundEffectsProvider: React.FC<{
@@ -18,9 +18,8 @@ export const Shared_SoundEffectsProvider: React.FC<{
   // Initialize AudioContext and load sounds
   useEffect((): void => {
     const initAudio = async (): Promise<void> => {
-      const AudioContextClass =
-        window.AudioContext ||
-        (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      const AudioContextClass = window.AudioContext
+        || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioContextClass) return;
 
       const ctx = new AudioContextClass();
@@ -45,6 +44,7 @@ export const Shared_SoundEffectsProvider: React.FC<{
           const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
           audioBuffersRef.current.set(soundName as SoundEffect, audioBuffer);
         } catch {
+          // Ignore sound loading errors - sound will simply not play
         }
       }
     };
@@ -234,6 +234,7 @@ export const Shared_SoundEffectsProvider: React.FC<{
       try {
         localStorage.setItem('tetrix-soundeffects-volume', JSON.stringify(clampedVolume));
       } catch {
+        // Ignore localStorage errors (might be disabled or full)
       }
     });
   }, [isEnabled]);
@@ -248,6 +249,7 @@ export const Shared_SoundEffectsProvider: React.FC<{
       try {
         localStorage.setItem('tetrix-soundeffects-muted', JSON.stringify(!enabled));
       } catch {
+        // Ignore localStorage errors (might be disabled or full)
       }
     });
   }, [volume]);

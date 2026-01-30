@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Shared_useTetrixStateContext, Shared_useGameSizing } from '../../Shared';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { Shared_useGameSizing } from '../../Shared/Shared_useGameSizing';
 import { PurchasesContainer } from '../PurchasesContainer';
 import { ShapeQueue } from '../ShapeQueue';
 import './GameControlsPanel.css';

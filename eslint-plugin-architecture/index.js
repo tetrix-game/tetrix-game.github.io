@@ -506,6 +506,24 @@ const importFromSiblingDirectoryOrShared = {
     messages: {
       singleUseShouldBeSibling:
         'Module "{{importPath}}" is only imported once. Since it has a single dependency, move it to be a direct sibling of this file. The import path should be "./{{moduleName}}" (current: "{{currentPath}}").',
+      notActualChild:
+        'Import "{{importPath}}" appears to be a child import but is not a subdirectory.\n\n' +
+        'Expected: {{expectedPath}}\n' +
+        'Actual: {{actualPath}}\n\n' +
+        'Single-use components must be in child directories of their parent.\n' +
+        'Move the module to be a direct subdirectory or fix the import path.',
+      multiUseNotInShared:
+        'Module "{{importPath}}" is imported from {{count}} locations but NOT in a Shared directory.\n\n' +
+        'Current: {{currentLocation}}\n' +
+        'Expected: {{expectedSharedPath}}\n\n' +
+        'Multi-use components must be in Shared at the LCA level.\n' +
+        'Move to: {{lcaPath}}/Shared/Shared_{{moduleName}}',
+      multiUseWrongSharedLevel:
+        'Module "{{importPath}}" is in Shared but not at correct LCA level.\n\n' +
+        'Current: {{currentLocation}}\n' +
+        'Expected: {{expectedSharedPath}}\n\n' +
+        'Shared directory should be at: {{lcaPath}}/Shared/\n' +
+        'Move the module to the LCA-level Shared directory.',
       multiUseShouldBeInLCA:
         'Module "{{importPath}}" is imported from {{count}} different locations. It should be located at the Least Common Ancestor directory ({{lca}}) to minimize coupling. Current location: {{currentLocation}}',
       checkUsageAndMove:
@@ -592,8 +610,35 @@ const importFromSiblingDirectoryOrShared = {
           if (importCount === 1) {
             const isSibling = isDirectSibling(importPath);
 
-            if (!isSibling) {
-              // Extract the module name from the import path
+            // If it looks like a sibling, verify it's actually a subdirectory
+            if (isSibling) {
+              const importingDir = path.dirname(filename);
+              const importedModuleName = importPath.slice(2); // Remove './'
+              const expectedChildPath = path.join(importingDir, importedModuleName);
+              // resolvedPath points to index.ts, so get its parent directory
+              const actualModuleDir = path.dirname(resolvedPath);
+
+              if (path.normalize(actualModuleDir) !== path.normalize(expectedChildPath)) {
+                if (DEBUG) {
+                  console.log('[import-from-sibling] VIOLATION: Looks like child but is not subdirectory', {
+                    importPath,
+                    expectedChildPath: expectedChildPath.replace(process.cwd(), ''),
+                    actualModuleDir: actualModuleDir.replace(process.cwd(), ''),
+                  });
+                }
+
+                context.report({
+                  node: statement,
+                  messageId: 'notActualChild',
+                  data: {
+                    importPath,
+                    expectedPath: expectedChildPath.replace(process.cwd(), ''),
+                    actualPath: actualModuleDir.replace(process.cwd(), ''),
+                  },
+                });
+              }
+            } else {
+              // Not a sibling pattern - report as before
               const parts = importPath.split('/');
               const moduleName = parts[parts.length - 1];
 
@@ -617,38 +662,96 @@ const importFromSiblingDirectoryOrShared = {
             }
           }
 
-          // CASE 2: Multiple imports - should be at LCA
+          // CASE 2: Multiple imports - should be in Shared at LCA
           else if (importCount > 1) {
             // Use graphManager's memoized LCA calculation
             const lca = graphManager.calculateLCA([...importingFiles]);
             const currentModuleDir = path.dirname(resolvedPath);
+            const moduleName = path.basename(currentModuleDir);
 
-            // Check if the module is in the LCA directory
-            // The module should be a direct child of the LCA
-            const expectedParent = lca;
-            const actualParent = path.dirname(currentModuleDir);
+            // Check if the module is in a Shared directory by parsing path parts
+            const pathParts = currentModuleDir.split(path.sep);
+            const hasSharedDir = pathParts.includes('Shared');
 
-            if (DEBUG) {
-              console.log('[import-from-sibling] Multi-import check:', {
-                importPath,
-                lca: lca.replace(process.cwd(), ''),
-                expectedParent: expectedParent.replace(process.cwd(), ''),
-                actualParent: actualParent.replace(process.cwd(), ''),
-                match: actualParent === expectedParent,
-              });
-            }
+            if (!hasSharedDir) {
+              // Multi-use component not in Shared - report error
+              const expectedSharedPath = path.join(lca, 'Shared', `Shared_${moduleName}`);
 
-            if (actualParent !== expectedParent) {
+              if (DEBUG) {
+                console.log('[import-from-sibling] VIOLATION: Multi-use not in Shared', {
+                  importPath,
+                  count: importCount,
+                  currentModuleDir: currentModuleDir.replace(process.cwd(), ''),
+                  expectedSharedPath: expectedSharedPath.replace(process.cwd(), ''),
+                });
+              }
+
               context.report({
                 node: statement,
-                messageId: 'multiUseShouldBeInLCA',
+                messageId: 'multiUseNotInShared',
                 data: {
-                  importPath: importPath,
+                  importPath,
                   count: importCount,
-                  lca: lca.replace(process.cwd(), ''),
                   currentLocation: currentModuleDir.replace(process.cwd(), ''),
+                  expectedSharedPath: expectedSharedPath.replace(process.cwd(), ''),
+                  lcaPath: lca.replace(process.cwd(), ''),
+                  moduleName,
                 },
               });
+            } else {
+              // In Shared - verify it's at the correct LCA level
+              // Find the actual "Shared" directory (not as part of a module name like "Shared_foo")
+              const pathParts = currentModuleDir.split(path.sep);
+
+              // Find the last occurrence of exactly "Shared" (the directory, not part of a name)
+              let sharedIndex = -1;
+              for (let i = pathParts.length - 1; i >= 0; i--) {
+                if (pathParts[i] === 'Shared') {
+                  sharedIndex = i;
+                  break;
+                }
+              }
+
+              if (sharedIndex > 0) {
+                // Reconstruct the full path to the Shared directory
+                const sharedDirPath = pathParts.slice(0, sharedIndex + 1).join(path.sep);
+
+                // Check if LCA ends with Shared (modules are siblings in Shared)
+                const lcaParts = lca.split(path.sep);
+                const lcaEndsWithShared = lcaParts[lcaParts.length - 1] === 'Shared';
+
+                // If LCA is a Shared directory, modules should be direct children
+                // If LCA is not Shared, modules should be in {LCA}/Shared/
+                const expectedSharedDir = lcaEndsWithShared ? lca : path.join(lca, 'Shared');
+
+                if (path.normalize(sharedDirPath) !== path.normalize(expectedSharedDir)) {
+                  const expectedSharedPath = path.join(expectedSharedDir, moduleName);
+
+                  if (DEBUG) {
+                    console.log('[import-from-sibling] VIOLATION: Shared at wrong level', {
+                      importPath,
+                      count: importCount,
+                      currentModuleDir: currentModuleDir.replace(process.cwd(), ''),
+                      sharedDirPath: sharedDirPath.replace(process.cwd(), ''),
+                      expectedSharedDir: expectedSharedDir.replace(process.cwd(), ''),
+                      expectedSharedPath: expectedSharedPath.replace(process.cwd(), ''),
+                      lcaEndsWithShared,
+                    });
+                  }
+
+                  context.report({
+                    node: statement,
+                    messageId: 'multiUseWrongSharedLevel',
+                    data: {
+                      importPath,
+                      count: importCount,
+                      currentLocation: currentModuleDir.replace(process.cwd(), ''),
+                      expectedSharedPath: expectedSharedPath.replace(process.cwd(), ''),
+                      lcaPath: lca.replace(process.cwd(), ''),
+                    },
+                  });
+                }
+              }
             }
           }
         }
@@ -1049,24 +1152,19 @@ const folderExportMustMatch = {
 
         if (exports.length === 0) return;
 
-        // Build expected names
-        const expectedNames = [
-          folderName,
-          `Memo${folderName}`,
-          `Memoized${folderName}`,
-        ];
+        // Build expected names - exact match only (no Memo variations)
+        const expectedNames = [folderName];
 
         // If in Shared directory, also allow Shared_ prefix
         if (isInSharedDir(filename)) {
           expectedNames.push(`Shared_${folderName}`);
-          expectedNames.push(`MemoShared_${folderName}`);
-          expectedNames.push(`MemoizedShared_${folderName}`);
         }
 
-        // Check if any export matches
-        const hasMatch = exports.some(exp =>
+        // Check if exactly one export matches and it's the only export
+        const matchingExports = exports.filter(exp =>
           expectedNames.includes(exp)
         );
+        const hasMatch = matchingExports.length === 1 && exports.filter(exp => /^[A-Z]/.test(exp)).length === 1;
 
         if (!hasMatch) {
           // Filter to only PascalCase exports for the error message
@@ -1084,6 +1182,114 @@ const folderExportMustMatch = {
             },
           });
         }
+      },
+    };
+  },
+};
+
+/**
+ * Rule: one-declaration-per-file
+ *
+ * Each file must contain exactly ONE export declaration (component, constant, or function).
+ * This enforces single responsibility and ensures folder names accurately reflect their contents.
+ *
+ * Facade pattern exception: If the folder exports a matching named object that wraps
+ * other exports, it's considered a facade and is allowed.
+ *
+ * Examples:
+ *   ✅ Single export: export const Header = ...
+ *   ✅ Facade: export const Shared_utils = { helper1, helper2, ... } (folder named Shared_utils)
+ *   ❌ Multiple exports: export const Header = ...; export const Icon = ...;
+ */
+const oneDeclarationPerFile = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'Enforce exactly one declaration per file',
+    },
+    messages: {
+      multipleDeclarations:
+        'File has {{count}} declarations but must have exactly ONE.\n\n' +
+        'Found: {{declarations}}\n\n' +
+        'Each declaration should be in its own folder:\n' +
+        '{{suggestions}}\n\n' +
+        'Single responsibility: One file = one thing.\n' +
+        'This keeps the codebase organized and folder names meaningful.',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+
+    // Skip node_modules, build output, and test directory
+    if (filename.includes('node_modules') || filename.includes('/dist/') || isInTestDir(filename)) {
+      return {};
+    }
+
+    // Skip types files (they can have multiple type exports)
+    if (isTypesFile(filename)) {
+      return {};
+    }
+
+    return {
+      'Program:exit'(node) {
+        const declarations = [];
+
+        // Count export declarations (skip type/interface exports)
+        for (const statement of node.body) {
+          if (
+            statement.type === 'ExportNamedDeclaration' &&
+            statement.declaration
+          ) {
+            // Function: export function Foo() { ... }
+            if (
+              statement.declaration.type === 'FunctionDeclaration' &&
+              statement.declaration.id
+            ) {
+              declarations.push(statement.declaration.id.name);
+            }
+
+            // Variable: export const Foo = ...
+            if (statement.declaration.type === 'VariableDeclaration') {
+              for (const declarator of statement.declaration.declarations) {
+                if (declarator.id.type === 'Identifier') {
+                  declarations.push(declarator.id.name);
+                }
+              }
+            }
+
+            // Skip Type/Interface exports
+          }
+        }
+
+        // Allow 0 (empty file) or 1 declaration
+        if (declarations.length <= 1) return;
+
+        // Check for facade pattern: one export matches folder name and wraps others
+        const folderName = path.basename(path.dirname(filename));
+        const hasFacade = declarations.some(decl =>
+          decl === folderName || decl === `Shared_${folderName}`
+        );
+
+        if (hasFacade) {
+          // This is a facade pattern - allowed
+          return;
+        }
+
+        // Multiple declarations without facade - report error
+        const suggestions = declarations
+          .map(decl => `  - ${decl}/index.tsx or ${decl}/index.ts`)
+          .join('\n');
+
+        context.report({
+          node,
+          messageId: 'multipleDeclarations',
+          data: {
+            count: declarations.length,
+            declarations: declarations.join(', '),
+            suggestions,
+          },
+        });
       },
     };
   },
@@ -1199,6 +1405,7 @@ export default {
     'enforce-downwards-imports': enforceDownwardsImports,
     'shared-exports-must-be-prefixed': sharedExportsMustBePrefixed,
     'folder-export-must-match': folderExportMustMatch,
+    'one-declaration-per-file': oneDeclarationPerFile,
     'no-separate-export-declarations': noSeparateExportDeclarations,
   },
   processors: {
@@ -1223,6 +1430,7 @@ export default {
         'architecture/enforce-downwards-imports': 'error',
         'architecture/shared-exports-must-be-prefixed': 'error',
         'architecture/folder-export-must-match': 'error',
+        'architecture/one-declaration-per-file': 'error',
         'architecture/no-separate-export-declarations': 'error',
       },
     },

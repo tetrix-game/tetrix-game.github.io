@@ -39,7 +39,7 @@ export type TetrixReducerState = {
   savedShape: Shape | null;
 
   // Shape slot progression
-  unlockedSlots: number; // Number of unlocked shape slots (1-4)
+  unlockedSlots: Set<number>; // Set of unlocked shape slot numbers (1-4)
   mouseGridLocation: Location | null;
   mousePosition: { x: number; y: number }; // Never null - always has a position
   gemIconPosition: { x: number; y: number }; // Position of the score display gem icon

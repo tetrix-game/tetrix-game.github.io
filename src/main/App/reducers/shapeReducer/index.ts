@@ -289,12 +289,18 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       // Add new shape at end (will be at position 5, clipped until animation slides it in)
       const updatedItems = [...state.nextShapes, newQueuedShape];
 
-      // Start removal animation for the purchasable slot
+      // CRITICAL: Add slot to unlockedSlots Set IMMEDIATELY on purchase to prevent loss on reload
+      // Previously this happened in COMPLETE_SLOT_PURCHASE_REMOVAL, but that created
+      // a window where the user could reload and lose their purchase
+      const newUnlockedSlots = new Set(state.unlockedSlots);
+      newUnlockedSlots.add(item.slotNumber);
+
       return {
         ...state,
         score: newScore,
         nextShapes: updatedItems,
         nextShapeIdCounter: state.nextShapeIdCounter + 1,
+        unlockedSlots: newUnlockedSlots, // Add slot number to Set immediately on purchase
         removingShapeIndex: slotIndex,
         shapeRemovalAnimationState: 'removing',
         openRotationMenus: [...state.openRotationMenus, false],
@@ -306,7 +312,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
     case 'COMPLETE_SLOT_PURCHASE_REMOVAL': {
       // Phase 2 of two-phase animation:
       // Remove the purchased slot from the array (animation has completed)
-      // Increment unlockedSlots counter
+      // NOTE: unlockedSlots is now incremented immediately in PURCHASE_SHAPE_SLOT
 
       if (state.removingShapeIndex === null) {
         return {
@@ -331,7 +337,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
         shapeOptionBounds: finalBounds,
         removingShapeIndex: null,
         shapeRemovalAnimationState: 'none',
-        unlockedSlots: state.unlockedSlots + 1, // Increment unlocked slots
+        // unlockedSlots already incremented in PURCHASE_SHAPE_SLOT
       };
     }
 

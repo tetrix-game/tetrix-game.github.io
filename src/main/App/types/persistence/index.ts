@@ -12,6 +12,7 @@ export type SerializedQueueItem = | { type: 'shape'; shape: Shape }
 // NOTE: isGameOver is intentionally NOT persisted - it's a derived state
 // that gets recalculated on load based on actual board state.
 export type SavedGameState = {
+  version: string; // App version - saves from different versions are treated as corrupted
   score: number;
   tiles: TileData[];
   nextShapes: Shape[]; // Legacy field for backwards compatibility
@@ -25,7 +26,7 @@ export type SavedGameState = {
   queueColorProbabilities?: import('../shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  unlockedSlots?: number; // Number of unlocked shape slots (1-4)
+  unlockedSlots?: number[]; // Array of unlocked shape slot numbers (1-4) for JSON serialization
   // isGameOver is NOT persisted - see gameStateReducer.ts LOAD_GAME_STATE
   lastUpdated: number;
 };

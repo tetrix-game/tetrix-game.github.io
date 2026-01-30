@@ -53,7 +53,7 @@ export const initialGameState = {
   nextShapes: [],
   nextShapeIdCounter: 0, // Monotonically increasing counter for unique shape IDs
   savedShape: null,
-  unlockedSlots: 1, // Start with 1 shape slot unlocked
+  unlockedSlots: new Set([1]), // Start with slot 1 unlocked
   mouseGridLocation: null,
   dragState: {
     phase: 'none' as const,
@@ -74,7 +74,7 @@ export const initialGameState = {
   shapeRemovalAnimationState: 'none' as const,
   newShapeAnimationStates: [],
   shapeOptionBounds: [],
-  score: 0,
+  score: 100000,
   totalLinesCleared: 0,
   showCoinDisplay: false,
   queueMode: 'infinite' as const,
@@ -263,8 +263,19 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       // We always initialize in 'playing' state, then calculate game over
       // based on actual board state after loading. This prevents false game overs.
 
-      // Restore unlockedSlots from persistence (default to 1 if not present)
-      const restoredUnlockedSlots = gameData.unlockedSlots ?? 1;
+      // Restore unlockedSlots from persistence (default to Set([1]) if not present)
+      // Handle both old format (number) and new format (array)
+      let restoredUnlockedSlots: Set<number>;
+      if (Array.isArray(gameData.unlockedSlots)) {
+        // New format: array of slot numbers
+        restoredUnlockedSlots = new Set(gameData.unlockedSlots);
+      } else if (typeof gameData.unlockedSlots === 'number') {
+        // Legacy: convert number to Set (assume slots 1 through N are unlocked)
+        restoredUnlockedSlots = new Set(Array.from({ length: gameData.unlockedSlots }, (_, i) => i + 1));
+      } else {
+        // Default: only slot 1 unlocked
+        restoredUnlockedSlots = new Set([1]);
+      }
 
       let nextIdCounter = state.nextShapeIdCounter;
       const loadedQueue: import('../../types/core').QueueItem[] = [];
@@ -273,6 +284,8 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
       if (gameData.nextQueue && Array.isArray(gameData.nextQueue)) {
         // NEW FORMAT: Load full queue directly from persistence
         // Purchasable slots are first-class citizens and persisted
+        // IMPORTANT: Filter out any purchasable slots that have been unlocked
+        // This handles edge cases with corrupted saves or interrupted purchases
         for (const item of gameData.nextQueue) {
           if (item.type === 'shape') {
             loadedQueue.push({
@@ -281,37 +294,44 @@ export function gameStateReducer(state: TetrixReducerState, action: TetrixAction
               type: 'shape',
             });
           } else if (item.type === 'purchasable-slot') {
-            loadedQueue.push({
-              id: nextIdCounter++,
-              type: 'purchasable-slot',
-              cost: item.cost,
-              slotNumber: item.slotNumber,
-            });
+            // Only load purchasable slot if its slot number is NOT in the unlocked set
+            if (!restoredUnlockedSlots.has(item.slotNumber)) {
+              loadedQueue.push({
+                id: nextIdCounter++,
+                type: 'purchasable-slot',
+                cost: item.cost,
+                slotNumber: item.slotNumber,
+              });
+            }
+            // If slotNumber is in the unlocked set, skip it (it was already purchased)
           }
         }
       } else {
         // LEGACY FORMAT: Old saves only had plain shapes, reconstruct queue
+        // Build queue in order (slots 1, 2, 3, 4) based on which slots are unlocked
         const loadedPlainShapes: Shape[] = gameData.nextShapes || [];
+        const slotCosts: Record<number, number> = { 2: 5000, 3: 15000, 4: 50000 };
 
-        // Add loaded shapes as QueuedShapes
-        for (const shape of loadedPlainShapes) {
-          loadedQueue.push({
-            id: nextIdCounter++,
-            shape,
-            type: 'shape',
-          });
-        }
-
-        // Add purchasable slots for remaining slots (up to 4 total)
-        const slotCosts = [5000, 15000, 50000]; // Costs for slots 2, 3, 4
-        for (let i = restoredUnlockedSlots; i < 4; i++) {
-          const slotNumber = i + 1; // Slot numbers are 1-indexed
-          loadedQueue.push({
-            id: nextIdCounter++,
-            type: 'purchasable-slot',
-            cost: slotCosts[i - 1], // Get cost from array (0-indexed)
-            slotNumber,
-          });
+        let shapeIndex = 0;
+        for (let slotNumber = 1; slotNumber <= 4; slotNumber++) {
+          if (restoredUnlockedSlots.has(slotNumber)) {
+            // Slot is unlocked - add a shape if available
+            if (shapeIndex < loadedPlainShapes.length) {
+              loadedQueue.push({
+                id: nextIdCounter++,
+                shape: loadedPlainShapes[shapeIndex++],
+                type: 'shape',
+              });
+            }
+          } else {
+            // Slot is locked - add a purchasable slot
+            loadedQueue.push({
+              id: nextIdCounter++,
+              type: 'purchasable-slot',
+              cost: slotCosts[slotNumber],
+              slotNumber,
+            });
+          }
         }
       }
 

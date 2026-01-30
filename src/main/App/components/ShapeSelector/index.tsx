@@ -12,30 +12,30 @@ const ShapeSelector = (): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
   const { nextShapes, removingShapeIndex, shapeRemovalAnimationState, queueMode, unlockedSlots } = useTetrixStateContext();
 
-  // Create initial queue - shapes + purchasable slots based on unlocked slots
+  // Create initial queue - shapes + purchasable slots based on which slots are unlocked
   const initialQueue = useMemo(() => {
     const queue: QueueItem[] = [];
     let idCounter = 0;
+    const slotCosts: Record<number, number> = { 2: 5000, 3: 15000, 4: 50000 };
 
-    // Add shapes for unlocked slots
-    for (let i = 0; i < unlockedSlots; i++) {
-      queue.push({
-        id: idCounter++,
-        shape: generateRandomShape(),
-        type: 'shape',
-      });
-    }
-
-    // Add purchasable slots for remaining slots (up to 4 total)
-    const slotCosts = [5000, 15000, 50000]; // Costs for slots 2, 3, 4
-    for (let i = unlockedSlots; i < 4; i++) {
-      const slotNumber = i + 1; // Slot numbers are 1-indexed
-      queue.push({
-        id: idCounter++,
-        type: 'purchasable-slot',
-        cost: slotCosts[i - 1], // Get cost from array (0-indexed)
-        slotNumber,
-      });
+    // Build queue in order (slots 1, 2, 3, 4)
+    for (let slotNumber = 1; slotNumber <= 4; slotNumber++) {
+      if (unlockedSlots.has(slotNumber)) {
+        // Slot is unlocked - add a shape
+        queue.push({
+          id: idCounter++,
+          shape: generateRandomShape(),
+          type: 'shape',
+        });
+      } else {
+        // Slot is locked - add a purchasable slot
+        queue.push({
+          id: idCounter++,
+          type: 'purchasable-slot',
+          cost: slotCosts[slotNumber],
+          slotNumber,
+        });
+      }
     }
 
     return queue;

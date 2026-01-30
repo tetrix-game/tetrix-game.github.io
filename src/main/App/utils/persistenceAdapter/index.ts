@@ -11,6 +11,7 @@ import type {
   ModifiersPersistenceData,
   LoadResult,
 } from '../../types/persistence';
+import { APP_VERSION } from '../../config/version';
 import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../checksumUtils';
 import * as crud from '../indexedDBCrud';
 import { STORES } from '../indexedDBCrud';
@@ -59,6 +60,30 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
     ]) as [SavedGameState | null, ChecksumManifest | null];
 
     if (state) {
+      // VERSION CHECK: Reject saves from different versions
+      // User requirement: "Updating the game should reset all state to default state,
+      // NEVER honoring the past state"
+      if (!state.version || state.version !== APP_VERSION) {
+        console.warn(
+          `[Persistence] Version mismatch! Save version: ${state.version ?? 'unknown'}, App version: ${APP_VERSION}. Treating as corrupted.`
+        );
+        return { status: 'not_found' }; // Treat as if no save exists
+      }
+
+      // REQUIRED FIELDS VALIDATION: All-or-nothing approach
+      // If any required field is missing/invalid, treat the entire save as corrupted
+      const hasRequiredFields =
+        typeof state.score === 'number' &&
+        Array.isArray(state.tiles) &&
+        (Array.isArray(state.nextShapes) || Array.isArray(state.nextQueue)) &&
+        typeof state.lastUpdated === 'number' &&
+        state.stats !== null && state.stats !== undefined;
+
+      if (!hasRequiredFields) {
+        console.error('[Persistence] Save is missing required fields. Treating as corrupted.');
+        return { status: 'not_found' }; // Treat as if no save exists
+      }
+
       // Helper to sanitize numeric values (handles NaN, Infinity, non-numbers)
       const sanitizeNumber = (val: unknown, fallback: number = 0): number => {
         if (typeof val === 'number' && Number.isFinite(val)) {
@@ -70,9 +95,11 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
       // Sanitize state to ensure all required fields exist (handles partial/corrupted data)
       // NOTE: isGameOver is NOT loaded - it's a derived state calculated on load
       const sanitizedState: SavedGameState = {
+        version: state.version,
         score: sanitizeNumber(state.score, 0),
         tiles: Array.isArray(state.tiles) ? state.tiles : [],
         nextShapes: Array.isArray(state.nextShapes) ? state.nextShapes : [],
+        nextQueue: state.nextQueue,
         savedShape: state.savedShape ?? null,
         totalLinesCleared: sanitizeNumber(state.totalLinesCleared, 0),
         shapesUsed: sanitizeNumber(state.shapesUsed, 0),
@@ -82,6 +109,7 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
         queueColorProbabilities: state.queueColorProbabilities,
         queueHiddenShapes: state.queueHiddenShapes,
         queueSize: state.queueSize,
+        unlockedSlots: Array.isArray(state.unlockedSlots) ? state.unlockedSlots : undefined,
         lastUpdated: sanitizeNumber(state.lastUpdated, Date.now()),
       };
 
@@ -133,9 +161,11 @@ export async function clearGameBoard(): Promise<void> {
     // NOTE: isGameOver is not persisted - it's derived on load
     const resetState: SavedGameState = {
       ...current,
+      version: APP_VERSION, // Update version on reset
       score: 0,
       tiles: [],
       nextShapes: [],
+      nextQueue: undefined,
       savedShape: null,
       totalLinesCleared: 0,
       shapesUsed: 0,
@@ -439,9 +469,11 @@ export async function clearAllDataAndReload(): Promise<void> {
 
         // Save the restored stats to a fresh game state
         const freshGameState: SavedGameState = {
+          version: APP_VERSION,
           score: 0,
           tiles: [],
           nextShapes: [],
+          nextQueue: undefined,
           savedShape: null,
           totalLinesCleared: 0,
           shapesUsed: 0,

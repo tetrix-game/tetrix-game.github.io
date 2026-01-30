@@ -71,7 +71,7 @@ async function saveGameState(data: {
   queueColorProbabilities?: import('../../types/shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  unlockedSlots?: number;
+  unlockedSlots?: Set<number>;
   // NOTE: isGameOver is NOT persisted - it's a derived state
 }): Promise<void> {
   // Serialize queue items (strip IDs, keep types and data)
@@ -91,7 +91,10 @@ async function saveGameState(data: {
     ? data.nextQueue.filter((item) => item.type === 'shape').map((item) => item.shape)
     : (data.nextShapes ?? []);
 
+  const { APP_VERSION } = await import('../../config/version');
+
   const gameState: SavedGameState = {
+    version: APP_VERSION, // Include version for validation on load
     score: data.score,
     tiles: data.tiles,
     nextShapes: legacyShapes, // Keep for backwards compatibility
@@ -105,7 +108,7 @@ async function saveGameState(data: {
     queueColorProbabilities: data.queueColorProbabilities,
     queueHiddenShapes: data.queueHiddenShapes,
     queueSize: data.queueSize,
-    unlockedSlots: data.unlockedSlots,
+    unlockedSlots: data.unlockedSlots ? Array.from(data.unlockedSlots) : undefined,
     lastUpdated: Date.now(),
   };
 
@@ -116,6 +119,7 @@ async function saveGameState(data: {
  * Load game state
  */
 export async function loadGameState(): Promise<{
+  version: string;
   score: number;
   tiles: TileData[];
   nextShapes: Shape[]; // Legacy
@@ -129,7 +133,7 @@ export async function loadGameState(): Promise<{
   queueColorProbabilities?: import('../../types/shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  unlockedSlots?: number;
+  unlockedSlots?: number[];
   lastUpdated: number;
   // NOTE: isGameOver is NOT returned - it's calculated on load
 } | null> {
@@ -159,11 +163,44 @@ export async function safeBatchSave(data: {
   queueColorProbabilities?: import('../../types/shapeQueue').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
-  unlockedSlots?: number;
+  unlockedSlots?: Set<number>;
   // NOTE: isGameOver is NOT saved - it's a derived state
 }): Promise<void> {
+  // Convert unlockedSlots Set to array for persistence
+  const unlockedSlotsArray = data.unlockedSlots ? Array.from(data.unlockedSlots) : undefined;
+
+  // Build the update object with proper types
+  // Serialize queue items (strip IDs, keep types and data)
+  const serializedQueue: SerializedQueueItem[] | undefined = data.nextQueue?.map((item) => {
+    if (item.type === 'shape') {
+      return { type: 'shape' as const, shape: item.shape };
+    }
+    return {
+      type: 'purchasable-slot' as const,
+      cost: item.cost,
+      slotNumber: item.slotNumber,
+    };
+  });
+
+  const updateData: Partial<SavedGameState> = {
+    score: data.score,
+    tiles: data.tiles,
+    nextShapes: data.nextShapes,
+    nextQueue: serializedQueue,
+    savedShape: data.savedShape,
+    totalLinesCleared: data.totalLinesCleared,
+    shapesUsed: data.shapesUsed,
+    hasPlacedFirstShape: data.hasPlacedFirstShape,
+    stats: data.stats,
+    queueMode: data.queueMode,
+    queueColorProbabilities: data.queueColorProbabilities,
+    queueHiddenShapes: data.queueHiddenShapes,
+    queueSize: data.queueSize,
+    unlockedSlots: unlockedSlotsArray,
+  };
+
   try {
-    await updateGameStateAdapter(data);
+    await updateGameStateAdapter(updateData);
   } catch (error) {
     // If no state exists yet, create it
     await saveGameState({
@@ -180,7 +217,7 @@ export async function safeBatchSave(data: {
       queueColorProbabilities: data.queueColorProbabilities,
       queueHiddenShapes: data.queueHiddenShapes,
       queueSize: data.queueSize,
-      unlockedSlots: data.unlockedSlots,
+      unlockedSlots: data.unlockedSlots, // Pass original Set, saveGameState will convert
     });
   }
 }

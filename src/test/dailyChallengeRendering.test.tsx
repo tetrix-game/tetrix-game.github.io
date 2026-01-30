@@ -10,8 +10,7 @@ import { describe, it, expect } from 'vitest';
 
 import { Grid } from '../Grid';
 import { initialState } from '../reducers';
-import { Shared_TetrixDispatchContext } from '../TetrixProvider/Shared_useTetrixDispatchContext/Shared_TetrixDispatchContext';
-import { Shared_TetrixStateContext } from '../TetrixProvider/Shared_useTetrixStateContext/Shared_TetrixStateContext';
+import { TetrixDispatchContext, TetrixStateContext } from '../TetrixProvider';
 import type { TetrixReducerState, TetrixDispatch } from '../types';
 
 describe('Daily Challenge Grid Rendering', () => {
@@ -25,11 +24,11 @@ describe('Daily Challenge Grid Rendering', () => {
     };
 
     const { container } = render(
-      <Shared_TetrixDispatchContext.Provider value={mockDispatch}>
-        <Shared_TetrixStateContext.Provider value={state}>
+      <TetrixDispatchContext.Provider value={mockDispatch}>
+        <TetrixStateContext.Provider value={state}>
           <Grid width={10} height={10} />
-        </Shared_TetrixStateContext.Provider>
-      </Shared_TetrixDispatchContext.Provider>,
+        </TetrixStateContext.Provider>
+      </TetrixDispatchContext.Provider>,
     );
 
     // Should render 100 tiles (10x10 grid)
@@ -57,11 +56,11 @@ describe('Daily Challenge Grid Rendering', () => {
     };
 
     const { container } = render(
-      <Shared_TetrixDispatchContext.Provider value={mockDispatch}>
-        <Shared_TetrixStateContext.Provider value={state}>
+      <TetrixDispatchContext.Provider value={mockDispatch}>
+        <TetrixStateContext.Provider value={state}>
           <Grid width={10} height={10} />
-        </Shared_TetrixStateContext.Provider>
-      </Shared_TetrixDispatchContext.Provider>,
+        </TetrixStateContext.Provider>
+      </TetrixDispatchContext.Provider>,
     );
 
     // Should only render 4 tiles (the ones in the tiles Map)
@@ -96,11 +95,11 @@ describe('Daily Challenge Grid Rendering', () => {
     };
 
     const { container } = render(
-      <Shared_TetrixDispatchContext.Provider value={mockDispatch}>
-        <Shared_TetrixStateContext.Provider value={state}>
+      <TetrixDispatchContext.Provider value={mockDispatch}>
+        <TetrixStateContext.Provider value={state}>
           <Grid width={10} height={10} />
-        </Shared_TetrixStateContext.Provider>
-      </Shared_TetrixDispatchContext.Provider>,
+        </TetrixStateContext.Provider>
+      </TetrixDispatchContext.Provider>,
     );
 
     // Should only render diamond tiles (18 total)

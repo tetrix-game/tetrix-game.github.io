@@ -4,8 +4,7 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
-import type { QueuedShape, QueueItem } from '../types/core';
-import type { TetrixReducerState, TetrixAction } from '../types/gameState';
+import type { QueuedShape, QueueItem, TetrixReducerState, TetrixAction } from '../types';
 import { persistence } from '../persistence';
 import { shapeGeneration } from '../shapeGeneration';
 import { shapeTransforms } from '../shapeTransforms';

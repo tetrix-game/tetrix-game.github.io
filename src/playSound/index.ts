@@ -16,16 +16,16 @@ const BASE_SOUND_EFFECTS_VOLUME = 0.5;
 
 let modulePlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | null = null;
 
-function playSound(soundEffect: SoundEffect, startTime?: number): void {
+function playSoundInternal(soundEffect: SoundEffect, startTime?: number): void {
   if (modulePlaySound) {
     modulePlaySound(soundEffect, startTime);
   }
 }
 
 function registerPlaySound(
-  playSound: (soundEffect: SoundEffect, startTime?: number) => void,
+  playSoundFn: (soundEffect: SoundEffect, startTime?: number) => void,
 ): void {
-  modulePlaySound = playSound;
+  modulePlaySound = playSoundFn;
 }
 
 function unregisterPlaySound(): void {
@@ -36,7 +36,7 @@ function unregisterPlaySound(): void {
 export const playSound = {
   SOUND_VOLUME_MULTIPLIERS,
   BASE_SOUND_EFFECTS_VOLUME,
-  playSound,
+  playSound: playSoundInternal,
   registerPlaySound,
   unregisterPlaySound,
 };

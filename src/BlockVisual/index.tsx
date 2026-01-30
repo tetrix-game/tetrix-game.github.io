@@ -15,7 +15,7 @@ type BlockVisualProps = {
   readonly showIcon?: boolean;
 };
 
-function BlockVisual({
+function BlockVisualComponent({
   isFilled,
   color,
   size,
@@ -57,4 +57,4 @@ function BlockVisual({
   );
 }
 
-export const BlockVisual = React.memo(BlockVisual);
+export const BlockVisual = React.memo(BlockVisualComponent);

@@ -3,8 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { DraggingShape } from '../DraggingShape';
 import { animationConstants } from '../animationConstants';
-import { Shared_TetrixDispatchContext } from '../TetrixProvider/Shared_useTetrixDispatchContext/Shared_TetrixDispatchContext';
-import { Shared_TetrixStateContext } from '../TetrixProvider/Shared_useTetrixStateContext/Shared_TetrixStateContext';
+import { TetrixDispatchContext, TetrixStateContext } from '../TetrixProvider';
 import type { DragPhase } from '../types';
 import type { TetrixReducerState } from '../types';
 import { INITIAL_GAME_STATS } from '../types';
@@ -122,11 +121,11 @@ describe('Sound Timing in DraggingShape', () => {
     const mockState = createMockState('placing');
 
     render(
-      <Shared_TetrixStateContext.Provider value={mockState}>
-        <Shared_TetrixDispatchContext.Provider value={mockDispatch}>
+      <TetrixStateContext.Provider value={mockState}>
+        <TetrixDispatchContext.Provider value={mockDispatch}>
           <DraggingShape />
-        </Shared_TetrixDispatchContext.Provider>
-      </Shared_TetrixStateContext.Provider>,
+        </TetrixDispatchContext.Provider>
+      </TetrixStateContext.Provider>,
     );
 
     // Calculate sound trigger time
@@ -148,11 +147,11 @@ describe('Sound Timing in DraggingShape', () => {
     const mockState = createMockState('none');
 
     render(
-      <Shared_TetrixStateContext.Provider value={mockState}>
-        <Shared_TetrixDispatchContext.Provider value={mockDispatch}>
+      <TetrixStateContext.Provider value={mockState}>
+        <TetrixDispatchContext.Provider value={mockDispatch}>
           <DraggingShape />
-        </Shared_TetrixDispatchContext.Provider>
-      </Shared_TetrixStateContext.Provider>,
+        </TetrixDispatchContext.Provider>
+      </TetrixStateContext.Provider>,
     );
 
     // Fast-forward past the sound trigger point
@@ -168,11 +167,11 @@ describe('Sound Timing in DraggingShape', () => {
     const mockState = createMockState('placing');
 
     render(
-      <Shared_TetrixStateContext.Provider value={mockState}>
-        <Shared_TetrixDispatchContext.Provider value={mockDispatch}>
+      <TetrixStateContext.Provider value={mockState}>
+        <TetrixDispatchContext.Provider value={mockDispatch}>
           <DraggingShape />
-        </Shared_TetrixDispatchContext.Provider>
-      </Shared_TetrixStateContext.Provider>,
+        </TetrixDispatchContext.Provider>
+      </TetrixStateContext.Provider>,
     );
 
     // Fast-forward to completion

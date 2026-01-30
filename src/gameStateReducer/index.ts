@@ -5,10 +5,8 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import type { Tile, QueuedShape, Shape, ColorName } from '../types/core';
-import type { TetrixReducerState, TetrixAction } from '../types/gameState';
-import { shapeQueue } from '../types/shapeQueue';
-import { stats } from '../types/stats';
+import type { Tile, QueuedShape, Shape, ColorName, TetrixReducerState, TetrixAction } from '../types';
+import { shapeQueue, stats } from '../types';
 import { checkGameOver } from '../gameOverUtils';
 import { gridConstants } from '../gridConstants';
 import { checkMapCompletion } from '../mapCompletionUtils';

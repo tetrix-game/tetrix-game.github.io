@@ -15,6 +15,9 @@ const { loadModifiers, initializePersistence, clearAllDataAndReload } = persiste
 const TetrixDispatchContext = createContext<TetrixDispatch | null>(null);
 const TetrixStateContext = createContext<TetrixReducerState | null>(null);
 
+// Export contexts for testing
+export { TetrixDispatchContext, TetrixStateContext };
+
 // Hook implementations (no Shared_ prefix - internal to this module)
 export function useTetrixDispatchContext(): TetrixDispatch {
   const context = useContext(TetrixDispatchContext);

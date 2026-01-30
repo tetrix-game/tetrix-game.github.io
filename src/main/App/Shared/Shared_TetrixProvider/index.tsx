@@ -1,20 +1,19 @@
 import { useReducer, useEffect, useState } from 'react';
 
-import type { ThemeName, BlockTheme } from '../../types/theme';
+import { Shared_theme } from '../../types/theme';
 import {
   loadTheme,
   loadGameState,
   loadSettingsData,
 } from '../Shared_persistence';
-import {
-  loadModifiers,
-  initializePersistence,
-  clearAllDataAndReload,
-} from '../Shared_persistenceAdapter';
+import { Shared_persistenceAdapter } from '../Shared_persistenceAdapter';
 import { initialState, tetrixReducer } from '../Shared_reducers';
-
 import { Shared_TetrixDispatchContext } from './Shared_TetrixDispatchContext/';
 import { Shared_TetrixStateContext } from './Shared_TetrixStateContext/';
+
+const { loadModifiers, initializePersistence, clearAllDataAndReload } = Shared_persistenceAdapter;
+type ThemeName = Shared_theme['ThemeName'];
+type BlockTheme = Shared_theme['BlockTheme'];
 
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
 export function Shared_TetrixProvider(

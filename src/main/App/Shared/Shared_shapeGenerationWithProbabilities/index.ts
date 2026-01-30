@@ -1,6 +1,13 @@
-import type { Shape, ColorName, Block } from '../../../types/core';
-import type { ColorProbability } from '../../../types/shapeQueue';
-import { rotateShape, cloneShape } from '../shapeTransforms';
+import { Shared_core } from '../../../types/core';
+import { Shared_shapeQueue } from '../../../types/shapeQueue';
+import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
+
+type Shape = Shared_core['Shape'];
+type ColorName = Shared_core['ColorName'];
+type Block = Shared_core['Block'];
+type ColorProbability = Shared_shapeQueue['ColorProbability'];
+
+const { rotateShape, cloneShape } = Shared_shapeTransforms;
 
 /**
  * Shape generation with configurable color probabilities
@@ -278,3 +285,10 @@ export function generateRandomShapeWithGrandpaMode(
 
   return shape;
 }
+
+// Facade export to match folder name
+export const Shared_shapeGenerationWithProbabilities = {
+  generateRandomShapeWithProbabilities,
+  generateShapesWithProbabilities,
+  generateRandomShapeWithGrandpaMode,
+};

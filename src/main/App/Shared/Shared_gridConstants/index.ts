@@ -7,17 +7,20 @@
  * - Challenge board data conversion utilities
  */
 
-import type { ColorName, TilesSet } from '../../types/core';
+import { Shared_core } from '../../types/core';
+
+type ColorName = Shared_core['ColorName'];
+type TilesSet = Shared_core['TilesSet'];
 
 // Grid configuration - mutable to allow runtime size changes
-export let GRID_SIZE = 10;
+let GRID_SIZE = 10;
 
 /**
  * Visual spacing between grid tiles in pixels.
  * CRITICAL: This prevents tiles from collapsing into each other visually.
  * Must be large enough to clearly separate distinct grid cells.
  */
-export const GRID_GAP = 2;
+const GRID_GAP = 2;
 
 /**
  * Generate grid addresses in row-major order
@@ -40,14 +43,14 @@ function generateGridAddresses(size: number): readonly string[] {
  * Use this for iteration instead of generating arrays
  * Regenerated when grid size changes
  */
-export let GRID_ADDRESSES = generateGridAddresses(GRID_SIZE);
+let GRID_ADDRESSES = generateGridAddresses(GRID_SIZE);
 
 /**
  * Set the grid size and regenerate all grid addresses
  * This should be called before initializing the game state
  * @param size - The new grid size (e.g., 8, 10, 12, 15)
  */
-export function setGridSize(size: number): void {
+function setGridSize(size: number): void {
   if (size < 4 || size > 20) {
     throw new Error(`Grid size must be between 4 and 20, got ${size}`);
   }
@@ -63,7 +66,7 @@ if (GRID_ADDRESSES.length !== GRID_SIZE * GRID_SIZE) {
 /**
  * Helper function to create a tile key from location (1-indexed)
  */
-export function makeTileKey(row: number, column: number): string {
+function makeTileKey(row: number, column: number): string {
   return `R${row}C${column}`;
 }
 
@@ -84,7 +87,7 @@ export type ChallengeBoardData = {
  * Convert tiles Map to challenge board data (only includes filled tiles)
  * Use this for exporting board state from debug editor
  */
-export function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData {
+function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData {
   const tiles: Array<{ key: string; data: { isFilled: boolean; color: ColorName } }> = [];
 
   tilesMap.forEach((tile, key) => {

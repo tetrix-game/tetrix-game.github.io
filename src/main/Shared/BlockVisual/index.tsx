@@ -1,11 +1,13 @@
 import React from 'react';
 
-import type { ColorName } from '../../App/types/core';
-import type { BlockTheme } from '../../App/types/theme';
+import { Shared_core } from '../../App/types/core';
+import { Shared_theme } from '../../App/types/theme';
 import { Shared_ShapeIcon } from '../ShapeIcon';
-
 import { Shared_BlockSvg } from './BlockSvg';
 import './BlockVisual.css';
+
+type ColorName = Shared_core['ColorName'];
+type BlockTheme = Shared_theme['BlockTheme'];
 
 type BlockVisualProps = {
   readonly isFilled: boolean;

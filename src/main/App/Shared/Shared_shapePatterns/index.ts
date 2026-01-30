@@ -1,5 +1,7 @@
-import type { TilesSet } from '../../../types/core';
-import { makeTileKey } from '../shapeValidation';
+import { Shared_core } from '../../../types/core';
+import { makeTileKey } from '../Shared_shapeValidation';
+
+type TilesSet = Shared_core['TilesSet'];
 
 /**
  * Shape pattern detection - Super combo and special patterns
@@ -150,3 +152,8 @@ function isColumnValidWithEmptyAt(grid: boolean[][], col: number, emptyRow: numb
 
   return filledCount === 9 && hasEmptyAtPosition;
 }
+
+// Facade export to match folder name
+export const Shared_shapePatterns = {
+  detectSuperComboPattern,
+};

@@ -14,7 +14,7 @@ const DB_NAME = 'TetrixGameDB';
 const DB_VERSION = 9; // Simplified to single game mode
 
 // Store names
-export const STORES = {
+const STORES = {
   // Game state
   GAME_STATE: 'gameState',
 
@@ -100,7 +100,7 @@ async function getDatabase(): Promise<IDBDatabase> {
  * @param key - The key to store data under
  * @param data - The data to store
  */
-export async function write<T>(
+async function write<T>(
   storeName: StoreName,
   key: IDBValidKey,
   data: T,
@@ -137,7 +137,7 @@ export async function write<T>(
  * @param key - The key to retrieve
  * @returns The stored data or null if not found
  */
-export async function read<T>(
+async function read<T>(
   storeName: StoreName,
   key: IDBValidKey,
 ): Promise<T | null> {
@@ -167,7 +167,7 @@ export async function read<T>(
  * @param storeName - The store to delete from
  * @param key - The key to delete
  */
-export async function remove(
+async function remove(
   storeName: StoreName,
   key: IDBValidKey,
 ): Promise<void> {
@@ -197,7 +197,7 @@ export async function remove(
  * @param storeName - The store to list
  * @returns Array of all keys in the store
  */
-export async function listKeys(storeName: StoreName): Promise<IDBValidKey[]> {
+async function listKeys(storeName: StoreName): Promise<IDBValidKey[]> {
   const db = await getDatabase();
 
   return new Promise((resolve, reject): void => {
@@ -224,7 +224,7 @@ export async function listKeys(storeName: StoreName): Promise<IDBValidKey[]> {
  * @param storeName - The store to read all from
  * @returns Array of all values in the store
  */
-export async function readAll<T>(storeName: StoreName): Promise<T[]> {
+async function readAll<T>(storeName: StoreName): Promise<T[]> {
   const db = await getDatabase();
 
   return new Promise((resolve, reject): void => {
@@ -250,7 +250,7 @@ export async function readAll<T>(storeName: StoreName): Promise<T[]> {
  * CLEAR - Remove all data from a store
  * @param storeName - The store to clear
  */
-export async function clear(storeName: StoreName): Promise<void> {
+async function clear(storeName: StoreName): Promise<void> {
   const db = await getDatabase();
 
   return new Promise((resolve, reject): void => {
@@ -276,7 +276,7 @@ export async function clear(storeName: StoreName): Promise<void> {
  * BATCH WRITE - Write multiple records in a single transaction
  * @param operations - Array of write operations to perform
  */
-export async function batchWrite(
+async function batchWrite(
   operations: Array<{
     storeName: StoreName;
     key: IDBValidKey;
@@ -320,7 +320,7 @@ export async function batchWrite(
  * @param operations - Array of read operations to perform
  * @returns Array of results in the same order as operations
  */
-export async function batchRead<T>(
+async function batchRead<T>(
   operations: Array<{
     storeName: StoreName;
     key: IDBValidKey;
@@ -369,7 +369,7 @@ export async function batchRead<T>(
  * @param key - The key to check for
  * @returns True if the key exists, false otherwise
  */
-export async function exists(
+async function exists(
   storeName: StoreName,
   key: IDBValidKey,
 ): Promise<boolean> {
@@ -397,14 +397,14 @@ export async function exists(
 /**
  * Initialize the database (optional - first operation will auto-init)
  */
-export async function initDB(): Promise<void> {
+async function initDB(): Promise<void> {
   await getDatabase();
 }
 
 /**
  * Close the database connection (call this on cleanup)
  */
-export function closeDatabase(): void {
+function closeDatabase(): void {
   if (dbConnection) {
     dbConnection.close();
     dbConnection = null;
@@ -414,5 +414,15 @@ export function closeDatabase(): void {
 // Facade export to match folder name
 export const Shared_indexedDBCrud = {
   STORES,
+  write,
+  read,
+  remove,
+  listKeys,
+  readAll,
+  clear,
+  batchWrite,
+  batchRead,
+  exists,
+  initDB,
   closeDatabase,
 };

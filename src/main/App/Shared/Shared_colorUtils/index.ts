@@ -2,7 +2,9 @@
  * Color utilities for block color management and luminosity adjustments
  */
 
-import type { ColorName } from '../../types/core';
+import { Shared_core } from '../../types/core';
+
+type ColorName = Shared_core['ColorName'];
 
 /**
  * Converts RGB string to HSL values
@@ -88,7 +90,7 @@ function parseRgb(rgbString: string): [number, number, number] {
  * @param rgbString - RGB color string like "rgb(255, 0, 0)"
  * @param percent - Percentage to adjust (-100 to 100). Positive = lighter, negative = darker
  */
-export function adjustLuminosity(rgbString: string, percent: number): string {
+function adjustLuminosity(rgbString: string, percent: number): string {
   const [r, g, b] = parseRgb(rgbString);
   const [h, s, l] = rgbToHsl(r, g, b);
 
@@ -174,7 +176,7 @@ const BLOCK_BLAST_BASE_COLORS: Record<ColorName, string> = {
 /**
  * Pre-generated block color palettes for each theme
  */
-export const BLOCK_COLOR_PALETTES = {
+const BLOCK_COLOR_PALETTES = {
   dark: createBlockPalette(DARK_MODE_BASE_COLORS),
   light: createBlockPalette(LIGHT_MODE_BASE_COLORS),
   'block-blast': createBlockPalette(BLOCK_BLAST_BASE_COLORS),
@@ -183,7 +185,7 @@ export const BLOCK_COLOR_PALETTES = {
 /**
  * Converts a block color palette to CSS custom property definitions
  */
-export function blockPaletteToCssVars(palette: BlockColorPalette): Record<string, string> {
+function blockPaletteToCssVars(palette: BlockColorPalette): Record<string, string> {
   const cssVars: Record<string, string> = {};
 
   for (const colorName of Object.keys(palette) as ColorName[]) {

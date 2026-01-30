@@ -8,14 +8,19 @@ import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // safeBatchSave removed - persistence handled by PersistenceListener
 import { cleanupExpiredAnimations } from '../Shared_clearingAnimationUtils';
 import { checkGameOver } from '../Shared_gameOverUtils';
-import { makeTileKey } from '../Shared_gridConstants';
+import { Shared_gridConstants } from '../Shared_gridConstants';
 import { performLineClearing } from '../Shared_lineClearingOrchestrator';
 import { checkMapCompletion } from '../Shared_mapCompletionUtils';
 import { getShapeGridPositions } from '../Shared_shapeGeometry';
-import { generateSuperShape } from '../Shared_shapes/shapeGeneration';
-import { generateRandomShapeWithGrandpaMode } from '../Shared_shapes/shapeGenerationWithProbabilities';
-import { detectSuperComboPattern } from '../Shared_shapes/shapePatterns';
+import { Shared_shapeGeneration } from '../Shared_shapeGeneration';
+import { Shared_shapeGenerationWithProbabilities } from '../Shared_shapeGenerationWithProbabilities';
+import { Shared_shapePatterns } from '../Shared_shapePatterns';
 import { updateStats, incrementNoTurnStreak } from '../Shared_statsUtils';
+
+const { makeTileKey } = Shared_gridConstants;
+const { generateSuperShape } = Shared_shapeGeneration;
+const { generateRandomShapeWithGrandpaMode } = Shared_shapeGenerationWithProbabilities;
+const { detectSuperComboPattern } = Shared_shapePatterns;
 
 export function tileReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {

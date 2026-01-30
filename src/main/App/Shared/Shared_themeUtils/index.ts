@@ -2,7 +2,9 @@
  * Theme definitions and utilities for visual theming
  */
 
-import type { ThemeName } from '../../types/theme';
+import { Shared_theme } from '../../types/theme';
+
+type ThemeName = Shared_theme['ThemeName'];
 
 /**
  * Theme color definitions
@@ -27,7 +29,7 @@ export type ThemeDefinition = {
 /**
  * All available theme definitions
  */
-export const THEME_DEFINITIONS: Record<ThemeName, ThemeDefinition> = {
+const THEME_DEFINITIONS: Record<ThemeName, ThemeDefinition> = {
   dark: {
     background: 'rgb(25, 25, 25)',
     gameBackground: 'rgb(25, 25, 25)',
@@ -81,7 +83,7 @@ export const THEME_DEFINITIONS: Record<ThemeName, ThemeDefinition> = {
 /**
  * Converts theme definition to CSS custom properties
  */
-export function themeToCssVars(
+function themeToCssVars(
   theme: ThemeDefinition,
   themeName: ThemeName,
 ): Record<string, string> {

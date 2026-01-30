@@ -6,10 +6,14 @@
 
 import type { QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { safeBatchSave } from '../persistence';
-import { generateRandomShape } from '../Shared_shapes/shapeGeneration';
-import { rotateShape, cloneShape } from '../Shared_shapes/shapeTransforms';
+import { Shared_persistence } from '../../Shared_persistence';
+import { Shared_shapeGeneration } from '../Shared_shapeGeneration';
+import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
 import { resetNoTurnStreak } from '../Shared_statsUtils';
+
+const { safeBatchSave } = Shared_persistence;
+const { generateRandomShape } = Shared_shapeGeneration;
+const { rotateShape, cloneShape } = Shared_shapeTransforms;
 
 export function shapeReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {

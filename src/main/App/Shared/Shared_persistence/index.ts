@@ -4,31 +4,37 @@
  * Provides easy-to-use functions for common persistence operations.
  */
 
-import type { Shape, TileData, QueueItem } from '../../types/core';
+import { Shared_core } from '../../types/core';
 import type { SavedGameState, LoadResult, SerializedQueueItem } from '../../types/persistence';
-import type { StatsPersistenceData } from '../../types/stats';
-import {
-  saveGameState as saveGameStateAdapter,
-  loadGameState as loadGameStateAdapter,
-  updateGameState as updateGameStateAdapter,
+import { Shared_stats } from '../../types/stats';
+import { Shared_persistenceAdapter } from '../Shared_persistenceAdapter';
+
+type Shape = Shared_core['Shape'];
+type TileData = Shared_core['TileData'];
+type QueueItem = Shared_core['QueueItem'];
+type StatsPersistenceData = Shared_stats['StatsPersistenceData'];
+const {
+  saveGameState: saveGameStateAdapter,
+  loadGameState: loadGameStateAdapter,
+  updateGameState: updateGameStateAdapter,
   clearGameBoard,
-  loadSettings as loadSettingsAdapter,
-  saveMusicSettings as saveMusicSettingsAdapter,
-  loadMusicSettings as loadMusicSettingsAdapter,
-  saveSoundEffectsSettings as saveSoundEffectsSettingsAdapter,
-  loadSoundEffectsSettings as loadSoundEffectsSettingsAdapter,
-  saveDebugSettings as saveDebugSettingsAdapter,
-  loadDebugSettings as loadDebugSettingsAdapter,
-  saveTheme as saveThemeAdapter,
-  loadTheme as loadThemeAdapter,
-  saveBlockTheme as saveBlockThemeAdapter,
+  loadSettings: loadSettingsAdapter,
+  saveMusicSettings: saveMusicSettingsAdapter,
+  loadMusicSettings: loadMusicSettingsAdapter,
+  saveSoundEffectsSettings: saveSoundEffectsSettingsAdapter,
+  loadSoundEffectsSettings: loadSoundEffectsSettingsAdapter,
+  saveDebugSettings: saveDebugSettingsAdapter,
+  loadDebugSettings: loadDebugSettingsAdapter,
+  saveTheme: saveThemeAdapter,
+  loadTheme: loadThemeAdapter,
+  saveBlockTheme: saveBlockThemeAdapter,
   saveModifiers,
   loadModifiers,
   clearAllDataAndReload,
   initializePersistence,
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,
-} from '../Shared_persistenceAdapter';
+} = Shared_persistenceAdapter;
 
 // ============================================================================
 // CONVENIENCE FUNCTIONS

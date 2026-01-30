@@ -1,5 +1,10 @@
-import { GRID_SIZE } from '../../main/App/Shared/Shared_gridConstants';
-import type { TilesSet, ColorName, Tile } from '../../main/types';
+import { Shared_gridConstants } from '../../main/App/Shared/Shared_gridConstants';
+import { Shared_core } from '../../main/types/core';
+
+const { GRID_SIZE } = Shared_gridConstants;
+type TilesSet = Shared_core['TilesSet'];
+type ColorName = Shared_core['ColorName'];
+type Tile = Shared_core['Tile'];
 
 /**
  * Helper functions for testing with TilesSet (Map-based tiles using plain Tile objects)

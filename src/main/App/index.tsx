@@ -16,7 +16,6 @@ import { useUpdateNotification } from './hooks/useUpdateNotification';
 import { Shared_MusicControlProvider } from './Shared/Shared_MusicControlProvider';
 import { Shared_SoundEffectsProvider } from './Shared/Shared_SoundEffectsProvider';
 import { Shared_TetrixProvider } from './Shared/Shared_TetrixProvider';
-
 import './App.css';
 
 const AppContent = (): JSX.Element => {

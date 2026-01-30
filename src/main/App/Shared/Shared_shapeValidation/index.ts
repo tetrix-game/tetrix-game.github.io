@@ -1,6 +1,8 @@
-import { GRID_SIZE } from '../../../Shared/Shared_gridConstants';
-import type { Shape, Location, TilesSet } from '../../../types/core';
-import type { GameMode } from '../../../types/gameState';
+import { Shared_gridConstants } from '../Shared_gridConstants';
+import type { Shape, Location, TilesSet } from '../../types/core';
+import type { GameMode } from '../../types/gameState';
+
+const { GRID_SIZE } = Shared_gridConstants;
 
 /**
  * Shape validation functions - Placement validation and collision detection
@@ -9,7 +11,7 @@ import type { GameMode } from '../../../types/gameState';
 /**
  * Helper function to create a tile key from location
  */
-export function makeTileKey(row: number, column: number): string {
+function makeTileKey(row: number, column: number): string {
   return `R${row}C${column}`;
 }
 
@@ -25,7 +27,7 @@ export function makeTileKey(row: number, column: number): string {
  * @param tiles - Map of tile keys to tile data for checking occupancy
  * @returns true if the shape can be placed without overlapping or going out of bounds
  */
-export function canPlaceShape(
+function canPlaceShape(
   shape: Shape,
   gridTopLeftLocation: Location,
   gridSize: { rows: number; columns: number },
@@ -85,7 +87,7 @@ export function canPlaceShape(
  * @param gameMode - The current game mode (optional, defaults to 'infinite')
  * @returns true if the shape can be placed without overlapping filled tiles or going out of bounds
  */
-export function isValidPlacement(
+function isValidPlacement(
   shape: Shape,
   gridTopLeftLocation: Location | null,
   tiles: TilesSet,
@@ -152,7 +154,7 @@ export function isValidPlacement(
  * @param gameMode - The current game mode (optional, defaults to 'infinite')
  * @returns Array of invalid block positions with their shape-relative coordinates
  */
-export function getInvalidBlocks(
+function getInvalidBlocks(
   shape: Shape,
   gridTopLeftLocation: Location | null,
   tiles: TilesSet,
@@ -211,3 +213,5 @@ export function getInvalidBlocks(
 
   return invalidBlocks;
 }
+
+export { makeTileKey, canPlaceShape, isValidPlacement, getInvalidBlocks };

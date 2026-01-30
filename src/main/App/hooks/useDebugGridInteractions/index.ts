@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 
-import type { Location } from '../../types/core';
+import { Shared_core } from '../../types/core';
+
+type Location = Shared_core['Location'];
 
 /**
  * Custom hook for handling debug grid interactions
@@ -20,3 +22,8 @@ export function useDebugGridInteractions(): {
     handleDebugClick,
   };
 }
+
+// Facade export to match folder name
+export const useDebugGridInteractions_export = {
+  useDebugGridInteractions,
+};

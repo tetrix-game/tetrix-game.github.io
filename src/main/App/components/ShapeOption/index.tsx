@@ -1,11 +1,14 @@
 import './ShapeOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
-import { ANIMATION_TIMING } from '../../Shared/animationConstants';
+import { Shared_animationConstants } from '../../Shared/Shared_animationConstants';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import type { Shape } from '../../types/core';
+import { Shared_core } from '../../types/core';
 import { ShapeDisplay } from '../ShapeDisplay';
+
+const { ANIMATION_TIMING } = Shared_animationConstants;
+type Shape = Shared_core['Shape'];
 
 type ShapeOptionProps = {
   shape: Shape;

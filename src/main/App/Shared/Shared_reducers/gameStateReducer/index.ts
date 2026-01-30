@@ -7,13 +7,16 @@
 
 import type { Tile, QueuedShape, Shape, ColorName } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-// Persistence imports removed - handled by PersistenceListener
-import { DEFAULT_COLOR_PROBABILITIES } from '../../types/shapeQueue';
-import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../../types/stats';
+import { Shared_shapeQueue } from '../../types/shapeQueue';
+import { Shared_stats } from '../../types/stats';
 import { checkGameOver } from '../Shared_gameOverUtils';
-import { GRID_ADDRESSES, makeTileKey } from '../Shared_gridConstants';
+import { Shared_gridConstants } from '../Shared_gridConstants';
 import { checkMapCompletion } from '../Shared_mapCompletionUtils';
 import { updateStats } from '../Shared_statsUtils';
+
+const { DEFAULT_COLOR_PROBABILITIES } = Shared_shapeQueue;
+const { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } = Shared_stats;
+const { GRID_ADDRESSES, makeTileKey } = Shared_gridConstants;
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = (): Map<string, Tile> => {
@@ -38,7 +41,7 @@ const makeTiles = (): Map<string, Tile> => {
   return tiles;
 };
 
-export const initialGameState = {
+const initialGameState = {
   gameState: 'playing' as const,
   gameMode: 'infinite' as const,
   currentLevel: 0,
@@ -251,9 +254,8 @@ export function gameStateReducer(
               hasFilledTiles = true;
             }
             tilesMap.set(position, tile);
-          }
-          // New format: TileData with position property
-          else if (tileData.position) {
+          } else if (tileData.position) {
+            // New format: TileData with position property
             const tile: Tile = {
               position: tileData.position,
               backgroundColor: tileData.backgroundColor || 'grey',
@@ -818,3 +820,5 @@ export function gameStateReducer(
       return state;
   }
 }
+
+export { initialGameState };

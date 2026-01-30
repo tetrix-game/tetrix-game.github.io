@@ -12,14 +12,18 @@ import { APP_VERSION } from '../../../version';
 import { useGridEditor } from '../../contexts/GridEditorProvider';
 import { loadDebugSettings, saveDebugSettings } from '../../Shared/persistence';
 import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
-import { generateShapesWithProbabilities } from '../../Shared/Shared_shapes/shapeGenerationWithProbabilities';
+import { Shared_shapeGenerationWithProbabilities } from '../../Shared/Shared_shapeGenerationWithProbabilities';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import { THEMES, BLOCK_THEMES } from '../../types/theme';
-import type { ThemeName, BlockTheme } from '../../types/theme';
+import { Shared_theme } from '../../types/theme';
 import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
 import { InstallButton } from '../InstallButton';
 import './SettingsOverlay.css';
+
+const { generateShapesWithProbabilities } = Shared_shapeGenerationWithProbabilities;
+const { THEMES, BLOCK_THEMES } = Shared_theme;
+type ThemeName = Shared_theme['ThemeName'];
+type BlockTheme = Shared_theme['BlockTheme'];
 
 const ThemeSelector: React.FC = () => {
   const { currentTheme } = Shared_useTetrixStateContext();

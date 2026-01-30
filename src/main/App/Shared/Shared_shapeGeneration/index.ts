@@ -1,5 +1,11 @@
-import type { Shape, Block, ColorName } from '../../../types/core';
-import { rotateShape, cloneShape, makeRandomColor } from '../shapeTransforms';
+import { Shared_core } from '../../../types/core';
+import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
+
+type Shape = Shared_core['Shape'];
+type Block = Shared_core['Block'];
+type ColorName = Shared_core['ColorName'];
+
+const { rotateShape, cloneShape, makeRandomColor } = Shared_shapeTransforms;
 
 /**
  * Shape generation functions - Templates and random generation
@@ -380,3 +386,23 @@ export function generateRandomShape(): Shape {
 
   return shape;
 }
+
+// Facade export to match folder name
+export const Shared_shapeGeneration = {
+  generateIPiece,
+  generateOPiece,
+  generateTPiece,
+  generateSPiece,
+  generateZPiece,
+  generateJPiece,
+  generateLPiece,
+  generate3x3Piece,
+  generate3x2Piece,
+  generate5x1Piece,
+  generate3x1Piece,
+  generate2x1Piece,
+  generate1x1Piece,
+  generateEvenLPiece,
+  generateSuperShape,
+  generateRandomShape,
+};

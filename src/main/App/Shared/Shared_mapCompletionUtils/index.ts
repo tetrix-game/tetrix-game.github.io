@@ -1,4 +1,6 @@
-import type { TilesSet } from '../../types/core';
+import { Shared_core } from '../../types/core';
+
+type TilesSet = Shared_core['TilesSet'];
 
 /**
  * Result of checking map completion

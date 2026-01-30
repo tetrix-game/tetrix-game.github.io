@@ -4,7 +4,9 @@
  */
 
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { safeBatchSave } from '../persistence';
+import { Shared_persistence } from '../../Shared_persistence';
+
+const { safeBatchSave } = Shared_persistence;
 
 export function scoringReducer(
   state: TetrixReducerState,
@@ -85,3 +87,8 @@ export function scoringReducer(
       return state;
   }
 }
+
+// Facade export to match folder name
+export const scoringReducer_export = {
+  scoringReducer,
+};

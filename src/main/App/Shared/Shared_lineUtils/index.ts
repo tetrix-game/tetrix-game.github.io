@@ -1,4 +1,7 @@
-import type { TilesSet, Tile } from '../../types/core';
+import { Shared_core } from '../../types/core';
+
+type TilesSet = Shared_core['TilesSet'];
+type Tile = Shared_core['Tile'];
 
 const GRID_SIZE = 10;
 

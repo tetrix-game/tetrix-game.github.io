@@ -10,11 +10,13 @@
  * - Detecting full board clears
  */
 
-import type { TilesSet } from '../../types/core';
-import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
-import { clearFullLines, isGridCompletelyEmpty } from '../lineUtils';
+import { Shared_core } from '../../types/core';
+import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../Shared_clearingAnimationUtils';
+import { clearFullLines, isGridCompletelyEmpty } from '../Shared_lineUtils';
 import { calculateScore } from '../scoringUtils';
-import { Shared_playSound } from '../Shared_SoundEffectsProvider/constants';
+import { Shared_playSound } from '../Shared_SoundEffectsProvider/Shared_playSound';
+
+type TilesSet = Shared_core['TilesSet'];
 
 const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
   rows: {

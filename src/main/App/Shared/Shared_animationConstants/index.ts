@@ -5,7 +5,7 @@
  *
  * Currently slowed down to 2000ms for debugging purposes.
  */
-export const ANIMATION_TIMING = {
+const ANIMATION_TIMING = {
   // DraggingShape animations
   PICKUP_DURATION: 300,
   PLACING_DURATION: 300,

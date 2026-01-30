@@ -1,6 +1,8 @@
 import React, { useMemo, memo } from 'react';
 
-import type { BlockTheme } from '../../../App/types/theme';
+import { Shared_theme } from '../../../App/types/theme';
+
+type BlockTheme = Shared_theme['BlockTheme'];
 
 interface BlockSvgProps {
   color: string;

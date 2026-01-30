@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
 
-import { GRID_SIZE } from '../../Shared/Shared_gridConstants';
+import { Shared_gridConstants } from '../../Shared/Shared_gridConstants';
 import { mousePositionToGridLocation } from '../../Shared/Shared_shapeGeometry';
-import { isValidPlacement, getInvalidBlocks } from '../../Shared/Shared_shapes/shapeValidation';
+import { isValidPlacement, getInvalidBlocks } from '../../Shared/Shared_shapeValidation';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+
+const { GRID_SIZE } = Shared_gridConstants;
 
 export const usePointerTracking = (): void => {
   const { gameMode, dragState, gridTileSize, gridBounds, tiles } = Shared_useTetrixStateContext();

@@ -51,3 +51,8 @@ export const DEFAULT_COLOR_PROBABILITIES: ColorProbability[] = [
   { color: 'blue', weight: 1 },
   { color: 'purple', weight: 1 },
 ];
+
+// Facade export to match folder name
+export const shapeQueue = {
+  DEFAULT_COLOR_PROBABILITIES,
+};

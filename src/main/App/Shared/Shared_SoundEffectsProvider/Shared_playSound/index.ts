@@ -1,6 +1,6 @@
 import type { SoundEffect } from './types';
 
-export const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
+const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
   click_into_place: 1.0, // -27.4 dB mean, reference level
   game_over: 0.7, // -22.1 dB mean, louder than others
   pickup_shape: 0.4, // -14.8 dB mean, much louder than others
@@ -12,22 +12,31 @@ export const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
   heartbeat: 1.0, // Synthesized, already calibrated
 };
 
-export const BASE_SOUND_EFFECTS_VOLUME = 0.5;
+const BASE_SOUND_EFFECTS_VOLUME = 0.5;
 
 let modulePlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | null = null;
 
-export function Shared_playSound(soundEffect: SoundEffect, startTime?: number): void {
+function playSound(soundEffect: SoundEffect, startTime?: number): void {
   if (modulePlaySound) {
     modulePlaySound(soundEffect, startTime);
   }
 }
 
-export function registerPlaySound(
+function registerPlaySound(
   playSound: (soundEffect: SoundEffect, startTime?: number) => void,
 ): void {
   modulePlaySound = playSound;
 }
 
-export function unregisterPlaySound(): void {
+function unregisterPlaySound(): void {
   modulePlaySound = null;
 }
+
+// Facade export to match folder name
+export const Shared_playSound = {
+  SOUND_VOLUME_MULTIPLIERS,
+  BASE_SOUND_EFFECTS_VOLUME,
+  playSound,
+  registerPlaySound,
+  unregisterPlaySound,
+};

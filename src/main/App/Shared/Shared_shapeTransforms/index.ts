@@ -1,4 +1,7 @@
-import type { Shape, ColorName } from '../../../types/core';
+import { Shared_core } from '../../../types/core';
+
+type Shape = Shared_core['Shape'];
+type ColorName = Shared_core['ColorName'];
 
 /**
  * Shape transformation functions - Rotation and cloning operations
@@ -46,3 +49,10 @@ export function makeRandomColor(colorCount: number = 7): ColorName {
   const randomColorIndex = Math.floor(Math.random() * colors.length);
   return colors[randomColorIndex];
 }
+
+// Facade export to match folder name
+export const Shared_shapeTransforms = {
+  rotateShape,
+  cloneShape,
+  makeRandomColor,
+};

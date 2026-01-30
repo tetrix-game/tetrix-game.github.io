@@ -91,3 +91,9 @@ export const THEMES: Record<ThemeName, Theme> = {
     },
   },
 };
+
+// Facade export to match folder name
+export const theme = {
+  BLOCK_THEMES,
+  THEMES,
+};

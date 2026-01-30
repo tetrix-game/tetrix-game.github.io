@@ -5,8 +5,11 @@
  */
 
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { ANIMATION_TIMING } from '../animationConstants';
-import { getShapeGridPositions, getShapeVisualOffset } from '../shapeGeometry';
+import { Shared_animationConstants } from '../Shared_animationConstants';
+import { Shared_shapeGeometry } from '../Shared_shapeGeometry';
+
+const { ANIMATION_TIMING } = Shared_animationConstants;
+const { getShapeGridPositions, getShapeVisualOffset } = Shared_shapeGeometry;
 
 export function dragReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {

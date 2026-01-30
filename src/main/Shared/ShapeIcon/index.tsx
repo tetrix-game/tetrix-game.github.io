@@ -1,5 +1,7 @@
-import type { ColorName } from '../../App/types/core';
+import { Shared_core } from '../../App/types/core';
 import './ShapeIcon.css';
+
+type ColorName = Shared_core['ColorName'];
 
 type ShapeIconProps = {
   color: ColorName;

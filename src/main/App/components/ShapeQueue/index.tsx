@@ -7,7 +7,12 @@ import { ShapeSelector } from '../ShapeSelector';
 
 export const ShapeQueue = (): JSX.Element => {
   const dispatch = Shared_useTetrixDispatchContext();
-  const { queueMode, queueHiddenShapes, isQueueOverlayOpen, nextShapes } = Shared_useTetrixStateContext();
+  const {
+    queueMode,
+    queueHiddenShapes,
+    isQueueOverlayOpen,
+    nextShapes,
+  } = Shared_useTetrixStateContext();
 
   // Handle queue indicator click
   const handleQueueIndicatorClick = (): void => {

@@ -26,7 +26,7 @@ const DEBUG_PERSISTENCE_CHECKSUMS = false;
 /**
  * Save complete game state
  */
-export async function saveGameState(state: SavedGameState): Promise<void> {
+async function saveGameState(state: SavedGameState): Promise<void> {
   // CRITICAL: Strip isGameOver from persisted data.
   // It's a derived state calculated on load, NOT persisted.
 
@@ -51,7 +51,7 @@ export async function saveGameState(state: SavedGameState): Promise<void> {
 /**
  * Load complete game state
  */
-export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
+async function loadGameState(): Promise<LoadResult<SavedGameState>> {
   try {
     // Load Data and Manifest in parallel using a single transaction for consistency
     const [state, manifest] = await crud.batchRead([
@@ -137,7 +137,7 @@ export async function loadGameState(): Promise<LoadResult<SavedGameState>> {
 /**
  * Clear game state (board + score), but preserve stats
  */
-export async function clearGameBoard(): Promise<void> {
+async function clearGameBoard(): Promise<void> {
   const currentResult = await loadGameState();
 
   if (currentResult.status === 'success') {
@@ -171,7 +171,7 @@ export async function clearGameBoard(): Promise<void> {
 /**
  * Update partial game state (only specified fields)
  */
-export async function updateGameState(updates: Partial<SavedGameState>): Promise<void> {
+async function updateGameState(updates: Partial<SavedGameState>): Promise<void> {
   const current = await crud.read<SavedGameState>(STORES.GAME_STATE, 'current');
 
   if (!current) {
@@ -208,7 +208,7 @@ async function saveSettings(settings: GameSettingsPersistenceData): Promise<void
 /**
  * Load game settings
  */
-export async function loadSettings(): Promise<LoadResult<GameSettingsPersistenceData>> {
+async function loadSettings(): Promise<LoadResult<GameSettingsPersistenceData>> {
   try {
     const settings = await crud.read<GameSettingsPersistenceData>(STORES.SETTINGS, 'current');
     if (settings) {
@@ -223,7 +223,7 @@ export async function loadSettings(): Promise<LoadResult<GameSettingsPersistence
 /**
  * Update partial settings
  */
-export async function updateSettings(
+async function updateSettings(
   updates: Partial<GameSettingsPersistenceData>,
 ): Promise<void> {
   const currentResult = await loadSettings();
@@ -255,7 +255,7 @@ export async function updateSettings(
 /**
  * Save music settings specifically
  */
-export async function saveMusicSettings(
+async function saveMusicSettings(
   isMuted: boolean,
   volume: number = 100,
   isEnabled: boolean = true,
@@ -273,7 +273,7 @@ export async function saveMusicSettings(
 /**
  * Load music settings
  */
-export async function loadMusicSettings(): Promise<
+async function loadMusicSettings(): Promise<
   LoadResult<{
     isMuted: boolean;
     volume: number;
@@ -292,7 +292,7 @@ export async function loadMusicSettings(): Promise<
 /**
  * Save sound effects settings specifically
  */
-export async function saveSoundEffectsSettings(
+async function saveSoundEffectsSettings(
   isMuted: boolean,
   volume: number = 100,
   isEnabled: boolean = true,
@@ -310,7 +310,7 @@ export async function saveSoundEffectsSettings(
 /**
  * Load sound effects settings
  */
-export async function loadSoundEffectsSettings(): Promise<
+async function loadSoundEffectsSettings(): Promise<
   LoadResult<{
     isMuted: boolean;
     volume: number;
@@ -329,14 +329,14 @@ export async function loadSoundEffectsSettings(): Promise<
 /**
  * Save debug unlock status
  */
-export async function saveDebugSettings(unlocked: boolean): Promise<void> {
+async function saveDebugSettings(unlocked: boolean): Promise<void> {
   await updateSettings({ debugUnlocked: unlocked });
 }
 
 /**
  * Load debug settings
  */
-export async function loadDebugSettings(): Promise<LoadResult<boolean>> {
+async function loadDebugSettings(): Promise<LoadResult<boolean>> {
   const result = await loadSettings();
   if (result.status === 'success') {
     return { status: 'success', data: result.data.debugUnlocked || false };
@@ -349,14 +349,14 @@ export async function loadDebugSettings(): Promise<LoadResult<boolean>> {
 /**
  * Save theme preference
  */
-export async function saveTheme(theme: string): Promise<void> {
+async function saveTheme(theme: string): Promise<void> {
   await updateSettings({ theme });
 }
 
 /**
  * Load theme
  */
-export async function loadTheme(): Promise<LoadResult<string>> {
+async function loadTheme(): Promise<LoadResult<string>> {
   const result = await loadSettings();
   if (result.status === 'success' && result.data.theme) {
     return { status: 'success', data: result.data.theme };
@@ -367,7 +367,7 @@ export async function loadTheme(): Promise<LoadResult<string>> {
 /**
  * Save block theme preference
  */
-export async function saveBlockTheme(blockTheme: string): Promise<void> {
+async function saveBlockTheme(blockTheme: string): Promise<void> {
   await updateSettings({ blockTheme });
 }
 
@@ -378,7 +378,7 @@ export async function saveBlockTheme(blockTheme: string): Promise<void> {
 /**
  * Save unlocked modifiers
  */
-export async function saveModifiers(unlockedModifiers: Set<number>): Promise<void> {
+async function saveModifiers(unlockedModifiers: Set<number>): Promise<void> {
   const data: ModifiersPersistenceData = {
     unlockedModifiers: Array.from(unlockedModifiers),
     lastUpdated: Date.now(),
@@ -389,7 +389,7 @@ export async function saveModifiers(unlockedModifiers: Set<number>): Promise<voi
 /**
  * Load unlocked modifiers
  */
-export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
+async function loadModifiers(): Promise<LoadResult<Set<number>>> {
   try {
     const data = await crud.read<ModifiersPersistenceData>(STORES.MODIFIERS, 'current');
     if (data?.unlockedModifiers) {
@@ -411,7 +411,7 @@ export async function loadModifiers(): Promise<LoadResult<Set<number>>> {
  * This function extracts all-time and high-score stats before clearing,
  * then restores them after. This ensures user progress is never lost.
  */
-export async function clearAllDataAndReload(): Promise<void> {
+async function clearAllDataAndReload(): Promise<void> {
   try {
     // STEP 1: Extract and preserve long-term statistics
     let preservedStats: {
@@ -504,7 +504,7 @@ export async function clearAllDataAndReload(): Promise<void> {
 /**
  * Initialize persistence system on app startup
  */
-export async function initializePersistence(): Promise<void> {
+async function initializePersistence(): Promise<void> {
   await crud.initDB();
 }
 
@@ -515,7 +515,7 @@ export async function initializePersistence(): Promise<void> {
 /**
  * Save call-to-action timestamp
  */
-export async function saveCallToActionTimestamp(callKey: string, timestamp: number): Promise<void> {
+async function saveCallToActionTimestamp(callKey: string, timestamp: number): Promise<void> {
   const key = `cta-${callKey}`;
   await crud.write(STORES.SETTINGS, key, timestamp);
 }
@@ -523,7 +523,7 @@ export async function saveCallToActionTimestamp(callKey: string, timestamp: numb
 /**
  * Load call-to-action timestamp
  */
-export async function loadCallToActionTimestamp(callKey: string): Promise<LoadResult<number>> {
+async function loadCallToActionTimestamp(callKey: string): Promise<LoadResult<number>> {
   const key = `cta-${callKey}`;
   try {
     const timestamp = await crud.read<number>(STORES.SETTINGS, key);
@@ -535,3 +535,28 @@ export async function loadCallToActionTimestamp(callKey: string): Promise<LoadRe
     return { status: 'error', error: error instanceof Error ? error : new Error(String(error)) };
   }
 }
+
+// Facade export to match folder name
+export const Shared_persistenceAdapter = {
+  saveGameState,
+  loadGameState,
+  clearGameBoard,
+  updateGameState,
+  loadSettings,
+  updateSettings,
+  saveMusicSettings,
+  loadMusicSettings,
+  saveSoundEffectsSettings,
+  loadSoundEffectsSettings,
+  saveDebugSettings,
+  loadDebugSettings,
+  saveTheme,
+  loadTheme,
+  saveBlockTheme,
+  saveModifiers,
+  loadModifiers,
+  clearAllDataAndReload,
+  initializePersistence,
+  saveCallToActionTimestamp,
+  loadCallToActionTimestamp,
+};

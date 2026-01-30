@@ -4,9 +4,12 @@
 
 import React from 'react';
 
-import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../../Shared/Shared_colorUtils';
+import { Shared_colorUtils } from '../../Shared/Shared_colorUtils';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import { THEME_DEFINITIONS, themeToCssVars } from '../../Shared/Shared_themeUtils';
+import { Shared_themeUtils } from '../../Shared/Shared_themeUtils';
+
+const { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } = Shared_colorUtils;
+const { THEME_DEFINITIONS, themeToCssVars } = Shared_themeUtils;
 
 type ThemeProviderProps = {
   children: React.ReactNode;

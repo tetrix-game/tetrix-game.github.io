@@ -91,3 +91,9 @@ export const INITIAL_STATS_PERSISTENCE: StatsPersistenceData = {
     allTimeBest: 0,
   },
 };
+
+// Facade export to match folder name
+export const stats = {
+  INITIAL_GAME_STATS,
+  INITIAL_STATS_PERSISTENCE,
+};

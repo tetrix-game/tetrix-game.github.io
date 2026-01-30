@@ -15,8 +15,11 @@
  * - column-quad: Beating heart effect for quad column clears (4+ columns)
  */
 
-import type { TileAnimation, TilesSet } from '../../types/core';
-import type { ClearedLine } from '../lineUtils';
+import { Shared_core } from '../../types/core';
+
+type TileAnimation = Shared_core['TileAnimation'];
+type TilesSet = Shared_core['TilesSet'];
+type ClearedLine = { index: number; color?: string };
 
 export type AnimationTierConfig = {
   duration: number; // Animation duration in ms

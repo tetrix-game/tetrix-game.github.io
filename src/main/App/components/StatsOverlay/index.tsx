@@ -3,9 +3,12 @@ import React from 'react';
 import { Shared_Overlay } from '../../../Shared/Overlay';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import { ColorName } from '../../types/core';
-import { StatCategory } from '../../types/stats';
+import { Shared_core } from '../../types/core';
+import { Shared_stats } from '../../types/stats';
 import './StatsOverlay.css';
+
+type ColorName = Shared_core['ColorName'];
+type StatCategory = Shared_stats['StatCategory'];
 
 interface StatsOverlayProps {
   onClose: () => void;

@@ -99,7 +99,7 @@ function isValidCircleCoordinate(row: number, column: number, size: number): boo
 /**
  * Check if a coordinate is valid for the current grid shape
  */
-export function isValidGridCoordinate(row: number, column: number): boolean {
+function isValidGridCoordinate(row: number, column: number): boolean {
   const { shape, size, customValidator } = GRID_SHAPE_CONFIG;
 
   // Base bounds check
@@ -132,7 +132,7 @@ export function isValidGridCoordinate(row: number, column: number): boolean {
  * Generate grid addresses for the current shape
  * Only includes valid coordinates
  */
-export function generateShapedGridAddresses(config: GridShapeConfig): readonly string[] {
+function generateShapedGridAddresses(config: GridShapeConfig): readonly string[] {
   const addresses: string[] = [];
 
   for (let row = 1; row <= config.size; row++) {
@@ -156,7 +156,7 @@ export function generateShapedGridAddresses(config: GridShapeConfig): readonly s
  * Set the grid shape configuration
  * This regenerates grid addresses and updates validation
  */
-export function setGridShape(config: Partial<GridShapeConfig>): void {
+function setGridShape(config: Partial<GridShapeConfig>): void {
   GRID_SHAPE_CONFIG = {
     ...GRID_SHAPE_CONFIG,
     ...config,
@@ -177,7 +177,7 @@ export function setGridShape(config: Partial<GridShapeConfig>): void {
 /**
  * Get grid statistics for current shape
  */
-export function getGridShapeStats(): {
+function getGridShapeStats(): {
   shape: GridShape;
   size: number;
   totalTiles: number;
@@ -199,7 +199,7 @@ export function getGridShapeStats(): {
 /**
  * Preset grid shape configurations
  */
-export const GRID_SHAPE_PRESETS = {
+const GRID_SHAPE_PRESETS = {
   // Standard square grids
   SQUARE_SMALL: { shape: 'square' as GridShape, size: 8 },
   SQUARE_NORMAL: { shape: 'square' as GridShape, size: 10 },
@@ -224,7 +224,7 @@ export const GRID_SHAPE_PRESETS = {
 /**
  * Example: Custom cross shape
  */
-export function createCrossShape(size: number): GridShapeConfig {
+function createCrossShape(size: number): GridShapeConfig {
   const center = Math.ceil(size / 2);
   const armWidth = Math.floor(size / 3);
 
@@ -243,7 +243,7 @@ export function createCrossShape(size: number): GridShapeConfig {
 /**
  * Example: Custom plus shape (thinner cross)
  */
-export function createPlusShape(size: number): GridShapeConfig {
+function createPlusShape(size: number): GridShapeConfig {
   const center = Math.ceil(size / 2);
 
   return {
@@ -259,7 +259,7 @@ export function createPlusShape(size: number): GridShapeConfig {
 /**
  * Visualize grid shape in console (for debugging)
  */
-export function visualizeGridShape(config?: GridShapeConfig): string {
+function visualizeGridShape(config?: GridShapeConfig): string {
   const currentConfig = config || GRID_SHAPE_CONFIG;
   const prevConfig = GRID_SHAPE_CONFIG;
   GRID_SHAPE_CONFIG = currentConfig;

@@ -48,6 +48,13 @@ const isTypesFile = (filename) => {
   return basename === 'types.ts' || basename === 'types.tsx';
 };
 
+// Helper to check if a file is in the src/test directory
+const isInTestDir = (filename) => {
+  if (!filename) return false;
+  const normalized = path.normalize(filename);
+  return normalized.includes(path.join('src', 'test'));
+};
+
 // Forbidden React hooks in component files
 const FORBIDDEN_HOOKS_IN_COMPONENTS = [
   'useContext',
@@ -83,6 +90,13 @@ const namedExportsOnly = {
     schema: [],
   },
   create(context) {
+    const filename = context.filename || context.getFilename();
+
+    // Skip test directory files
+    if (isInTestDir(filename)) {
+      return {};
+    }
+
     return {
       ExportDefaultDeclaration(node) {
         context.report({
@@ -117,6 +131,13 @@ const noReexports = {
     schema: [],
   },
   create(context) {
+    const filename = context.filename || context.getFilename();
+
+    // Skip test directory files
+    if (isInTestDir(filename)) {
+      return {};
+    }
+
     return {
       // Check named re-exports: export { Foo } from './bar'
       ExportNamedDeclaration(node) {
@@ -176,6 +197,11 @@ const importFromIndex = {
   },
   create(context) {
     const filename = context.filename || context.getFilename();
+
+    // Skip test directory files
+    if (isInTestDir(filename)) {
+      return {};
+    }
 
     return {
       ImportDeclaration(node) {
@@ -295,8 +321,8 @@ const indexOnlyFiles = {
       return {};
     }
 
-    // Skip node_modules and build output
-    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+    // Skip node_modules, build output, and test directory
+    if (filename.includes('node_modules') || filename.includes('/dist/') || isInTestDir(filename)) {
       return {};
     }
 
@@ -354,6 +380,11 @@ const sharedMustBeMultiImported = {
     const fileDir = path.dirname(filename);
     const isSharedFile = isInSharedDir(filename);
     const basename = path.basename(filename, path.extname(filename));
+
+    // Skip test directory files
+    if (isInTestDir(filename)) {
+      return {};
+    }
 
     // For non-shared files: track imports from src/Shared
     if (!isSharedFile) {
@@ -489,8 +520,8 @@ const importFromSiblingDirectoryOrShared = {
     const filename = context.filename || context.getFilename();
     const DEBUG = process.env.ESLINT_DEBUG_ARCHITECTURE === 'true';
 
-    // Skip node_modules and build output
-    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+    // Skip node_modules, build output, and test directory
+    if (filename.includes('node_modules') || filename.includes('/dist/') || isInTestDir(filename)) {
       return {};
     }
 
@@ -654,8 +685,8 @@ const noCircularDependencies = {
   create(context) {
     const filename = context.filename || context.getFilename();
 
-    // Skip node_modules and build output
-    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+    // Skip node_modules, build output, and test directory
+    if (filename.includes('node_modules') || filename.includes('/dist/') || isInTestDir(filename)) {
       return {};
     }
 
@@ -728,8 +759,8 @@ const enforceDownwardsImports = {
     const filename = context.filename || context.getFilename();
     const fileDir = path.dirname(filename);
 
-    // Skip node_modules and build output
-    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+    // Skip node_modules, build output, and test directory
+    if (filename.includes('node_modules') || filename.includes('/dist/') || isInTestDir(filename)) {
       return {};
     }
 
@@ -827,6 +858,11 @@ const sharedExportsMustBePrefixed = {
   },
   create(context) {
     const filename = context.filename || context.getFilename();
+
+    // Skip test directory files
+    if (isInTestDir(filename)) {
+      return {};
+    }
 
     // Only apply to files in Shared directory
     if (!isInSharedDir(filename)) {
@@ -960,8 +996,8 @@ const folderExportMustMatch = {
       return {};
     }
 
-    // Skip node_modules and build output
-    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+    // Skip node_modules, build output, and test directory
+    if (filename.includes('node_modules') || filename.includes('/dist/') || isInTestDir(filename)) {
       return {};
     }
 
@@ -1087,8 +1123,8 @@ const noSeparateExportDeclarations = {
   create(context) {
     const filename = context.filename || context.getFilename();
 
-    // Skip node_modules and build output
-    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+    // Skip node_modules, build output, and test directory
+    if (filename.includes('node_modules') || filename.includes('/dist/') || isInTestDir(filename)) {
       return {};
     }
 

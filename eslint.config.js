@@ -219,6 +219,26 @@ export default tseslint.config(
       'architecture/folder-export-must-match': 'off',
     },
   },
+  // src/test directory - completely exclude from all architecture rules
+  {
+    files: ['src/test/**/*.ts', 'src/test/**/*.tsx'],
+    plugins: {
+      'architecture': architecture,
+    },
+    rules: {
+      'architecture/named-exports-only': 'off',
+      'architecture/no-reexports': 'off',
+      'architecture/import-from-index': 'off',
+      'architecture/index-only-files': 'off',
+      'architecture/enforce-downwards-imports': 'off',
+      'architecture/shared-exports-must-be-prefixed': 'off',
+      'architecture/folder-export-must-match': 'off',
+      'architecture/shared-must-be-multi-imported': 'off',
+      'architecture/import-from-sibling-directory-or-shared': 'off',
+      'architecture/no-circular-dependencies': 'off',
+      'architecture/no-separate-export-declarations': 'off',
+    },
+  },
   // Config files need default exports (Vite, ESLint, etc.)
   {
     files: ['*.config.ts', '*.config.js', 'vite.config.ts', 'eslint.config.js'],

@@ -3,19 +3,19 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import { makeTileKey } from '../../Shared/Shared_gridConstants';
-import { getShapeGridPositions } from '../../Shared/Shared_shapeGeometry';
 import type { Tile, QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // safeBatchSave removed - persistence handled by PersistenceListener
-import { cleanupExpiredAnimations } from '../../Shared/Shared_clearingAnimationUtils';
-import { checkGameOver } from '../../Shared/Shared_gameOverUtils';
-import { performLineClearing } from '../../Shared/Shared_lineClearingOrchestrator';
-import { checkMapCompletion } from '../../Shared/Shared_mapCompletionUtils';
-import { generateSuperShape } from '../../Shared/Shared_shapes/shapeGeneration';
-import { generateRandomShapeWithGrandpaMode } from '../../Shared/Shared_shapes/shapeGenerationWithProbabilities';
-import { detectSuperComboPattern } from '../../Shared/Shared_shapes/shapePatterns';
-import { updateStats, incrementNoTurnStreak } from '../../Shared/Shared_statsUtils';
+import { cleanupExpiredAnimations } from '../Shared_clearingAnimationUtils';
+import { checkGameOver } from '../Shared_gameOverUtils';
+import { makeTileKey } from '../Shared_gridConstants';
+import { performLineClearing } from '../Shared_lineClearingOrchestrator';
+import { checkMapCompletion } from '../Shared_mapCompletionUtils';
+import { getShapeGridPositions } from '../Shared_shapeGeometry';
+import { generateSuperShape } from '../Shared_shapes/shapeGeneration';
+import { generateRandomShapeWithGrandpaMode } from '../Shared_shapes/shapeGenerationWithProbabilities';
+import { detectSuperComboPattern } from '../Shared_shapes/shapePatterns';
+import { updateStats, incrementNoTurnStreak } from '../Shared_statsUtils';
 
 export function tileReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {

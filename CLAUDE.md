@@ -6,6 +6,20 @@
 
 Core gameplay: Place Tetris-like shapes onto a 10x10 grid to clear rows and columns, earning points and unlocking features.
 
+## Architecture Principles
+
+### Code Organization
+- **All code lives directly in `index.ts` files** - Functions, constants, and types are declared in index.ts, never in separate files that get re-exported
+- **No re-exports allowed** - Index files cannot use `export { X } from './file'` or `export * from './file'`
+- **Flat sibling structure** - Modules at the same level import from each other using `../ModuleName`
+- **Utilities are shared by definition** - All utility code lives in `src/main/App/Shared/`
+- **Facade exports required** - Each folder must export an object matching its name (e.g., `Shared_gridConstants/` exports `Shared_gridConstants`)
+
+### Import Rules
+- **Import from siblings or Shared** - `import { foo } from '../SiblingModule'` or `import { bar } from '../../Shared/Shared_Module'`
+- **Never import upwards** - Components cannot import from parent directories (except types and Shared)
+- **No deep imports within Shared** - Import from sibling: `'../Shared_module'` not `'../../Shared/Shared_module'`
+
 ## Key Architecture Files
 
 Before making changes, **always read these base context files first**:

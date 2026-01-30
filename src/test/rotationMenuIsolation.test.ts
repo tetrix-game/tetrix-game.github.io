@@ -1,8 +1,8 @@
 import { expect, test, describe } from 'vitest';
 
 import { tetrixReducer, initialState } from '../main/App/Shared/Shared_reducers';
-import type { QueuedShape, Shape } from '../main/App/types/core';
 import { generateRandomShape } from '../main/App/Shared/Shared_shapes/shapeGeneration';
+import type { QueuedShape, Shape } from '../main/App/types/core';
 
 // Helper functions to create QueuedShapes for tests
 let testShapeIdCounter = 2000;

@@ -4,8 +4,8 @@
 
 import React from 'react';
 
-import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { BLOCK_COLOR_PALETTES, blockPaletteToCssVars } from '../../Shared/Shared_colorUtils';
+import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
 import { THEME_DEFINITIONS, themeToCssVars } from '../../Shared/Shared_themeUtils';
 
 type ThemeProviderProps = {

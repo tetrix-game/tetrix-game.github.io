@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 
-import type { TilesSet, ColorName } from '../main/App/types/core';
 import {
   isRowFull,
   isColumnFull,
@@ -10,6 +9,7 @@ import {
   clearColumns,
   clearFullLines,
 } from '../main/App/Shared/Shared_lineUtils';
+import type { TilesSet, ColorName } from '../main/App/types/core';
 
 import {
   createTilesWithFilled,

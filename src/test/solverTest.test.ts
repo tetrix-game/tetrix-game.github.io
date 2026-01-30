@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import type { TilesSet } from '../main/App/types/core';
 import { solveDailyChallenge } from '../main/App/Shared/Shared_dailyChallengeSolver';
+import type { TilesSet } from '../main/App/types/core';
 
 describe('solveDailyChallenge', () => {
   it('should solve a simple 2x2 grid', () => {
@@ -15,7 +15,6 @@ describe('solveDailyChallenge', () => {
 
     const seed = 12345;
     const solution = solveDailyChallenge(tiles, seed);
-
 
     expect(solution).not.toBeNull();
     expect(solution!.length).toBeGreaterThan(0);

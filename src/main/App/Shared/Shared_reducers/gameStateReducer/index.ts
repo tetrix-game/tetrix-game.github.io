@@ -5,15 +5,15 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import { GRID_ADDRESSES, makeTileKey } from '../../Shared/Shared_gridConstants';
 import type { Tile, QueuedShape, Shape, ColorName } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 // Persistence imports removed - handled by PersistenceListener
 import { DEFAULT_COLOR_PROBABILITIES } from '../../types/shapeQueue';
 import { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } from '../../types/stats';
-import { checkGameOver } from '../../Shared/Shared_gameOverUtils';
-import { checkMapCompletion } from '../../Shared/Shared_mapCompletionUtils';
-import { updateStats } from '../../Shared/Shared_statsUtils';
+import { checkGameOver } from '../Shared_gameOverUtils';
+import { GRID_ADDRESSES, makeTileKey } from '../Shared_gridConstants';
+import { checkMapCompletion } from '../Shared_mapCompletionUtils';
+import { updateStats } from '../Shared_statsUtils';
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = (): Map<string, Tile> => {

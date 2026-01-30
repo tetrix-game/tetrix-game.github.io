@@ -4,12 +4,12 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
-import { safeBatchSave } from '../../Shared/persistence';
 import type { QueuedShape, QueueItem } from '../../types/core';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { generateRandomShape } from '../../Shared/Shared_shapes/shapeGeneration';
-import { rotateShape, cloneShape } from '../../Shared/Shared_shapes/shapeTransforms';
-import { resetNoTurnStreak } from '../../Shared/Shared_statsUtils';
+import { safeBatchSave } from '../persistence';
+import { generateRandomShape } from '../Shared_shapes/shapeGeneration';
+import { rotateShape, cloneShape } from '../Shared_shapes/shapeTransforms';
+import { resetNoTurnStreak } from '../Shared_statsUtils';
 
 export function shapeReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {
   switch (action.type) {

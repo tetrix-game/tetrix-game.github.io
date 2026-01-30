@@ -41,7 +41,6 @@ describe('Updated Shape Generation', () => {
       totalShapes++;
     }
 
-
     // With 7 shape types (all with 4 blocks), we expect equal distribution
     // Each shape type should appear ~14.3% (1/7) of the time
     expect(totalShapes).toBe(testCount);
@@ -58,7 +57,6 @@ describe('Updated Shape Generation', () => {
         shapes.push(pattern);
       }
     }
-
 
     // We expect to find 7 different shape types: I, O, T, S, Z, L, J
     expect(shapes.length).toBeGreaterThanOrEqual(7);

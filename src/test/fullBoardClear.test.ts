@@ -9,11 +9,11 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 
+import { generateFullBoardClearAnimation } from '../main/App/Shared/Shared_clearingAnimationUtils';
 import { makeTileKey } from '../main/App/Shared/Shared_gridConstants';
+import { isGridCompletelyEmpty } from '../main/App/Shared/Shared_lineUtils';
 import { tileReducer } from '../main/App/Shared/Shared_reducers/tileReducer';
 import type { TetrixReducerState } from '../main/App/types/gameState';
-import { generateFullBoardClearAnimation } from '../main/App/Shared/Shared_clearingAnimationUtils';
-import { isGridCompletelyEmpty } from '../main/App/Shared/Shared_lineUtils';
 
 import { createTilesWithFilled } from './testHelpers';
 

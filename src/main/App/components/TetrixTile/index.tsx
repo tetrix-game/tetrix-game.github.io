@@ -2,13 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 
 import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
 import { Shared_Tile } from '../../../Shared/Tile';
-import { Shared_core } from '../../types/core';
-import { Shared_theme } from '../../types/theme';
+import type { ColorName, TileAnimation } from '../../types/core';
+import type { BlockTheme } from '../../types/theme';
 import './TetrixTile.css';
-
-type ColorName = Shared_core['ColorName'];
-type TileAnimation = Shared_core['TileAnimation'];
-type BlockTheme = Shared_theme['BlockTheme'];
 
 type TetrixTileProps = {
   row: number;

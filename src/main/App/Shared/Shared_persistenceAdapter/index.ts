@@ -12,9 +12,9 @@ import type {
   ModifiersPersistenceData,
   LoadResult,
 } from '../../types/persistence';
-import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../checksumUtils';
-import * as crud from '../indexedDBCrud';
-import { STORES } from '../indexedDBCrud';
+import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../Shared_checksumUtils';
+import * as crud from '../Shared_indexedDBCrud';
+import { STORES } from '../Shared_indexedDBCrud';
 
 // Toggle this to enable/disable persistence logging
 const DEBUG_PERSISTENCE_CHECKSUMS = false;

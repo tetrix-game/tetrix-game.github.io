@@ -11,12 +11,12 @@
 /**
  * Grid shape types
  */
-export type GridShape = 'square' | 'diamond' | 'hexagon' | 'circle' | 'custom';
+export type Shared_GridShape = 'square' | 'diamond' | 'hexagon' | 'circle' | 'custom';
 
 /**
  * Grid shape configuration
  */
-export type GridShapeConfig = {
+export type Shared_GridShapeConfig = {
   shape: GridShape;
   size: number; // Base size parameter (e.g., radius, side length)
   customValidator?: (row: number, column: number) => boolean;

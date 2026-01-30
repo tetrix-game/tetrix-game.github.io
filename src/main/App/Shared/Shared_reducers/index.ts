@@ -9,7 +9,7 @@
  * before other reducers might need that updated state.
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types/gameState';
+import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 
 import { dragReducer } from './dragReducer';
 import { gameStateReducer, initialGameState } from './gameStateReducer';

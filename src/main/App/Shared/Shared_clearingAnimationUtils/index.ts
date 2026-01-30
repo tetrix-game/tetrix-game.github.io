@@ -15,13 +15,11 @@
  * - column-quad: Beating heart effect for quad column clears (4+ columns)
  */
 
-import { Shared_core } from '../../types/core';
+import type { TileAnimation, TilesSet } from '../../types/core';
 
-type TileAnimation = Shared_core['TileAnimation'];
-type TilesSet = Shared_core['TilesSet'];
 type ClearedLine = { index: number; color?: string };
 
-export type AnimationTierConfig = {
+export type Shared_AnimationTierConfig = {
   duration: number; // Animation duration in ms
   waveDelay: number; // Delay between each tile in ms
   startDelay: number; // Delay before the first animation starts in ms
@@ -29,7 +27,11 @@ export type AnimationTierConfig = {
   finishDuration?: number; // Duration of the shrink/fade out phase
 };
 
-export type AnimationConfig = {
+// Type aliases for internal use
+type AnimationTierConfig = Shared_AnimationTierConfig;
+type AnimationConfig = Shared_AnimationConfig;
+
+export type Shared_AnimationConfig = {
   rows: {
     single: AnimationTierConfig;
     double: AnimationTierConfig;

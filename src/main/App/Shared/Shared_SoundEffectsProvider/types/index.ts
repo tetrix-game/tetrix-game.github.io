@@ -1,4 +1,4 @@
-export type SoundEffect = | 'click_into_place'
+export type Shared_SoundEffect = | 'click_into_place'
   | 'game_over'
   | 'pickup_shape'
   | 'invalid_placement'
@@ -9,7 +9,7 @@ export type SoundEffect = | 'click_into_place'
   | 'heartbeat';
 
 export interface Shared_SoundEffectsContextValue {
-  playSound: (soundEffect: SoundEffect, startTime?: number) => void;
+  playSound: (soundEffect: Shared_SoundEffect, startTime?: number) => void;
   setVolume: (volume: number) => void;
   setEnabled: (enabled: boolean) => void;
   volume: number;

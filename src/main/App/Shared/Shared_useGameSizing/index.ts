@@ -4,7 +4,7 @@ import { Shared_gridConstants } from '../Shared_gridConstants';
 
 const { GRID_SIZE, GRID_GAP } = Shared_gridConstants;
 
-export interface GameSizing {
+export interface Shared_GameSizing {
   gridSize: number;
   gridCellSize: number;
   gridGap: number;

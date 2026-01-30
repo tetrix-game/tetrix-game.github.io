@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { mousePositionToGridLocation } from '../main/App/Shared/shapeGeometry';
+import { mousePositionToGridLocation } from '../main/App/Shared/Shared_shapeGeometry';
 import type { Shape, Block } from '../main/App/types/core';
 
 describe('Edge Hover Positioning', () => {

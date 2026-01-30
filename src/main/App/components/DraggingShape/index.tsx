@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
-import { ANIMATION_TIMING } from '../../Shared/animationConstants';
-import { getShapeBounds } from '../../Shared/shapeGeometry';
+import { Shared_animationConstants } from '../../Shared/Shared_animationConstants';
+import { Shared_shapeGeometry } from '../../Shared/Shared_shapeGeometry';
 import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
@@ -47,6 +47,7 @@ export function DraggingShape(): JSX.Element | null {
   const { gridSize, gridGap } = Shared_useGameSizing();
 
   // Constants for animation timing (derived from shared source of truth)
+  const { ANIMATION_TIMING } = Shared_animationConstants;
   const {
     PICKUP_DURATION,
     PLACING_DURATION,
@@ -54,6 +55,8 @@ export function DraggingShape(): JSX.Element | null {
     PLACEMENT_SOUND_DURATION,
     INVALID_BLOCK_ANIMATION_DURATION,
   } = ANIMATION_TIMING;
+
+  const { getShapeBounds } = Shared_shapeGeometry;
 
   // ShapeOption constants (must match ShapeOption.tsx)
   const SHAPE_OPTION_PADDING = 4;

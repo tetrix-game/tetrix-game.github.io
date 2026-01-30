@@ -4,12 +4,12 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
-import type { QueuedShape, QueueItem } from '../../types/core';
-import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
+import type { QueuedShape, QueueItem } from '../../../types/core';
+import type { TetrixReducerState, TetrixAction } from '../../../types/gameState';
 import { Shared_persistence } from '../../Shared_persistence';
-import { Shared_shapeGeneration } from '../Shared_shapeGeneration';
-import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
-import { resetNoTurnStreak } from '../Shared_statsUtils';
+import { Shared_shapeGeneration } from '../../Shared_shapeGeneration';
+import { Shared_shapeTransforms } from '../../Shared_shapeTransforms';
+import { resetNoTurnStreak } from '../../Shared_statsUtils';
 
 const { safeBatchSave } = Shared_persistence;
 const { generateRandomShape } = Shared_shapeGeneration;

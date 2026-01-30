@@ -1,7 +1,4 @@
-import { Shared_core } from '../../types/core';
-
-type TilesSet = Shared_core['TilesSet'];
-type Tile = Shared_core['Tile'];
+import type { Tile, TilesSet } from '../../types/core';
 
 const GRID_SIZE = 10;
 
@@ -175,7 +172,7 @@ function getLineColor(tiles: TilesSet, index: number, isRow: boolean): string | 
   return firstColor;
 }
 
-export type ClearedLine = {
+export type Shared_ClearedLine = {
   index: number;
   color?: string;
 };

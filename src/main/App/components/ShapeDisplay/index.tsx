@@ -2,12 +2,11 @@ import './ShapeDisplay.css';
 import { useMemo, useRef, useEffect, useState } from 'react';
 
 import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
-import { getShapeBounds } from '../../Shared/shapeGeometry';
-import { Shared_core } from '../../types/core';
-import { Shared_theme } from '../../types/theme';
+import { Shared_shapeGeometry } from '../../Shared/Shared_shapeGeometry';
+import type { Shape } from '../../types/core';
+import type { BlockTheme } from '../../types/theme';
 
-type Shape = Shared_core['Shape'];
-type BlockTheme = Shared_theme['BlockTheme'];
+const { getShapeBounds } = Shared_shapeGeometry;
 
 type ShapeDisplayProps = {
   shape: Shape;

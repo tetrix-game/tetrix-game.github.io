@@ -1,7 +1,4 @@
-import { Shared_core } from '../../../types/core';
-
-type Shape = Shared_core['Shape'];
-type ColorName = Shared_core['ColorName'];
+import type { Shape, ColorName } from '../../types/core';
 
 /**
  * Shape transformation functions - Rotation and cloning operations

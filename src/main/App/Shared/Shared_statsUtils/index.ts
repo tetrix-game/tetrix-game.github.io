@@ -1,10 +1,6 @@
 
-import { Shared_core } from '../../types/core';
-import { Shared_stats } from '../../types/stats';
-
-type ColorName = Shared_core['ColorName'];
-type StatsPersistenceData = Shared_stats['StatsPersistenceData'];
-type StatCategory = Shared_stats['StatCategory'];
+import type { ColorName } from '../../types/core';
+import type { StatCategory, StatsPersistenceData } from '../../types/stats';
 
 /**
  * Updates the stats based on the cleared lines and placed shape

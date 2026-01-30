@@ -1,8 +1,6 @@
 import { useCallback } from 'react';
 
-import { Shared_core } from '../../types/core';
-
-type Location = Shared_core['Location'];
+import type { Location } from '../../types/core';
 
 /**
  * Custom hook for handling debug grid interactions

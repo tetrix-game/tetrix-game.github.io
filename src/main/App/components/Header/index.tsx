@@ -1,14 +1,13 @@
 import { useMemo, useCallback } from 'react';
 
-import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
+import { Shared_SoundEffectsControlContext } from '../../Shared/Shared_SoundEffectsControlContext';
 import { Shared_useSoundEffects } from '../../Shared/Shared_SoundEffectsProvider/Shared_useSoundEffects';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { Shared_useMusicControl } from '../../Shared/Shared_useMusicControl';
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { BackgroundMusic } from '../BackgroundMusic';
 import { ScoreDisplay } from '../ScoreDisplay';
 import { SettingsOverlay } from '../SettingsOverlay';
-
-import { SoundEffectsControlContext } from './SoundEffectsControlContext';
 import './Header.css';
 
 export const Header: React.FC = () => {
@@ -32,7 +31,7 @@ export const Header: React.FC = () => {
   }), [volume, setVolume, isEnabled, toggleSoundEffectsEnabled]);
 
   return (
-    <SoundEffectsControlContext.Provider value={soundEffectsContextValue}>
+    <Shared_SoundEffectsControlContext.Provider value={soundEffectsContextValue}>
       <div className="header">
         <BackgroundMusic />
         {/* Show audio unlock indicator when browser policy blocks autoplay */}
@@ -47,6 +46,6 @@ export const Header: React.FC = () => {
         </div>
         <SettingsOverlay />
       </div>
-    </SoundEffectsControlContext.Provider>
+    </Shared_SoundEffectsControlContext.Provider>
   );
 };

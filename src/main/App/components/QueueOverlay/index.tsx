@@ -2,11 +2,9 @@ import React from 'react';
 
 import { Shared_Overlay } from '../../../Shared/Overlay';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import { Shared_core } from '../../types/core';
+import type { Shape } from '../../types/core';
 import { ShapeDisplay } from '../ShapeDisplay';
 import './QueueOverlay.css';
-
-type Shape = Shared_core['Shape'];
 
 interface QueueOverlayProps {
   hiddenShapes: Shape[]; // Array of shapes not currently visible

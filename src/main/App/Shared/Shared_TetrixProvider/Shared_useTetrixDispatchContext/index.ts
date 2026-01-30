@@ -1,7 +1,8 @@
 import { useContext } from 'react';
 
+import type { TetrixDispatch } from '../../../types/gameState';
+
 import { Shared_TetrixDispatchContext } from './Shared_TetrixDispatchContext';
-import type { TetrixDispatch } from '../../types/gameState';
 
 export function Shared_useTetrixDispatchContext(): TetrixDispatch {
   const context = useContext(Shared_TetrixDispatchContext);

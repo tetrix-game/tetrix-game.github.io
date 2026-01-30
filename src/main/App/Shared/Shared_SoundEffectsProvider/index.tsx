@@ -2,8 +2,11 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../Shared_persistence';
 import { Shared_playSound } from '../Shared_playSound';
+
 import { Shared_SoundEffectsContext } from './Shared_SoundEffectsContext/';
-import type { SoundEffect, Shared_SoundEffectsContextValue } from './types/';
+import type { Shared_SoundEffect, Shared_SoundEffectsContextValue } from './types/';
+
+type SoundEffect = Shared_SoundEffect;
 
 const {
   SOUND_VOLUME_MULTIPLIERS,

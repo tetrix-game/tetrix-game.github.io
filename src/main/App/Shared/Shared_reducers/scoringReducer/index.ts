@@ -3,7 +3,7 @@
  * Actions: ADD_SCORE, SHOW_COIN_DISPLAY, HIDE_COIN_DISPLAY, SPEND_COIN, UPDATE_GEM_ICON_POSITION
  */
 
-import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
+import type { TetrixReducerState, TetrixAction } from '../../../types/gameState';
 import { Shared_persistence } from '../../Shared_persistence';
 
 const { safeBatchSave } = Shared_persistence;
@@ -87,8 +87,3 @@ export function scoringReducer(
       return state;
   }
 }
-
-// Facade export to match folder name
-export const scoringReducer_export = {
-  scoringReducer,
-};

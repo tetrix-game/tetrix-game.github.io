@@ -1,11 +1,10 @@
 import React, { ReactNode } from 'react';
 
-import { Shared_core } from '../../App/types/core';
+import type { ColorName } from '../../App/types/core';
 import { Shared_ShapeIcon } from '../ShapeIcon';
+
 import { Shared_TileSvg } from './TileSvg';
 import './Tile.css';
-
-type ColorName = Shared_core['ColorName'];
 
 interface TileProps {
   row: number;

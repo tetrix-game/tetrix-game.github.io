@@ -1,6 +1,6 @@
-import type { SoundEffect } from '../Shared_SoundEffectsProvider/types';
+import type { Shared_SoundEffect } from '../Shared_SoundEffectsProvider/types';
 
-const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
+const SOUND_VOLUME_MULTIPLIERS: Partial<Record<Shared_SoundEffect, number>> = {
   click_into_place: 1.0, // -27.4 dB mean, reference level
   game_over: 0.7, // -22.1 dB mean, louder than others
   pickup_shape: 0.4, // -14.8 dB mean, much louder than others

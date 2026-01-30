@@ -26,7 +26,7 @@ const STORES = {
   CHECKSUMS: 'checksums',
 } as const;
 
-export type StoreName = typeof STORES[keyof typeof STORES];
+export type Shared_StoreName = typeof STORES[keyof typeof STORES];
 
 /**
  * Check if IndexedDB is available

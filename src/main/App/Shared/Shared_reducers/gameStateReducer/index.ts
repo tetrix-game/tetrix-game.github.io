@@ -5,16 +5,16 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import type { Tile, QueuedShape, Shape, ColorName } from '../../types/core';
-import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { Shared_shapeQueue } from '../../types/shapeQueue';
-import { Shared_stats } from '../../types/stats';
-import { checkGameOver } from '../Shared_gameOverUtils';
-import { Shared_gridConstants } from '../Shared_gridConstants';
-import { checkMapCompletion } from '../Shared_mapCompletionUtils';
-import { updateStats } from '../Shared_statsUtils';
+import type { Tile, QueuedShape, Shape, ColorName } from '../../../types/core';
+import type { TetrixReducerState, TetrixAction } from '../../../types/gameState';
+import { shapeQueue } from '../../../types/shapeQueue';
+import { stats } from '../../../types/stats';
+import { checkGameOver } from '../../Shared_gameOverUtils';
+import { Shared_gridConstants } from '../../Shared_gridConstants';
+import { checkMapCompletion } from '../../Shared_mapCompletionUtils';
+import { updateStats } from '../../Shared_statsUtils';
 
-const { DEFAULT_COLOR_PROBABILITIES } = Shared_shapeQueue;
+const { DEFAULT_COLOR_PROBABILITIES } = shapeQueue;
 const { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } = Shared_stats;
 const { GRID_ADDRESSES, makeTileKey } = Shared_gridConstants;
 
@@ -297,7 +297,7 @@ export function gameStateReducer(
       }
 
       let nextIdCounter = state.nextShapeIdCounter;
-      const loadedQueue: import('../../types/core').QueueItem[] = [];
+      const loadedQueue: import('../../../types/core').QueueItem[] = [];
 
       // Check if we have the new nextQueue field (full queue with purchasable slots)
       if (gameData.nextQueue && Array.isArray(gameData.nextQueue)) {

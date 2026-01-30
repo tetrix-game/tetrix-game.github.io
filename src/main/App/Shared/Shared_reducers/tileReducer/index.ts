@@ -3,19 +3,19 @@
  * Actions: COMPLETE_PLACEMENT (tile updates), DEBUG_* actions
  */
 
-import type { Tile, QueuedShape, QueueItem } from '../../types/core';
-import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
+import type { Tile, QueuedShape, QueueItem } from '../../../types/core';
+import type { TetrixReducerState, TetrixAction } from '../../../types/gameState';
 // safeBatchSave removed - persistence handled by PersistenceListener
-import { cleanupExpiredAnimations } from '../Shared_clearingAnimationUtils';
-import { checkGameOver } from '../Shared_gameOverUtils';
-import { Shared_gridConstants } from '../Shared_gridConstants';
-import { performLineClearing } from '../Shared_lineClearingOrchestrator';
-import { checkMapCompletion } from '../Shared_mapCompletionUtils';
-import { getShapeGridPositions } from '../Shared_shapeGeometry';
-import { Shared_shapeGeneration } from '../Shared_shapeGeneration';
-import { Shared_shapeGenerationWithProbabilities } from '../Shared_shapeGenerationWithProbabilities';
-import { Shared_shapePatterns } from '../Shared_shapePatterns';
-import { updateStats, incrementNoTurnStreak } from '../Shared_statsUtils';
+import { cleanupExpiredAnimations } from '../../Shared_clearingAnimationUtils';
+import { checkGameOver } from '../../Shared_gameOverUtils';
+import { Shared_gridConstants } from '../../Shared_gridConstants';
+import { performLineClearing } from '../../Shared_lineClearingOrchestrator';
+import { checkMapCompletion } from '../../Shared_mapCompletionUtils';
+import { Shared_shapeGeneration } from '../../Shared_shapeGeneration';
+import { Shared_shapeGenerationWithProbabilities } from '../../Shared_shapeGenerationWithProbabilities';
+import { getShapeGridPositions } from '../../Shared_shapeGeometry';
+import { Shared_shapePatterns } from '../../Shared_shapePatterns';
+import { updateStats, incrementNoTurnStreak } from '../../Shared_statsUtils';
 
 const { makeTileKey } = Shared_gridConstants;
 const { generateSuperShape } = Shared_shapeGeneration;

@@ -1,11 +1,8 @@
-import { Shared_core } from '../../types/core';
-import { getFilledBlocks } from '../Shared_shapeGeometry';
+import type { Shape, ColorName, TilesSet } from '../../types/core';
 import { Shared_shapeGeneration } from '../Shared_shapeGeneration';
+import { getFilledBlocks } from '../Shared_shapeGeometry';
 import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
 
-type Shape = Shared_core['Shape'];
-type TilesSet = Shared_core['TilesSet'];
-type ColorName = Shared_core['ColorName'];
 const {
   generateIPiece,
   generateOPiece,
@@ -106,7 +103,7 @@ function areShapesEqual(s1: Shape, s2: Shape): boolean {
   return true;
 }
 
-export type SolvedShape = {
+export type Shared_SolvedShape = {
   shape: Shape;
   gridPosition: { row: number; col: number }; // Top-left of the shape grid
 };

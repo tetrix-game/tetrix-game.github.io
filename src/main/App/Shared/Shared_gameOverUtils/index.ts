@@ -1,10 +1,8 @@
-import { Shared_core } from '../../types/core';
+import type { Shape, TilesSet } from '../../types/core';
 import type { GameMode } from '../../types/gameState';
 import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
 import { isValidPlacement } from '../Shared_shapeValidation';
 
-type Shape = Shared_core['Shape'];
-type TilesSet = Shared_core['TilesSet'];
 const { rotateShape } = Shared_shapeTransforms;
 
 /**

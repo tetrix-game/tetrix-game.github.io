@@ -5,7 +5,7 @@ import type { SavedGameState } from '../../types/persistence';
  * - Leaf nodes contain the hash of the data segment.
  * - Branch nodes contain the hash of their children's combined hashes.
  */
-export interface ChecksumNode {
+export interface Shared_ChecksumNode {
   hash: string;
   children?: Record<string, ChecksumNode>;
 }
@@ -14,13 +14,13 @@ export interface ChecksumNode {
  * The "Shadow Manifest" stored separately from the game data.
  * Contains the root hash and the full tree structure for verification.
  */
-export interface ChecksumManifest {
+export interface Shared_ChecksumManifest {
   timestamp: number;
   root: ChecksumNode;
   schemaVersion: number;
 }
 
-export interface VerificationResult {
+export interface Shared_VerificationResult {
   isValid: boolean;
   mismatches: string[]; // Paths to mismatched nodes (e.g., "root.score")
 }

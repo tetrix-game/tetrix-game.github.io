@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../../Shared/persistence';
-import { Pointer, PointerProps } from '../index';
+import { Pointer, PointerProps } from '..';
+import { Shared_persistence } from '../../../Shared/Shared_persistence';
 import './CallToActionPointer.css';
+
+const { saveCallToActionTimestamp, loadCallToActionTimestamp } = Shared_persistence;
 
 export type CallToActionPointerProps = Omit<PointerProps, 'children' | 'isVisible'> & {
   /**

@@ -7,10 +7,7 @@
  * - Challenge board data conversion utilities
  */
 
-import { Shared_core } from '../../types/core';
-
-type ColorName = Shared_core['ColorName'];
-type TilesSet = Shared_core['TilesSet'];
+import type { Tile, TilesSet } from '../../types/core';
 
 // Grid configuration - mutable to allow runtime size changes
 let GRID_SIZE = 10;
@@ -73,7 +70,7 @@ function makeTileKey(row: number, column: number): string {
 /**
  * Challenge board data structure for serialization
  */
-export type ChallengeBoardData = {
+export type Shared_ChallengeBoardData = {
   tiles: Array<{
     key: string;
     data: {

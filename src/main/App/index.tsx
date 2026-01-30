@@ -13,9 +13,9 @@ import { GridEditorProvider } from './contexts/GridEditorProvider';
 import { usePointerTracking } from './hooks/usePointerTracking';
 import { useShapePlacement } from './hooks/useShapePlacement';
 import { useUpdateNotification } from './hooks/useUpdateNotification';
-import { Shared_MusicControlProvider } from './Shared/Shared_MusicControlProvider';
 import { Shared_SoundEffectsProvider } from './Shared/Shared_SoundEffectsProvider';
 import { Shared_TetrixProvider } from './Shared/Shared_TetrixProvider';
+import { Shared_MusicControlProvider } from './Shared_MusicControlProvider';
 import './App.css';
 
 const AppContent = (): JSX.Element => {

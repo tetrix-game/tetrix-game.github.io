@@ -1,11 +1,8 @@
-import { Shared_core } from '../../../types/core';
-import { Shared_shapeQueue } from '../../../types/shapeQueue';
+import type { Shape, ColorName } from '../../types/core';
+import { shapeQueue } from '../../types/shapeQueue';
 import { Shared_shapeTransforms } from '../Shared_shapeTransforms';
 
-type Shape = Shared_core['Shape'];
-type ColorName = Shared_core['ColorName'];
-type Block = Shared_core['Block'];
-type ColorProbability = Shared_shapeQueue['ColorProbability'];
+type ColorProbability = shapeQueue['ColorProbability'];
 
 const { rotateShape, cloneShape } = Shared_shapeTransforms;
 

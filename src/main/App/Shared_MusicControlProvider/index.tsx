@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
-import { loadMusicSettings, saveMusicSettings } from '../Shared_persistence';
+import { loadMusicSettings, saveMusicSettings } from '../Shared/Shared_persistence';
 
-import { Shared_MusicControlContext } from './Shared_MusicControlContext/';
+import { MusicControlContext } from './MusicControlContext';
 
 export const Shared_MusicControlProvider: React.FC<{
   children: React.ReactNode;
@@ -109,8 +109,8 @@ export const Shared_MusicControlProvider: React.FC<{
   };
 
   return (
-    <Shared_MusicControlContext.Provider value={value}>
+    <MusicControlContext.Provider value={value}>
       {children}
-    </Shared_MusicControlContext.Provider>
+    </MusicControlContext.Provider>
   );
 };

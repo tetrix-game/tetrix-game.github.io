@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { tetrixReducer } from '../main/App/Shared/Shared_reducers';
-import { generateRandomShape } from '../main/App/Shared/Shared_shapes/shapeGeneration';
+import { generateRandomShape } from '../main/App/Shared/Shared_shapeGeneration';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 
 describe('Drag and Drop Return to Selector', () => {

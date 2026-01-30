@@ -24,13 +24,15 @@ const isMemoComponent = (name) => {
   return name && /^Memo[A-Z]/.test(name);
 };
 
-// Helper to check if a file path is inside src/Shared directory
+// Helper to check if a file path is inside any Shared directory
 // Uses normalized path matching to prevent false positives
+// Matches both src/main/Shared and src/main/App/Shared
 const isInSharedDir = (filePath) => {
   if (!filePath) return false;
   const normalized = path.normalize(filePath);
-  const sharedPattern = path.join('src', 'main', 'Shared');
-  return normalized.includes(sharedPattern);
+  const pathParts = normalized.split(path.sep);
+  // Check if any directory in the path is named exactly "Shared"
+  return pathParts.includes('Shared');
 };
 
 // Helper to check if an import path points to src/Shared
@@ -46,6 +48,61 @@ const isSharedImport = (importPath, currentFileDir) => {
 const isTypesFile = (filename) => {
   const basename = path.basename(filename);
   return basename === 'types.ts' || basename === 'types.tsx';
+};
+
+// Helper to check if a file is a config file (e.g., vite.config.ts, eslint.config.js)
+const isConfigFile = (filename) => {
+  const basename = path.basename(filename);
+  return basename.endsWith('.config.ts') ||
+         basename.endsWith('.config.js') ||
+         basename.endsWith('.config.tsx') ||
+         basename.endsWith('.config.mjs') ||
+         basename.endsWith('.config.cjs');
+};
+
+// Helper to check if a file is part of the React ecosystem
+// (components, hooks, reducers, contexts, etc.)
+const isReactEcosystemFile = (filename) => {
+  const basename = path.basename(filename, path.extname(filename));
+  const ext = path.extname(filename);
+
+  // Must be a TypeScript file
+  if (!['.ts', '.tsx'].includes(ext)) return false;
+
+  // Exclude config files
+  if (isConfigFile(filename)) return false;
+
+  // Exclude type-only files
+  if (isTypesFile(filename)) return false;
+
+  // TSX files are always React ecosystem (components)
+  if (ext === '.tsx') return true;
+
+  // TS files: include if they match React patterns
+  // - Hooks: useXxx
+  // - Reducers: xxxReducer
+  // - Contexts: xxxContext
+  // - Providers: xxxProvider
+  // - Utils/helpers in Shared (if in Shared dir, assume React ecosystem for .ts)
+  if (ext === '.ts') {
+    // If in Shared directory, assume it's React ecosystem code
+    // (utilities, reducers, contexts used by React components)
+    if (isInSharedDir(filename)) return true;
+
+    // Hook files
+    if (/^use[A-Z]/.test(basename)) return true;
+
+    // Reducer files
+    if (basename.endsWith('Reducer')) return true;
+
+    // Context files
+    if (basename.endsWith('Context')) return true;
+
+    // Provider files
+    if (basename.endsWith('Provider')) return true;
+  }
+
+  return false;
 };
 
 // Helper to check if a file is in the src/test directory
@@ -182,6 +239,7 @@ const noReexports = {
  * Example:
  *   ✅ import { Header } from './Header';
  *   ❌ import { Header } from './Header/Header';
+ *   ❌ import { Header } from './Header/index';
  */
 const importFromIndex = {
   meta: {
@@ -212,42 +270,43 @@ const importFromIndex = {
           return;
         }
 
-        // Normalize the path and check for file-like imports
+        // Normalize the path and check for explicit index or redundant imports
         const pathParts = importPath.split('/');
         const lastPart = pathParts[pathParts.length - 1];
 
-        // If the last part looks like a file (contains a dot or starts with uppercase
-        // and the previous part is also a valid folder name), it's likely a direct file import
-        // We detect patterns like: ./Folder/File or ./Folder/FileName
-        // But allow: ./Folder (imports from index)
+        // CASE 1: Explicitly importing 'index' - should just import the folder
+        // ❌ import { Header } from './Header/index'
+        // ✅ import { Header } from './Header'
+        if (lastPart === 'index') {
+          const suggestedParts = pathParts.slice(0, -1);
+          const suggestedPath = suggestedParts.join('/') || './';
 
-        // Check if the import path has more than one component after ./ or ../
-        // and the last component looks like a file (PascalCase or camelCase, not 'index')
+          context.report({
+            node,
+            messageId: 'importNotFromIndex',
+            data: {
+              path: importPath,
+              suggestedPath,
+            },
+          });
+          return;
+        }
+
+        // CASE 2: Check for redundant imports where folder and file name match
+        // ❌ import { Header } from './Header/Header'
+        // ❌ import { Shared_Tile } from './Shared/Shared_Tile/Shared_Tile'
+        // ✅ import { Header } from './Header'
+        // ✅ import { Shared_Tile } from './Shared/Shared_Tile'
         if (pathParts.length >= 2) {
           const relativeParts = pathParts.filter(p => p !== '.' && p !== '..');
-          
+
           if (relativeParts.length >= 2) {
             const lastRelativePart = relativeParts[relativeParts.length - 1];
-            
-            // Skip if explicitly importing 'index'
-            if (lastRelativePart === 'index') {
-              return;
-            }
+            const secondToLastPart = relativeParts[relativeParts.length - 2];
 
-            // Check if the last part looks like a file name:
-            // - Has an extension like .ts, .tsx, .js, .jsx
-            // - OR is PascalCase/camelCase without extension (implicit index resolution won't apply)
-            const hasExtension = /\.(ts|tsx|js|jsx)$/.test(lastRelativePart);
-            const isPascalOrCamelCase = /^[A-Za-z]/.test(lastRelativePart) && !lastRelativePart.includes('.');
-            const looksLikeFile = hasExtension || isPascalOrCamelCase;
-
-            // The previous part should look like a folder (PascalCase typically)
-            const previousPart = relativeParts[relativeParts.length - 2];
-            const looksLikeFolder = /^[A-Z]/.test(previousPart) || previousPart === 'src';
-
-            if (looksLikeFile && looksLikeFolder) {
-              // This looks like a direct file import inside a folder
-              // Suggest importing from the parent folder instead
+            // Check if the last two parts match (redundant import)
+            // This catches: './Header/Header' but allows './Shared/Shared_Header'
+            if (lastRelativePart === secondToLastPart) {
               const suggestedParts = pathParts.slice(0, -1);
               const suggestedPath = suggestedParts.join('/');
 
@@ -259,6 +318,39 @@ const importFromIndex = {
                   suggestedPath: suggestedPath || './',
                 },
               });
+              return;
+            }
+
+            // Check for file extensions - these should never be used
+            // ❌ import { Header } from './Header/Header.tsx'
+            // ❌ import { Header } from './Header.tsx'
+            const hasExtension = /\.(ts|tsx|js|jsx)$/.test(lastRelativePart);
+            if (hasExtension) {
+              // Remove the extension and check if we should also remove the filename
+              const withoutExt = lastRelativePart.replace(/\.(ts|tsx|js|jsx)$/, '');
+              const isIndex = withoutExt === 'index';
+              const matchesPrevious = withoutExt === secondToLastPart;
+
+              let suggestedParts;
+              if (isIndex || matchesPrevious) {
+                // Remove both extension and filename
+                suggestedParts = pathParts.slice(0, -1);
+              } else {
+                // Just remove extension
+                suggestedParts = [...pathParts.slice(0, -1), withoutExt];
+              }
+
+              const suggestedPath = suggestedParts.join('/') || './';
+
+              context.report({
+                node,
+                messageId: 'importNotFromIndex',
+                data: {
+                  path: importPath,
+                  suggestedPath,
+                },
+              });
+              return;
             }
           }
         }
@@ -367,11 +459,11 @@ const sharedMustBeMultiImported = {
     type: 'problem',
     docs: {
       description:
-        'Components in src/Shared must be imported from multiple files',
+        'React ecosystem code in src/Shared must be imported from multiple files',
     },
     messages: {
       notShared:
-        'Shared component "{{name}}" is only imported from {{count}} file(s). Components in src/Shared must be imported from at least 2 different files to justify being shared. Move this component closer to where it\'s used.',
+        'Shared module "{{name}}" is only imported from {{count}} file(s). Code in src/Shared must be imported from at least 2 different files to justify being shared. Move this module closer to where it\'s used.',
     },
     schema: [],
   },
@@ -386,48 +478,48 @@ const sharedMustBeMultiImported = {
       return {};
     }
 
-    // For non-shared files: track imports from src/Shared
-    if (!isSharedFile) {
-      return {
-        ImportDeclaration(node) {
-          const importPath = node.source.value;
+    // Return handlers for both tracking imports and validating exports
+    const handlers = {
+      // Track ALL imports of Shared modules (both from outside and within Shared)
+      ImportDeclaration(node) {
+        const importPath = node.source.value;
 
-          // Skip external modules
-          if (!importPath.startsWith('.') && !importPath.startsWith('/')) {
-            return;
-          }
+        // Skip external modules
+        if (!importPath.startsWith('.') && !importPath.startsWith('/')) {
+          return;
+        }
 
-          // Check if importing from src/Shared
-          if (!isSharedImport(importPath, fileDir)) {
-            return;
-          }
+        // Resolve the import path to see if it's in a Shared directory
+        const resolvedPath = graphManager.resolvePath(filename, importPath);
+        if (!resolvedPath) return;
 
-          // Track each imported component using graphManager
-          for (const specifier of node.specifiers) {
-            if (specifier.type !== 'ImportSpecifier') continue;
+        // Only track if the imported file is in a Shared directory
+        if (!isInSharedDir(resolvedPath)) {
+          return;
+        }
 
-            const importedName = specifier.imported.name;
+        // Track each imported component/function using graphManager
+        for (const specifier of node.specifiers) {
+          if (specifier.type !== 'ImportSpecifier') continue;
 
-            // Only track component imports (PascalCase)
-            if (!/^[A-Z]/.test(importedName)) continue;
+          const importedName = specifier.imported.name;
 
-            // Use graphManager to track shared imports
-            graphManager.trackSharedImport(importedName, filename);
-          }
-        },
-      };
-    }
+          // Track both PascalCase (components) and camelCase (functions/utilities)
+          // Skip only lowercase constants and type imports
+          if (!/^[A-Z]/.test(importedName) && !/^[a-z][a-zA-Z]*$/.test(importedName)) continue;
 
-    // For shared component files: check if they're imported enough
-    // Only check .tsx files that export components (not hooks, types, etc.)
-    if (!isTsxComponentFile(filename) || basename === 'index') {
-      return {};
-    }
+          // Use graphManager to track shared imports
+          graphManager.trackSharedImport(importedName, filename);
+        }
+      },
+    };
 
-    return {
-      'Program:exit'(node) {
-        // Find the primary export (component name)
-        let componentName = null;
+    // For shared React ecosystem files: add validation handler
+    // Check .tsx (components) and .ts (reducers, hooks, utils) files
+    if (isReactEcosystemFile(filename)) {
+      handlers['Program:exit'] = (node) => {
+        // Find the primary export (component/function/reducer name)
+        let exportName = null;
 
         for (const statement of node.body) {
           if (statement.type === 'ExportNamedDeclaration' && statement.declaration) {
@@ -435,36 +527,41 @@ const sharedMustBeMultiImported = {
               statement.declaration.type === 'FunctionDeclaration'
               && statement.declaration.id
             ) {
-              componentName = statement.declaration.id.name;
+              exportName = statement.declaration.id.name;
               break;
             }
             if (statement.declaration.type === 'VariableDeclaration') {
               const firstDecl = statement.declaration.declarations[0];
               if (firstDecl && firstDecl.id.type === 'Identifier') {
-                componentName = firstDecl.id.name;
+                exportName = firstDecl.id.name;
                 break;
               }
             }
           }
         }
 
-        if (!componentName) return;
+        if (!exportName) return;
 
-        // Check how many files import this component using graphManager
-        const { count: importCount } = graphManager.getSharedImportInfo(componentName);
+        // Skip lowercase constants (UPPER_CASE or lowercase)
+        if (!/^[A-Z]/.test(exportName) && !/^[a-z][a-zA-Z]*$/.test(exportName)) return;
+
+        // Check how many files import this component/function using graphManager
+        const { count: importCount } = graphManager.getSharedImportInfo(exportName);
 
         if (importCount < 2) {
           context.report({
             node,
             messageId: 'notShared',
             data: {
-              name: componentName,
+              name: exportName,
               count: importCount,
             },
           });
         }
-      },
-    };
+      };
+    }
+
+    return handlers;
   },
 };
 
@@ -550,6 +647,11 @@ const importFromSiblingDirectoryOrShared = {
 
         // Skip external modules
         if (!importPath.startsWith('.')) {
+          return;
+        }
+
+        // Skip asset imports (CSS, images, fonts, etc.)
+        if (/\.(css|scss|sass|less|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/i.test(importPath)) {
           return;
         }
 
@@ -1145,7 +1247,7 @@ const folderExportMustMatch = {
               }
             }
 
-            // Skip Type/Interface exports - we only care about component exports
+            // Skip Type/Interface exports - we only care about component/function exports
             // Types don't need to match folder names
           }
         }
@@ -1160,24 +1262,39 @@ const folderExportMustMatch = {
           expectedNames.push(`Shared_${folderName}`);
         }
 
-        // Check if exactly one export matches and it's the only export
+        // Check if exports match the expected pattern
+        // Allow both PascalCase (components) and camelCase (functions/hooks) exports
         const matchingExports = exports.filter(exp =>
           expectedNames.includes(exp)
         );
-        const hasMatch = matchingExports.length === 1 && exports.filter(exp => /^[A-Z]/.test(exp)).length === 1;
+
+        // Check for facade pattern: one export matches folder name and wraps others
+        const hasFacade = matchingExports.length > 0;
+
+        if (hasFacade) {
+          // Facade pattern is allowed - the matching export can wrap other exports
+          // This is the preferred pattern for utility modules
+          return;
+        }
+
+        // No facade - check for single export matching folder name
+        // Only count actual code exports (not lowercase like 'initialState')
+        // PascalCase = components, camelCase starting with lowercase letter = functions/hooks
+        const codeExports = exports.filter(exp => /^[A-Za-z]/.test(exp));
+        const hasMatch = matchingExports.length === 1 && codeExports.length === 1;
 
         if (!hasMatch) {
-          // Filter to only PascalCase exports for the error message
-          const pascalCaseExports = exports.filter(exp => /^[A-Z]/.test(exp));
+          // Show all code exports in error message (both PascalCase and camelCase)
+          const codeExportsList = codeExports.length > 0
+            ? codeExports.join(', ')
+            : '(none)';
 
           context.report({
             node,
             messageId: 'mismatch',
             data: {
               folderName,
-              actualExports: pascalCaseExports.length > 0
-                ? pascalCaseExports.join(', ')
-                : '(none)',
+              actualExports: codeExportsList,
               expectedNames: expectedNames.slice(0, 3).join(', '),
             },
           });

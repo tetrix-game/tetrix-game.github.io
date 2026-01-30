@@ -1,9 +1,7 @@
 import React from 'react';
 
-import { Shared_core } from '../../../types/core';
+import type { ColorName } from '../../../types/core';
 import './ColorBrushSubmenu.css';
-
-type ColorName = Shared_core['ColorName'];
 
 interface ColorBrushSubmenuProps {
   selectedColor: ColorName | 'eraser';

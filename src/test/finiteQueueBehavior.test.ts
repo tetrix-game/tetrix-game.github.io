@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { initialState } from '../main/App/Shared/Shared_reducers';
-import { generateRandomShapeWithProbabilities } from '../main/App/Shared/Shared_shapes/shapeGenerationWithProbabilities';
+import { generateRandomShapeWithProbabilities } from '../main/App/Shared/Shared_shapeGenerationWithProbabilities';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 import { DEFAULT_COLOR_PROBABILITIES } from '../main/App/types/shapeQueue';
 

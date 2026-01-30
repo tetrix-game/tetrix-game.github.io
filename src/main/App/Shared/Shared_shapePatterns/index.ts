@@ -1,7 +1,5 @@
-import { Shared_core } from '../../../types/core';
+import type { TilesSet } from '../../types/core';
 import { makeTileKey } from '../Shared_shapeValidation';
-
-type TilesSet = Shared_core['TilesSet'];
 
 /**
  * Shape pattern detection - Super combo and special patterns

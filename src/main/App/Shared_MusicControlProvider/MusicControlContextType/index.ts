@@ -1,4 +1,4 @@
-export interface Shared_MusicControlContextType {
+export interface MusicControlContextType {
   volume: number;
   setVolume: (volume: number) => void;
   isEnabled: boolean;

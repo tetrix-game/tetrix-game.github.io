@@ -4,9 +4,9 @@
  *          RETURN_SHAPE_TO_SELECTOR, COMPLETE_RETURN, CLEAR_SELECTION
  */
 
-import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
-import { Shared_animationConstants } from '../Shared_animationConstants';
-import { Shared_shapeGeometry } from '../Shared_shapeGeometry';
+import type { TetrixReducerState, TetrixAction } from '../../../types/gameState';
+import { Shared_animationConstants } from '../../Shared_animationConstants';
+import { Shared_shapeGeometry } from '../../Shared_shapeGeometry';
 
 const { ANIMATION_TIMING } = Shared_animationConstants;
 const { getShapeGridPositions, getShapeVisualOffset } = Shared_shapeGeometry;

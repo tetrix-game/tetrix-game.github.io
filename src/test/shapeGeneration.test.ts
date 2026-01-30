@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { getFilledBlocks } from '../main/App/Shared/shapeGeometry';
-import { generateRandomShape } from '../main/App/Shared/Shared_shapes/shapeGeneration';
+import { generateRandomShape } from '../main/App/Shared/Shared_shapeGeneration';
+import { getFilledBlocks } from '../main/App/Shared/Shared_shapeGeometry';
 
 describe('Updated Shape Generation', () => {
   it('should only generate 4-block shapes (in 4x4 grid)', () => {
@@ -16,8 +16,6 @@ describe('Updated Shape Generation', () => {
 
       shapeStats.set(count, (shapeStats.get(count) || 0) + 1);
     }
-
-    const sortedStats = Array.from(shapeStats.entries()).sort((a, b) => a[0] - b[0]);
 
     // Verify we only have 4-block shapes
     const blockCounts = Array.from(shapeStats.keys()).sort((a, b) => a - b);

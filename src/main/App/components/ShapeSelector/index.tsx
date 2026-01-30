@@ -4,14 +4,12 @@ import { useEffect, useMemo } from 'react';
 import { Shared_shapeGeneration } from '../../Shared/Shared_shapeGeneration';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import { Shared_core } from '../../types/core';
+import type { QueueItem, PurchasableSlot } from '../../types/core';
 import { PurchasableSlotOption } from '../PurchasableSlotOption';
 import { ShapeOption } from '../ShapeOption';
 import { ShapeProducerViewport } from '../ShapeProducerViewport';
 
 const { generateRandomShape } = Shared_shapeGeneration;
-type QueueItem = Shared_core['QueueItem'];
-type PurchasableSlot = Shared_core['PurchasableSlot'];
 
 export const ShapeSelector = (): JSX.Element => {
   const dispatch = Shared_useTetrixDispatchContext();

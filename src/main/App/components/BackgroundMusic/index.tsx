@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
-import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
+import { Shared_useMusicControl } from '../../Shared/Shared_useMusicControl';
 import './BackgroundMusic.css';
 
 // Per-track volume multipliers to normalize loudness across all BGM tracks

@@ -15,7 +15,7 @@ import {
   GRID_SHAPE_PRESETS,
   createCrossShape,
   createPlusShape,
-  type GridShapeConfig,
+  type Shared_GridShapeConfig,
 } from '../main/App/Shared/Shared_gridShapes';
 
 describe('Grid Shapes', () => {
@@ -50,14 +50,14 @@ describe('Grid Shapes', () => {
     });
 
     it('should generate correct number of tiles for 7x7 diamond', () => {
-      const config: GridShapeConfig = { shape: 'diamond', size: 7 };
+      const config: Shared_GridShapeConfig = { shape: 'diamond', size: 7 };
       const addresses = generateShapedGridAddresses(config);
       // 7x7 diamond: 1 + 3 + 5 + 7 + 5 + 3 + 1 = 25 tiles
       expect(addresses.length).toBe(25);
     });
 
     it('should generate correct number of tiles for 9x9 diamond', () => {
-      const config: GridShapeConfig = { shape: 'diamond', size: 9 };
+      const config: Shared_GridShapeConfig = { shape: 'diamond', size: 9 };
       const addresses = generateShapedGridAddresses(config);
       // 9x9 diamond: 1 + 3 + 5 + 7 + 9 + 7 + 5 + 3 + 1 = 41 tiles
       expect(addresses.length).toBe(41);
@@ -79,8 +79,8 @@ describe('Grid Shapes', () => {
     });
 
     it('should have fewer tiles than square', () => {
-      const circleConfig: GridShapeConfig = { shape: 'circle', size: 9 };
-      const squareConfig: GridShapeConfig = { shape: 'square', size: 9 };
+      const circleConfig: Shared_GridShapeConfig = { shape: 'circle', size: 9 };
+      const squareConfig: Shared_GridShapeConfig = { shape: 'square', size: 9 };
 
       const circleTiles = generateShapedGridAddresses(circleConfig).length;
       const squareTiles = generateShapedGridAddresses(squareConfig).length;
@@ -103,7 +103,7 @@ describe('Grid Shapes', () => {
     });
 
     it('should generate full grid for square shape', () => {
-      const config: GridShapeConfig = { shape: 'square', size: 8 };
+      const config: Shared_GridShapeConfig = { shape: 'square', size: 8 };
       const addresses = generateShapedGridAddresses(config);
       expect(addresses.length).toBe(64); // 8x8 = 64
     });
@@ -204,7 +204,7 @@ describe('Grid Shapes', () => {
 
   describe('Visualization', () => {
     it('should generate visualization string for diamond', () => {
-      const config: GridShapeConfig = { shape: 'diamond', size: 5 };
+      const config: Shared_GridShapeConfig = { shape: 'diamond', size: 5 };
       const viz = visualizeGridShape(config);
 
       expect(viz).toContain('DIAMOND Grid');
@@ -215,7 +215,7 @@ describe('Grid Shapes', () => {
     });
 
     it('should show correct tile count in visualization', () => {
-      const config: GridShapeConfig = { shape: 'diamond', size: 7 };
+      const config: Shared_GridShapeConfig = { shape: 'diamond', size: 7 };
       const viz = visualizeGridShape(config);
 
       expect(viz).toContain('Total tiles: 25');
@@ -245,7 +245,7 @@ describe('Grid Shapes', () => {
 
   describe('Address Generation', () => {
     it('should generate addresses in row-major order', () => {
-      const config: GridShapeConfig = { shape: 'square', size: 3 };
+      const config: Shared_GridShapeConfig = { shape: 'square', size: 3 };
       const addresses = generateShapedGridAddresses(config);
 
       expect(addresses[0]).toBe('R1C1');
@@ -255,7 +255,7 @@ describe('Grid Shapes', () => {
     });
 
     it('should skip invalid coordinates for diamond', () => {
-      const config: GridShapeConfig = { shape: 'diamond', size: 5 };
+      const config: Shared_GridShapeConfig = { shape: 'diamond', size: 5 };
       const addresses = generateShapedGridAddresses(config);
 
       // Should not include corners

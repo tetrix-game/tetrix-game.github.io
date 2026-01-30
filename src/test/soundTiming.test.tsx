@@ -2,9 +2,9 @@ import { render, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { DraggingShape } from '../main/App/components/DraggingShape';
-import { ANIMATION_TIMING } from '../main/App/Shared/animationConstants';
-import { Shared_TetrixDispatchContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_TetrixDispatchContext';
-import { Shared_TetrixStateContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_TetrixStateContext';
+import { Shared_animationConstants } from '../main/App/Shared/Shared_animationConstants';
+import { Shared_TetrixDispatchContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext/Shared_TetrixDispatchContext';
+import { Shared_TetrixStateContext } from '../main/App/Shared/Shared_TetrixProvider/Shared_useTetrixStateContext/Shared_TetrixStateContext';
 import type { DragPhase } from '../main/App/types/drag';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 import { INITIAL_GAME_STATS } from '../main/App/types/stats';
@@ -130,8 +130,8 @@ describe('Sound Timing in DraggingShape', () => {
     );
 
     // Calculate sound trigger time
-    const soundTriggerTime = ANIMATION_TIMING.PLACING_DURATION
-      - ANIMATION_TIMING.PLACEMENT_SOUND_DURATION;
+    const soundTriggerTime = Shared_animationConstants.ANIMATION_TIMING.PLACING_DURATION
+      - Shared_animationConstants.ANIMATION_TIMING.PLACEMENT_SOUND_DURATION;
 
     // Fast-forward to the sound trigger point
     await act(async () => {
@@ -177,7 +177,7 @@ describe('Sound Timing in DraggingShape', () => {
 
     // Fast-forward to completion
     await act(async () => {
-      vi.advanceTimersByTime(ANIMATION_TIMING.PLACING_DURATION);
+      vi.advanceTimersByTime(Shared_animationConstants.ANIMATION_TIMING.PLACING_DURATION);
       // Allow time for the final animation frame
       await vi.runOnlyPendingTimersAsync();
     });

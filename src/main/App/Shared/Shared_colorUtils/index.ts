@@ -2,9 +2,7 @@
  * Color utilities for block color management and luminosity adjustments
  */
 
-import { Shared_core } from '../../types/core';
-
-type ColorName = Shared_core['ColorName'];
+import type { ColorName } from '../../types/core';
 
 /**
  * Converts RGB string to HSL values
@@ -103,7 +101,7 @@ function adjustLuminosity(rgbString: string, percent: number): string {
 /**
  * Block color definitions for each theme
  */
-export type BlockColorPalette = {
+export type Shared_BlockColorPalette = {
   [K in ColorName]: {
     bg: string;
     borderTop: string;

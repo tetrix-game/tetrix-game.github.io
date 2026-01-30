@@ -1,11 +1,9 @@
-import { Shared_core } from '../../types/core';
-
-type TilesSet = Shared_core['TilesSet'];
+import type { Tile, TilesSet } from '../../types/core';
 
 /**
  * Result of checking map completion
  */
-export interface MapCompletionResult {
+export interface Shared_MapCompletionResult {
   isComplete: boolean; // Whether all tiles have blocks placed
   matchedTiles: number; // Number of tiles where block color matches tile background
   totalTiles: number; // Total number of tiles that should be filled

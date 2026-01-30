@@ -2,14 +2,12 @@
  * Theme definitions and utilities for visual theming
  */
 
-import { Shared_theme } from '../../types/theme';
-
-type ThemeName = Shared_theme['ThemeName'];
+import type { ThemeName } from '../../types/theme';
 
 /**
  * Theme color definitions
  */
-export type ThemeDefinition = {
+export type Shared_ThemeDefinition = {
   background: string;
   gameBackground: string;
   text: string;

@@ -10,20 +10,19 @@ import { createPortal } from 'react-dom';
 
 import { APP_VERSION } from '../../../version';
 import { useGridEditor } from '../../contexts/GridEditorProvider';
-import { loadDebugSettings, saveDebugSettings } from '../../Shared/persistence';
-import { Shared_useMusicControl } from '../../Shared/Shared_MusicControlProvider/Shared_useMusicControl';
+import { loadDebugSettings, saveDebugSettings } from '../../Shared/Shared_persistence';
 import { Shared_shapeGenerationWithProbabilities } from '../../Shared/Shared_shapeGenerationWithProbabilities';
+import { Shared_useSoundEffectsControl } from '../../Shared/Shared_SoundEffectsControlContext';
 import { Shared_useTetrixDispatchContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixDispatchContext';
 import { Shared_useTetrixStateContext } from '../../Shared/Shared_TetrixProvider/Shared_useTetrixStateContext';
-import { Shared_theme } from '../../types/theme';
-import { useSoundEffectsControl } from '../Header/SoundEffectsControlContext';
+import { Shared_useMusicControl } from '../../Shared/Shared_useMusicControl';
+import type { ThemeName, BlockTheme } from '../../types/theme';
+import { theme } from '../../types/theme';
 import { InstallButton } from '../InstallButton';
 import './SettingsOverlay.css';
 
 const { generateShapesWithProbabilities } = Shared_shapeGenerationWithProbabilities;
-const { THEMES, BLOCK_THEMES } = Shared_theme;
-type ThemeName = Shared_theme['ThemeName'];
-type BlockTheme = Shared_theme['BlockTheme'];
+const { THEMES, BLOCK_THEMES } = theme;
 
 const ThemeSelector: React.FC = () => {
   const { currentTheme } = Shared_useTetrixStateContext();
@@ -147,7 +146,7 @@ export const SettingsOverlay: React.FC = () => {
     setVolume: setSoundVolume,
     isEnabled: isSoundEnabled,
     toggleEnabled: toggleSoundEnabled,
-  } = useSoundEffectsControl();
+  } = Shared_useSoundEffectsControl();
   const state = Shared_useTetrixStateContext();
   const dispatch = Shared_useTetrixDispatchContext();
   const { openEditor: openGridEditor } = useGridEditor();

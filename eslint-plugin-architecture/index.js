@@ -1053,6 +1053,70 @@ const folderExportMustMatch = {
   },
 };
 
+/**
+ * Rule: no-separate-export-declarations
+ *
+ * Disallows export statements that are separate from declarations.
+ * Forces all exports to be inline with their declarations.
+ *
+ * Examples:
+ *   ✅ export const Foo = ...
+ *   ✅ export function Bar() { ... }
+ *   ❌ export { Foo }
+ *   ❌ export { Foo as Bar }
+ */
+const noSeparateExportDeclarations = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'Disallow export statements separate from declarations',
+    },
+    messages: {
+      separateExport:
+        'Export "{{name}}" is separate from its declaration.\n\n' +
+        'Exports must be inline with declarations:\n' +
+        '  ✅ export const {{name}} = ...\n' +
+        '  ✅ export function {{name}}() { ... }\n' +
+        '  ❌ const {{name}} = ...; export { {{name}} }\n' +
+        '  ❌ export { SomethingElse as {{name}} }\n\n' +
+        'This ensures declarations and exports are always together,\n' +
+        'making the code easier to understand and maintain.',
+    },
+    schema: [],
+  },
+  create(context) {
+    const filename = context.filename || context.getFilename();
+
+    // Skip node_modules and build output
+    if (filename.includes('node_modules') || filename.includes('/dist/')) {
+      return {};
+    }
+
+    return {
+      ExportNamedDeclaration(node) {
+        // Check if this is an export with specifiers but no declaration
+        // This catches: export { Foo } and export { Foo as Bar }
+        if (!node.declaration && node.specifiers && node.specifiers.length > 0) {
+          for (const specifier of node.specifiers) {
+            if (specifier.type === 'ExportSpecifier') {
+              // Report the exported name (the 'as Y' part if renamed)
+              const exportedName = specifier.exported.name;
+
+              context.report({
+                node: specifier,
+                messageId: 'separateExport',
+                data: {
+                  name: exportedName,
+                },
+              });
+            }
+          }
+        }
+      },
+    };
+  },
+};
+
 // State management for ensuring fresh state on each ESLint run
 let lastRunTimestamp = 0;
 const RUN_TIMEOUT_MS = 1000; // If more than 1s between files, assume new run
@@ -1099,6 +1163,7 @@ export default {
     'enforce-downwards-imports': enforceDownwardsImports,
     'shared-exports-must-be-prefixed': sharedExportsMustBePrefixed,
     'folder-export-must-match': folderExportMustMatch,
+    'no-separate-export-declarations': noSeparateExportDeclarations,
   },
   processors: {
     // Add cleanup processor for TypeScript files
@@ -1122,6 +1187,7 @@ export default {
         'architecture/enforce-downwards-imports': 'error',
         'architecture/shared-exports-must-be-prefixed': 'error',
         'architecture/folder-export-must-match': 'error',
+        'architecture/no-separate-export-declarations': 'error',
       },
     },
   },

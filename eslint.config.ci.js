@@ -198,6 +198,7 @@ export default tseslint.config(
       'architecture/enforce-downwards-imports': 'error',
       'architecture/shared-exports-must-be-prefixed': 'error',
       'architecture/folder-export-must-match': 'error',
+      'architecture/no-separate-export-declarations': 'error',
     },
   },
   // Test files - exclude from architecture rules
@@ -217,6 +218,7 @@ export default tseslint.config(
       'architecture/enforce-downwards-imports': 'off',
       'architecture/shared-exports-must-be-prefixed': 'off',
       'architecture/folder-export-must-match': 'off',
+      'architecture/no-separate-export-declarations': 'off',
     },
   },
   // Config files need default exports (Vite, ESLint, etc.)

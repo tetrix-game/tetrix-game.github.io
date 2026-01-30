@@ -1,28 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import { loadMusicSettings, saveMusicSettings } from '../persistence';
 
-export interface MusicControlContextType {
-  volume: number;
-  setVolume: (volume: number) => void;
-  isEnabled: boolean;
-  toggleEnabled: () => void;
-  shouldPlayMusic: boolean;
-  triggerAutoplay: () => void;
-  /** Whether the browser has allowed audio playback (user has interacted with document) */
-  isAudioUnlocked: boolean;
-  /** Whether audio is waiting for user interaction to play */
-  isWaitingForInteraction: boolean;
-}
-const MusicControlContext = createContext<MusicControlContextType | null>(null);
-export const useMusicControl = (): MusicControlContextType => {
-  const context = useContext(MusicControlContext);
-  if (!context) {
-    throw new Error('useMusicControl must be used within a MusicControlContext.Provider');
-  }
-  return context;
-};
-export const MusicControlProvider: React.FC<{
+import { Shared_MusicControlContext } from './contexts/';
+
+export const Shared_MusicControlProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }): JSX.Element => {
   const [volume, setVolumeState] = useState(100);
@@ -126,8 +108,8 @@ export const MusicControlProvider: React.FC<{
   };
 
   return (
-    <MusicControlContext.Provider value={value}>
+    <Shared_MusicControlContext.Provider value={value}>
       {children}
-    </MusicControlContext.Provider>
+    </Shared_MusicControlContext.Provider>
   );
 };

@@ -1,5 +1,5 @@
 import './Tetrix.css';
-import { useTetrixStateContext } from '../../Shared/TetrixContext';
+import { Shared_useTetrixStateContext } from '../../Shared';
 import { GameControlsPanel } from '../GameControlsPanel';
 import { GameOverOverlay } from '../GameOverOverlay';
 import { GemShower } from '../GemShower';
@@ -7,7 +7,7 @@ import { Grid } from '../Grid';
 import { MapCompletionOverlay } from '../MapCompletionOverlay';
 
 const Tetrix: React.FC = () => {
-  const { gameState, gameMode, isStatsOpen, mapCompletionResult } = useTetrixStateContext();
+  const { gameState, gameMode, isStatsOpen, mapCompletionResult } = Shared_useTetrixStateContext();
 
   // Only render when in playing or gameover state
   if (gameState !== 'playing' && gameState !== 'gameover') {

@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi } from 'vitest';
 
 import { ShapeSelector } from '../main/App/components/ShapeSelector';
-import { TetrixProvider } from '../main/App/Shared/TetrixContext';
+import { Shared_TetrixProvider } from '../main/App/Shared';
 
 // Mock the persistence utilities to avoid IndexedDB issues in tests
 vi.mock('../utils/persistenceUtils', () => ({
@@ -34,9 +34,9 @@ vi.mock('../utils/persistenceUtils', () => ({
 describe('Unified Shape Queue Management', () => {
   test.skip('should render only actual shapes (no virtual shapes)', async () => {
     const { container } = render(
-      <TetrixProvider>
+      <Shared_TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>,
+      </Shared_TetrixProvider>,
     );
 
     // Wait for shapes to be populated
@@ -60,9 +60,9 @@ describe('Unified Shape Queue Management', () => {
 
   test.skip('should calculate height based on nextShapes.length', async () => {
     const { container } = render(
-      <TetrixProvider>
+      <Shared_TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>,
+      </Shared_TetrixProvider>,
     );
 
     // Wait for shapes to be populated
@@ -79,9 +79,9 @@ describe('Unified Shape Queue Management', () => {
   test.skip('should update height when shapes are added/removed', async () => {
     // This test verifies that shape count calculation is unified with rendered containers
     const { container } = render(
-      <TetrixProvider>
+      <Shared_TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>,
+      </Shared_TetrixProvider>,
     );
 
     // Wait for shapes to be populated

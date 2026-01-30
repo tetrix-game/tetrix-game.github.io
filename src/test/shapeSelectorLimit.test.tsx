@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi } from 'vitest';
 
 import { ShapeSelector } from '../main/App/components/ShapeSelector';
-import { TetrixProvider } from '../main/App/Shared/TetrixContext';
+import { Shared_TetrixProvider } from '../main/App/Shared';
 
 // Mock the persistence utilities to avoid IndexedDB issues in tests
 vi.mock('../utils/persistenceUtils', () => ({
@@ -30,9 +30,9 @@ vi.mock('../utils/persistenceUtils', () => ({
 describe('ShapeSelector 4-Element Limit', () => {
   test('should display at most 4 shapes by default', async () => {
     const { container } = render(
-      <TetrixProvider>
+      <Shared_TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>,
+      </Shared_TetrixProvider>,
     );
 
     // Wait for shapes to be populated
@@ -48,9 +48,9 @@ describe('ShapeSelector 4-Element Limit', () => {
 
   test('should have shapes container with proper CSS class', async () => {
     const { container } = render(
-      <TetrixProvider>
+      <Shared_TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>,
+      </Shared_TetrixProvider>,
     );
 
     await waitFor(() => {
@@ -61,9 +61,9 @@ describe('ShapeSelector 4-Element Limit', () => {
 
   test('should have shape selector with proper styling classes', async () => {
     const { container } = render(
-      <TetrixProvider>
+      <Shared_TetrixProvider>
         <ShapeSelector />
-      </TetrixProvider>,
+      </Shared_TetrixProvider>,
     );
 
     await waitFor(() => {

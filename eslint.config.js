@@ -203,6 +203,22 @@ export default tseslint.config(
       // Run 'npm run lint:ci' for full validation
     },
   },
+  // Test files - exclude from architecture rules
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx'],
+    plugins: {
+      'architecture': architecture,
+    },
+    rules: {
+      'architecture/named-exports-only': 'off',
+      'architecture/no-reexports': 'off',
+      'architecture/import-from-index': 'off',
+      'architecture/index-only-files': 'off',
+      'architecture/enforce-downwards-imports': 'off',
+      'architecture/shared-exports-must-be-prefixed': 'off',
+      'architecture/folder-export-must-match': 'off',
+    },
+  },
   // Config files need default exports (Vite, ESLint, etc.)
   {
     files: ['*.config.ts', '*.config.js', 'vite.config.ts', 'eslint.config.js'],

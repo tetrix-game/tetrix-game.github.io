@@ -102,3 +102,16 @@ export function tilesMapToChallengeData(tilesMap: TilesSet): ChallengeBoardData 
 
   return { tiles };
 }
+
+/**
+ * Facade object wrapping all grid constants exports
+ * Matches folder name for architecture compliance
+ */
+export const Shared_gridConstants = {
+  GRID_SIZE,
+  GRID_GAP,
+  GRID_ADDRESSES,
+  setGridSize,
+  makeTileKey,
+  tilesMapToChallengeData,
+};

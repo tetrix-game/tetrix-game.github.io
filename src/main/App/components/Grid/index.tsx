@@ -3,9 +3,7 @@ import { useRef, useEffect, useMemo } from 'react';
 
 import { TetrixTile } from '../../components/TetrixTile';
 import { useDebugGridInteractions } from '../../hooks/useDebugGridInteractions';
-import { GRID_SIZE } from '../../Shared/gridConstants';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
-import { useGameSizing } from '../../Shared/useGameSizing';
+import { GRID_SIZE, Shared_useTetrixStateContext, Shared_useTetrixDispatchContext, Shared_useGameSizing } from '../../Shared';
 
 interface GridProps {
   width?: number; // Grid width in tiles (default: GRID_SIZE)
@@ -14,10 +12,10 @@ interface GridProps {
 }
 
 export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridProps): JSX.Element {
-  const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = useTetrixStateContext();
-  const dispatch = useTetrixDispatchContext();
+  const { tiles, dragState, gameMode, blockTheme, showBlockIcons } = Shared_useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
   const gridRef = useRef<HTMLDivElement>(null);
-  const { gridSize: hookGridSize, gridGap, gridCellSize: hookGridCellSize } = useGameSizing();
+  const { gridSize: hookGridSize, gridGap, gridCellSize: hookGridCellSize } = Shared_useGameSizing();
   const { isDebugMode, handleDebugClick } = useDebugGridInteractions();
 
   // Use provided pixelSize or fall back to responsive hook size

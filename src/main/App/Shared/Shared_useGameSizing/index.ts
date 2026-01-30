@@ -19,7 +19,7 @@ export interface GameSizing {
  * - All buttons in GameControlsPanel use same size (shapes, indicator, turn buttons)
  * - Button size can be scaled by user preference (0.5x to 1.5x)
  */
-export const useGameSizing = (buttonSizeMultiplier: number = 1.0): GameSizing => {
+export const Shared_useGameSizing = (buttonSizeMultiplier: number = 1.0): GameSizing => {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,

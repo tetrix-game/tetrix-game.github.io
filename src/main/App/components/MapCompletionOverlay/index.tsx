@@ -1,8 +1,8 @@
 import React from 'react';
 
 import './MapCompletionOverlay.css';
-import { Shared_Overlay } from '../../../Shared/Overlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
+import { Shared_Overlay } from '../../../Shared';
+import { Shared_useTetrixStateContext, Shared_useTetrixDispatchContext } from '../../Shared';
 import { Grid } from '../Grid';
 
 interface MapCompletionOverlayProps {
@@ -18,8 +18,8 @@ const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
   totalTiles,
   missedTiles,
 }) => {
-  const dispatch = useTetrixDispatchContext();
-  const { gameMode } = useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
+  const { gameMode } = Shared_useTetrixStateContext();
 
   const isSuccess = stars > 0;
 

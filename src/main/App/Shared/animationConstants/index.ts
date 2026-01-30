@@ -20,3 +20,11 @@ export const ANIMATION_TIMING = {
   // Invalid placement animation
   INVALID_BLOCK_ANIMATION_DURATION: 200,
 };
+
+/**
+ * Facade object wrapping all animation constants exports
+ * Matches folder name for architecture compliance
+ */
+export const Shared_animationConstants = {
+  ANIMATION_TIMING,
+};

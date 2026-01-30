@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../../Shared/persistence';
+import { saveCallToActionTimestamp, loadCallToActionTimestamp } from '../../../Shared';
 import { Pointer, PointerProps } from '../index';
 import './CallToActionPointer.css';
 

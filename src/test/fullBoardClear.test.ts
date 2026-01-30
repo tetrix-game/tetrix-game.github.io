@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { tileReducer } from '../main/App/reducers/tileReducer';
-import { makeTileKey } from '../main/App/Shared/gridConstants';
+import { makeTileKey } from '../main/App/Shared';
 import type { TetrixReducerState } from '../main/App/types/gameState';
 import { generateFullBoardClearAnimation } from '../main/App/utils/clearingAnimationUtils';
 import { isGridCompletelyEmpty } from '../main/App/utils/lineUtils';

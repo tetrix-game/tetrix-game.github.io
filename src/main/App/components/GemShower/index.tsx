@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
-import { useTetrixStateContext } from '../../Shared/TetrixContext';
+import { Shared_useTetrixStateContext } from '../../Shared';
 import { GemParticle } from '../GemParticle';
 import './GemShower.css';
 
@@ -14,7 +14,7 @@ interface GemData {
 }
 
 const GemShower: React.FC = () => {
-  const { score, gemIconPosition } = useTetrixStateContext();
+  const { score, gemIconPosition } = Shared_useTetrixStateContext();
   const [gems, setGems] = useState<GemData[]>([]);
   const lastScoreRef = useRef<number | null>(null);
 

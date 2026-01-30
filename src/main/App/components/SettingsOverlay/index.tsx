@@ -10,12 +10,7 @@ import { createPortal } from 'react-dom';
 
 import { APP_VERSION } from '../../../version';
 import { useGridEditor } from '../../contexts/GridEditorContext';
-import { useMusicControl } from '../../Shared/MusicControlContext';
-import {
-  loadDebugSettings,
-  saveDebugSettings,
-} from '../../Shared/persistence';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../../Shared/TetrixContext';
+import { Shared_useMusicControl, loadDebugSettings, saveDebugSettings, Shared_useTetrixDispatchContext, Shared_useTetrixStateContext } from '../../Shared';
 import { THEMES, BLOCK_THEMES } from '../../types/theme';
 import type { ThemeName, BlockTheme } from '../../types/theme';
 import { generateShapesWithProbabilities } from '../../utils/shapes/shapeGenerationWithProbabilities';
@@ -24,8 +19,8 @@ import { InstallButton } from '../InstallButton';
 import './SettingsOverlay.css';
 
 const ThemeSelector: React.FC = () => {
-  const { currentTheme } = useTetrixStateContext();
-  const dispatch = useTetrixDispatchContext();
+  const { currentTheme } = Shared_useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
 
   const handleThemeChange = (theme: ThemeName): void => {
     dispatch({ type: 'SET_THEME', value: { theme } });
@@ -51,8 +46,8 @@ const ThemeSelector: React.FC = () => {
 };
 
 const BlockThemeSelector: React.FC = () => {
-  const { blockTheme } = useTetrixStateContext();
-  const dispatch = useTetrixDispatchContext();
+  const { blockTheme } = Shared_useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
 
   const handleThemeChange = (theme: BlockTheme): void => {
     dispatch({ type: 'SET_BLOCK_THEME', value: { theme } });
@@ -78,8 +73,8 @@ const BlockThemeSelector: React.FC = () => {
 };
 
 const BlockIconToggle: React.FC = () => {
-  const { showBlockIcons } = useTetrixStateContext();
-  const dispatch = useTetrixDispatchContext();
+  const { showBlockIcons } = Shared_useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
 
   return (
     <div className="menu-item theme-selector">
@@ -103,8 +98,8 @@ const BlockIconToggle: React.FC = () => {
 };
 
 const GrandpaModeToggle: React.FC = () => {
-  const { grandpaMode } = useTetrixStateContext();
-  const dispatch = useTetrixDispatchContext();
+  const { grandpaMode } = Shared_useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
 
   return (
     <div className="menu-item theme-selector">
@@ -139,15 +134,15 @@ const SettingsOverlay: React.FC = () => {
     isEnabled: isMusicEnabled,
     toggleEnabled: toggleMusicEnabled,
     isWaitingForInteraction,
-  } = useMusicControl();
+  } = Shared_useMusicControl();
   const {
     volume: soundVolume,
     setVolume: setSoundVolume,
     isEnabled: isSoundEnabled,
     toggleEnabled: toggleSoundEnabled,
   } = useSoundEffectsControl();
-  const state = useTetrixStateContext();
-  const dispatch = useTetrixDispatchContext();
+  const state = Shared_useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
   const { openEditor: openGridEditor } = useGridEditor();
   const [debugUnlocked, setDebugUnlocked] = useState(false);
   const [debugClickCount, setDebugClickCount] = useState(0);

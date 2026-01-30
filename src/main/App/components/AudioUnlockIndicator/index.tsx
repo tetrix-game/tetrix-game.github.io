@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useMusicControl } from '../../Shared/MusicControlContext';
+import { Shared_useMusicControl } from '../../Shared';
 import './AudioUnlockIndicator.css';
 
 /**
@@ -15,7 +15,7 @@ import './AudioUnlockIndicator.css';
  * - Provides a helpful tooltip explaining why music hasn't started
  */
 const AudioUnlockIndicator: React.FC = () => {
-  const { isWaitingForInteraction } = useMusicControl();
+  const { isWaitingForInteraction } = Shared_useMusicControl();
 
   if (!isWaitingForInteraction) {
     return null;

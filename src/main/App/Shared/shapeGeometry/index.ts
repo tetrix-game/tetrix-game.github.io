@@ -197,3 +197,15 @@ export function mousePositionToGridLocation(
   // This allows shapes to show "does not fit" visual when hovering outside the grid
   return { row, column };
 }
+
+/**
+ * Facade object wrapping all shape geometry exports
+ * Matches folder name for architecture compliance
+ */
+export const Shared_shapeGeometry = {
+  getShapeBounds,
+  getShapeGridPositions,
+  getFilledBlocks,
+  getShapeVisualOffset,
+  mousePositionToGridLocation,
+};

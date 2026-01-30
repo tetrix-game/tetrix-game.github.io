@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { Shared_BlockVisual } from '../../../Shared/BlockVisual';
-import { ANIMATION_TIMING } from '../../Shared/animationConstants';
-import { getShapeBounds } from '../../Shared/shapeGeometry';
-import { useSoundEffects } from '../../Shared/SoundEffectsContext';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
-import { useGameSizing } from '../../Shared/useGameSizing';
+import { Shared_BlockVisual } from '../../../Shared';
+import { ANIMATION_TIMING, getShapeBounds, Shared_useSoundEffects, Shared_useTetrixStateContext, Shared_useTetrixDispatchContext, Shared_useGameSizing } from '../../Shared';
 import './DraggingShape.css';
 
 /**
@@ -34,16 +30,16 @@ export function DraggingShape(): JSX.Element | null {
     blockTheme,
     showBlockIcons,
     gameMode,
-  } = useTetrixStateContext();
+  } = Shared_useTetrixStateContext();
 
-  const dispatch = useTetrixDispatchContext();
-  const { playSound } = useSoundEffects();
+  const dispatch = Shared_useTetrixDispatchContext();
+  const { playSound } = Shared_useSoundEffects();
   const [pickupProgress, setPickupProgress] = useState(0);
   const [placingProgress, setPlacingProgress] = useState(0);
   const [returningProgress, setReturningProgress] = useState(0);
 
   // Get dynamic sizing from hook
-  const { gridSize, gridGap } = useGameSizing();
+  const { gridSize, gridGap } = Shared_useGameSizing();
 
   // Constants for animation timing (derived from shared source of truth)
   const {

@@ -1,8 +1,6 @@
 import { useMemo, useCallback } from 'react';
 
-import { useMusicControl } from '../../Shared/MusicControlContext';
-import { useSoundEffects } from '../../Shared/SoundEffectsContext';
-import { useTetrixStateContext } from '../../Shared/TetrixContext';
+import { Shared_useMusicControl, Shared_useSoundEffects, Shared_useTetrixStateContext } from '../../Shared';
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { BackgroundMusic } from '../BackgroundMusic';
 import { ScoreDisplay } from '../ScoreDisplay';
@@ -13,11 +11,11 @@ import './Header.css';
 
 const Header: React.FC = () => {
   // Use the main sound effects context
-  const { volume, setVolume, isEnabled, setEnabled } = useSoundEffects();
+  const { volume, setVolume, isEnabled, setEnabled } = Shared_useSoundEffects();
   // Get music control for the audio unlock indicator
-  const { isWaitingForInteraction } = useMusicControl();
+  const { isWaitingForInteraction } = Shared_useMusicControl();
 
-  const { gameMode } = useTetrixStateContext();
+  const { gameMode } = Shared_useTetrixStateContext();
 
   const toggleSoundEffectsEnabled = useCallback(() => {
     // Toggle and let context handle persistence

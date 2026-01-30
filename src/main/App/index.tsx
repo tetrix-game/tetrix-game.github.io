@@ -13,9 +13,7 @@ import { GridEditorProvider } from './contexts/GridEditorContext';
 import { usePointerTracking } from './hooks/usePointerTracking';
 import { useShapePlacement } from './hooks/useShapePlacement';
 import { useUpdateNotification } from './hooks/useUpdateNotification';
-import { MusicControlProvider } from './Shared/MusicControlContext';
-import { SoundEffectsProvider } from './Shared/SoundEffectsContext';
-import { TetrixProvider } from './Shared/TetrixContext';
+import { Shared_MusicControlProvider, Shared_SoundEffectsProvider, Shared_TetrixProvider } from './Shared';
 
 import './App.css';
 
@@ -51,17 +49,17 @@ const App = (): JSX.Element => {
   return (
     <StrictMode>
       <ErrorBoundary>
-        <SoundEffectsProvider>
-          <MusicControlProvider>
-            <TetrixProvider>
+        <Shared_SoundEffectsProvider>
+          <Shared_MusicControlProvider>
+            <Shared_TetrixProvider>
               <GridEditorProvider>
                 <ThemeProvider>
                   <AppContent />
                 </ThemeProvider>
               </GridEditorProvider>
-            </TetrixProvider>
-          </MusicControlProvider>
-        </SoundEffectsProvider>
+            </Shared_TetrixProvider>
+          </Shared_MusicControlProvider>
+        </Shared_SoundEffectsProvider>
       </ErrorBoundary>
     </StrictMode>
   );

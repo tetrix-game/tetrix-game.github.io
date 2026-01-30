@@ -4,8 +4,7 @@
  *          RETURN_SHAPE_TO_SELECTOR, COMPLETE_RETURN, CLEAR_SELECTION
  */
 
-import { ANIMATION_TIMING } from '../../Shared/animationConstants';
-import { getShapeGridPositions, getShapeVisualOffset } from '../../Shared/shapeGeometry';
+import { ANIMATION_TIMING, getShapeGridPositions, getShapeVisualOffset } from '../../Shared';
 import type { TetrixReducerState, TetrixAction } from '../../types/gameState';
 
 export function dragReducer(state: TetrixReducerState, action: TetrixAction): TetrixReducerState {

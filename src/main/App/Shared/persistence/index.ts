@@ -329,3 +329,40 @@ export async function saveBlockTheme(blockTheme: string): Promise<void> {
 export async function loadSettingsData(): Promise<LoadResult<import('../../types/persistence').GameSettingsPersistenceData>> {
   return await loadSettingsAdapter();
 }
+
+/**
+ * Facade object wrapping all persistence exports
+ * Matches folder name for architecture compliance
+ */
+export const Shared_persistence = {
+  // Game state
+  clearGameBoard,
+  loadGameState,
+  safeBatchSave,
+
+  // Modifiers
+  saveModifiers,
+  loadModifiers,
+
+  // Settings
+  loadMusicSettings,
+  saveMusicSettings,
+  loadSoundEffectsSettings,
+  saveSoundEffectsSettings,
+  loadDebugSettings,
+  saveDebugSettings,
+  loadTheme,
+  saveTheme,
+  saveBlockTheme,
+  loadSettingsData,
+
+  // Call to Action
+  saveCallToActionTimestamp,
+  loadCallToActionTimestamp,
+
+  // Cleanup
+  clearAllDataAndReload,
+
+  // Initialization
+  initializePersistence,
+};

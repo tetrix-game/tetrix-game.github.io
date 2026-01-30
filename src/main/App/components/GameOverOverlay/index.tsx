@@ -1,12 +1,12 @@
 import React from 'react';
 
 import './GameOverOverlay.css';
-import { Shared_Overlay } from '../../../Shared/Overlay';
-import { useTetrixStateContext, useTetrixDispatchContext } from '../../Shared/TetrixContext';
+import { Shared_Overlay } from '../../../Shared';
+import { Shared_useTetrixStateContext, Shared_useTetrixDispatchContext } from '../../Shared';
 
 const GameOverOverlay: React.FC = (): JSX.Element => {
-  const { gameMode } = useTetrixStateContext();
-  const dispatch = useTetrixDispatchContext();
+  const { gameMode } = Shared_useTetrixStateContext();
+  const dispatch = Shared_useTetrixDispatchContext();
 
   const handleRestart = (): void => {
     if (gameMode === 'daily') {

@@ -1,4 +1,4 @@
-import { getFilledBlocks } from '../../Shared/shapeGeometry';
+import { getFilledBlocks } from '../../Shared';
 import type { Shape, TilesSet, ColorName } from '../../types/core';
 import {
   generateIPiece,

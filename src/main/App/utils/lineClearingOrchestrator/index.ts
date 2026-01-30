@@ -10,7 +10,7 @@
  * - Detecting full board clears
  */
 
-import { playSound } from '../../Shared/SoundEffectsContext';
+import { Shared_playSound } from '../../Shared';
 import type { TilesSet } from '../../types/core';
 import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../lineUtils';
@@ -53,32 +53,32 @@ function playLineClearSounds(
 ): void {
   const scheduleSound = (count: number, type: 'rows' | 'columns'): void => {
     if (count >= 1) {
-      playSound(
+      Shared_playSound(
         'clear_combo_1',
         baseStartTime + CLEARING_ANIMATION_CONFIG[type].single.startDelay,
       );
     }
     if (count >= 2) {
-      playSound(
+      Shared_playSound(
         'clear_combo_2',
         baseStartTime + CLEARING_ANIMATION_CONFIG[type].double.startDelay,
       );
     }
     if (count >= 3) {
-      playSound(
+      Shared_playSound(
         'clear_combo_3',
         baseStartTime + CLEARING_ANIMATION_CONFIG[type].triple.startDelay,
       );
     }
     if (count >= 4) {
       const quadStart = baseStartTime + CLEARING_ANIMATION_CONFIG[type].quad.startDelay;
-      playSound('clear_combo_4', quadStart);
+      Shared_playSound('clear_combo_4', quadStart);
 
       // Schedule heartbeat sounds to match the 3 beats of the quad animation
       const beatInterval = 800;
-      playSound('heartbeat', quadStart + 100);
-      playSound('heartbeat', quadStart + 100 + beatInterval);
-      playSound('heartbeat', quadStart + 100 + (beatInterval * 2));
+      Shared_playSound('heartbeat', quadStart + 100);
+      Shared_playSound('heartbeat', quadStart + 100 + beatInterval);
+      Shared_playSound('heartbeat', quadStart + 100 + (beatInterval * 2));
     }
   };
 
@@ -206,10 +206,10 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
 
     // Play special sound for full board clear (after normal animations)
     const fullBoardSoundStart = baseStartTime + normalAnimationEndTime;
-    playSound('clear_combo_4', fullBoardSoundStart);
-    playSound('heartbeat', fullBoardSoundStart + 200);
-    playSound('heartbeat', fullBoardSoundStart + 700);
-    playSound('heartbeat', fullBoardSoundStart + 1200);
+    Shared_playSound('clear_combo_4', fullBoardSoundStart);
+    Shared_playSound('heartbeat', fullBoardSoundStart + 200);
+    Shared_playSound('heartbeat', fullBoardSoundStart + 700);
+    Shared_playSound('heartbeat', fullBoardSoundStart + 1200);
   }
 
   return {

@@ -1,43 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import { loadSoundEffectsSettings, saveSoundEffectsSettings } from '../persistence';
 
-export type SoundEffect = | 'click_into_place'
-  | 'game_over'
-  | 'pickup_shape'
-  | 'invalid_placement'
-  | 'clear_combo_1'
-  | 'clear_combo_2'
-  | 'clear_combo_3'
-  | 'clear_combo_4'
-  | 'heartbeat';
-const SOUND_VOLUME_MULTIPLIERS: Partial<Record<SoundEffect, number>> = {
-  click_into_place: 1.0, // -27.4 dB mean, reference level
-  game_over: 0.7, // -22.1 dB mean, louder than others
-  pickup_shape: 0.4, // -14.8 dB mean, much louder than others
-  invalid_placement: 1.4, // -31.2 dB mean, quieter than others
-  clear_combo_1: 1.0, // -27.4 dB mean
-  clear_combo_2: 1.1, // -28.7 dB mean
-  clear_combo_3: 1.2, // -29.8 dB mean
-  clear_combo_4: 1.1, // -28.4 dB mean
-  heartbeat: 1.0, // Synthesized, already calibrated
-};
-const BASE_SOUND_EFFECTS_VOLUME = 0.5;
-let modulePlaySound: ((soundEffect: SoundEffect, startTime?: number) => void) | null = null;
-export function playSound(soundEffect: SoundEffect, startTime?: number): void {
-  if (modulePlaySound) {
-    modulePlaySound(soundEffect, startTime);
-  }
-}
-interface SoundEffectsContextValue {
-  playSound: (soundEffect: SoundEffect, startTime?: number) => void;
-  setVolume: (volume: number) => void;
-  setEnabled: (enabled: boolean) => void;
-  volume: number;
-  isEnabled: boolean;
-}
-const SoundEffectsContext = createContext<SoundEffectsContextValue | undefined>(undefined);
-export const SoundEffectsProvider: React.FC<{
+import { SOUND_VOLUME_MULTIPLIERS, BASE_SOUND_EFFECTS_VOLUME, registerPlaySound, unregisterPlaySound } from './constants/';
+import { Shared_SoundEffectsContext } from './contexts/';
+import type { SoundEffect, Shared_SoundEffectsContextValue } from './types/';
+
+export const Shared_SoundEffectsProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }): JSX.Element => {
   const [volume, setVolumeState] = useState(100);
@@ -248,9 +217,9 @@ export const SoundEffectsProvider: React.FC<{
   // Register this playSound function at module level
   // so reducer and other non-React code can benefit from fast playback
   useEffect((): (() => void) => {
-    modulePlaySound = playSound;
+    registerPlaySound(playSound);
     return (): void => {
-      modulePlaySound = null;
+      unregisterPlaySound();
     };
   }, [playSound]);
 
@@ -283,7 +252,7 @@ export const SoundEffectsProvider: React.FC<{
     });
   }, [volume]);
 
-  const value: SoundEffectsContextValue = {
+  const value: Shared_SoundEffectsContextValue = {
     playSound,
     setVolume,
     setEnabled,
@@ -292,15 +261,8 @@ export const SoundEffectsProvider: React.FC<{
   };
 
   return (
-    <SoundEffectsContext.Provider value={value}>
+    <Shared_SoundEffectsContext.Provider value={value}>
       {children}
-    </SoundEffectsContext.Provider>
+    </Shared_SoundEffectsContext.Provider>
   );
-};
-export const useSoundEffects = (): SoundEffectsContextValue => {
-  const context = useContext(SoundEffectsContext);
-  if (!context) {
-    throw new Error('useSoundEffects must be used within a SoundEffectsProvider');
-  }
-  return context;
 };

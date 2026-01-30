@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-import { useMusicControl } from '../../Shared/MusicControlContext';
-import { useTetrixStateContext } from '../../Shared/TetrixContext';
+import { Shared_useMusicControl, Shared_useTetrixStateContext } from '../../Shared';
 import './BackgroundMusic.css';
 
 // Per-track volume multipliers to normalize loudness across all BGM tracks
@@ -25,8 +24,8 @@ const BASE_BGM_VOLUME = 0.5;
 const BackgroundMusic: React.FC = (): JSX.Element => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const currentTrackRef = useRef<string>('');
-  const { hasPlacedFirstShape } = useTetrixStateContext();
-  const { isEnabled, volume, shouldPlayMusic, triggerAutoplay } = useMusicControl();
+  const { hasPlacedFirstShape } = Shared_useTetrixStateContext();
+  const { isEnabled, volume, shouldPlayMusic, triggerAutoplay } = Shared_useMusicControl();
 
   // Track if we've already triggered autoplay from first shape
   const hasTriggeredFromShapeRef = useRef(false);

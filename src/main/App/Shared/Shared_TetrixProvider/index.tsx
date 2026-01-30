@@ -1,7 +1,6 @@
-import { useReducer, useEffect, useState, createContext, useContext } from 'react';
+import { useReducer, useEffect, useState } from 'react';
 
-import { initialState, tetrixReducer } from '../../reducers';
-import type { TetrixDispatch, TetrixReducerState } from '../../types/gameState';
+import { initialState, tetrixReducer } from '../Shared_tetrixReducer';
 import type { ThemeName, BlockTheme } from '../../types/theme';
 import {
   loadModifiers,
@@ -12,8 +11,10 @@ import {
   loadSettingsData,
 } from '../persistence';
 
+import { Shared_TetrixStateContext, Shared_TetrixDispatchContext } from './contexts/';
+
 type InitializationState = 'BOOTING' | 'LOADING' | 'READY' | 'FAILURE';
-export function TetrixProvider({ children }: { readonly children: React.ReactNode }): JSX.Element {
+export function Shared_TetrixProvider({ children }: { readonly children: React.ReactNode }): JSX.Element {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
 
@@ -216,26 +217,10 @@ export function TetrixProvider({ children }: { readonly children: React.ReactNod
   }
 
   return (
-    <TetrixStateContext.Provider value={state}>
-      <TetrixDispatchContext.Provider value={dispatch}>
+    <Shared_TetrixStateContext.Provider value={state}>
+      <Shared_TetrixDispatchContext.Provider value={dispatch}>
         {children}
-      </TetrixDispatchContext.Provider>
-    </TetrixStateContext.Provider>
+      </Shared_TetrixDispatchContext.Provider>
+    </Shared_TetrixStateContext.Provider>
   );
-}
-export const TetrixStateContext = createContext<TetrixReducerState | null>(null);
-export const TetrixDispatchContext = createContext<TetrixDispatch | null>(null);
-export function useTetrixStateContext(): TetrixReducerState {
-  const context = useContext(TetrixStateContext);
-  if (!context) {
-    throw new Error('useTetrixStateContext must be used within a TetrixStateProvider');
-  }
-  return context;
-}
-export function useTetrixDispatchContext(): TetrixDispatch {
-  const context = useContext(TetrixDispatchContext);
-  if (!context) {
-    throw new Error('useTetrixDispatchContext must be used within a TetrixDispatchProvider');
-  }
-  return context;
 }

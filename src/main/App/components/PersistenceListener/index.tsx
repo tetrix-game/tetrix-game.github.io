@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme, clearGameBoard } from '../../Shared/persistence';
-import { useTetrixStateContext } from '../../Shared/TetrixContext';
+import { safeBatchSave, saveModifiers, saveTheme, saveBlockTheme, clearGameBoard, Shared_useTetrixStateContext } from '../../Shared';
 import { tilesToArray } from '../../types/core';
 import { updateSettings } from '../../utils/persistenceAdapter';
 
@@ -16,7 +15,7 @@ import { updateSettings } from '../../utils/persistenceAdapter';
  * - Saving happens here whenever relevant state changes
  */
 export const PersistenceListener = (): null => {
-  const state = useTetrixStateContext();
+  const state = Shared_useTetrixStateContext();
   const {
     gameState,
     gameMode,

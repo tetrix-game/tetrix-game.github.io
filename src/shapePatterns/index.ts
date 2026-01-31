@@ -1,5 +1,5 @@
-import type { TilesSet } from '../types';
 import { makeTileKey } from '../shapeValidation';
+import type { TilesSet } from '../types';
 
 /**
  * Shape pattern detection - Super combo and special patterns

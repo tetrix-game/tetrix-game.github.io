@@ -126,7 +126,8 @@ export function ShapeIcon({
         );
 
       default:
-        return null;
+        // Fallback: render a circle for unknown colors
+        return <circle cx={center} cy={center} r={20} fill="currentColor" />;
     }
   };
 

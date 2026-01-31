@@ -1,10 +1,9 @@
 import React from 'react';
 
 import './MapCompletionOverlay.css';
-import { Overlay } from '../Overlay';
-import { useTetrixDispatchContext } from '../TetrixProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
 import { Grid } from '../Grid';
+import { Overlay } from '../Overlay';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
 
 interface MapCompletionOverlayProps {
   stars: number; // 0-3 stars (0 = failure)
@@ -42,6 +41,14 @@ export const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
     }
   };
 
+  // Compute title text to avoid nested ternary
+  let titleText = 'Level Failed';
+  if (stars === 3) {
+    titleText = 'Perfect!';
+  } else if (isSuccess) {
+    titleText = 'Level Complete!';
+  }
+
   return (
     <Overlay
       className="map-completion-overlay"
@@ -55,7 +62,7 @@ export const MapCompletionOverlay: React.FC<MapCompletionOverlayProps> = ({
 
         <div className="completion-details">
           <h1 className={`completion-title ${isSuccess ? 'success' : 'failure'}`}>
-            {stars === 3 ? 'Perfect!' : isSuccess ? 'Level Complete!' : 'Level Failed'}
+            {titleText}
           </h1>
 
           {isSuccess && (

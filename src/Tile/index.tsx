@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
 
-import type { ColorName } from '../types';
 import { ShapeIcon } from '../ShapeIcon';
 import { TileSvg } from '../TileSvg';
+import type { ColorName } from '../types';
 import './Tile.css';
 
 interface TileProps {

@@ -1,6 +1,5 @@
 
-import type { ColorName } from '../types';
-import type { StatCategory, StatsPersistenceData } from '../types';
+import type { ColorName, StatCategory, StatsPersistenceData } from '../types';
 
 /**
  * Updates the stats based on the cleared lines and placed shape

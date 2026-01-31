@@ -1,11 +1,10 @@
 import { render, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import { DraggingShape } from '../DraggingShape';
 import { animationConstants } from '../animationConstants';
+import { DraggingShape } from '../DraggingShape';
 import { TetrixDispatchContext, TetrixStateContext } from '../TetrixProvider';
-import type { DragPhase } from '../types';
-import type { TetrixReducerState } from '../types';
+import type { DragPhase, TetrixReducerState } from '../types';
 import { INITIAL_GAME_STATS } from '../types';
 
 const mocks = vi.hoisted(() => ({

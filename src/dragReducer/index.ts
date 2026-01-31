@@ -4,9 +4,9 @@
  *          RETURN_SHAPE_TO_SELECTOR, COMPLETE_RETURN, CLEAR_SELECTION
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types';
 import { animationConstants } from '../animationConstants';
 import { shapeGeometry } from '../shapeGeometry';
+import type { TetrixReducerState, TetrixAction } from '../types';
 
 const { ANIMATION_TIMING } = animationConstants;
 const { getShapeGridPositions, getShapeVisualOffset } = shapeGeometry;

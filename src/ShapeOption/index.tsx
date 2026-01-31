@@ -2,10 +2,9 @@ import './ShapeOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
 import { animationConstants } from '../animationConstants';
-import { useTetrixDispatchContext } from '../TetrixProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
-import type { Shape } from '../types';
 import { ShapeDisplay } from '../ShapeDisplay';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
+import type { Shape } from '../types';
 
 const { ANIMATION_TIMING } = animationConstants;
 

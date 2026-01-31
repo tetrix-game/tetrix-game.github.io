@@ -5,12 +5,12 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
-import type { Tile, QueuedShape, Shape, ColorName, TetrixReducerState, TetrixAction } from '../types';
-import { shapeQueue, stats } from '../types';
 import { checkGameOver } from '../gameOverUtils';
 import { gridConstants } from '../gridConstants';
 import { checkMapCompletion } from '../mapCompletionUtils';
 import { updateStats } from '../statsUtils';
+import { shapeQueue, stats } from '../types';
+import type { Tile, QueuedShape, QueueItem, Shape, ColorName, TetrixReducerState, TetrixAction } from '../types';
 
 const { DEFAULT_COLOR_PROBABILITIES } = shapeQueue;
 const { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } = stats;
@@ -257,7 +257,10 @@ export function gameStateReducer(
             const tile: Tile = {
               position: tileData.position,
               backgroundColor: tileData.backgroundColor || 'grey',
-              block: { isFilled: tileData.isFilled, color: tileData.color },
+              block: {
+                isFilled: tileData.isFilled ?? false,
+                color: tileData.color ?? 'grey',
+              },
               activeAnimations: tileData.activeAnimations || [],
             };
             if (tileData.isFilled) {
@@ -295,7 +298,7 @@ export function gameStateReducer(
       }
 
       let nextIdCounter = state.nextShapeIdCounter;
-      const loadedQueue: import('../types/core').QueueItem[] = [];
+      const loadedQueue: QueueItem[] = [];
 
       // Check if we have the new nextQueue field (full queue with purchasable slots)
       if (gameData.nextQueue && Array.isArray(gameData.nextQueue)) {

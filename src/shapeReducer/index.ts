@@ -4,11 +4,11 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
-import type { QueuedShape, QueueItem, TetrixReducerState, TetrixAction } from '../types';
 import { persistence } from '../persistence';
 import { shapeGeneration } from '../shapeGeneration';
 import { shapeTransforms } from '../shapeTransforms';
 import { resetNoTurnStreak } from '../statsUtils';
+import type { QueuedShape, QueueItem, TetrixReducerState, TetrixAction } from '../types';
 
 const { safeBatchSave } = persistence;
 const { generateRandomShape } = shapeGeneration;

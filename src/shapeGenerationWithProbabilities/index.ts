@@ -1,8 +1,5 @@
-import type { Shape, ColorName } from '../types';
-import { shapeQueue } from '../types';
 import { shapeTransforms } from '../shapeTransforms';
-
-type ColorProbability = shapeQueue['ColorProbability'];
+import type { Shape, ColorName, ColorProbability, Block } from '../types';
 
 const { rotateShape, cloneShape } = shapeTransforms;
 

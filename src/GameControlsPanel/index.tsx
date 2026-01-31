@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { useTetrixStateContext } from '../TetrixProvider';
-import { useGameSizing } from '../useGameSizing';
 import { PurchasesContainer } from '../PurchasesContainer';
 import { ShapeQueue } from '../ShapeQueue';
+import { useTetrixStateContext } from '../TetrixProvider';
+import { useGameSizing } from '../useGameSizing';
 import './GameControlsPanel.css';
 
 export const GameControlsPanel: React.FC = () => {

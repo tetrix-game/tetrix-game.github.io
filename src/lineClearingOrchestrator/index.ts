@@ -10,15 +10,13 @@
  * - Detecting full board clears
  */
 
-import type { Tile, TileAnimation, TilesSet } from '../types';
 import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../lineUtils';
 import { playSound as playSoundModule } from '../playSound';
 import { calculateScore } from '../scoringUtils';
+import type { TilesSet } from '../types';
 
 const { playSound } = playSoundModule;
-
-type AnimationConfig = AnimationConfig;
 
 const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
   rows: {

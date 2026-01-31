@@ -9,13 +9,12 @@
  * before other reducers might need that updated state.
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types';
-
 import { dragReducer } from '../dragReducer';
 import { gameStateReducer, initialGameState } from '../gameStateReducer';
 import { scoringReducer } from '../scoringReducer';
 import { shapeReducer } from '../shapeReducer';
 import { tileReducer } from '../tileReducer';
+import type { TetrixReducerState, TetrixAction } from '../types';
 
 export const initialState: TetrixReducerState = initialGameState;
 

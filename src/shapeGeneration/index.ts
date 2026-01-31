@@ -1,5 +1,5 @@
-import type { Shape, Block, ColorName } from '../types';
 import { shapeTransforms } from '../shapeTransforms';
+import type { Shape, Block, ColorName } from '../types';
 
 const { rotateShape, cloneShape, makeRandomColor } = shapeTransforms;
 

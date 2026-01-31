@@ -3,8 +3,8 @@
  * Actions: ADD_SCORE, SHOW_COIN_DISPLAY, HIDE_COIN_DISPLAY, SPEND_COIN, UPDATE_GEM_ICON_POSITION
  */
 
-import type { TetrixReducerState, TetrixAction } from '../types';
 import { persistence } from '../persistence';
+import type { TetrixReducerState, TetrixAction } from '../types';
 
 const { safeBatchSave } = persistence;
 

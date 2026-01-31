@@ -1,13 +1,13 @@
 import { useMemo, useCallback } from 'react';
 
-import { SoundEffectsControlContext } from '../SoundEffectsControlContext';
-import { useSoundEffects } from '../SoundEffectsProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
-import { useMusicControl } from '../useMusicControl';
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { BackgroundMusic } from '../BackgroundMusic';
 import { ScoreDisplay } from '../ScoreDisplay';
 import { SettingsOverlay } from '../SettingsOverlay';
+import { SoundEffectsControlContext } from '../SoundEffectsControlContext';
+import { useSoundEffects } from '../SoundEffectsProvider';
+import { useTetrixStateContext } from '../TetrixProvider';
+import { useMusicControl } from '../useMusicControl';
 import './Header.css';
 
 export const Header: React.FC = () => {

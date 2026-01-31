@@ -1,7 +1,6 @@
-import type { Shape, TilesSet } from '../types';
-import type { GameMode } from '../types';
 import { shapeTransforms } from '../shapeTransforms';
 import { isValidPlacement } from '../shapeValidation';
+import type { Shape, TilesSet, GameMode } from '../types';
 
 const { rotateShape } = shapeTransforms;
 

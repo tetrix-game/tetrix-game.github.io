@@ -8,18 +8,17 @@ import { QRCodeSVG } from 'qrcode.react';
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-import { APP_VERSION } from '../version';
+import { InstallButton } from '../InstallButton';
+import { loadDebugSettings, saveDebugSettings } from '../persistence';
 // TODO: GridEditorProvider removed during reorganization - needs to be restored
 // import { useGridEditor } from '../contexts/GridEditorProvider';
-import { loadDebugSettings, saveDebugSettings } from '../persistence';
 import { shapeGenerationWithProbabilities } from '../shapeGenerationWithProbabilities';
 import { useSoundEffectsControl } from '../SoundEffectsControlContext';
-import { useTetrixDispatchContext } from '../TetrixProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
-import { useMusicControl } from '../useMusicControl';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
 import type { ThemeName, BlockTheme } from '../types';
 import { theme } from '../types';
-import { InstallButton } from '../InstallButton';
+import { useMusicControl } from '../useMusicControl';
+import { APP_VERSION } from '../version';
 import './SettingsOverlay.css';
 
 const { generateShapesWithProbabilities } = shapeGenerationWithProbabilities;
@@ -152,7 +151,8 @@ export const SettingsOverlay: React.FC = () => {
   const dispatch = useTetrixDispatchContext();
   // TODO: Restore GridEditor when provider is available
   // const { openEditor: openGridEditor } = useGridEditor();
-  const openGridEditor = () => console.warn('Grid Editor disabled - provider needs restoration');
+  // eslint-disable-next-line no-console
+  const openGridEditor = (): void => console.warn('Grid Editor disabled - provider needs restoration');
   const [debugUnlocked, setDebugUnlocked] = useState(false);
   const [debugClickCount, setDebugClickCount] = useState(0);
 

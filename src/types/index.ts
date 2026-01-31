@@ -88,7 +88,6 @@ function tilesToArray(tiles: TilesSet): TileData[] {
   }));
 }
 
-
 // ============================================================================
 // ANIMATION TYPES
 // ============================================================================
@@ -108,7 +107,6 @@ export type ShapeOptionBounds = {
 // ============================================================================
 // DRAG TYPES
 // ============================================================================
-
 
 // Drag phase-based animation system
 export type DragPhase = 'none' | 'picking-up' | 'dragging' | 'placing' | 'returning';
@@ -143,7 +141,6 @@ export type DragState = {
 // ============================================================================
 // GAMESTATE TYPES
 // ============================================================================
-
 
 // Game state types - simplified for level-based play
 export type GameState = 'playing' | 'gameover';
@@ -325,8 +322,8 @@ type AddScoreAction = {
 type LoadGameStateAction = {
   type: 'LOAD_GAME_STATE';
   value: {
-    gameData: import('../persistence').SavedGameState;
-    stats?: import('../stats').StatsPersistenceData; // Optional stats
+    gameData: SavedGameState;
+    stats?: StatsPersistenceData; // Optional stats
   };
 };
 
@@ -615,7 +612,6 @@ export type TetrixDispatch = React.Dispatch<TetrixAction>;
 // PERSISTENCE TYPES
 // ============================================================================
 
-
 // Serialized queue item for persistence
 export type SerializedQueueItem = | { type: 'shape'; shape: Shape }
   | { type: 'purchasable-slot'; cost: number; slotNumber: number };
@@ -633,9 +629,9 @@ export type SavedGameState = {
   totalLinesCleared: number;
   shapesUsed: number;
   hasPlacedFirstShape: boolean;
-  stats: import('../stats').StatsPersistenceData;
-  queueMode?: import('../shapeQueue').QueueMode;
-  queueColorProbabilities?: import('../shapeQueue').ColorProbability[];
+  stats: StatsPersistenceData;
+  queueMode?: QueueMode;
+  queueColorProbabilities?: ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
   unlockedSlots?: number[]; // Array of unlocked shape slot numbers (1-4) for JSON serialization
@@ -674,8 +670,6 @@ export type ModifiersPersistenceData = {
   lastUpdated: number;
 };
 
-export type StatsPersistenceData = import('../stats').StatsPersistenceData;
-
 // Load result type distinguishes between empty (new user) and error states
 export type LoadResult<T> = | { status: 'success'; data: T }
   | { status: 'not_found' } // Valid: New user
@@ -694,7 +688,6 @@ export type ScoreData = {
 // ============================================================================
 // SHAPEQUEUE TYPES
 // ============================================================================
-
 
 /**
  * Queue mode - determines how shapes are generated and stored
@@ -753,8 +746,7 @@ export const shapeQueue = {
 // STATS TYPES
 // ============================================================================
 
-export type StatCategory =
-  | 'shapesPlaced'
+export type StatCategory = | 'shapesPlaced'
   | 'linesCleared'
   | 'coloredLinesCleared'
   | 'rowsCleared'

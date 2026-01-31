@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 
-import type { ColorName } from '../types';
 import { ShapeIcon } from '../ShapeIcon';
+import type { ColorName } from '../types';
 
 describe('ShapeIcon Component', () => {
   const colors: ColorName[] = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey'];

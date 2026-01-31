@@ -1,6 +1,5 @@
 import { useReducer, useEffect, useState, createContext, useContext } from 'react';
 
-import type { ThemeName, BlockTheme, TetrixReducerState, TetrixDispatch } from '../types';
 import {
   loadTheme,
   loadGameState,
@@ -8,6 +7,7 @@ import {
 } from '../persistence';
 import { persistenceAdapter } from '../persistenceAdapter';
 import { initialState, tetrixReducer } from '../reducers';
+import type { ThemeName, BlockTheme, TetrixReducerState, TetrixDispatch } from '../types';
 
 const { loadModifiers, initializePersistence, clearAllDataAndReload } = persistenceAdapter;
 

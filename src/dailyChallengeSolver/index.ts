@@ -1,7 +1,7 @@
-import type { Shape, ColorName, TilesSet } from '../types';
 import { shapeGeneration } from '../shapeGeneration';
 import { getFilledBlocks } from '../shapeGeometry';
 import { shapeTransforms } from '../shapeTransforms';
+import type { Shape, ColorName, TilesSet } from '../types';
 
 const {
   generateIPiece,

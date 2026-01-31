@@ -29,8 +29,6 @@ export interface SoundEffectsContextValue {
   isEnabled: boolean;
 }
 
-type SoundEffect = SoundEffect;
-
 // Context definition (internal)
 const SoundEffectsContext = createContext<
   SoundEffectsContextValue | undefined

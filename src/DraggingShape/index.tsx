@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { BlockVisual } from '../BlockVisual';
 import { animationConstants } from '../animationConstants';
+import { BlockVisual } from '../BlockVisual';
 import { shapeGeometry } from '../shapeGeometry';
 import { useSoundEffects } from '../SoundEffectsProvider';
-import { useTetrixDispatchContext } from '../TetrixProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
 import { useGameSizing } from '../useGameSizing';
 import './DraggingShape.css';
 

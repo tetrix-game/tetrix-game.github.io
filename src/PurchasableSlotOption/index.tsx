@@ -2,8 +2,7 @@ import './PurchasableSlotOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
 import { animationConstants } from '../animationConstants';
-import { useTetrixDispatchContext } from '../TetrixProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
 
 const { ANIMATION_TIMING } = animationConstants;
 
@@ -90,7 +89,7 @@ export const PurchasableSlotOption = ({
     <div
       ref={containerRef}
       className={`purchasable-slot-option ${canAfford ? 'affordable' : 'locked'
-        } ${isAnimatingRemoval ? 'removing' : ''}`}
+      } ${isAnimatingRemoval ? 'removing' : ''}`}
       onClick={handleClick}
       id={slotId}
     >

@@ -27,10 +27,6 @@ export type AnimationTierConfig = {
   finishDuration?: number; // Duration of the shrink/fade out phase
 };
 
-// Type aliases for internal use
-type AnimationTierConfig = AnimationTierConfig;
-type AnimationConfig = AnimationConfig;
-
 export type AnimationConfig = {
   rows: {
     single: AnimationTierConfig;

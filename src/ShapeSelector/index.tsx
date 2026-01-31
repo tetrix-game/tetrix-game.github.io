@@ -1,13 +1,12 @@
 import './ShapeSelector.css';
 import { useEffect, useMemo } from 'react';
 
-import { shapeGeneration } from '../shapeGeneration';
-import { useTetrixDispatchContext } from '../TetrixProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
-import type { QueueItem, PurchasableSlot } from '../types';
 import { PurchasableSlotOption } from '../PurchasableSlotOption';
+import { shapeGeneration } from '../shapeGeneration';
 import { ShapeOption } from '../ShapeOption';
 import { ShapeProducerViewport } from '../ShapeProducerViewport';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
+import type { QueueItem, PurchasableSlot } from '../types';
 
 const { generateRandomShape } = shapeGeneration;
 

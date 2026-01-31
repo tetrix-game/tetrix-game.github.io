@@ -1,6 +1,5 @@
-import type { Shape, Location, TilesSet } from '../types';
-import type { GameMode } from '../types';
 import { gridConstants } from '../gridConstants';
+import type { Shape, Location, TilesSet, GameMode } from '../types';
 
 const { GRID_SIZE } = gridConstants;
 

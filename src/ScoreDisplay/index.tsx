@@ -1,12 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 
 import { BlueGemIcon } from '../BlueGemIcon';
-import { useVisualError } from '../useVisualError';
-import { formatScore } from '../scoringUtils';
-import { useTetrixDispatchContext } from '../TetrixProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
 import { ErrorPointer } from '../Pointer/ErrorPointer';
+import { formatScore } from '../scoringUtils';
 import { StatsOverlay } from '../StatsOverlay';
+import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
+import { useVisualError } from '../useVisualError';
 import '../App/feedback.css';
 import './ScoreDisplay.css';
 

@@ -234,18 +234,18 @@ async function updateSettings(
   const updated: GameSettingsPersistenceData = {
     music: current?.music
       || {
-      isMuted: false,
-      volume: 100,
-      isEnabled: true,
-      lastUpdated: Date.now(),
-    },
+        isMuted: false,
+        volume: 100,
+        isEnabled: true,
+        lastUpdated: Date.now(),
+      },
     soundEffects: current?.soundEffects
       || {
-      isMuted: false,
-      volume: 100,
-      isEnabled: true,
-      lastUpdated: Date.now(),
-    },
+        isMuted: false,
+        volume: 100,
+        isEnabled: true,
+        lastUpdated: Date.now(),
+      },
     ...current,
     ...updates,
     lastUpdated: Date.now(),

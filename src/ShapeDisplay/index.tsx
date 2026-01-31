@@ -3,8 +3,7 @@ import { useMemo, useRef, useEffect, useState } from 'react';
 
 import { BlockVisual } from '../BlockVisual';
 import { shapeGeometry } from '../shapeGeometry';
-import type { Shape } from '../types';
-import type { BlockTheme } from '../types';
+import type { Shape, BlockTheme } from '../types';
 
 const { getShapeBounds } = shapeGeometry;
 

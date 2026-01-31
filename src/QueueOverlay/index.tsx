@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { Overlay } from '../Overlay';
+import { ShapeDisplay } from '../ShapeDisplay';
 import { useTetrixStateContext } from '../TetrixProvider';
 import type { Shape } from '../types';
-import { ShapeDisplay } from '../ShapeDisplay';
 import './QueueOverlay.css';
 
 interface QueueOverlayProps {

@@ -10,7 +10,7 @@ import { gridConstants } from '../gridConstants';
 import { checkMapCompletion } from '../mapCompletionUtils';
 import { updateStats } from '../statsUtils';
 import { shapeQueue, stats } from '../types';
-import type { Tile, QueuedShape, QueueItem, Shape, ColorName, TetrixReducerState, TetrixAction } from '../types';
+import type { Tile, QueuedShape, QueueItem, Shape, ColorName, TetrixReducerState, TetrixAction, TileAnimation } from '../types';
 
 const { DEFAULT_COLOR_PROBABILITIES } = shapeQueue;
 const { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } = stats;
@@ -75,7 +75,7 @@ const initialGameState = {
   shapeRemovalAnimationState: 'none' as const,
   newShapeAnimationStates: [],
   shapeOptionBounds: [],
-  score: 100000,
+  score: 0,
   totalLinesCleared: 0,
   showCoinDisplay: false,
   queueMode: 'infinite' as const,
@@ -237,6 +237,12 @@ export function gameStateReducer(
           backgroundColor?: ColorName;
           isFilled?: boolean;
           color?: ColorName;
+          activeAnimations?: Array<{
+            id: string;
+            type: string;
+            startTime: number;
+            duration: number;
+          }>;
         };
         gameData.tiles.forEach((tileData: TileDataFormat) => {
           // Old format: has location and block properties
@@ -261,7 +267,7 @@ export function gameStateReducer(
                 isFilled: tileData.isFilled ?? false,
                 color: tileData.color ?? 'grey',
               },
-              activeAnimations: tileData.activeAnimations || [],
+              activeAnimations: (tileData.activeAnimations || []) as TileAnimation[],
             };
             if (tileData.isFilled) {
               hasFilledTiles = true;

@@ -12,6 +12,7 @@ import type {
   GameSettingsPersistenceData,
   ModifiersPersistenceData,
   LoadResult,
+  GameStats,
 } from '../types';
 import { APP_VERSION } from '../version';
 
@@ -417,8 +418,8 @@ async function clearAllDataAndReload(): Promise<void> {
   try {
     // STEP 1: Extract and preserve long-term statistics
     let preservedStats: {
-      allTime: unknown;
-      highScore: unknown;
+      allTime: GameStats;
+      highScore: GameStats;
       noTurnStreak: { allTimeBest: number };
     } | null = null;
 

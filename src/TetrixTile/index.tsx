@@ -72,8 +72,6 @@ const TetrixTileComponent = ({
       col={col}
       backgroundColor={backgroundColor as ColorName}
       className="tetrix-tile"
-      // Pass data attributes for event delegation in parent
-      {...{ 'data-row': row, 'data-col': col } as React.HTMLAttributes<HTMLDivElement>}
     >
       <BlockVisual
         isFilled={blockIsFilled}

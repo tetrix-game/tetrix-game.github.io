@@ -15,7 +15,7 @@ type PurchasableSlotOptionProps = {
 
 export const PurchasableSlotOption = ({
   cost,
-  slotNumber,
+  slotNumber: _slotNumber,
   slotIndex,
   id,
 }: PurchasableSlotOptionProps): JSX.Element => {
@@ -85,6 +85,9 @@ export const PurchasableSlotOption = ({
     });
   }, [isAnimatingRemoval, canAfford, slotIndex, dispatch]);
 
+  // Format cost for display (e.g., 5000 -> 5k)
+  const formattedCost = cost >= 1000 ? `${cost / 1000}k` : cost.toString();
+
   return (
     <div
       ref={containerRef}
@@ -95,9 +98,8 @@ export const PurchasableSlotOption = ({
     >
       <div className="purchasable-slot-content">
         <div className="lock-icon">{canAfford ? '🔓' : '🔒'}</div>
-        <div className="slot-label">Slot {slotNumber}</div>
         <div className="cost-display">
-          <span className="cost-amount">{cost}</span>
+          <span className="cost-amount">{formattedCost}</span>
           <span className="cost-icon">💎</span>
         </div>
       </div>

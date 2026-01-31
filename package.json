@@ -8,6 +8,7 @@
     "start": "vite --host",
     "build": "npm run lint:ci && tsc -p tsconfig.app.json && vite build",
     "bump-version": "node bump-version.js",
+    "auto-publish": "node auto-publish.js",
     "publish": "npm run bump-version && npm run generate-icons && npm run build && gh-pages -d dist",
     "lint": "eslint .",
     "lint:ci": "eslint . --config eslint.config.ci.js",

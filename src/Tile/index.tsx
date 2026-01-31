@@ -1,8 +1,7 @@
 import React, { ReactNode } from 'react';
 
-import type { ColorName } from '../App/types/core';
+import type { ColorName } from '../types';
 import { ShapeIcon } from '../ShapeIcon';
-
 import { TileSvg } from '../TileSvg';
 import './Tile.css';
 
@@ -19,7 +18,7 @@ interface TileProps {
   style?: React.CSSProperties;
 }
 
-const Tile: React.FC<TileProps> = ({
+const TileComponent: React.FC<TileProps> = ({
   row,
   col,
   backgroundColor,
@@ -76,4 +75,4 @@ const Tile: React.FC<TileProps> = ({
   );
 };
 
-export const Tile = React.memo(Tile);
+export const Tile = React.memo(TileComponent);

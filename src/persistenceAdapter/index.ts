@@ -5,16 +5,18 @@
  * Uses the CRUD pattern for IndexedDB operations.
  */
 
-import { APP_VERSION } from '../version';
+import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../checksumUtils';
+import { indexedDBCrud } from '../indexedDBCrud';
 import type {
   SavedGameState,
   GameSettingsPersistenceData,
   ModifiersPersistenceData,
   LoadResult,
 } from '../types';
-import { generateChecksumManifest, verifyChecksumManifest, type ChecksumManifest } from '../checksumUtils';
-import * as crud from '../indexedDBCrud';
-import { STORES } from '../indexedDBCrud';
+import { APP_VERSION } from '../version';
+
+const { STORES } = indexedDBCrud;
+const crud = indexedDBCrud;
 
 // Toggle this to enable/disable persistence logging
 const DEBUG_PERSISTENCE_CHECKSUMS = false;

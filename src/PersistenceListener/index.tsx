@@ -3,10 +3,10 @@ import { useEffect, useRef } from 'react';
 import { safeBatchSave, saveTheme, saveBlockTheme } from '../persistence';
 import { persistenceAdapter } from '../persistenceAdapter';
 import { useTetrixStateContext } from '../TetrixProvider';
-import { core } from '../types';
+import { types } from '../types';
 
 const { updateSettings, saveModifiers, clearGameBoard } = persistenceAdapter;
-const { tilesToArray } = core;
+const { tilesToArray } = types;
 
 /**
  * PersistenceListener

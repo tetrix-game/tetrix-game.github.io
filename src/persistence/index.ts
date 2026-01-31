@@ -4,7 +4,7 @@
  * Provides easy-to-use functions for common persistence operations.
  */
 
-import type { Shape, Tile, TileData } from '../types';
+import type { Shape, Tile, TileData, QueueItem } from '../types';
 import type { SavedGameState, LoadResult, SerializedQueueItem } from '../types';
 import type { StatsPersistenceData } from '../types';
 import { persistenceAdapter } from '../persistenceAdapter';
@@ -49,8 +49,8 @@ export async function saveGameState(data: {
   shapesUsed?: number;
   hasPlacedFirstShape?: boolean;
   stats?: StatsPersistenceData;
-  queueMode?: import('../types/shapeQueue').QueueMode;
-  queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
+  queueMode?: import('../types').QueueMode;
+  queueColorProbabilities?: import('../types').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
   unlockedSlots?: Set<number>;
@@ -111,8 +111,8 @@ export async function loadGameState(): Promise<{
   shapesUsed: number;
   hasPlacedFirstShape: boolean;
   stats: StatsPersistenceData;
-  queueMode?: import('../types/shapeQueue').QueueMode;
-  queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
+  queueMode?: import('../types').QueueMode;
+  queueColorProbabilities?: import('../types').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
   unlockedSlots?: number[];
@@ -141,8 +141,8 @@ export async function safeBatchSave(data: {
   totalLinesCleared?: number;
   shapesUsed?: number;
   hasPlacedFirstShape?: boolean;
-  queueMode?: import('../types/shapeQueue').QueueMode;
-  queueColorProbabilities?: import('../types/shapeQueue').ColorProbability[];
+  queueMode?: import('../types').QueueMode;
+  queueColorProbabilities?: import('../types').ColorProbability[];
   queueHiddenShapes?: Shape[];
   queueSize?: number;
   unlockedSlots?: Set<number>;
@@ -308,7 +308,7 @@ export async function saveBlockTheme(blockTheme: string): Promise<void> {
 /**
  * Load settings
  */
-export async function loadSettingsData(): Promise<LoadResult<import('../types/persistence').GameSettingsPersistenceData>> {
+export async function loadSettingsData(): Promise<LoadResult<import('../types').GameSettingsPersistenceData>> {
   return await loadSettingsAdapter();
 }
 

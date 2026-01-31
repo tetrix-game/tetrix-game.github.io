@@ -13,8 +13,10 @@
 import type { Tile, TileAnimation, TilesSet } from '../types';
 import { generateClearingAnimations, generateFullBoardClearAnimation, AnimationConfig } from '../clearingAnimationUtils';
 import { clearFullLines, isGridCompletelyEmpty } from '../lineUtils';
-import { playSound } from '../playSound';
+import { playSound as playSoundModule } from '../playSound';
 import { calculateScore } from '../scoringUtils';
+
+const { playSound } = playSoundModule;
 
 type AnimationConfig = AnimationConfig;
 

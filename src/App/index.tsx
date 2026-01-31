@@ -4,15 +4,14 @@ import { DraggingShape } from '../DraggingShape';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { FullScreenButton as FullScreenFloatingActionButton } from '../FullScreenButton';
 import { Header } from '../Header';
-import { PersistenceListener } from '../PersistenceListener';
 import { MusicControlProvider } from '../MusicControlProvider';
+import { PersistenceListener } from '../PersistenceListener';
 import { SoundEffectsProvider } from '../SoundEffectsProvider';
-import { TetrixProvider } from '../TetrixProvider';
 import { Tetrix } from '../Tetrix';
+import { TetrixProvider } from '../TetrixProvider';
 import { ThemeProvider } from '../ThemeProvider';
 import { ToastOverlay } from '../ToastOverlay';
 import { UpdateNotification } from '../UpdateNotification';
-
 import { usePointerTracking } from '../usePointerTracking';
 import { useShapePlacement } from '../useShapePlacement';
 import { useUpdateNotification } from '../useUpdateNotification';

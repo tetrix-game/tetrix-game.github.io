@@ -136,6 +136,7 @@ function createBlockPalette(baseColors: Record<ColorName, string>): BlockColorPa
  * Dark mode block colors - vibrant colors that pop against dark background
  */
 const DARK_MODE_BASE_COLORS: Record<ColorName, string> = {
+  white: 'rgb(240, 240, 240)',
   grey: 'rgb(140, 140, 140)',
   red: 'rgb(239, 68, 68)',
   orange: 'rgb(249, 115, 22)',
@@ -149,6 +150,7 @@ const DARK_MODE_BASE_COLORS: Record<ColorName, string> = {
  * Light mode block colors - slightly muted colors that work on light background
  */
 const LIGHT_MODE_BASE_COLORS: Record<ColorName, string> = {
+  white: 'rgb(220, 220, 220)',
   grey: 'rgb(115, 115, 115)',
   red: 'rgb(220, 38, 38)',
   orange: 'rgb(234, 88, 12)',
@@ -162,6 +164,7 @@ const LIGHT_MODE_BASE_COLORS: Record<ColorName, string> = {
  * Block blast mode block colors - saturated, vibrant colors for the gradient background
  */
 const BLOCK_BLAST_BASE_COLORS: Record<ColorName, string> = {
+  white: 'rgb(235, 240, 250)',
   grey: 'rgb(120, 140, 160)',
   red: 'rgb(220, 50, 50)',
   orange: 'rgb(230, 100, 30)',

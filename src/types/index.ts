@@ -37,7 +37,7 @@ export type QueueItem = QueuedShape | PurchasableSlot;
 
 export type Location = { row: number; column: number };
 
-export type ColorName = 'grey' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple';
+export type ColorName = 'white' | 'grey' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple';
 
 export type Block = {
   color: ColorName;

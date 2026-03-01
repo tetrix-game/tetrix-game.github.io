@@ -1,3 +1,4 @@
+import { getShapeColor, type ShapeType } from '../shapeColorMapping';
 import { shapeTransforms } from '../shapeTransforms';
 import type { Shape, Block, ColorName } from '../types';
 
@@ -11,7 +12,7 @@ const { rotateShape, cloneShape, makeRandomColor } = shapeTransforms;
  * Helper function to create an empty block
  */
 function createEmptyBlock(): Block {
-  return { color: makeRandomColor(), isFilled: false };
+  return { color: 'grey', isFilled: false };
 }
 
 /**
@@ -280,97 +281,91 @@ export function generateSuperShape(): Shape {
  * Each base shape type has equal likelihood of being selected, then orientation is randomly chosen
  *
  * Shape types and their rotation counts:
- * - I-piece (4-block line): 2 unique rotations
- * - O-piece (square): 1 rotation (no change)
- * - T-piece: 4 rotations
- * - S-piece: 2 unique rotations
- * - Z-piece: 2 unique rotations
- * - L-piece: 4 rotations
- * - J-piece: 4 rotations
+ * - I-piece (4-block line): 2 unique rotations → blue
+ * - O-piece (square): 1 rotation (no change) → yellow
+ * - T-piece: 4 rotations → purple
+ * - S-piece: 2 unique rotations → green
+ * - Z-piece: 2 unique rotations → red
+ * - L-piece: 4 rotations → orange
+ * - J-piece: 4 rotations → blue
  *
  * Note: Super combo piece is not in regular rotation - only generated as easter egg
  */
 export function generateRandomShape(): Shape {
-  const color = makeRandomColor();
-  const _ = (): Block => ({ color: makeRandomColor(), isFilled: false }); // empty block
-  const X = (): Block => ({ color, isFilled: true }); // filled block
-
-  // Define base shape templates and their unique rotation counts
-  const shapeTemplates: Array<{ template: Shape; rotations: number }> = [
-    // I-piece (4-block line) - 2 unique rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), _(), _(), _()],
-        [X(), X(), X(), X()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 2,
-    },
-    // O-piece (2x2 square) - 1 rotation (all rotations are identical)
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), X(), X(), _()],
-        [_(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 1,
-    },
-    // T-piece - 4 rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), X(), _(), _()],
-        [X(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 4,
-    },
-    // S-piece - 2 unique rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), X(), X(), _()],
-        [X(), X(), _(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 2,
-    },
-    // Z-piece - 2 unique rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [X(), X(), _(), _()],
-        [_(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 2,
-    },
-    // J-piece - 4 rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [X(), _(), _(), _()],
-        [X(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 4,
-    },
-    // L-piece - 4 rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [X(), X(), X(), _()],
-        [X(), _(), _(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 4,
-    },
+  // Define base shape templates with their type metadata and unique rotation counts
+  const shapeTemplates: Array<{ type: ShapeType; rotations: number }> = [
+    { type: 'I', rotations: 2 },
+    { type: 'O', rotations: 1 },
+    { type: 'T', rotations: 4 },
+    { type: 'S', rotations: 2 },
+    { type: 'Z', rotations: 2 },
+    { type: 'J', rotations: 4 },
+    { type: 'L', rotations: 4 },
   ];
 
   // Select a random shape template
-  const { template, rotations } = shapeTemplates[Math.floor(Math.random() * shapeTemplates.length)];
+  const { type, rotations } = shapeTemplates[Math.floor(Math.random() * shapeTemplates.length)];
+
+  // Get the designated color for this shape type
+  const color = getShapeColor(type);
+  const _ = createEmptyBlock;
+  const X = (): Block => ({ color, isFilled: true }); // filled block
+
+  // Map shape type to template
+  const shapeTypeTemplates: Record<ShapeType, Shape> = {
+    'I': [
+      [_(), _(), _(), _()],
+      [_(), _(), _(), _()],
+      [X(), X(), X(), X()],
+      [_(), _(), _(), _()],
+    ],
+    'O': [
+      [_(), _(), _(), _()],
+      [_(), X(), X(), _()],
+      [_(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'T': [
+      [_(), _(), _(), _()],
+      [_(), X(), _(), _()],
+      [X(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'S': [
+      [_(), _(), _(), _()],
+      [_(), X(), X(), _()],
+      [X(), X(), _(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'Z': [
+      [_(), _(), _(), _()],
+      [X(), X(), _(), _()],
+      [_(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'J': [
+      [_(), _(), _(), _()],
+      [X(), _(), _(), _()],
+      [X(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'L': [
+      [_(), _(), _(), _()],
+      [X(), X(), X(), _()],
+      [X(), _(), _(), _()],
+      [_(), _(), _(), _()],
+    ],
+    // Extended shapes (not used in generateRandomShape but required by type)
+    '3x3': [],
+    '3x2': [],
+    '5x1': [],
+    '3x1': [],
+    '2x1': [],
+    '1x1': [],
+    'EvenL': [],
+  };
+
+  const template = shapeTypeTemplates[type];
 
   // Apply a random number of rotations (0 to rotations-1)
   const numRotations = Math.floor(Math.random() * rotations);

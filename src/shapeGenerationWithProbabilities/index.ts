@@ -1,132 +1,105 @@
+import { getShapeColor, type ShapeType } from '../shapeColorMapping';
 import { shapeTransforms } from '../shapeTransforms';
-import type { Shape, ColorName, ColorProbability, Block } from '../types';
+import type { Shape, ColorProbability, Block } from '../types';
 
 const { rotateShape, cloneShape } = shapeTransforms;
 
 /**
  * Shape generation with configurable color probabilities
+ * Note: Color probabilities are now deprecated in favor of consistent shape-based colors
  */
 
 /**
- * Select a random color based on probability weights
- * @param probabilities Array of colors and their weights
- * @returns Selected color
+ * Helper function to create an empty block
  */
-function selectColorByProbability(probabilities: ColorProbability[]): ColorName {
-  // Calculate total weight
-  const totalWeight = probabilities.reduce((sum, p) => sum + p.weight, 0);
-
-  if (totalWeight === 0) {
-    // Fallback to first color if no weights
-    return probabilities[0]?.color || 'blue';
-  }
-
-  // Generate random number between 0 and totalWeight
-  const random = Math.random() * totalWeight;
-
-  // Find which color this random value corresponds to
-  let cumulativeWeight = 0;
-  for (const { color, weight } of probabilities) {
-    cumulativeWeight += weight;
-    if (random < cumulativeWeight) {
-      return color;
-    }
-  }
-
-  // Fallback (should never reach here)
-  return probabilities[probabilities.length - 1].color;
+function createEmptyBlock(): Block {
+  return { color: 'grey', isFilled: false };
 }
 
 /**
  * Generate a random shape with specified color probabilities
- * @param colorProbabilities Array of colors and their weights
- * @returns Random shape with color selected by probability
+ * Note: Color probabilities are now ignored as shapes use consistent colors based on type.
+ * This parameter is kept for backward compatibility.
+ * @param _colorProbabilities Array of colors and their weights (ignored)
+ * @returns Random shape with color based on shape type
  */
 export function generateRandomShapeWithProbabilities(
-  colorProbabilities: ColorProbability[],
+  _colorProbabilities: ColorProbability[],
 ): Shape {
-  const color = selectColorByProbability(colorProbabilities);
-
-  // Use same logic as generateRandomShape but with selected color
-  const _ = (): Block => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
-  const X = (): Block => ({ color, isFilled: true });
-
-  // Define base shape templates and their unique rotation counts
-  const shapeTemplates: Array<{ template: Shape; rotations: number }> = [
-    // I-piece (4-block line) - 2 unique rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), _(), _(), _()],
-        [X(), X(), X(), X()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 2,
-    },
-    // O-piece (2x2 square) - 1 rotation (all rotations are identical)
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), X(), X(), _()],
-        [_(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 1,
-    },
-    // T-piece - 4 rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), X(), _(), _()],
-        [X(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 4,
-    },
-    // S-piece - 2 unique rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [_(), X(), X(), _()],
-        [X(), X(), _(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 2,
-    },
-    // Z-piece - 2 unique rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [X(), X(), _(), _()],
-        [_(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 2,
-    },
-    // J-piece - 4 rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [X(), _(), _(), _()],
-        [X(), X(), X(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 4,
-    },
-    // L-piece - 4 rotations
-    {
-      template: [
-        [_(), _(), _(), _()],
-        [X(), X(), X(), _()],
-        [X(), _(), _(), _()],
-        [_(), _(), _(), _()],
-      ],
-      rotations: 4,
-    },
+  // Define base shape templates with their type metadata and unique rotation counts
+  const shapeTemplates: Array<{ type: ShapeType; rotations: number }> = [
+    { type: 'I', rotations: 2 },
+    { type: 'O', rotations: 1 },
+    { type: 'T', rotations: 4 },
+    { type: 'S', rotations: 2 },
+    { type: 'Z', rotations: 2 },
+    { type: 'J', rotations: 4 },
+    { type: 'L', rotations: 4 },
   ];
 
   // Select a random shape template
-  const { template, rotations } = shapeTemplates[Math.floor(Math.random() * shapeTemplates.length)];
+  const { type, rotations } = shapeTemplates[Math.floor(Math.random() * shapeTemplates.length)];
+
+  // Get the designated color for this shape type
+  const color = getShapeColor(type);
+  const _ = createEmptyBlock;
+  const X = (): Block => ({ color, isFilled: true });
+
+  // Map shape type to template
+  const shapeTypeTemplates: Record<ShapeType, Shape> = {
+    'I': [
+      [_(), _(), _(), _()],
+      [_(), _(), _(), _()],
+      [X(), X(), X(), X()],
+      [_(), _(), _(), _()],
+    ],
+    'O': [
+      [_(), _(), _(), _()],
+      [_(), X(), X(), _()],
+      [_(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'T': [
+      [_(), _(), _(), _()],
+      [_(), X(), _(), _()],
+      [X(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'S': [
+      [_(), _(), _(), _()],
+      [_(), X(), X(), _()],
+      [X(), X(), _(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'Z': [
+      [_(), _(), _(), _()],
+      [X(), X(), _(), _()],
+      [_(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'J': [
+      [_(), _(), _(), _()],
+      [X(), _(), _(), _()],
+      [X(), X(), X(), _()],
+      [_(), _(), _(), _()],
+    ],
+    'L': [
+      [_(), _(), _(), _()],
+      [X(), X(), X(), _()],
+      [X(), _(), _(), _()],
+      [_(), _(), _(), _()],
+    ],
+    // Extended shapes (not used in this function but required by type)
+    '3x3': [],
+    '3x2': [],
+    '5x1': [],
+    '3x1': [],
+    '2x1': [],
+    '1x1': [],
+    'EvenL': [],
+  };
+
+  const template = shapeTypeTemplates[type];
 
   // Apply a random number of rotations (0 to rotations-1)
   const numRotations = Math.floor(Math.random() * rotations);
@@ -157,28 +130,25 @@ export function generateShapesWithProbabilities(
 }
 
 /**
- * Shape type enum for weighted selection
+ * Standard Tetris shape type (subset of full ShapeType)
  */
-type ShapeType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
+type StandardShapeType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
 
 /**
  * Generate a random shape with specified color probabilities and optional grandpa mode
  * In grandpa mode, Z and S shapes occur at 1/4 their normal frequency
- * @param colorProbabilities Array of colors and their weights
+ * Note: Color probabilities are now ignored as shapes use consistent colors based on type.
+ * This parameter is kept for backward compatibility.
+ * @param _colorProbabilities Array of colors and their weights (ignored)
  * @param grandpaMode If true, reduce Z and S shape frequency to 1/4
- * @returns Random shape with color selected by probability
+ * @returns Random shape with color based on shape type
  */
 export function generateRandomShapeWithGrandpaMode(
-  colorProbabilities: ColorProbability[],
+  _colorProbabilities: ColorProbability[],
   grandpaMode: boolean = false,
 ): Shape {
-  const color = selectColorByProbability(colorProbabilities);
-
-  const _ = (): Block => ({ color: selectColorByProbability(colorProbabilities), isFilled: false });
-  const X = (): Block => ({ color, isFilled: true });
-
   // Shape types with their weights (normal = 1, grandpa mode reduces Z/S to 0.25)
-  const shapeWeights: Array<{ type: ShapeType; weight: number }> = [
+  const shapeWeights: Array<{ type: StandardShapeType; weight: number }> = [
     { type: 'I', weight: 1 },
     { type: 'O', weight: 1 },
     { type: 'T', weight: 1 },
@@ -192,7 +162,7 @@ export function generateRandomShapeWithGrandpaMode(
   const totalWeight = shapeWeights.reduce((sum, s) => sum + s.weight, 0);
   const random = Math.random() * totalWeight;
   let cumulativeWeight = 0;
-  let selectedType: ShapeType = 'I';
+  let selectedType: StandardShapeType = 'I';
 
   for (const { type, weight } of shapeWeights) {
     cumulativeWeight += weight;
@@ -202,8 +172,13 @@ export function generateRandomShapeWithGrandpaMode(
     }
   }
 
+  // Get the designated color for this shape type
+  const color = getShapeColor(selectedType);
+  const _ = createEmptyBlock;
+  const X = (): Block => ({ color, isFilled: true });
+
   // Map shape type to template
-  const shapeTemplates: Record<ShapeType, { template: Shape; rotations: number }> = {
+  const shapeTemplates: Record<StandardShapeType, { template: Shape; rotations: number }> = {
     'I': {
       template: [
         [_(), _(), _(), _()],

@@ -250,12 +250,27 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       );
       const finalBounds = state.shapeOptionBounds.filter((_, index) => index !== indexToRemove);
 
+      // CRITICAL: If a shape is currently being dragged, adjust its index
+      // When we remove a shape at indexToRemove, all shapes after it shift down by 1
+      let newDragState = state.dragState;
+      if (
+        state.dragState.selectedShapeIndex !== null
+        && state.dragState.selectedShapeIndex > indexToRemove
+      ) {
+        // The dragged shape's index needs to decrease by 1
+        newDragState = {
+          ...state.dragState,
+          selectedShapeIndex: state.dragState.selectedShapeIndex - 1,
+        };
+      }
+
       return {
         ...state,
         nextShapes: finalShapes,
         openRotationMenus: finalRotationMenus,
         newShapeAnimationStates: finalAnimationStates,
         shapeOptionBounds: finalBounds,
+        dragState: newDragState,
         removingShapeIndex: null,
         shapeRemovalAnimationState: 'none',
       };
@@ -335,12 +350,27 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       );
       const finalBounds = state.shapeOptionBounds.filter((_, index) => index !== indexToRemove);
 
+      // CRITICAL: If a shape is currently being dragged, adjust its index
+      // When we remove a shape at indexToRemove, all shapes after it shift down by 1
+      let newDragState = state.dragState;
+      if (
+        state.dragState.selectedShapeIndex !== null
+        && state.dragState.selectedShapeIndex > indexToRemove
+      ) {
+        // The dragged shape's index needs to decrease by 1
+        newDragState = {
+          ...state.dragState,
+          selectedShapeIndex: state.dragState.selectedShapeIndex - 1,
+        };
+      }
+
       return {
         ...state,
         nextShapes: finalItems,
         openRotationMenus: finalRotationMenus,
         newShapeAnimationStates: finalAnimationStates,
         shapeOptionBounds: finalBounds,
+        dragState: newDragState,
         removingShapeIndex: null,
         shapeRemovalAnimationState: 'none',
         // unlockedSlots already incremented in PURCHASE_SHAPE_SLOT

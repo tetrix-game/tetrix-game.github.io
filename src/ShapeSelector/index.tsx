@@ -24,7 +24,7 @@ export const ShapeSelector = (): JSX.Element => {
   const initialQueue = useMemo(() => {
     const queue: QueueItem[] = [];
     let idCounter = 0;
-    const slotCosts: Record<number, number> = { 2: 5000, 3: 15000, 4: 50000 };
+    const slotCosts: Record<number, number> = { 2: 500, 3: 1500, 4: 5000 };
 
     // Build queue in order (slots 1, 2, 3, 4)
     for (let slotNumber = 1; slotNumber <= 4; slotNumber++) {

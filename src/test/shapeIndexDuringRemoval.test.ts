@@ -169,7 +169,7 @@ describe('Shape Index During Removal Animation', () => {
     const initialState: TetrixReducerState = {
       nextShapes: [
         { id: 0, shape: shape0, type: 'shape' },
-        { id: 1, type: 'purchasable-slot', cost: 5000, slotNumber: 2 },
+        { id: 1, type: 'purchasable-slot', cost: 500, slotNumber: 2 },
         { id: 2, shape: shape2, type: 'shape' },
         { id: 3, shape: shape3, type: 'shape' },
       ],

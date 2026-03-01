@@ -336,7 +336,7 @@ export function gameStateReducer(
         // LEGACY FORMAT: Old saves only had plain shapes, reconstruct queue
         // Build queue in order (slots 1, 2, 3, 4) based on which slots are unlocked
         const loadedPlainShapes: Shape[] = gameData.nextShapes || [];
-        const slotCosts: Record<number, number> = { 2: 5000, 3: 15000, 4: 50000 };
+        const slotCosts: Record<number, number> = { 2: 500, 3: 1500, 4: 5000 };
 
         let shapeIndex = 0;
         for (let slotNumber = 1; slotNumber <= 4; slotNumber++) {

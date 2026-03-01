@@ -767,7 +767,8 @@ export type StatCategory = | 'shapesPlaced'
   | 'quadrupleColumnsWithSingleRows'
   | 'singleColumnBySingleRow'
   | 'doubleColumnByDoubleRow'
-  | 'quadrupleRowByQuadrupleColumn';
+  | 'quadrupleRowByQuadrupleColumn'
+  | 'fullBoardClears';
 
 export type ColorStat = {
   [key in ColorName]?: number;
@@ -823,6 +824,7 @@ export const INITIAL_GAME_STATS: GameStats = {
   singleColumnBySingleRow: { ...INITIAL_STAT_VALUE },
   doubleColumnByDoubleRow: { ...INITIAL_STAT_VALUE },
   quadrupleRowByQuadrupleColumn: { ...INITIAL_STAT_VALUE },
+  fullBoardClears: { ...INITIAL_STAT_VALUE },
 };
 
 export const INITIAL_STATS_PERSISTENCE: StatsPersistenceData = {

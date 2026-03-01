@@ -40,6 +40,7 @@
   align-items: center;
   flex-grow: 1;
   height: 100%;
+  gap: 1rem;
 }
 
 /* Back button styling */

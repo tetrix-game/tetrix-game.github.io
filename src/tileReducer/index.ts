@@ -87,7 +87,12 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           color: 'grey' as const,
         }));
 
-        newStats = updateStats(state.stats, clearedRows, clearedColumns);
+        newStats = updateStats(
+          state.stats,
+          clearedRows,
+          clearedColumns,
+          lineClearResult.isFullBoardClear,
+        );
         // Increment no-turn streak (since shape was placed without rotating)
         newStats = incrementNoTurnStreak(newStats);
       }

@@ -2,6 +2,7 @@ import { useMemo, useCallback } from 'react';
 
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { BackgroundMusic } from '../BackgroundMusic';
+import { BoardClearDisplay } from '../BoardClearDisplay';
 import { ScoreDisplay } from '../ScoreDisplay';
 import { SettingsOverlay } from '../SettingsOverlay';
 import { SoundEffectsControlContext } from '../SoundEffectsControlContext';
@@ -42,6 +43,7 @@ export const Header: React.FC = () => {
         )}
         <div />
         <div className="header-center">
+          <BoardClearDisplay />
           <ScoreDisplay />
         </div>
         <SettingsOverlay />

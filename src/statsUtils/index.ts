@@ -8,6 +8,7 @@ export function updateStats(
   currentStats: StatsPersistenceData,
   clearedRows: { index: number; color?: string }[],
   clearedColumns: { index: number; color?: string }[],
+  isFullBoardClear: boolean = false,
 ): StatsPersistenceData {
   const newStats: StatsPersistenceData = JSON.parse(JSON.stringify(currentStats));
   const now = Date.now();
@@ -143,6 +144,11 @@ export function updateStats(
   if (r === 1 && c === 1) incrementStat('singleColumnBySingleRow', comboColor);
   if (r === 2 && c === 2) incrementStat('doubleColumnByDoubleRow', comboColor);
   if (r === 4 && c === 4) incrementStat('quadrupleRowByQuadrupleColumn', comboColor);
+
+  // Track full board clears
+  if (isFullBoardClear) {
+    incrementStat('fullBoardClears');
+  }
 
   return newStats;
 }

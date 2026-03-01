@@ -78,6 +78,7 @@ const CATEGORY_LABELS: Record<StatCategory, string> = {
   singleColumnBySingleRow: '1R x 1C',
   doubleColumnByDoubleRow: '2R x 2C',
   quadrupleRowByQuadrupleColumn: '4R x 4C',
+  fullBoardClears: 'Full Board Clears',
 };
 
 const COLORS: ColorName[] = ['blue', 'green', 'red', 'yellow', 'purple', 'orange'];

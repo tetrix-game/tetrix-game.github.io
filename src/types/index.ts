@@ -623,8 +623,7 @@ export type SavedGameState = {
   version: string; // App version - saves from different versions are treated as corrupted
   score: number;
   tiles: TileData[];
-  nextShapes: Shape[]; // Legacy field for backwards compatibility
-  nextQueue?: SerializedQueueItem[]; // New field - full queue with shapes and purchasable slots
+  nextQueue: SerializedQueueItem[]; // Full queue with shapes and purchasable slots
   savedShape: Shape | null;
   totalLinesCleared: number;
   shapesUsed: number;

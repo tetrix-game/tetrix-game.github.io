@@ -82,7 +82,7 @@ export function generateChecksumManifest(state: SavedGameState): ChecksumManifes
   // 1. Generate Leaf Nodes
   const scoreNode: ChecksumNode = { hash: hashLeaf(state.score) };
   const tilesNode: ChecksumNode = { hash: hashLeaf(state.tiles) };
-  const nextShapesNode: ChecksumNode = { hash: hashLeaf(state.nextShapes) };
+  const nextQueueNode: ChecksumNode = { hash: hashLeaf(state.nextQueue) };
   const savedShapeNode: ChecksumNode = { hash: hashLeaf(state.savedShape) };
   const statsNode: ChecksumNode = { hash: hashLeaf(state.stats) };
 
@@ -101,7 +101,7 @@ export function generateChecksumManifest(state: SavedGameState): ChecksumManifes
   const children: Record<string, ChecksumNode> = {
     score: scoreNode,
     tiles: tilesNode,
-    nextShapes: nextShapesNode,
+    nextQueue: nextQueueNode,
     savedShape: savedShapeNode,
     stats: statsNode,
     metadata: metadataNode,

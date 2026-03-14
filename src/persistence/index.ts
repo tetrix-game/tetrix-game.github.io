@@ -40,8 +40,7 @@ const {
 export async function saveGameState(data: {
   score: number;
   tiles: TileData[];
-  nextShapes?: Shape[]; // Legacy - for backwards compatibility
-  nextQueue?: QueueItem[]; // New - full queue with purchasable slots
+  nextQueue: QueueItem[]; // Full queue with purchasable slots
   savedShape: Shape | null;
   totalLinesCleared?: number;
   shapesUsed?: number;
@@ -55,7 +54,7 @@ export async function saveGameState(data: {
   // NOTE: isGameOver is NOT persisted - it's a derived state
 }): Promise<void> {
   // Serialize queue items (strip IDs, keep types and data)
-  const serializedQueue: SerializedQueueItem[] | undefined = data.nextQueue?.map((item) => {
+  const serializedQueue: SerializedQueueItem[] = data.nextQueue.map((item) => {
     if (item.type === 'shape') {
       return { type: 'shape' as const, shape: item.shape };
     }
@@ -66,19 +65,13 @@ export async function saveGameState(data: {
     };
   });
 
-  // For backwards compatibility, also extract plain shapes
-  const legacyShapes = data.nextQueue
-    ? data.nextQueue.filter((item) => item.type === 'shape').map((item) => item.shape)
-    : (data.nextShapes ?? []);
-
   const { APP_VERSION } = await import('../version');
 
   const gameState: SavedGameState = {
     version: APP_VERSION, // Include version for validation on load
     score: data.score,
     tiles: data.tiles,
-    nextShapes: legacyShapes, // Keep for backwards compatibility
-    nextQueue: serializedQueue, // New field - full queue structure
+    nextQueue: serializedQueue, // Full queue structure
     savedShape: data.savedShape,
     totalLinesCleared: data.totalLinesCleared ?? 0,
     shapesUsed: data.shapesUsed ?? 0,
@@ -102,8 +95,7 @@ export async function loadGameState(): Promise<{
   version: string;
   score: number;
   tiles: TileData[];
-  nextShapes: Shape[]; // Legacy
-  nextQueue?: SerializedQueueItem[]; // New - full queue
+  nextQueue: SerializedQueueItem[]; // Full queue
   savedShape: Shape | null;
   totalLinesCleared: number;
   shapesUsed: number;
@@ -132,8 +124,7 @@ export async function loadGameState(): Promise<{
 export async function safeBatchSave(data: {
   score?: number;
   tiles?: TileData[];
-  nextShapes?: Shape[]; // Legacy
-  nextQueue?: QueueItem[]; // New - full queue
+  nextQueue?: QueueItem[]; // Full queue
   savedShape?: Shape | null;
   stats?: StatsPersistenceData;
   totalLinesCleared?: number;
@@ -165,7 +156,6 @@ export async function safeBatchSave(data: {
   const updateData: Partial<SavedGameState> = {
     score: data.score,
     tiles: data.tiles,
-    nextShapes: data.nextShapes,
     nextQueue: serializedQueue,
     savedShape: data.savedShape,
     totalLinesCleared: data.totalLinesCleared,
@@ -186,8 +176,7 @@ export async function safeBatchSave(data: {
     await saveGameState({
       score: data.score ?? 0,
       tiles: data.tiles ?? [],
-      nextShapes: data.nextShapes,
-      nextQueue: data.nextQueue,
+      nextQueue: data.nextQueue ?? [],
       savedShape: data.savedShape ?? null,
       totalLinesCleared: data.totalLinesCleared,
       shapesUsed: data.shapesUsed,

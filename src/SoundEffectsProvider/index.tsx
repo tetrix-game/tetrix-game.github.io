@@ -266,13 +266,8 @@ export const SoundEffectsProvider: React.FC<{
     setVolumeState(clampedVolume);
 
     // Save to DB in background (async, non-blocking)
-    saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch((_error): void => {
-      // Fallback to localStorage
-      try {
-        localStorage.setItem('tetrix-soundeffects-volume', JSON.stringify(clampedVolume));
-      } catch {
-        // Ignore localStorage errors (might be disabled or full)
-      }
+    saveSoundEffectsSettings(!isEnabled, clampedVolume, isEnabled).catch(() => {
+      // Silently fail if persistence is unavailable
     });
   }, [isEnabled]);
 
@@ -281,13 +276,8 @@ export const SoundEffectsProvider: React.FC<{
     setIsEnabledState(enabled);
 
     // Save to DB in background (async, non-blocking)
-    saveSoundEffectsSettings(!enabled, volume, enabled).catch((_error): void => {
-      // Fallback to localStorage
-      try {
-        localStorage.setItem('tetrix-soundeffects-muted', JSON.stringify(!enabled));
-      } catch {
-        // Ignore localStorage errors (might be disabled or full)
-      }
+    saveSoundEffectsSettings(!enabled, volume, enabled).catch(() => {
+      // Silently fail if persistence is unavailable
     });
   }, [volume]);
 

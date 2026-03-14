@@ -74,7 +74,7 @@ async function loadGameState(): Promise<LoadResult<SavedGameState>> {
       // If any required field is missing/invalid, treat the entire save as corrupted
       const hasRequiredFields = typeof state.score === 'number'
         && Array.isArray(state.tiles)
-        && (Array.isArray(state.nextShapes) || Array.isArray(state.nextQueue))
+        && Array.isArray(state.nextQueue)
         && typeof state.lastUpdated === 'number'
         && state.stats !== null && state.stats !== undefined;
 
@@ -96,8 +96,7 @@ async function loadGameState(): Promise<LoadResult<SavedGameState>> {
         version: state.version,
         score: sanitizeNumber(state.score, 0),
         tiles: Array.isArray(state.tiles) ? state.tiles : [],
-        nextShapes: Array.isArray(state.nextShapes) ? state.nextShapes : [],
-        nextQueue: state.nextQueue,
+        nextQueue: Array.isArray(state.nextQueue) ? state.nextQueue : [],
         savedShape: state.savedShape ?? null,
         totalLinesCleared: sanitizeNumber(state.totalLinesCleared, 0),
         shapesUsed: sanitizeNumber(state.shapesUsed, 0),
@@ -153,8 +152,7 @@ async function clearGameBoard(): Promise<void> {
       version: APP_VERSION, // Update version on reset
       score: 0,
       tiles: [],
-      nextShapes: [],
-      nextQueue: undefined,
+      nextQueue: [],
       savedShape: null,
       totalLinesCleared: 0,
       shapesUsed: 0,
@@ -481,8 +479,7 @@ async function clearAllDataAndReload(): Promise<void> {
           version: APP_VERSION,
           score: 0,
           tiles: [],
-          nextShapes: [],
-          nextQueue: undefined,
+          nextQueue: [],
           savedShape: null,
           totalLinesCleared: 0,
           shapesUsed: 0,

@@ -79,14 +79,9 @@ export const MusicControlProvider: React.FC<{
       setShouldPlayMusic(true);
     }
 
-    // Save to IndexedDB (primary storage)
-    saveMusicSettings(!newEnabledState, volume, newEnabledState).catch((_error: Error) => {
-      // Fallback to localStorage
-      try {
-        localStorage.setItem('tetrix-music-muted', JSON.stringify(!newEnabledState));
-      } catch {
-        // Ignore localStorage errors (might be disabled or full)
-      }
+    // Save to IndexedDB
+    saveMusicSettings(!newEnabledState, volume, newEnabledState).catch(() => {
+      // Silently fail if persistence is unavailable
     });
   }, [isEnabled, volume]);
 

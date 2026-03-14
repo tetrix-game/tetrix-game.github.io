@@ -14,7 +14,7 @@ import type { Tile, QueuedShape, QueueItem, Shape, ColorName, TetrixReducerState
 
 const { DEFAULT_COLOR_PROBABILITIES } = shapeQueue;
 const { INITIAL_STATS_PERSISTENCE, INITIAL_GAME_STATS } = stats;
-const { GRID_ADDRESSES, makeTileKey } = gridConstants;
+const { GRID_ADDRESSES } = gridConstants;
 
 // Helper function to create tiles Map using plain Tile objects
 const makeTiles = (): Map<string, Tile> => {
@@ -230,10 +230,7 @@ export function gameStateReducer(
 
       if (Array.isArray(gameData.tiles)) {
         type TileDataFormat = {
-          location?: { row: number; column: number };
-          block?: { isFilled: boolean; color: ColorName };
-          tileBackgroundColor?: ColorName;
-          position?: string;
+          position: string;
           backgroundColor?: ColorName;
           isFilled?: boolean;
           color?: ColorName;
@@ -245,35 +242,20 @@ export function gameStateReducer(
           }>;
         };
         gameData.tiles.forEach((tileData: TileDataFormat) => {
-          // Old format: has location and block properties
-          if (tileData.location && tileData.block) {
-            const position = makeTileKey(tileData.location.row, tileData.location.column);
-            const tile: Tile = {
-              position,
-              backgroundColor: tileData.tileBackgroundColor || 'grey',
-              block: { isFilled: tileData.block.isFilled, color: tileData.block.color },
-              activeAnimations: [],
-            };
-            if (tileData.block.isFilled) {
-              hasFilledTiles = true;
-            }
-            tilesMap.set(position, tile);
-          } else if (tileData.position) {
-            // New format: TileData with position property
-            const tile: Tile = {
-              position: tileData.position,
-              backgroundColor: tileData.backgroundColor || 'grey',
-              block: {
-                isFilled: tileData.isFilled ?? false,
-                color: tileData.color ?? 'grey',
-              },
-              activeAnimations: (tileData.activeAnimations || []) as TileAnimation[],
-            };
-            if (tileData.isFilled) {
-              hasFilledTiles = true;
-            }
-            tilesMap.set(tile.position, tile);
+          // Current format: TileData with position property
+          const tile: Tile = {
+            position: tileData.position,
+            backgroundColor: tileData.backgroundColor || 'grey',
+            block: {
+              isFilled: tileData.isFilled ?? false,
+              color: tileData.color ?? 'grey',
+            },
+            activeAnimations: (tileData.activeAnimations || []) as TileAnimation[],
+          };
+          if (tileData.isFilled) {
+            hasFilledTiles = true;
           }
+          tilesMap.set(tile.position, tile);
         });
       }
 
@@ -285,19 +267,10 @@ export function gameStateReducer(
       // based on actual board state after loading. This prevents false game overs.
 
       // Restore unlockedSlots from persistence (default to Set([1]) if not present)
-      // Handle both old format (number) and new format (array)
       let restoredUnlockedSlots: Set<number>;
       if (Array.isArray(gameData.unlockedSlots)) {
-        // New format: array of slot numbers
+        // Current format: array of slot numbers
         restoredUnlockedSlots = new Set(gameData.unlockedSlots);
-      } else if (typeof gameData.unlockedSlots === 'number') {
-        // Legacy: convert number to Set (assume slots 1 through N are unlocked)
-        restoredUnlockedSlots = new Set(
-          Array.from(
-            { length: gameData.unlockedSlots },
-            (_, i) => i + 1,
-          ),
-        );
       } else {
         // Default: only slot 1 unlocked
         restoredUnlockedSlots = new Set([1]);
@@ -306,12 +279,11 @@ export function gameStateReducer(
       let nextIdCounter = state.nextShapeIdCounter;
       const loadedQueue: QueueItem[] = [];
 
-      // Check if we have the new nextQueue field (full queue with purchasable slots)
+      // Load full queue directly from persistence
+      // Purchasable slots are first-class citizens and persisted
+      // IMPORTANT: Filter out any purchasable slots that have been unlocked
+      // This handles edge cases with corrupted saves or interrupted purchases
       if (gameData.nextQueue && Array.isArray(gameData.nextQueue)) {
-        // NEW FORMAT: Load full queue directly from persistence
-        // Purchasable slots are first-class citizens and persisted
-        // IMPORTANT: Filter out any purchasable slots that have been unlocked
-        // This handles edge cases with corrupted saves or interrupted purchases
         for (const item of gameData.nextQueue) {
           if (item.type === 'shape') {
             loadedQueue.push({
@@ -330,33 +302,6 @@ export function gameStateReducer(
               });
             }
             // If slotNumber is in the unlocked set, skip it (it was already purchased)
-          }
-        }
-      } else {
-        // LEGACY FORMAT: Old saves only had plain shapes, reconstruct queue
-        // Build queue in order (slots 1, 2, 3, 4) based on which slots are unlocked
-        const loadedPlainShapes: Shape[] = gameData.nextShapes || [];
-        const slotCosts: Record<number, number> = { 2: 500, 3: 1500, 4: 5000 };
-
-        let shapeIndex = 0;
-        for (let slotNumber = 1; slotNumber <= 4; slotNumber++) {
-          if (restoredUnlockedSlots.has(slotNumber)) {
-            // Slot is unlocked - add a shape if available
-            if (shapeIndex < loadedPlainShapes.length) {
-              loadedQueue.push({
-                id: nextIdCounter++,
-                shape: loadedPlainShapes[shapeIndex++],
-                type: 'shape',
-              });
-            }
-          } else {
-            // Slot is locked - add a purchasable slot
-            loadedQueue.push({
-              id: nextIdCounter++,
-              type: 'purchasable-slot',
-              cost: slotCosts[slotNumber],
-              slotNumber,
-            });
           }
         }
       }

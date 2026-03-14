@@ -364,10 +364,18 @@ export function gameStateReducer(
       // Initialize rotation menus for all queue items (all closed by default)
       const loadedOpenRotationMenus = loadedQueue.map(() => false);
 
-      // Extract plain shapes for game over check (filter out purchasable slots)
-      const plainShapesForCheck = loadedQueue
-        .filter((item): item is QueuedShape => item.type === 'shape')
-        .map((qs) => qs.shape);
+      // Build aligned arrays: only shapes and their corresponding menu states
+      // This fixes the bug where plainShapes and menu states had different lengths
+      // when purchasable slots were present (slots filtered from shapes but not from menus)
+      const plainShapesForCheck: Shape[] = [];
+      const plainShapesMenuStates: boolean[] = [];
+
+      loadedQueue.forEach((item, index) => {
+        if (item.type === 'shape') {
+          plainShapesForCheck.push((item as QueuedShape).shape);
+          plainShapesMenuStates.push(loadedOpenRotationMenus[index]);
+        }
+      });
 
       // POST-LOAD GAME OVER CHECK:
       // Calculate game over based on actual loaded state.
@@ -382,8 +390,9 @@ export function gameStateReducer(
         actuallyGameOver = checkGameOver(
           tilesMap,
           plainShapesForCheck,
-          loadedOpenRotationMenus,
+          plainShapesMenuStates, // Now properly aligned with plainShapesForCheck
           state.gameMode,
+          gameData.score, // Pass loaded score to check affordability of rotation unlock
         );
       } else if (plainShapesForCheck.length === 0 && gameData.queueMode === 'finite') {
         // Finite mode with no shapes left is game over

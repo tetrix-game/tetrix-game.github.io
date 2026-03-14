@@ -8,6 +8,11 @@ export const BoardClearDisplay: React.FC = () => {
   const { stats } = useTetrixStateContext();
   const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
 
+  // Safety check: ensure stats structure exists
+  if (!stats?.current?.fullBoardClears || !stats?.allTime?.fullBoardClears) {
+    return null;
+  }
+
   const currentBoardClears = stats.current.fullBoardClears.total;
   const allTimeBoardClears = stats.allTime.fullBoardClears.total;
 

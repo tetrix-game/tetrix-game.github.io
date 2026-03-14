@@ -14,7 +14,7 @@ import { shapeGenerationWithProbabilities } from '../shapeGenerationWithProbabil
 import { getShapeGridPositions } from '../shapeGeometry';
 import { shapePatterns } from '../shapePatterns';
 import { updateStats, incrementNoTurnStreak } from '../statsUtils';
-import type { Tile, QueuedShape, QueueItem, TetrixReducerState, TetrixAction } from '../types';
+import type { Tile, QueuedShape, QueueItem, Shape, TetrixReducerState, TetrixAction } from '../types';
 
 const { makeTileKey } = gridConstants;
 const { generateSuperShape } = shapeGeneration;
@@ -160,10 +160,19 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // For game over check, we need to check the POST-animation state (without the placed shape)
       const shapesAfterRemoval = animatingShapes.filter((_, index) => index !== removedIndex);
       const menusAfterRemoval = animatingRotationMenus.filter((_, index) => index !== removedIndex);
-      // Extract only actual shapes (not purchasable slots) for game over check
-      const plainShapes = shapesAfterRemoval
-        .filter((item) => item.type === 'shape')
-        .map((item) => (item as QueuedShape).shape);
+
+      // Build aligned arrays: only shapes and their corresponding menu states
+      // This fixes the bug where plainShapes and menusAfterRemoval had different lengths
+      // when purchasable slots were present (slots filtered from shapes but not from menus)
+      const plainShapes: Shape[] = [];
+      const plainShapesMenuStates: boolean[] = [];
+
+      shapesAfterRemoval.forEach((item, index) => {
+        if (item.type === 'shape') {
+          plainShapes.push((item as QueuedShape).shape);
+          plainShapesMenuStates.push(menusAfterRemoval[index]);
+        }
+      });
 
       // GAME OVER CHECK: Run on the FINAL state (correct 3 shapes after placement)
       // Infinite mode: Check if any shapes can be placed
@@ -173,8 +182,9 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         isGameOver = checkGameOver(
           lineClearResult.tiles,
           plainShapes,
-          menusAfterRemoval,
+          plainShapesMenuStates, // Now properly aligned with plainShapes
           state.gameMode,
+          newScore, // Pass current score to check affordability of rotation unlock
         );
       } else if (state.queueMode === 'finite') {
         // In finite mode, check if queue is depleted
@@ -184,8 +194,9 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         const noMovesPossible = checkGameOver(
           lineClearResult.tiles,
           plainShapes,
-          menusAfterRemoval,
+          plainShapesMenuStates, // Now properly aligned with plainShapes
           state.gameMode,
+          newScore, // Pass current score to check affordability of rotation unlock
         );
 
         // If queue is depleted OR no moves possible, check map completion

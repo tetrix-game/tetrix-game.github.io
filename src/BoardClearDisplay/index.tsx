@@ -31,11 +31,11 @@ export const BoardClearDisplay: React.FC = () => {
   return (
     <div
       className={`board-clear-display ${animationClass}`}
-      title="Board clears this game / all time"
+      title={`Board clears this game: ${currentBoardClears} (${allTimeBoardClears} all time)`}
     >
       <BoardClearIcon />
       <span className="board-clear-display-value">
-        {currentBoardClears} / {allTimeBoardClears}
+        {currentBoardClears}
       </span>
     </div>
   );

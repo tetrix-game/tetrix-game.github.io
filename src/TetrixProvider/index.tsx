@@ -59,10 +59,10 @@ export function TetrixProvider(
           loadModifiers().catch((_err: Error) => {
             return { status: 'error', error: _err } as const;
           }),
-          loadTheme().catch((_err: Error) => {
+          loadTheme().catch(() => {
             return null;
           }),
-          loadGameState().catch((_err: Error) => {
+          loadGameState().catch(() => {
             return null;
           }),
           loadSettingsData().catch((_err: Error) => {

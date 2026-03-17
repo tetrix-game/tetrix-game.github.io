@@ -32,7 +32,6 @@ const DEBUG_PERSISTENCE_CHECKSUMS = false;
 async function saveGameState(state: SavedGameState): Promise<void> {
   // CRITICAL: Strip isGameOver from persisted data.
   // It's a derived state calculated on load, NOT persisted.
-
   const cleanedState = { ...state };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (cleanedState as any).isGameOver;
@@ -67,7 +66,12 @@ async function loadGameState(): Promise<LoadResult<SavedGameState>> {
       // User requirement: "Updating the game should reset all state to default state,
       // NEVER honoring the past state"
       if (!state.version || state.version !== APP_VERSION) {
-        return { status: 'not_found' }; // Treat as if no save exists
+        // Delete the incompatible save data
+        await Promise.all([
+          crud.remove(STORES.GAME_STATE, 'current'),
+          crud.remove(STORES.CHECKSUMS, 'game_manifest'),
+        ]);
+        return { status: 'not_found' };
       }
 
       // REQUIRED FIELDS VALIDATION: All-or-nothing approach
@@ -115,13 +119,12 @@ async function loadGameState(): Promise<LoadResult<SavedGameState>> {
         const result = verifyChecksumManifest(sanitizedState, manifest);
 
         if (!result.isValid) {
+          // Checksum verification failed - data may be corrupted
           // We DO NOT fix it. We report it.
-          // The app will still load the data (to prevent crash), but the console is screaming.
+          // The app will still load the data (to prevent crash).
         } else if (DEBUG_PERSISTENCE_CHECKSUMS) {
           // Logging disabled
         }
-      } else {
-        // No checksum manifest found
       }
 
       return { status: 'success', data: sanitizedState };

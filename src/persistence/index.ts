@@ -172,7 +172,6 @@ export async function safeBatchSave(data: {
   try {
     await updateGameStateAdapter(updateData);
   } catch {
-    // If no state exists yet, create it
     await saveGameState({
       score: data.score ?? 0,
       tiles: data.tiles ?? [],

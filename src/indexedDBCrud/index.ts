@@ -51,19 +51,7 @@ async function openDatabase(): Promise<IDBDatabase> {
     };
 
     request.onsuccess = (): void => {
-      const db = request.result;
-
-      // Verify required stores exist
-      const requiredStores = Object.values(STORES);
-      const missingStores = requiredStores.filter(
-        (store): boolean => !db.objectStoreNames.contains(store),
-      );
-
-      if (missingStores.length > 0) {
-        // Database may need upgrade
-      }
-
-      resolve(db);
+      resolve(request.result);
     };
 
     request.onupgradeneeded = (event): void => {

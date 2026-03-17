@@ -8,4 +8,4 @@
  * IMPORTANT: Increment this whenever making changes that would
  * make old saves incompatible (even minor changes).
  */
-export const APP_VERSION = '1.6.0';
+export const APP_VERSION = '2.0.0';

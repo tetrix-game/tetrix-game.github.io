@@ -58,13 +58,15 @@ export const PersistenceListener = (): null => {
     // This ensures "Back to Menu" after game over clears the old board state
     if (gameMode === 'hub' && prevGameMode !== 'hub') {
       clearGameBoard().catch(() => {
-        // Silently handle clear failure
+        // Silent error - user in menu anyway
       });
       return;
     }
 
     // Don't save game state while in hub mode
-    if (gameMode === 'hub') return;
+    if (gameMode === 'hub') {
+      return;
+    }
 
     // Save game state
     // NOTE: We intentionally do NOT persist isGameOver.
@@ -87,7 +89,7 @@ export const PersistenceListener = (): null => {
       unlockedSlots,
       // isGameOver is intentionally NOT persisted - see LOAD_GAME_STATE for recalculation
     }).catch(() => {
-      // Silently handle save failure
+      // Silent error - will retry on next state change
     });
   }, [
     gameMode,
@@ -110,7 +112,7 @@ export const PersistenceListener = (): null => {
   // Effect for Modifiers
   useEffect(() => {
     saveModifiers(unlockedModifiers).catch(() => {
-      // Silently handle save failure
+      // Silent error - will retry on next change
     });
   }, [unlockedModifiers]);
 
@@ -121,21 +123,21 @@ export const PersistenceListener = (): null => {
       showBlockIcons,
       grandpaMode,
     }).catch(() => {
-      // Silently handle save failure
+      // Silent error - will retry on next change
     });
   }, [buttonSizeMultiplier, showBlockIcons, grandpaMode]);
 
   // Effect for Theme
   useEffect(() => {
     saveTheme(currentTheme).catch(() => {
-      // Silently handle save failure
+      // Silent error - will retry on next change
     });
   }, [currentTheme]);
 
   // Effect for Block Theme
   useEffect(() => {
     saveBlockTheme(blockTheme).catch(() => {
-      // Silently handle save failure
+      // Silent error - will retry on next change
     });
   }, [blockTheme]);
 

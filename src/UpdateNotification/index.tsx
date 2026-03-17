@@ -15,6 +15,9 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onUpdate
           <div className="update-message">
             <strong>New version available!</strong>
             <span className="update-subtitle">Update now to get the latest features</span>
+            <span className="update-warning">
+              ⚠️ Your save game will be deleted (no official save method available)
+            </span>
           </div>
         </div>
         <div className="update-notification-actions">

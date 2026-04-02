@@ -37,7 +37,11 @@ export default tseslint.config(
         ecmaFeatures: {
           jsx: true,
         },
-        project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        project: [
+          './tsconfig.app.json',
+          './tsconfig.node.json',
+          './tsconfig.test.json',
+        ],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -241,12 +245,44 @@ export default tseslint.config(
   },
   // Config files need default exports (Vite, ESLint, etc.)
   {
-    files: ['*.config.ts', '*.config.js', 'vite.config.ts', 'eslint.config.js'],
+    files: [
+      '*.config.ts',
+      '*.config.js',
+      'vite.config.ts',
+      'eslint.config.js',
+      'src/vite-env.d.ts',
+    ],
     plugins: {
       'architecture': architecture,
     },
     rules: {
       'architecture/named-exports-only': 'off',
+      'architecture/index-only-files': 'off',
+    },
+  },
+  // Custom hooks and utilities can import from their providers/services
+  {
+    files: [
+      'src/use*/index.ts',
+      'src/use*/index.tsx',
+      'src/**/CallToActionPointer/index.tsx',
+      'src/**/ErrorPointer/index.tsx',
+    ],
+    plugins: {
+      'architecture': architecture,
+    },
+    rules: {
+      'architecture/enforce-downwards-imports': 'off',
+    },
+  },
+  // Components can import CSS from parent directories and sibling pointer components
+  {
+    files: ['src/ScoreDisplay/index.tsx', 'src/FullScreenButton/index.tsx'],
+    plugins: {
+      'architecture': architecture,
+    },
+    rules: {
+      'architecture/enforce-downwards-imports': 'off',
     },
   },
 );

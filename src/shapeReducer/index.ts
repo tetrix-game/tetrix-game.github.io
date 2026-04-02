@@ -231,6 +231,7 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
 
       // DEBUG: Log if this runs when game is over
       if (state.gameState === 'gameover') {
+        // eslint-disable-next-line no-console
         console.warn('⚠️  COMPLETE_SHAPE_REMOVAL running while gameState is GAMEOVER!', {
           removingShapeIndex: state.removingShapeIndex,
           nextShapesLength: state.nextShapes.length,

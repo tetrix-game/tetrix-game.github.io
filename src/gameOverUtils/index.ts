@@ -23,6 +23,7 @@ export function checkGameOver(
 ): boolean {
   // DEBUG: Log array lengths to detect misalignment bug
   if (shapes.length !== openRotationMenus.length) {
+    // eslint-disable-next-line no-console
     console.error('🐛 GAME OVER BUG DETECTED: Array length mismatch!', {
       shapesLength: shapes.length,
       menusLength: openRotationMenus.length,
@@ -106,6 +107,7 @@ export function checkGameOver(
   }
 
   // DEBUG: Log when game over is detected
+  // eslint-disable-next-line no-console
   console.log('🎮 Game Over Detected', {
     shapesCount: shapes.length,
     menusCount: openRotationMenus.length,

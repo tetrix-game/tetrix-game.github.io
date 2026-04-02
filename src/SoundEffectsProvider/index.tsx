@@ -35,6 +35,7 @@ const SoundEffectsContext = createContext<
 >(undefined);
 
 // Hook (exported without Shared_ prefix - internal to module but exported for external use)
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSoundEffects(): SoundEffectsContextValue {
   const context = useContext(SoundEffectsContext);
   if (!context) {

@@ -190,6 +190,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // DEBUG: Log array construction for game over check
       if (plainShapes.length !== plainShapesMenuStates.length) {
+        // eslint-disable-next-line no-console
         console.error('🐛 ARRAY MISMATCH IN COMPLETE_PLACEMENT!', {
           shapesAfterRemovalLength: shapesAfterRemoval.length,
           menusAfterRemovalLength: menusAfterRemoval.length,
@@ -207,6 +208,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // DEBUG: Log game mode to detect if this is the bug
       if (state.gameMode !== 'infinite' && state.gameMode !== 'hub' && state.gameMode !== 'daily' && state.gameMode !== 'tutorial') {
+        // eslint-disable-next-line no-console
         console.error('🐛 UNEXPECTED GAME MODE!', {
           gameMode: state.gameMode,
           queueMode: state.queueMode,
@@ -215,6 +217,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       if (state.gameMode === 'infinite') {
         // DEBUG: Log what we're passing to checkGameOver
+        // eslint-disable-next-line no-console
         console.log('🔍 Calling checkGameOver from COMPLETE_PLACEMENT', {
           plainShapesLength: plainShapes.length,
           plainShapesMenuStatesLength: plainShapesMenuStates.length,
@@ -238,6 +241,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         );
 
         // DEBUG: Log result
+        // eslint-disable-next-line no-console
         console.log('✅ checkGameOver result:', isGameOver);
       } else if (state.queueMode === 'finite') {
         // In finite mode, check if queue is depleted
@@ -309,6 +313,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // DEBUG: Log what gameState will be set to
       if (isGameOver) {
+        // eslint-disable-next-line no-console
         console.error('🚨 SETTING GAME STATE TO GAMEOVER!', {
           isGameOver,
           previousGameState: state.gameState,

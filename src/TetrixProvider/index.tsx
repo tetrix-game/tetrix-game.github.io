@@ -20,6 +20,7 @@ const TetrixStateContext = createContext<TetrixReducerState | null>(null);
 export { TetrixDispatchContext, TetrixStateContext };
 
 // Hook implementations (no Shared_ prefix - internal to this module)
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTetrixDispatchContext(): TetrixDispatch {
   const context = useContext(TetrixDispatchContext);
   if (!context) {
@@ -28,6 +29,7 @@ export function useTetrixDispatchContext(): TetrixDispatch {
   return context;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTetrixStateContext(): TetrixReducerState {
   const context = useContext(TetrixStateContext);
   if (!context) {

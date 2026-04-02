@@ -7,4 +7,5 @@
 
 import packageJson from '../package.json';
 
-export const APP_VERSION = packageJson.version;
+export const version = packageJson.version;
+export const APP_VERSION = packageJson.version; // Legacy export for backward compatibility

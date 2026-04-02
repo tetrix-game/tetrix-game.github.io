@@ -1,18 +1,29 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 import { BlueGemIcon } from '../BlueGemIcon';
+import { GemShower } from '../GemShower';
 import { ErrorPointer } from '../Pointer/ErrorPointer';
 import { formatScore } from '../scoringUtils';
 import { StatsOverlay } from '../StatsOverlay';
-import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
+import {
+  useTetrixDispatchContext,
+  useTetrixStateContext,
+} from '../TetrixProvider';
 import { useVisualError } from '../useVisualError';
 import '../App/feedback.css';
 import './ScoreDisplay.css';
 
 export const ScoreDisplay: React.FC = (): JSX.Element => {
-  const { score, gameState, isStatsOpen, insufficientFundsError } = useTetrixStateContext();
+  const {
+    score,
+    gameState,
+    isStatsOpen,
+    insufficientFundsError,
+    gemIconPulseCount,
+  } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const gemIconRef = useRef<HTMLDivElement>(null);
+  const [isPulsing, setIsPulsing] = useState(false);
 
   // Use the reusable hook for error pulsing
   const isErrorPulsing = useVisualError(insufficientFundsError);
@@ -20,29 +31,14 @@ export const ScoreDisplay: React.FC = (): JSX.Element => {
   // Use the reusable hook for arrow visibility (longer duration)
   const isArrowVisible = useVisualError(insufficientFundsError, 2500);
 
-  // Update gem icon position whenever it changes (for GemShower particle physics)
+  // Trigger pulse animation when pulse count changes
   useEffect((): (() => void) | void => {
-    if (gemIconRef.current) {
-      const updatePosition = (): void => {
-        const rect = gemIconRef.current?.getBoundingClientRect();
-        if (rect) {
-          const position = {
-            x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2,
-          };
-          dispatch({
-            type: 'UPDATE_GEM_ICON_POSITION',
-            value: position,
-          });
-        }
-      };
-
-      // Update on mount and when window resizes
-      updatePosition();
-      window.addEventListener('resize', updatePosition);
-      return (): void => window.removeEventListener('resize', updatePosition);
+    if (gemIconPulseCount > 0) {
+      setIsPulsing(true);
+      const timeout = setTimeout(() => setIsPulsing(false), 300);
+      return (): void => clearTimeout(timeout);
     }
-  }, [dispatch]);
+  }, [gemIconPulseCount]);
 
   const handleOpenStats = (): void => {
     dispatch({ type: 'OPEN_STATS' });
@@ -60,7 +56,7 @@ export const ScoreDisplay: React.FC = (): JSX.Element => {
         style={{ cursor: 'pointer' }}
         title="Click to view stats"
       >
-        <div ref={gemIconRef}>
+        <div ref={gemIconRef} className={isPulsing ? 'pulse' : ''}>
           <BlueGemIcon />
         </div>
         <span className="score-display-value">
@@ -74,6 +70,8 @@ export const ScoreDisplay: React.FC = (): JSX.Element => {
         message="Need points to turn shapes!"
         offsetFromTarget={50}
       />
+
+      <GemShower gemIconRef={gemIconRef} />
 
       {isStatsOpen && <StatsOverlay onClose={handleCloseStats} />}
     </>

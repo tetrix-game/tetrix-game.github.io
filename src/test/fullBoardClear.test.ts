@@ -224,7 +224,6 @@ describe('Full Board Clear - Reducer Integration', () => {
       initialDailyState: null,
       showCoinDisplay: true,
       mousePosition: { x: 0, y: 0 },
-      gemIconPosition: { x: 0, y: 0 },
       gridTileSize: null,
       gridBounds: null,
       stats: {

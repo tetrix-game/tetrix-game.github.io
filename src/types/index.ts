@@ -174,7 +174,8 @@ export type TetrixReducerState = {
   unlockedSlots: Set<number>; // Set of unlocked shape slot numbers (1-4)
   mouseGridLocation: Location | null;
   mousePosition: { x: number; y: number }; // Never null - always has a position
-  gemIconPosition: { x: number; y: number }; // Position of the score display gem icon
+  gemIconPulseCount: number; // Increments to trigger pulse animation on gem icon
+  boardClearIconPulseCount: number; // Increments to trigger pulse animation on board clear icon
   gridTileSize: number | null;
   gridBounds: { top: number; left: number; width: number; height: number } | null;
   // Unified drag animation state with all drag-related properties
@@ -414,9 +415,12 @@ type GenerateSuperComboPatternAction = {
   type: 'GENERATE_SUPER_COMBO_PATTERN';
 };
 
-type UpdateGemIconPositionAction = {
-  type: 'UPDATE_GEM_ICON_POSITION';
-  value: { x: number; y: number };
+type TriggerGemIconPulseAction = {
+  type: 'TRIGGER_GEM_ICON_PULSE';
+};
+
+type TriggerBoardClearIconPulseAction = {
+  type: 'TRIGGER_BOARD_CLEAR_ICON_PULSE';
 };
 
 type DebugFillRowAction = {
@@ -577,7 +581,8 @@ export type TetrixAction = | SelectShapeAction
   | ActivateDoubleTurnModeAction
   | DeactivateDoubleTurnModeAction
   | GenerateSuperComboPatternAction
-  | UpdateGemIconPositionAction
+  | TriggerGemIconPulseAction
+  | TriggerBoardClearIconPulseAction
   | DebugFillRowAction
   | DebugFillColumnAction
   | DebugRemoveBlockAction

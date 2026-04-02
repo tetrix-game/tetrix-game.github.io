@@ -39,7 +39,8 @@ const CLEARING_ANIMATION_CONFIG: AnimationConfig = {
 
 export interface LineClearingResult {
   tiles: TilesSet;
-  pointsEarned: number;
+  gemPoints: number; // Points for score (normal clears)
+  starPoints: number; // Points for board clear counter (full board clears)
   clearedRowIndices: number[];
   clearedColumnIndices: number[];
   isFullBoardClear: boolean;
@@ -180,9 +181,25 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
   playLineClearSounds(clearedRowIndices, clearedColumnIndices, baseStartTime);
 
   // Step 5: Calculate score for lines cleared
-  let scoreData = calculateScore(clearedRowIndices.length, clearedColumnIndices.length);
+  const scoreData = calculateScore(clearedRowIndices.length, clearedColumnIndices.length);
 
-  // Step 6: If full board clear, add bonus and additional animations
+  // Step 5b: Split points between gems and stars based on clear type
+  let gemPoints = 0;
+  let starPoints = 0;
+
+  if (isFullBoardClear) {
+    // Stars get points for board clears
+    const rows = clearedRowIndices.length;
+    const cols = clearedColumnIndices.length;
+    starPoints = (rows + cols + rows * cols) * 10;
+    gemPoints = 0;
+  } else {
+    // Gems get points for normal clears
+    gemPoints = scoreData.pointsEarned;
+    starPoints = 0;
+  }
+
+  // Step 6: If full board clear, add animations (no bonus points - now goes to stars)
   if (isFullBoardClear) {
     // Calculate when normal animations finish
     const normalAnimationEndTime = calculateNormalAnimationEndTime(
@@ -200,12 +217,6 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
       normalAnimationEndTime,
     );
 
-    // Add 300 bonus points for full board clear
-    scoreData = {
-      ...scoreData,
-      pointsEarned: scoreData.pointsEarned + 300,
-    };
-
     // Play special sound for full board clear (after normal animations)
     const fullBoardSoundStart = baseStartTime + normalAnimationEndTime;
     playSound('clear_combo_4', fullBoardSoundStart);
@@ -216,7 +227,8 @@ export function performLineClearing(tiles: TilesSet): LineClearingResult {
 
   return {
     tiles: finalTiles,
-    pointsEarned: scoreData.pointsEarned,
+    gemPoints,
+    starPoints,
     clearedRowIndices,
     clearedColumnIndices,
     isFullBoardClear,

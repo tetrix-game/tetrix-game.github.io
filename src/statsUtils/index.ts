@@ -9,6 +9,7 @@ export function updateStats(
   clearedRows: { index: number; color?: string }[],
   clearedColumns: { index: number; color?: string }[],
   isFullBoardClear: boolean = false,
+  starPointsEarned: number = 0,
 ): StatsPersistenceData {
   const newStats: StatsPersistenceData = JSON.parse(JSON.stringify(currentStats));
   const now = Date.now();
@@ -147,7 +148,7 @@ export function updateStats(
 
   // Track full board clears
   if (isFullBoardClear) {
-    incrementStat('fullBoardClears');
+    incrementStat('fullBoardClears', undefined, starPointsEarned);
   }
 
   return newStats;

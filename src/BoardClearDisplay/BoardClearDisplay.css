@@ -37,6 +37,27 @@
 
   /* Ensure icon maintains aspect ratio and grows with screen */
   min-height: clamp(32px, 8vh, 64px);
+
+  transition: transform 0.15s ease-out, filter 0.15s ease-out;
+}
+
+.board-clear-icon.pulse {
+  animation: boardClearPulse 0.3s ease-out;
+}
+
+@keyframes boardClearPulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
+  }
+  50% {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 1));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
+  }
 }
 
 .board-clear-display-value {

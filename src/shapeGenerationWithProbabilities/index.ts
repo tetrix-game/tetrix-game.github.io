@@ -1,4 +1,5 @@
 import { getShapeColor, type ShapeType } from '../shapeColorMapping';
+import { generateIPiece } from '../shapeGeneration'; // TEMPORARY TEST IMPORT - Remove when board clear testing is complete
 import { shapeTransforms } from '../shapeTransforms';
 import type { Shape, ColorProbability, Block } from '../types';
 
@@ -26,6 +27,17 @@ function createEmptyBlock(): Block {
 export function generateRandomShapeWithProbabilities(
   _colorProbabilities: ColorProbability[],
 ): Shape {
+  // ============================================================
+  // TEMPORARY TEST CODE - Remove when board clear testing is complete
+  // Force all shapes to be I-pieces (1x4 horizontal lines) for testing full board clears
+  // ============================================================
+  return generateIPiece('blue');
+  // ============================================================
+  // END TEMPORARY TEST CODE - Uncomment code below to restore normal behavior
+  // ============================================================
+
+  /* ORIGINAL CODE - UNCOMMENT TO RESTORE:
+
   // Define base shape templates with their type metadata and unique rotation counts
   const shapeTemplates: Array<{ type: ShapeType; rotations: number }> = [
     { type: 'I', rotations: 2 },
@@ -110,6 +122,8 @@ export function generateRandomShapeWithProbabilities(
   }
 
   return shape;
+
+  END OF ORIGINAL CODE - UNCOMMENT ABOVE TO RESTORE */
 }
 
 /**
@@ -147,6 +161,17 @@ export function generateRandomShapeWithGrandpaMode(
   _colorProbabilities: ColorProbability[],
   grandpaMode: boolean = false,
 ): Shape {
+  // ============================================================
+  // TEMPORARY TEST CODE - Remove when board clear testing is complete
+  // Force all shapes to be I-pieces (1x4 horizontal lines) for testing full board clears
+  // ============================================================
+  return generateIPiece('blue');
+  // ============================================================
+  // END TEMPORARY TEST CODE - Uncomment code below to restore normal behavior
+  // ============================================================
+
+  /* ORIGINAL CODE - UNCOMMENT TO RESTORE:
+
   // Shape types with their weights (normal = 1, grandpa mode reduces Z/S to 0.25)
   const shapeWeights: Array<{ type: StandardShapeType; weight: number }> = [
     { type: 'I', weight: 1 },
@@ -253,6 +278,8 @@ export function generateRandomShapeWithGrandpaMode(
   }
 
   return shape;
+
+  END OF ORIGINAL CODE - UNCOMMENT ABOVE TO RESTORE */
 }
 
 // Facade export to match folder name

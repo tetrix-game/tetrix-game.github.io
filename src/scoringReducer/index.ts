@@ -1,6 +1,6 @@
 /**
  * Scoring Reducer - Handles score, gem display, and gem spending
- * Actions: ADD_SCORE, SHOW_COIN_DISPLAY, HIDE_COIN_DISPLAY, SPEND_COIN, UPDATE_GEM_ICON_POSITION
+ * Actions: ADD_SCORE, SHOW_COIN_DISPLAY, HIDE_COIN_DISPLAY, SPEND_COIN
  */
 
 import { persistence } from '../persistence';
@@ -76,10 +76,17 @@ export function scoringReducer(
       };
     }
 
-    case 'UPDATE_GEM_ICON_POSITION': {
+    case 'TRIGGER_GEM_ICON_PULSE': {
       return {
         ...state,
-        gemIconPosition: action.value,
+        gemIconPulseCount: state.gemIconPulseCount + 1,
+      };
+    }
+
+    case 'TRIGGER_BOARD_CLEAR_ICON_PULSE': {
+      return {
+        ...state,
+        boardClearIconPulseCount: state.boardClearIconPulseCount + 1,
       };
     }
 

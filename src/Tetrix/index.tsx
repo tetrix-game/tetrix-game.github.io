@@ -1,7 +1,6 @@
 import './Tetrix.css';
 import { GameControlsPanel } from '../GameControlsPanel';
 import { GameOverOverlay } from '../GameOverOverlay';
-import { GemShower } from '../GemShower';
 import { Grid } from '../Grid';
 import { MapCompletionOverlay } from '../MapCompletionOverlay';
 import { useTetrixStateContext } from '../TetrixProvider';
@@ -30,7 +29,6 @@ export const Tetrix: React.FC = () => {
     <div className="tetrix">
       <Grid />
       <GameControlsPanel />
-      <GemShower />
       {showStandardGameOver && <GameOverOverlay />}
       {showMapCompletion && (
         <MapCompletionOverlay

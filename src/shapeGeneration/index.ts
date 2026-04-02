@@ -234,6 +234,36 @@ export function generate1x1Piece(color: ColorName): Shape {
   ];
 }
 
+// ============================================================
+// TEMPORARY TEST UTILITY - Remove when board clear testing is complete
+// ============================================================
+/**
+ * Generate a 10x1 line piece (10 blocks) - FOR TESTING FULL BOARD CLEARS ONLY
+ * Uses a 10x10 grid to accommodate the full width
+ *
+ * ⚠️ THIS IS A TEST UTILITY - NOT FOR PRODUCTION USE
+ */
+export function generate10x1Piece(color: ColorName): Shape {
+  const _ = createEmptyBlock;
+  const X = (): Block => createFilledBlock(color);
+
+  return [
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [X(), X(), X(), X(), X(), X(), X(), X(), X(), X()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+    [_(), _(), _(), _(), _(), _(), _(), _(), _(), _()],
+  ];
+}
+// ============================================================
+// END TEMPORARY TEST UTILITY
+// ============================================================
+
 /**
  * Generate an "Even L" piece (3x3 with 2x2 missing = 5 blocks)
  */
@@ -292,6 +322,17 @@ export function generateSuperShape(): Shape {
  * Note: Super combo piece is not in regular rotation - only generated as easter egg
  */
 export function generateRandomShape(): Shape {
+  // ============================================================
+  // TEMPORARY TEST CODE - Remove when board clear testing is complete
+  // Force all shapes to be I-pieces (1x4 horizontal lines) for testing full board clears
+  // ============================================================
+  return generateIPiece('blue');
+  // ============================================================
+  // END TEMPORARY TEST CODE - Uncomment code below to restore normal behavior
+  // ============================================================
+
+  /* ORIGINAL CODE - UNCOMMENT TO RESTORE:
+
   // Define base shape templates with their type metadata and unique rotation counts
   const shapeTemplates: Array<{ type: ShapeType; rotations: number }> = [
     { type: 'I', rotations: 2 },
@@ -376,6 +417,8 @@ export function generateRandomShape(): Shape {
   }
 
   return shape;
+
+  END OF ORIGINAL CODE - UNCOMMENT ABOVE TO RESTORE */
 }
 
 // Facade export to match folder name
@@ -393,6 +436,7 @@ export const shapeGeneration = {
   generate3x1Piece,
   generate2x1Piece,
   generate1x1Piece,
+  generate10x1Piece,
   generateEvenLPiece,
   generateSuperShape,
   generateRandomShape,

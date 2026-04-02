@@ -69,7 +69,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       // Perform line clearing with orchestrator (handles animations, sounds, scoring)
       const lineClearResult = performLineClearing(newTiles);
 
-      const newScore = state.score + lineClearResult.pointsEarned;
+      const newScore = state.score + lineClearResult.gemPoints;
       const newTotalLinesCleared = state.totalLinesCleared
         + lineClearResult.clearedRowIndices.length
         + lineClearResult.clearedColumnIndices.length;
@@ -92,6 +92,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           clearedRows,
           clearedColumns,
           lineClearResult.isFullBoardClear,
+          lineClearResult.starPoints,
         );
         // Increment no-turn streak (since shape was placed without rotating)
         newStats = incrementNoTurnStreak(newStats);

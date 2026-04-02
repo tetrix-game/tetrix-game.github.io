@@ -7,6 +7,7 @@ import {
 } from '../persistence';
 import { persistenceAdapter } from '../persistenceAdapter';
 import { initialState, tetrixReducer } from '../reducers';
+import { initializeTestUtils } from '../testUtils';
 import type { ThemeName, BlockTheme, TetrixReducerState, TetrixDispatch } from '../types';
 
 const { loadModifiers, initializePersistence, clearAllDataAndReload } = persistenceAdapter;
@@ -41,6 +42,13 @@ export function TetrixProvider(
 ): JSX.Element {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
+
+  // Initialize test utilities for Playwright testing (dev only)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      initializeTestUtils(dispatch, () => state);
+    }
+  }, [dispatch, state]);
 
   // Load saved game state on startup
   useEffect((): void => {

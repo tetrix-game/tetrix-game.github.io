@@ -21,6 +21,7 @@ export const GameOverOverlay: React.FC = (): JSX.Element => {
       className="game-over-overlay"
       contentClassName="game-over-content"
       ariaLabel="Game Over"
+      data-testid="game-over-dialog"
     >
       <h1 className="game-over-title">Game Over</h1>
       <p className="game-over-subtitle">

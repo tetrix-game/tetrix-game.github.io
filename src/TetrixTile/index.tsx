@@ -72,6 +72,7 @@ const TetrixTileComponent = ({
       col={col}
       backgroundColor={backgroundColor as ColorName}
       className="tetrix-tile"
+      isFilled={blockIsFilled}
     >
       <BlockVisual
         isFilled={blockIsFilled}

@@ -81,6 +81,7 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
     <div
       ref={gridRef}
       className={`grid ${dragState.selectedShape ? 'grid-dragging' : ''}`}
+      data-testid="game-board"
       style={
         {
           '--grid-gap': `${gridGap}px`,

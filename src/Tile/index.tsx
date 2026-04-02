@@ -16,6 +16,7 @@ interface TileProps {
   children?: ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  isFilled?: boolean;
 }
 
 const TileComponent: React.FC<TileProps> = ({
@@ -29,13 +30,15 @@ const TileComponent: React.FC<TileProps> = ({
   children,
   className = '',
   style = {},
+  isFilled = false,
   ...rest
 }) => {
   const hasCustomBackground = backgroundColor && backgroundColor !== 'grey';
 
   return (
     <div
-      className={`tile-base ${hasCustomBackground ? 'tile-base-custom' : ''} ${className}`}
+      className={`tile-base ${hasCustomBackground ? 'tile-base-custom' : ''} ${isFilled ? 'filled' : ''} ${className}`}
+      data-testid={`tile-${row}-${col}`}
       style={{
         gridColumn: col,
         gridRow: row,

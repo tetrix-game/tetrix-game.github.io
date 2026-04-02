@@ -229,6 +229,15 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
       // Remove the placed shape from the array (animation has completed)
       // Array goes from 4 shapes back to 3
 
+      // DEBUG: Log if this runs when game is over
+      if (state.gameState === 'gameover') {
+        console.warn('⚠️  COMPLETE_SHAPE_REMOVAL running while gameState is GAMEOVER!', {
+          removingShapeIndex: state.removingShapeIndex,
+          nextShapesLength: state.nextShapes.length,
+          openRotationMenusLength: state.openRotationMenus.length,
+        });
+      }
+
       if (state.removingShapeIndex === null) {
         return {
           ...state,

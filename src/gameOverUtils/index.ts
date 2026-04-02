@@ -21,10 +21,34 @@ export function checkGameOver(
   gameMode: GameMode = 'infinite',
   currentScore: number = 0,
 ): boolean {
+  // DEBUG: Log array lengths to detect misalignment bug
+  if (shapes.length !== openRotationMenus.length) {
+    console.error('🐛 GAME OVER BUG DETECTED: Array length mismatch!', {
+      shapesLength: shapes.length,
+      menusLength: openRotationMenus.length,
+      shapes: shapes.map((s, i) => ({
+        index: i,
+        hasBlocks: s.some(row => row.some(block => block.isFilled)),
+        color: s.flat().find(b => b.isFilled)?.color,
+      })),
+      menus: openRotationMenus,
+      currentScore,
+    });
+  }
+
   // If no shapes left, it's not game over (new ones will spawn)
   if (shapes.length === 0) {
     return false;
   }
+
+  // DEBUG: Track checking process
+  const debugInfo: Array<{
+    shapeIndex: number;
+    isRotationUnlocked: boolean;
+    canAffordRotation: boolean;
+    rotationsChecked: number;
+    foundValidPlacement: boolean;
+  }> = [];
 
   // For each available shape
   for (let i = 0; i < shapes.length; i++) {
@@ -39,6 +63,8 @@ export function checkGameOver(
     const rotationsToCheck = (isRotationUnlocked || canAffordRotation) ? 4 : 1;
 
     let currentShape = shape;
+    let foundValidPlacement = false;
+
     for (let rotation = 0; rotation < rotationsToCheck; rotation++) {
       // Check all possible grid positions
       // The grid is 10x10. The shape is 4x4.
@@ -51,6 +77,14 @@ export function checkGameOver(
       for (let row = -3; row <= 10; row++) {
         for (let col = -3; col <= 10; col++) {
           if (isValidPlacement(currentShape, { row, column: col }, tiles, gameMode)) {
+            foundValidPlacement = true;
+            debugInfo.push({
+              shapeIndex: i,
+              isRotationUnlocked,
+              canAffordRotation,
+              rotationsChecked: rotation + 1,
+              foundValidPlacement: true,
+            });
             return false; // Found a valid move!
           }
         }
@@ -61,7 +95,24 @@ export function checkGameOver(
         currentShape = rotateShape(currentShape);
       }
     }
+
+    debugInfo.push({
+      shapeIndex: i,
+      isRotationUnlocked,
+      canAffordRotation,
+      rotationsChecked: rotationsToCheck,
+      foundValidPlacement,
+    });
   }
+
+  // DEBUG: Log when game over is detected
+  console.log('🎮 Game Over Detected', {
+    shapesCount: shapes.length,
+    menusCount: openRotationMenus.length,
+    currentScore,
+    shapeChecks: debugInfo,
+    filledTilesCount: Array.from(tiles.values()).filter(t => t.block.isFilled).length,
+  });
 
   return true; // No valid moves found for any shape in any rotation
 }

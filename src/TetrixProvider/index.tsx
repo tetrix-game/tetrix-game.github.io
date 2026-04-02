@@ -47,6 +47,10 @@ export function TetrixProvider(
   useEffect(() => {
     if (import.meta.env.DEV) {
       initializeTestUtils(dispatch, () => state);
+
+      // Also expose directly on window for E2E tests
+      (window as any).__dispatch = dispatch;
+      (window as any).__getGameState = () => state;
     }
   }, [dispatch, state]);
 

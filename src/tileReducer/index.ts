@@ -168,18 +168,67 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       const plainShapes: Shape[] = [];
       const plainShapesMenuStates: boolean[] = [];
 
+      // DEBUG: Track what's being filtered
+      const filteringDebug: Array<{
+        index: number;
+        type: string;
+        menuState: boolean | undefined;
+      }> = [];
+
       shapesAfterRemoval.forEach((item, index) => {
+        filteringDebug.push({
+          index,
+          type: item.type,
+          menuState: menusAfterRemoval[index],
+        });
+
         if (item.type === 'shape') {
           plainShapes.push((item as QueuedShape).shape);
           plainShapesMenuStates.push(menusAfterRemoval[index]);
         }
       });
 
+      // DEBUG: Log array construction for game over check
+      if (plainShapes.length !== plainShapesMenuStates.length) {
+        console.error('🐛 ARRAY MISMATCH IN COMPLETE_PLACEMENT!', {
+          shapesAfterRemovalLength: shapesAfterRemoval.length,
+          menusAfterRemovalLength: menusAfterRemoval.length,
+          plainShapesLength: plainShapes.length,
+          plainShapesMenuStatesLength: plainShapesMenuStates.length,
+          filteringDebug,
+          removedIndex,
+        });
+      }
+
       // GAME OVER CHECK: Run on the FINAL state (correct 3 shapes after placement)
       // Infinite mode: Check if any shapes can be placed
       // Finite mode: Game over when queue is completely empty (no visible shapes and no hidden shapes)
       let isGameOver = false;
+
+      // DEBUG: Log game mode to detect if this is the bug
+      if (state.gameMode !== 'infinite' && state.gameMode !== 'finite' && state.gameMode !== 'daily' && state.gameMode !== 'tutorial') {
+        console.error('🐛 UNEXPECTED GAME MODE!', {
+          gameMode: state.gameMode,
+          queueMode: state.queueMode,
+        });
+      }
+
       if (state.gameMode === 'infinite') {
+        // DEBUG: Log what we're passing to checkGameOver
+        console.log('🔍 Calling checkGameOver from COMPLETE_PLACEMENT', {
+          plainShapesLength: plainShapes.length,
+          plainShapesMenuStatesLength: plainShapesMenuStates.length,
+          shapesAfterRemovalLength: shapesAfterRemoval.length,
+          originalNextShapesLength: state.nextShapes.length,
+          removedIndex,
+          newScore,
+          plainShapes: plainShapes.map((s, i) => ({
+            index: i,
+            menuState: plainShapesMenuStates[i],
+            hasBlocks: s.some(row => row.some(block => block.isFilled)),
+          })),
+        });
+
         isGameOver = checkGameOver(
           lineClearResult.tiles,
           plainShapes,
@@ -187,6 +236,9 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           state.gameMode,
           newScore, // Pass current score to check affordability of rotation unlock
         );
+
+        // DEBUG: Log result
+        console.log('✅ checkGameOver result:', isGameOver);
       } else if (state.queueMode === 'finite') {
         // In finite mode, check if queue is depleted
         const queueDepleted = shapesAfterRemoval.length === 0 && updatedHiddenShapes.length === 0;
@@ -254,6 +306,17 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
 
       // For normal gameplay (not game over), use two-phase animation:
       // Keep 4 shapes during animation, COMPLETE_SHAPE_REMOVAL will remove the placed shape
+
+      // DEBUG: Log what gameState will be set to
+      if (isGameOver) {
+        console.error('🚨 SETTING GAME STATE TO GAMEOVER!', {
+          isGameOver,
+          previousGameState: state.gameState,
+          nextShapesLength: animatingShapes.length,
+          openRotationMenusLength: animatingRotationMenus.length,
+        });
+      }
+
       const newState = {
         ...state,
         gameState: isGameOver ? 'gameover' : state.gameState,

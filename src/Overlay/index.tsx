@@ -25,6 +25,8 @@ export interface OverlayProps {
   ariaLabel?: string;
   /** ARIA labelledby for the dialog */
   ariaLabelledBy?: string;
+  /** Test ID for e2e testing */
+  'data-testid'?: string;
 }
 
 /**
@@ -50,6 +52,7 @@ export const Overlay: React.FC<OverlayProps> = ({
   blur = true,
   ariaLabel,
   ariaLabelledBy,
+  'data-testid': dataTestId,
 }): JSX.Element | null => {
   // Handle Escape key
   React.useEffect((): (() => void) | void => {
@@ -81,6 +84,7 @@ export const Overlay: React.FC<OverlayProps> = ({
       aria-modal="true"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
+      data-testid={dataTestId}
     >
       <div className={`overlay-content ${contentClassName}`}>
         {children}

@@ -145,7 +145,7 @@ async function placePieceAtRow(rowIndex: number, columnIndex = 1): Promise<void>
 
   // Find the first actual shape (not a purchasable slot)
   const state = getStateRef();
-  const firstShapeIndex = state.nextShapes.findIndex(item => item.type === 'shape');
+  const firstShapeIndex = state.nextShapes.findIndex((item) => item.type === 'shape');
   if (firstShapeIndex === -1) {
     throw new Error('No shapes available in queue');
   }
@@ -227,7 +227,7 @@ async function placePieceAtColumn(columnIndex: number, rowIndex = 1): Promise<vo
 
   // Find the first actual shape (not a purchasable slot)
   const state = getStateRef();
-  const firstShapeIndex = state.nextShapes.findIndex(item => item.type === 'shape');
+  const firstShapeIndex = state.nextShapes.findIndex((item) => item.type === 'shape');
   if (firstShapeIndex === -1) {
     throw new Error('No shapes available in queue');
   }
@@ -306,7 +306,7 @@ async function placePieceAt(row: number, column: number): Promise<void> {
 
   // Find the first actual shape (not a purchasable slot)
   const state = getStateRef();
-  const firstShapeIndex = state.nextShapes.findIndex(item => item.type === 'shape');
+  const firstShapeIndex = state.nextShapes.findIndex((item) => item.type === 'shape');
   if (firstShapeIndex === -1) {
     throw new Error('No shapes available in queue');
   }
@@ -495,7 +495,7 @@ function setBoardState(filledPositions: Array<{ row: number; column: number }>):
   // Instead, let's just directly modify the internal state for testing
   // This is a hack but necessary for E2E testing
   const currentState = getStateRef();
-  (currentState as any).tiles = tiles;
+  (currentState as TetrixReducerState & { tiles: typeof tiles }).tiles = tiles;
 }
 
 // Facade export

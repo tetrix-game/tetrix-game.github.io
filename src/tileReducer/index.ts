@@ -206,7 +206,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       let isGameOver = false;
 
       // DEBUG: Log game mode to detect if this is the bug
-      if (state.gameMode !== 'infinite' && state.gameMode !== 'finite' && state.gameMode !== 'daily' && state.gameMode !== 'tutorial') {
+      if (state.gameMode !== 'infinite' && state.gameMode !== 'hub' && state.gameMode !== 'daily' && state.gameMode !== 'tutorial') {
         console.error('🐛 UNEXPECTED GAME MODE!', {
           gameMode: state.gameMode,
           queueMode: state.queueMode,
@@ -225,7 +225,7 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
           plainShapes: plainShapes.map((s, i) => ({
             index: i,
             menuState: plainShapesMenuStates[i],
-            hasBlocks: s.some(row => row.some(block => block.isFilled)),
+            hasBlocks: s.some((row) => row.some((block) => block.isFilled)),
           })),
         });
 

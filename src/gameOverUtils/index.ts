@@ -28,8 +28,8 @@ export function checkGameOver(
       menusLength: openRotationMenus.length,
       shapes: shapes.map((s, i) => ({
         index: i,
-        hasBlocks: s.some(row => row.some(block => block.isFilled)),
-        color: s.flat().find(b => b.isFilled)?.color,
+        hasBlocks: s.some((row) => row.some((block) => block.isFilled)),
+        color: s.flat().find((b) => b.isFilled)?.color,
       })),
       menus: openRotationMenus,
       currentScore,
@@ -111,7 +111,7 @@ export function checkGameOver(
     menusCount: openRotationMenus.length,
     currentScore,
     shapeChecks: debugInfo,
-    filledTilesCount: Array.from(tiles.values()).filter(t => t.block.isFilled).length,
+    filledTilesCount: Array.from(tiles.values()).filter((t) => t.block.isFilled).length,
   });
 
   return true; // No valid moves found for any shape in any rotation

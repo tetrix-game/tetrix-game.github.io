@@ -49,8 +49,13 @@ export function TetrixProvider(
       initializeTestUtils(dispatch, () => state);
 
       // Also expose directly on window for E2E tests
-      (window as any).__dispatch = dispatch;
-      (window as any).__getGameState = () => state;
+      type E2EWindow = Window & {
+        __dispatch: TetrixDispatch;
+        __getGameState: () => TetrixReducerState;
+      };
+      const e2eWindow = window as unknown as E2EWindow;
+      e2eWindow.__dispatch = dispatch;
+      e2eWindow.__getGameState = (): TetrixReducerState => state;
     }
   }, [dispatch, state]);
 

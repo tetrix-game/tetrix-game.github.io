@@ -322,17 +322,6 @@ export function generateSuperShape(): Shape {
  * Note: Super combo piece is not in regular rotation - only generated as easter egg
  */
 export function generateRandomShape(): Shape {
-  // ============================================================
-  // TEMPORARY TEST CODE - Remove when board clear testing is complete
-  // Force all shapes to be I-pieces (1x4 horizontal lines) for testing full board clears
-  // ============================================================
-  return generateIPiece('blue');
-  // ============================================================
-  // END TEMPORARY TEST CODE - Uncomment code below to restore normal behavior
-  // ============================================================
-
-  /* ORIGINAL CODE - UNCOMMENT TO RESTORE:
-
   // Define base shape templates with their type metadata and unique rotation counts
   const shapeTemplates: Array<{ type: ShapeType; rotations: number }> = [
     { type: 'I', rotations: 2 },
@@ -417,8 +406,6 @@ export function generateRandomShape(): Shape {
   }
 
   return shape;
-
-  END OF ORIGINAL CODE - UNCOMMENT ABOVE TO RESTORE */
 }
 
 // Facade export to match folder name

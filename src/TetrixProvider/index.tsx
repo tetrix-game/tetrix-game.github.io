@@ -45,7 +45,7 @@ export function TetrixProvider(
 
   // Initialize test utilities for Playwright testing (dev only)
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       initializeTestUtils(dispatch, () => state);
     }
   }, [dispatch, state]);

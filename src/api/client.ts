@@ -3,7 +3,8 @@
  * Provides type-safe methods for all backend endpoints
  */
 
-import type { SavedGameState } from '../types';
+import type { SavedGameState, Shape as TetrixShape, SerializedQueueItem as TetrixSerializedQueueItem, TileData as TetrixTileData } from '../types';
+import { unpackTiles, unpackShape, isCompactShape, isCompactTiles } from '../bytePacking';
 
 interface Stats {
   gamesPlayed: number;
@@ -37,6 +38,42 @@ interface PlaceShapeResponse {
   linesCleared?: number;
   updatedTiles?: GridTile[];
   nextQueue?: QueueShape[];
+}
+
+interface PlacementResult {
+  tiles: GridTile[][];
+  pointsEarned: number;
+  totalScore: number;
+  linesCleared: {
+    rows: number[];
+    columns: number[];
+  };
+  newShape: {
+    id: number;
+    shape: QueueShape;
+  };
+  queue: QueueShape[];
+  isGameOver: boolean;
+}
+
+// New minimal API types
+interface PlacementResponse {
+  success: boolean;
+  tiles?: TetrixTileData[];
+  score?: number;
+  linesCleared?: number;
+  updatedQueue?: TetrixSerializedQueueItem[];
+  gameOver?: boolean;
+  error?: string;
+  message?: string;
+}
+
+interface RotationResponse {
+  success: boolean;
+  newShape?: TetrixShape;
+  updatedQueue?: TetrixSerializedQueueItem[];
+  error?: string;
+  message?: string;
 }
 
 class TetrixAPI {
@@ -148,7 +185,34 @@ class TetrixAPI {
    * Load game state from backend
    */
   async getGameState(): Promise<SavedGameState> {
-    return this.request<SavedGameState>('/game/state');
+    const state = await this.request<SavedGameState>('/game/state');
+
+    // Convert compact tiles if present
+    if (state.tiles && Array.isArray(state.tiles) && state.tiles.length === 100 && typeof state.tiles[0] === 'number') {
+      const compactTiles = new Uint8Array(state.tiles as any);
+      const unpackedTiles = unpackTiles(compactTiles);
+      state.tiles = Array.from(unpackedTiles.values()).map(tile => ({
+        position: tile.position,
+        backgroundColor: tile.backgroundColor,
+        isFilled: tile.block.isFilled,
+        color: tile.block.color,
+      }));
+    }
+
+    // Convert compact shapes in queue
+    if (state.nextQueue) {
+      state.nextQueue = state.nextQueue.map(item => {
+        if (item.type === 'shape' && isCompactShape(item.shape)) {
+          return {
+            ...item,
+            shape: unpackShape(item.shape),
+          };
+        }
+        return item;
+      });
+    }
+
+    return state;
   }
 
   /**
@@ -197,6 +261,21 @@ class TetrixAPI {
   }
 
   /**
+   * Place a shape on the board (new server-authoritative version)
+   */
+  async placeShapeV2(
+    shapeId: number,
+    x: number,
+    y: number,
+    rotation: number,
+  ): Promise<PlacementResult> {
+    return this.request<PlacementResult>('/game/place-shape-v2', {
+      method: 'POST',
+      body: JSON.stringify({ shapeId, x, y, rotation }),
+    });
+  }
+
+  /**
    * Unlock a shape slot
    */
   async unlockSlot(
@@ -214,6 +293,70 @@ class TetrixAPI {
     }>('/game/unlock-slot', {
       method: 'POST',
       body: JSON.stringify({ slotNumber, cost }),
+    });
+  }
+
+  /**
+   * Place a shape with minimal data (server-authoritative)
+   * Coordinates are 1-indexed (1-10)
+   */
+  async placeShapeMinimal(
+    shapeId: number,
+    x: number,
+    y: number,
+  ): Promise<PlacementResponse> {
+    const response = await this.request<PlacementResponse>('/game/state', {
+      method: 'POST',
+      body: JSON.stringify({
+        shapeId,
+        x,
+        y,
+        useCompactFormat: true // Request compact format from backend
+      }),
+    });
+
+    // Convert compact format to legacy format for frontend compatibility
+    if (response.tiles) {
+      // Check if tiles are in compact format (array of numbers)
+      if (Array.isArray(response.tiles) && response.tiles.length === 100 && typeof response.tiles[0] === 'number') {
+        const compactTiles = new Uint8Array(response.tiles);
+        const unpackedTiles = unpackTiles(compactTiles);
+        // Convert Map to array of TileData
+        response.tiles = Array.from(unpackedTiles.values()).map(tile => ({
+          position: tile.position,
+          backgroundColor: tile.backgroundColor,
+          isFilled: tile.block.isFilled,
+          color: tile.block.color,
+        })) as any;
+      }
+    }
+
+    // Convert compact shapes in updatedQueue
+    if (response.updatedQueue) {
+      response.updatedQueue = response.updatedQueue.map(item => {
+        if (item.type === 'shape' && isCompactShape(item.shape)) {
+          return {
+            ...item,
+            shape: unpackShape(item.shape),
+          };
+        }
+        return item;
+      });
+    }
+
+    return response;
+  }
+
+  /**
+   * Rotate a shape (server-authoritative)
+   */
+  async rotateShapeMinimal(
+    shapeId: number,
+    direction: 'clockwise' | 'counterclockwise',
+  ): Promise<RotationResponse> {
+    return this.request<RotationResponse>('/game/rotate', {
+      method: 'POST',
+      body: JSON.stringify({ shapeId, direction }),
     });
   }
 

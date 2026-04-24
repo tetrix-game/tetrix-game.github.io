@@ -7,7 +7,7 @@
 
 import { persistenceAdapter } from '../persistenceAdapter';
 import { persistenceManager } from '../persistenceManager';
-import type { Shape, TileData, QueueItem, SavedGameState, LoadResult, SerializedQueueItem, StatsPersistenceData } from '../types';
+import type { Shape, TileData, QueueItem, SavedGameState, LoadResult, SerializedQueueItem, StatsPersistenceData, Tile } from '../types';
 
 // Helper to get current adapter
 const getAdapter = (): typeof persistenceAdapter => persistenceManager.getCurrentAdapter();
@@ -27,6 +27,37 @@ const {
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,
 } = persistenceAdapter;
+
+// ============================================================================
+// MIGRATION UTILITIES
+// ============================================================================
+
+/**
+ * Migrate game state to remove animations from tiles
+ * This is needed because animations are now frontend-only and should not be persisted
+ * @param gameState - Saved game state (possibly with animations)
+ * @returns Migrated game state without animations
+ */
+export function migrateGameState(gameState: SavedGameState): SavedGameState {
+  if (!gameState.tiles || !Array.isArray(gameState.tiles)) {
+    return gameState;
+  }
+
+  // Check if tiles have animations that need to be removed
+  const firstTile = gameState.tiles[0];
+  if (firstTile && typeof firstTile === 'object' && 'activeAnimations' in firstTile) {
+    // Strip animations from all tiles
+    gameState.tiles = gameState.tiles.map((tile: any) => ({
+      position: tile.position,
+      backgroundColor: tile.backgroundColor || 'grey',
+      isFilled: tile.isFilled,
+      color: tile.color,
+      // NO activeAnimations - these are frontend-only now
+    }));
+  }
+
+  return gameState;
+}
 
 // ============================================================================
 // CONVENIENCE FUNCTIONS
@@ -63,10 +94,19 @@ export async function saveGameState(data: {
 
   const { APP_VERSION } = await import('../version');
 
+  // Strip animations from tiles before saving
+  const cleanedTiles = data.tiles.map((tile: any) => ({
+    position: tile.position,
+    backgroundColor: tile.backgroundColor || 'grey',
+    isFilled: tile.isFilled,
+    color: tile.color,
+    // NO activeAnimations - frontend-only, not persisted
+  }));
+
   const gameState: SavedGameState = {
     version: APP_VERSION,
     score: data.score,
-    tiles: data.tiles,
+    tiles: cleanedTiles,
     nextQueue: serializedQueue,
     savedShape: data.savedShape,
     totalLinesCleared: data.totalLinesCleared ?? 0,
@@ -81,7 +121,10 @@ export async function saveGameState(data: {
     lastUpdated: Date.now(),
   };
 
-  await getAdapter().saveGameState(gameState);
+  // Apply migration to ensure consistency
+  const migratedState = migrateGameState(gameState);
+
+  await getAdapter().saveGameState(migratedState);
 }
 
 /**

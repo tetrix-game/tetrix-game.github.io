@@ -77,6 +77,17 @@ export type TileData = {
 // Set of tile keys with their data
 export type TilesSet = Map<string, Tile>;
 
+// Compact representation of tiles for network transport (100 bytes)
+// Index 0-99 where each byte is a color index (0-7) or 255 for empty
+export type CompactTiles = Uint8Array;
+
+// Compact representation of a shape for network transport (3 bytes)
+// 2 bytes for 16-bit block mask + 1 byte for color index
+export type CompactShape = {
+  blocks: Uint16Array; // 16-bit mask: bit 1 = filled, bit 0 = empty
+  color: number;       // Color index (0-7)
+};
+
 // Helper to convert TilesSet to array for serialization
 function tilesToArray(tiles: TilesSet): TileData[] {
   return Array.from(tiles.values()).map((tile) => ({
@@ -345,6 +356,26 @@ type RotateShapeAction = {
   value: { shapeIndex: number; clockwise: boolean };
 };
 
+type ApplyServerRotationAction = {
+  type: 'APPLY_SERVER_ROTATION';
+  value: {
+    shapeId: number;
+    newShape: Shape;
+    updatedQueue: SerializedQueueItem[];
+  };
+};
+
+type ApplyServerPlacementAction = {
+  type: 'APPLY_SERVER_PLACEMENT';
+  value: {
+    tiles: TileData[];
+    score: number;
+    linesCleared: number;
+    updatedQueue: SerializedQueueItem[];
+    gameOver: boolean;
+  };
+};
+
 type SpendCoinAction = {
   type: 'SPEND_COIN';
   value: {
@@ -571,6 +602,8 @@ export type TetrixAction = | SelectShapeAction
   | ShowCoinDisplayAction
   | HideCoinDisplayAction
   | RotateShapeAction
+  | ApplyServerRotationAction
+  | ApplyServerPlacementAction
   | SpendCoinAction
   | AddShapeOptionAction
   | RemoveShapeOptionAction
@@ -624,7 +657,9 @@ export type TetrixDispatch = React.Dispatch<TetrixAction>;
 // ============================================================================
 
 // Serialized queue item for persistence
-export type SerializedQueueItem = | { type: 'shape'; shape: Shape }
+// Updated to support both legacy Shape format and compact CompactShape format
+export type SerializedQueueItem =
+  | { type: 'shape'; shape: Shape | CompactShape }
   | { type: 'purchasable-slot'; cost: number; slotNumber: number };
 
 // Saved game state for persistence

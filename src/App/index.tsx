@@ -1,11 +1,13 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 
+import { AuthProvider } from '../AuthProvider';
 import { DraggingShape } from '../DraggingShape';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { FullScreenButton as FullScreenFloatingActionButton } from '../FullScreenButton';
 import { Header } from '../Header';
 import { MusicControlProvider } from '../MusicControlProvider';
 import { PersistenceListener } from '../PersistenceListener';
+import { ResetPasswordOverlay } from '../ResetPasswordOverlay';
 import { SoundEffectsProvider } from '../SoundEffectsProvider';
 import { Tetrix } from '../Tetrix';
 import { TetrixProvider } from '../TetrixProvider';
@@ -20,8 +22,24 @@ import './App.css';
 const AppContent = (): JSX.Element => {
   // Custom hooks encapsulate all React hook logic
   const { showUpdateNotification, handleUpdate, handleDismissUpdate } = useUpdateNotification();
+  const [showResetPassword, setShowResetPassword] = useState(false);
+
   usePointerTracking();
   useShapePlacement();
+
+  // Check for password reset token in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token && window.location.pathname.includes('reset-password')) {
+      setShowResetPassword(true);
+    }
+  }, []);
+
+  // If showing reset password, show only that
+  if (showResetPassword) {
+    return <ResetPasswordOverlay />;
+  }
 
   return (
     <>
@@ -49,15 +67,17 @@ export const App = (): JSX.Element => {
   return (
     <StrictMode>
       <ErrorBoundary>
-        <SoundEffectsProvider>
-          <MusicControlProvider>
-            <TetrixProvider>
-              <ThemeProvider>
-                <AppContent />
-              </ThemeProvider>
-            </TetrixProvider>
-          </MusicControlProvider>
-        </SoundEffectsProvider>
+        <AuthProvider>
+          <SoundEffectsProvider>
+            <MusicControlProvider>
+              <TetrixProvider>
+                <ThemeProvider>
+                  <AppContent />
+                </ThemeProvider>
+              </TetrixProvider>
+            </MusicControlProvider>
+          </SoundEffectsProvider>
+        </AuthProvider>
       </ErrorBoundary>
     </StrictMode>
   );

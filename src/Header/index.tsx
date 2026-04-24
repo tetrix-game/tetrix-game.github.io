@@ -1,8 +1,13 @@
-import { useMemo, useCallback } from 'react';
+import { Person as PersonIcon, Leaderboard as LeaderboardIcon } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import { useMemo, useCallback, useState } from 'react';
 
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
+import { useAuth } from '../AuthProvider/AuthContext';
 import { BackgroundMusic } from '../BackgroundMusic';
 import { BoardClearDisplay } from '../BoardClearDisplay';
+import { LeaderboardOverlay } from '../LeaderboardOverlay';
+import { LoginOverlay } from '../LoginOverlay';
 import { ScoreDisplay } from '../ScoreDisplay';
 import { SettingsOverlay } from '../SettingsOverlay';
 import { SoundEffectsControlContext } from '../SoundEffectsControlContext';
@@ -16,6 +21,12 @@ export const Header: React.FC = () => {
   const { volume, setVolume, isEnabled, setEnabled } = useSoundEffects();
   // Get music control for the audio unlock indicator
   const { isWaitingForInteraction } = useMusicControl();
+  // Get authentication state
+  const { isAuthenticated, user, logout } = useAuth();
+  // Login overlay state
+  const [showLoginOverlay, setShowLoginOverlay] = useState(false);
+  // Leaderboard overlay state
+  const [showLeaderboardOverlay, setShowLeaderboardOverlay] = useState(false);
 
   const { gameMode } = useTetrixStateContext();
 
@@ -24,12 +35,15 @@ export const Header: React.FC = () => {
     setEnabled(!isEnabled);
   }, [isEnabled, setEnabled]);
 
-  const soundEffectsContextValue = useMemo(() => ({
-    volume,
-    setVolume,
-    isEnabled,
-    toggleEnabled: toggleSoundEffectsEnabled,
-  }), [volume, setVolume, isEnabled, toggleSoundEffectsEnabled]);
+  const soundEffectsContextValue = useMemo(
+    () => ({
+      volume,
+      setVolume,
+      isEnabled,
+      toggleEnabled: toggleSoundEffectsEnabled,
+    }),
+    [volume, setVolume, isEnabled, toggleSoundEffectsEnabled],
+  );
 
   return (
     <SoundEffectsControlContext.Provider value={soundEffectsContextValue}>
@@ -46,7 +60,42 @@ export const Header: React.FC = () => {
           <BoardClearDisplay />
           <ScoreDisplay />
         </div>
-        <SettingsOverlay />
+        <div className="header-right">
+          {isAuthenticated ? (
+            <div className="user-menu">
+              <span className="user-name">{user?.username}</span>
+              <IconButton
+                onClick={() => setShowLeaderboardOverlay(true)}
+                size="small"
+                aria-label="Leaderboard"
+                sx={{ color: '#4fc3f7', marginLeft: 1 }}
+              >
+                <LeaderboardIcon />
+              </IconButton>
+              <button className="logout-button" onClick={logout}>
+                Logout
+              </button>
+            </div>
+          ) : (
+            <IconButton
+              onClick={() => setShowLoginOverlay(true)}
+              size="small"
+              aria-label="Login"
+              sx={{ color: '#4fc3f7' }}
+            >
+              <PersonIcon />
+            </IconButton>
+          )}
+          <SettingsOverlay />
+        </div>
+
+        <LoginOverlay isOpen={showLoginOverlay} onClose={() => setShowLoginOverlay(false)} />
+        {isAuthenticated && (
+          <LeaderboardOverlay
+            isOpen={showLeaderboardOverlay}
+            onClose={() => setShowLeaderboardOverlay(false)}
+          />
+        )}
       </div>
     </SoundEffectsControlContext.Provider>
   );

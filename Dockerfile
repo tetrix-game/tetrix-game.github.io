@@ -18,6 +18,10 @@ RUN npm install --legacy-peer-deps --ignore-scripts || npm install --legacy-peer
 # Copy source files
 COPY . .
 
+# Accept build argument and set as environment variable
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the app (skip linting)
 RUN npm run build:prod
 

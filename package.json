@@ -1,7 +1,7 @@
 {
   "name": "my-app",
   "private": true,
-  "version": "2.0.2",
+  "version": "2.0.3",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -15,6 +15,8 @@
     "generate-icons": "node generate-icons.js",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "flatten": "tsx scripts/flatten-structure.ts"
   },
   "dependencies": {

@@ -4,6 +4,7 @@
  */
 
 import { unpackTiles, unpackShape, isCompactShape } from '../bytePacking';
+import { featureFlags } from '../featureFlags';
 import type { SavedGameState, Shape as TetrixShape, SerializedQueueItem as TetrixSerializedQueueItem, TileData as TetrixTileData } from '../types';
 
 interface Stats {
@@ -311,7 +312,7 @@ class TetrixAPI {
         shapeId,
         x,
         y,
-        useCompactFormat: true, // Request compact format from backend
+        useCompactFormat: featureFlags.isEnabled('useCompactFormat'),
       }),
     });
 

@@ -7,8 +7,8 @@
 
 // Default feature flag values
 const DEFAULT_FLAGS = {
-  useCompactFormat: true,  // Compact byte format for API payloads
-  enableAnimations: true,   // Tile clearing animations
+  useCompactFormat: true, // Compact byte format for API payloads
+  enableAnimations: true, // Tile clearing animations
   enableSoundEffects: true, // Sound effects
 };
 
@@ -34,7 +34,7 @@ class FeatureFlagManager {
           const parsed = JSON.parse(stored);
           this.flags = { ...this.flags, ...parsed };
           console.log('🚩 Feature flags loaded from localStorage:', this.flags);
-        } catch (e) {
+        } catch {
           console.warn('Failed to parse feature flags from localStorage');
         }
       }
@@ -94,7 +94,7 @@ export const featureFlags = new FeatureFlagManager();
 
 // Expose to window for debugging in dev mode
 if (import.meta.env.DEV && typeof window !== 'undefined') {
-  (window as any).featureFlags = featureFlags;
+  (window as Window & { featureFlags?: FeatureFlagManager }).featureFlags = featureFlags;
   console.log('🚩 Feature flags available on window.featureFlags');
   console.log('   Example: window.featureFlags.disable("useCompactFormat")');
 }

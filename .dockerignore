@@ -1,0 +1,10 @@
+node_modules/
+.git/
+.env.local
+.npmrc
+test-results/
+playwright-report/
+e2e/
+*.md
+.gitignore
+.eslintrc*

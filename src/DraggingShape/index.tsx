@@ -235,6 +235,15 @@ export function DraggingShape(): JSX.Element | null {
       x: mousePosition.x,
       y: mousePosition.y - MOBILE_TOUCH_OFFSET,
     };
+  } else if (dragState.phase === 'waiting-for-server' && dragState.targetPosition) {
+    // Hold at target position and wiggle
+    currentCellSize = GRID_TILE_SIZE;
+    currentGap = GRID_GAP;
+    currentCenter = {
+      x: dragState.targetPosition.x,
+      y: dragState.targetPosition.y,
+    };
+    // No scale change - shape stays at 100%
   } else if (dragState.phase === 'placing' && dragState.targetPosition) {
     // Interpolate from Mouse (Placement Start) to Grid Target
     currentCellSize = GRID_TILE_SIZE;
@@ -289,7 +298,7 @@ export function DraggingShape(): JSX.Element | null {
 
   return (
     <div
-      className={`dragging-shape-container ${dragState.phase === 'dragging' ? 'dragging-phase' : ''}`}
+      className={`dragging-shape-container ${dragState.phase === 'dragging' || dragState.phase === 'waiting-for-server' ? 'wiggle-enabled' : ''}`}
       style={{
         '--container-top': `${containerTop}px`,
         '--container-left': `${containerLeft}px`,
@@ -312,7 +321,7 @@ export function DraggingShape(): JSX.Element | null {
           return (
             <div
               key={`${rowIndex}-${colIndex}`}
-              className={`dragging-shape-cell ${isInvalid ? 'invalid-cell' : ''}`}
+              className={`dragging-shape-cell ${isInvalid ? 'invalid-cell' : ''} ${dragState.phase === 'waiting-for-server' ? 'waiting-cell' : ''}`}
               style={{
                 // Apply the centering transform here
                 transform: 'translate(var(--centering-offset-x), var(--centering-offset-y))',

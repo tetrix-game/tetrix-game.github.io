@@ -71,6 +71,16 @@ export const useShapePlacement = (): void => {
 
       // If authenticated, use server-authoritative placement
       if (isAuthenticated) {
+        // Phase 1: Start wiggle animation
+        dispatch({
+          type: 'START_SERVER_PLACEMENT',
+          value: {
+            location,
+            mousePosition: { x: e.clientX, y: e.clientY },
+          },
+        });
+
+        // Phase 2: Make async API call
         try {
           const response = await api.placeShapeMinimal(
             dragState.selectedShapeIndex,
@@ -79,18 +89,22 @@ export const useShapePlacement = (): void => {
           );
 
           if (response.success && response.tiles) {
-            // Apply server response to game state
-            dispatch({
-              type: 'APPLY_SERVER_PLACEMENT',
-              value: {
-                tiles: response.tiles,
-                score: response.score!,
-                linesCleared: response.linesCleared!,
-                updatedQueue: response.updatedQueue!,
-                gameOver: response.gameOver || false,
-              },
-            });
-            playSound('click_into_place');
+            // Transition to placing phase (drop animation)
+            dispatch({ type: 'PLACE_SHAPE', value: { location, mousePosition: { x: e.clientX, y: e.clientY } } });
+
+            // Apply server response after a short delay to let drop animation start
+            setTimeout(() => {
+              dispatch({
+                type: 'APPLY_SERVER_PLACEMENT',
+                value: {
+                  tiles: response.tiles,
+                  score: response.score!,
+                  linesCleared: response.linesCleared!,
+                  updatedQueue: response.updatedQueue!,
+                  gameOver: response.gameOver || false,
+                },
+              });
+            }, 50);
           } else {
             // Server rejected placement
             playSound('invalid_placement');

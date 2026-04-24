@@ -120,7 +120,7 @@ export type ShapeOptionBounds = {
 // ============================================================================
 
 // Drag phase-based animation system
-export type DragPhase = 'none' | 'picking-up' | 'dragging' | 'placing' | 'returning';
+export type DragPhase = 'none' | 'picking-up' | 'dragging' | 'waiting-for-server' | 'placing' | 'returning';
 
 // Pre-calculated offsets for drag operations - calculated once when shape is selected
 export type DragOffsets = {
@@ -280,6 +280,14 @@ type PlaceShapeAction = {
   value: {
     location: Location;
     mousePosition?: { x: number; y: number };
+  };
+};
+
+type StartServerPlacementAction = {
+  type: 'START_SERVER_PLACEMENT';
+  value: {
+    location: Location;
+    mousePosition: { x: number; y: number };
   };
 };
 
@@ -588,6 +596,7 @@ export type TetrixAction = | SelectShapeAction
   | StartDragAction
   | UpdateMouseLocationAction
   | PlaceShapeAction
+  | StartServerPlacementAction
   | CompletePlacementAction
   | StartShapeRemovalAction
   | CompleteShapeRemovalAction

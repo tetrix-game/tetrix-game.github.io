@@ -218,9 +218,12 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
     case 'UPDATE_MOUSE_LOCATION': {
       const { location, position, tileSize, gridBounds, isValid, invalidBlocks } = action.value;
 
-      // If we are in the placing phase, we should NOT update the validity or hovered blocks
+      // If we are in the placing phase, waiting-for-server, or returning phase,
+      // we should NOT update the validity or hovered blocks
       // The shape is animating into place and should not react to mouse movement anymore
-      if (state.dragState.phase === 'placing' || state.dragState.phase === 'returning') {
+      if (state.dragState.phase === 'placing'
+          || state.dragState.phase === 'returning'
+          || state.dragState.phase === 'waiting-for-server') {
         return {
           ...state,
           mouseGridLocation: location,
@@ -272,6 +275,90 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
         gridTileSize: tileSize ?? state.gridTileSize ?? null,
         gridBounds: gridBounds ?? state.gridBounds ?? null,
         dragState: newDragState,
+      };
+    }
+
+    case 'START_SERVER_PLACEMENT': {
+      const { location, mousePosition: clickPosition } = action.value;
+
+      if (!state.dragState.selectedShape || state.dragState.selectedShapeIndex === null) {
+        return state;
+      }
+
+      // Calculate target position for wiggle animation
+      if (!state.gridTileSize || !state.gridBounds) {
+        return state;
+      }
+
+      const useMousePosition = clickPosition || state.mousePosition;
+      if (!useMousePosition) {
+        return state;
+      }
+
+      // Recalculate grid dimensions from current DOM
+      const gridElement = document.querySelector('.grid');
+      let TILE_SIZE: number;
+      let GRID_GAP: number;
+      let currentGridBounds = state.gridBounds;
+
+      if (gridElement) {
+        const rect = gridElement.getBoundingClientRect();
+        GRID_GAP = 2;
+        const GRID_GAPS_TOTAL = 9 * GRID_GAP;
+        TILE_SIZE = (rect.width - GRID_GAPS_TOTAL) / 10;
+
+        currentGridBounds = {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        };
+      } else {
+        TILE_SIZE = state.dragState.dragOffsets?.tileSize ?? state.gridTileSize;
+        GRID_GAP = state.dragState.dragOffsets?.gridGap ?? 2;
+      }
+
+      if (!TILE_SIZE || !currentGridBounds) {
+        return state;
+      }
+
+      // Calculate target position (center of filled blocks)
+      const tileWithGap = TILE_SIZE + GRID_GAP;
+      const shapePositions = getShapeGridPositions(state.dragState.selectedShape, location);
+
+      let minRow = Infinity, maxRow = -Infinity, minCol = Infinity, maxCol = -Infinity;
+      shapePositions.forEach((pos) => {
+        minRow = Math.min(minRow, pos.location.row);
+        maxRow = Math.max(maxRow, pos.location.row);
+        minCol = Math.min(minCol, pos.location.column);
+        maxCol = Math.max(maxCol, pos.location.column);
+      });
+
+      const centerRow = (minRow + maxRow) / 2;
+      const centerCol = (minCol + maxCol) / 2;
+
+      const targetCellCenterX = currentGridBounds.left
+        + (centerCol - 1) * tileWithGap
+        + TILE_SIZE / 2;
+      const targetCellCenterY = currentGridBounds.top
+        + (centerRow - 1) * tileWithGap
+        + TILE_SIZE / 2;
+
+      return {
+        ...state,
+        dragState: {
+          ...state.dragState,
+          phase: 'waiting-for-server',
+          targetPosition: { x: targetCellCenterX, y: targetCellCenterY },
+          placementLocation: location,
+          placementStartPosition: state.mousePosition
+            ? { x: state.mousePosition.x, y: state.mousePosition.y }
+            : useMousePosition,
+          hoveredBlockPositions: shapePositions,
+          startTime: performance.now(),
+        },
+        mouseGridLocation: location,
+        mousePosition: useMousePosition,
       };
     }
 

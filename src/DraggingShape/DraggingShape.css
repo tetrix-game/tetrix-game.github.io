@@ -55,3 +55,16 @@
   animation: wiggle var(--invalid-anim-duration, 0.2s) linear infinite;
   animation-delay: var(--wiggle-delay);
 }
+
+/* Wiggle animation for waiting-for-server phase - slower, full size */
+.waiting-cell .wiggle-wrapper {
+  animation: wiggle 400ms ease-in-out infinite;
+  animation-delay: var(--wiggle-delay, 0ms);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .waiting-cell .wiggle-wrapper {
+    animation: none;
+  }
+}

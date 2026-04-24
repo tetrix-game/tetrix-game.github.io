@@ -85,7 +85,7 @@ export type CompactTiles = Uint8Array;
 // 2 bytes for 16-bit block mask + 1 byte for color index
 export type CompactShape = {
   blocks: Uint16Array; // 16-bit mask: bit 1 = filled, bit 0 = empty
-  color: number;       // Color index (0-7)
+  color: number; // Color index (0-7)
 };
 
 // Helper to convert TilesSet to array for serialization
@@ -658,8 +658,7 @@ export type TetrixDispatch = React.Dispatch<TetrixAction>;
 
 // Serialized queue item for persistence
 // Updated to support both legacy Shape format and compact CompactShape format
-export type SerializedQueueItem =
-  | { type: 'shape'; shape: Shape | CompactShape }
+export type SerializedQueueItem = | { type: 'shape'; shape: Shape | CompactShape }
   | { type: 'purchasable-slot'; cost: number; slotNumber: number };
 
 // Saved game state for persistence

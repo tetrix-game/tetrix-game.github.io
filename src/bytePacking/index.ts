@@ -14,7 +14,7 @@
  * - 1 byte: color index (0-7)
  */
 
-import type { Tile, Shape, Block, ColorName, Location } from '../types';
+import type { Tile, Shape, ColorName, Location } from '../types';
 
 // ============================================================================
 // COLOR ENCODING
@@ -32,14 +32,14 @@ export const COLOR_INDEX_MAP: Record<ColorName, number> = {
 };
 
 export const INDEX_COLOR_MAP: ColorName[] = [
-  'white',   // 0
-  'grey',    // 1
-  'red',     // 2
-  'orange',  // 3
-  'yellow',  // 4
-  'green',   // 5
-  'blue',    // 6
-  'purple',  // 7
+  'white', // 0
+  'grey', // 1
+  'red', // 2
+  'orange', // 3
+  'yellow', // 4
+  'green', // 5
+  'blue', // 6
+  'purple', // 7
 ];
 
 export const EMPTY_TILE = 255; // 0xFF - marker for unfilled tiles
@@ -281,17 +281,19 @@ export function unpackShape(compact: { blocks: Uint16Array; color: number }): Sh
 /**
  * Check if an object is a compact shape
  */
-export function isCompactShape(obj: any): obj is { blocks: Uint16Array; color: number } {
-  return obj &&
-         typeof obj === 'object' &&
-         obj.blocks instanceof Uint16Array &&
-         typeof obj.color === 'number';
+export function isCompactShape(obj: unknown): obj is { blocks: Uint16Array; color: number } {
+  return !!obj
+    && typeof obj === 'object'
+    && 'blocks' in obj
+    && obj.blocks instanceof Uint16Array
+    && 'color' in obj
+    && typeof obj.color === 'number';
 }
 
 /**
  * Check if an array is a compact tiles array
  */
-export function isCompactTiles(obj: any): obj is Uint8Array {
+export function isCompactTiles(obj: unknown): obj is Uint8Array {
   return obj instanceof Uint8Array && obj.length === 100;
 }
 

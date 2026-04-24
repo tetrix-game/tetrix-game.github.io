@@ -4,6 +4,7 @@
  *          SET_SHAPE_OPTION_BOUNDS, START_SHAPE_REMOVAL, COMPLETE_SHAPE_REMOVAL
  */
 
+import { isCompactShape, unpackShape } from '../bytePacking';
 import { persistence } from '../persistence';
 import { shapeGeneration } from '../shapeGeneration';
 import { shapeTransforms } from '../shapeTransforms';
@@ -283,6 +284,52 @@ export function shapeReducer(state: TetrixReducerState, action: TetrixAction): T
         dragState: newDragState,
         removingShapeIndex: null,
         shapeRemovalAnimationState: 'none',
+      };
+    }
+
+    case 'APPLY_SERVER_ROTATION': {
+      const { shapeId, newShape, updatedQueue } = action.value;
+
+      // Convert SerializedQueueItem[] to QueueItem[] with IDs
+      let nextId = state.nextShapeIdCounter;
+      const enhancedQueue: QueueItem[] = updatedQueue.map((item) => {
+        if (item.type === 'shape') {
+          // Unpack compact shape if needed
+          const shape = isCompactShape(item.shape) ? unpackShape(item.shape) : item.shape;
+          return {
+            id: nextId++,
+            shape,
+            type: 'shape' as const,
+          };
+        }
+        return {
+          id: nextId++,
+          type: 'purchasable-slot' as const,
+          cost: item.cost!,
+          slotNumber: item.slotNumber!,
+        };
+      });
+
+      // Update the specific shape that was rotated
+      const newShapes = [...enhancedQueue];
+      if (shapeId >= 0 && shapeId < newShapes.length && newShapes[shapeId].type === 'shape') {
+        newShapes[shapeId] = { ...newShapes[shapeId], shape: newShape, type: 'shape' };
+      }
+
+      // If this is the currently selected shape, update it in dragState too
+      const newDragState = state.dragState.selectedShapeIndex === shapeId
+        ? { ...state.dragState, selectedShape: newShape }
+        : state.dragState;
+
+      // Reset no-turn streak since a shape was rotated
+      const newStats = resetNoTurnStreak(state.stats);
+
+      return {
+        ...state,
+        nextShapes: newShapes,
+        dragState: newDragState,
+        stats: newStats,
+        nextShapeIdCounter: nextId,
       };
     }
 

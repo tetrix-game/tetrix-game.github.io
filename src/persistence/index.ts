@@ -7,7 +7,7 @@
 
 import { persistenceAdapter } from '../persistenceAdapter';
 import { persistenceManager } from '../persistenceManager';
-import type { Shape, TileData, QueueItem, SavedGameState, LoadResult, SerializedQueueItem, StatsPersistenceData, Tile } from '../types';
+import type { Shape, TileData, QueueItem, SavedGameState, LoadResult, SerializedQueueItem, StatsPersistenceData } from '../types';
 
 // Helper to get current adapter
 const getAdapter = (): typeof persistenceAdapter => persistenceManager.getCurrentAdapter();
@@ -47,13 +47,18 @@ export function migrateGameState(gameState: SavedGameState): SavedGameState {
   const firstTile = gameState.tiles[0];
   if (firstTile && typeof firstTile === 'object' && 'activeAnimations' in firstTile) {
     // Strip animations from all tiles
-    gameState.tiles = gameState.tiles.map((tile: any) => ({
+    const migratedTiles = gameState.tiles.map((tile) => ({
       position: tile.position,
       backgroundColor: tile.backgroundColor || 'grey',
       isFilled: tile.isFilled,
       color: tile.color,
       // NO activeAnimations - these are frontend-only now
     }));
+
+    return {
+      ...gameState,
+      tiles: migratedTiles,
+    };
   }
 
   return gameState;
@@ -95,7 +100,7 @@ export async function saveGameState(data: {
   const { APP_VERSION } = await import('../version');
 
   // Strip animations from tiles before saving
-  const cleanedTiles = data.tiles.map((tile: any) => ({
+  const cleanedTiles = data.tiles.map((tile) => ({
     position: tile.position,
     backgroundColor: tile.backgroundColor || 'grey',
     isFilled: tile.isFilled,

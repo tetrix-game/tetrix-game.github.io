@@ -4,6 +4,7 @@
  */
 
 // safeBatchSave removed - persistence handled by PersistenceListener
+import { isCompactShape, unpackShape } from '../bytePacking';
 import { cleanupExpiredAnimations } from '../clearingAnimationUtils';
 import { checkGameOver } from '../gameOverUtils';
 import { gridConstants } from '../gridConstants';
@@ -628,6 +629,71 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
         openRotationMenus: [...state.openRotationMenus.slice(1), false],
         shapeOptionBounds: [...state.shapeOptionBounds.slice(1), null],
         newShapeAnimationStates: [...state.newShapeAnimationStates.slice(1), 'none'],
+      };
+    }
+
+    case 'APPLY_SERVER_PLACEMENT': {
+      const { tiles, score, linesCleared, updatedQueue, gameOver } = action.value;
+
+      // Convert TileData[] array to Map<string, Tile>
+      const newTiles = new Map<string, Tile>();
+      tiles.forEach((tileData) => {
+        newTiles.set(tileData.position, {
+          position: tileData.position,
+          block: {
+            color: tileData.color,
+            isFilled: tileData.isFilled,
+          },
+          backgroundColor: tileData.backgroundColor || 'grey',
+          activeAnimations: tileData.activeAnimations || [],
+        });
+      });
+
+      // Convert SerializedQueueItem[] to QueueItem[] with IDs
+      let nextId = state.nextShapeIdCounter;
+      const enhancedQueue: QueueItem[] = updatedQueue.map((item) => {
+        if (item.type === 'shape') {
+          // Unpack compact shape if needed (defensive check, API client should already do this)
+          const shape: Shape = isCompactShape(item.shape) ? unpackShape(item.shape) : item.shape;
+          return {
+            id: nextId++,
+            shape,
+            type: 'shape' as const,
+          };
+        }
+        return {
+          id: nextId++,
+          type: 'purchasable-slot' as const,
+          cost: item.cost!,
+          slotNumber: item.slotNumber!,
+        };
+      });
+
+      return {
+        ...state,
+        tiles: newTiles,
+        score,
+        totalLinesCleared: state.totalLinesCleared + linesCleared,
+        shapesUsed: state.shapesUsed + 1,
+        hasPlacedFirstShape: true,
+        nextShapes: enhancedQueue,
+        nextShapeIdCounter: nextId,
+        gameState: gameOver ? 'gameover' : state.gameState,
+        dragState: {
+          phase: 'none',
+          selectedShape: null,
+          selectedShapeIndex: null,
+          sourceId: null,
+          isValidPlacement: false,
+          hoveredBlockPositions: [],
+          invalidBlockPositions: [],
+          sourcePosition: null,
+          targetPosition: null,
+          placementLocation: null,
+          placementStartPosition: null,
+          startTime: null,
+          dragOffsets: null,
+        },
       };
     }
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 
+import { useAuth } from '../AuthProvider/AuthContext';
 import { safeBatchSave, saveTheme, saveBlockTheme } from '../persistence';
 import { persistenceAdapter } from '../persistenceAdapter';
 import { useTetrixStateContext } from '../TetrixProvider';
@@ -20,6 +21,7 @@ const { tilesToArray } = types;
  */
 export const PersistenceListener = (): null => {
   const state = useTetrixStateContext();
+  const { isAuthenticated } = useAuth();
   const {
     gameState,
     gameMode,
@@ -68,7 +70,12 @@ export const PersistenceListener = (): null => {
       return;
     }
 
-    // Save game state
+    // Skip game state persistence when authenticated - server handles it via API calls
+    if (isAuthenticated) {
+      return;
+    }
+
+    // Save game state (local play only)
     // NOTE: We intentionally do NOT persist isGameOver.
     // Game over is a derived state that should be recalculated on load
     // to prevent false game overs from stale/corrupted data.
@@ -107,6 +114,7 @@ export const PersistenceListener = (): null => {
     queueSize,
     queueColorProbabilities,
     unlockedSlots,
+    isAuthenticated,
   ]);
 
   // Effect for Modifiers

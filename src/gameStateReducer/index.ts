@@ -5,6 +5,7 @@
  *          LOAD_GAME_STATE, RESET_GAME
  */
 
+import { isCompactShape, unpackShape } from '../bytePacking';
 import { checkGameOver } from '../gameOverUtils';
 import { gridConstants } from '../gridConstants';
 import { checkMapCompletion } from '../mapCompletionUtils';
@@ -287,9 +288,11 @@ export function gameStateReducer(
       if (gameData.nextQueue && Array.isArray(gameData.nextQueue)) {
         for (const item of gameData.nextQueue) {
           if (item.type === 'shape') {
+            // Unpack compact shape if needed
+            const shape: Shape = isCompactShape(item.shape) ? unpackShape(item.shape) : item.shape;
             loadedQueue.push({
               id: nextIdCounter++,
-              shape: item.shape,
+              shape,
               type: 'shape',
             });
           } else if (item.type === 'purchasable-slot') {

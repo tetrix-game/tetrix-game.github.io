@@ -2,6 +2,8 @@ import './ShapeOption.css';
 import React, { useRef, useEffect, useCallback } from 'react';
 
 import { animationConstants } from '../animationConstants';
+import { api } from '../api/client';
+import { useAuth } from '../AuthProvider/AuthContext';
 import { ShapeDisplay } from '../ShapeDisplay';
 import { useTetrixDispatchContext, useTetrixStateContext } from '../TetrixProvider';
 import type { Shape } from '../types';
@@ -16,6 +18,7 @@ type ShapeOptionProps = {
 
 export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.Element => {
   const dispatch = useTetrixDispatchContext();
+  const { isAuthenticated } = useAuth();
   const {
     dragState,
     isTurningModeActive,
@@ -73,7 +76,7 @@ export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.El
     }
   }, [removingShapeIndex, shapeIndex, shapeRemovalAnimationState, dispatch]);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent): void => {
+  const handlePointerDown = useCallback(async (e: React.PointerEvent): Promise<void> => {
     e.preventDefault();
 
     // Don't handle events during animation
@@ -96,10 +99,34 @@ export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.El
 
         const clockwise = turningDirection === 'cw';
 
-        dispatch({
-          type: 'ROTATE_SHAPE',
-          value: { shapeIndex, clockwise },
-        });
+        // If authenticated, use server-authoritative rotation
+        if (isAuthenticated) {
+          try {
+            const response = await api.rotateShapeMinimal(
+              shapeIndex,
+              clockwise ? 'clockwise' : 'counterclockwise',
+            );
+
+            if (response.success && response.newShape && response.updatedQueue) {
+              dispatch({
+                type: 'APPLY_SERVER_ROTATION',
+                value: {
+                  shapeId: shapeIndex,
+                  newShape: response.newShape,
+                  updatedQueue: response.updatedQueue,
+                },
+              });
+            }
+          } catch {
+            // Failed to rotate - shape will remain in current state
+          }
+        } else {
+          // Local play - use old client-side logic
+          dispatch({
+            type: 'ROTATE_SHAPE',
+            value: { shapeIndex, clockwise },
+          });
+        }
 
         // Deactivate turning mode after rotation
         dispatch({ type: 'DEACTIVATE_TURNING_MODE' });
@@ -126,16 +153,48 @@ export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.El
           },
         });
 
-        // Perform two clockwise rotations for 180-degree turn
-        dispatch({
-          type: 'ROTATE_SHAPE',
-          value: { shapeIndex, clockwise: true },
-        });
+        // If authenticated, use server-authoritative rotation (twice)
+        if (isAuthenticated) {
+          try {
+            // First rotation
+            let response = await api.rotateShapeMinimal(shapeIndex, 'clockwise');
+            if (response.success && response.newShape && response.updatedQueue) {
+              dispatch({
+                type: 'APPLY_SERVER_ROTATION',
+                value: {
+                  shapeId: shapeIndex,
+                  newShape: response.newShape,
+                  updatedQueue: response.updatedQueue,
+                },
+              });
 
-        dispatch({
-          type: 'ROTATE_SHAPE',
-          value: { shapeIndex, clockwise: true },
-        });
+              // Second rotation
+              response = await api.rotateShapeMinimal(shapeIndex, 'clockwise');
+              if (response.success && response.newShape && response.updatedQueue) {
+                dispatch({
+                  type: 'APPLY_SERVER_ROTATION',
+                  value: {
+                    shapeId: shapeIndex,
+                    newShape: response.newShape,
+                    updatedQueue: response.updatedQueue,
+                  },
+                });
+              }
+            }
+          } catch {
+            // Failed to rotate - shape will remain in current state
+          }
+        } else {
+          // Local play - use old client-side logic
+          dispatch({
+            type: 'ROTATE_SHAPE',
+            value: { shapeIndex, clockwise: true },
+          });
+          dispatch({
+            type: 'ROTATE_SHAPE',
+            value: { shapeIndex, clockwise: true },
+          });
+        }
 
         // Deactivate double turn mode after rotation
         dispatch({ type: 'DEACTIVATE_DOUBLE_TURN_MODE' });
@@ -182,6 +241,7 @@ export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.El
     score,
     shape,
     shapeId,
+    isAuthenticated,
   ]);
 
   const isSelected = dragState.sourceId === shapeId || dragState.selectedShapeIndex === shapeIndex;

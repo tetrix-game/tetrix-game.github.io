@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import { api } from '../api/client';
+import { useAuth } from '../AuthProvider/AuthContext';
 import { gridConstants } from '../gridConstants';
 import { mousePositionToGridLocation } from '../shapeGeometry';
 import { isValidPlacement } from '../shapeValidation';
@@ -12,13 +14,14 @@ export const useShapePlacement = (): void => {
   const { gameMode, dragState, tiles } = useTetrixStateContext();
   const dispatch = useTetrixDispatchContext();
   const { playSound } = useSoundEffects();
+  const { isAuthenticated } = useAuth();
   const gridRef = useRef<HTMLElement | null>(null);
 
   // Global pointerup handler - consolidates all placement/return logic
   useEffect((): (() => void) => {
-    const handleGlobalPointerUp = (e: PointerEvent): void => {
+    const handleGlobalPointerUp = async (e: PointerEvent): Promise<void> => {
       // Only handle if a shape is being dragged
-      if (!dragState.selectedShape) return;
+      if (!dragState.selectedShape || dragState.selectedShapeIndex === null) return;
 
       // Get current grid element for validation
       if (!gridRef.current) {
@@ -66,14 +69,48 @@ export const useShapePlacement = (): void => {
         return;
       }
 
-      // Valid placement - place the shape
-      dispatch({
-        type: 'PLACE_SHAPE',
-        value: {
-          location,
-          mousePosition: { x: e.clientX, y: e.clientY },
-        },
-      });
+      // If authenticated, use server-authoritative placement
+      if (isAuthenticated) {
+        try {
+          const response = await api.placeShapeMinimal(
+            dragState.selectedShapeIndex,
+            location.row, // Already 1-indexed
+            location.column, // Already 1-indexed
+          );
+
+          if (response.success && response.tiles) {
+            // Apply server response to game state
+            dispatch({
+              type: 'APPLY_SERVER_PLACEMENT',
+              value: {
+                tiles: response.tiles,
+                score: response.score!,
+                linesCleared: response.linesCleared!,
+                updatedQueue: response.updatedQueue!,
+                gameOver: response.gameOver || false,
+              },
+            });
+            playSound('click_into_place');
+          } else {
+            // Server rejected placement
+            playSound('invalid_placement');
+            dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
+          }
+        } catch {
+          // Failed to place - return shape to selector
+          playSound('invalid_placement');
+          dispatch({ type: 'RETURN_SHAPE_TO_SELECTOR' });
+        }
+      } else {
+        // Local play - use old client-side logic
+        dispatch({
+          type: 'PLACE_SHAPE',
+          value: {
+            location,
+            mousePosition: { x: e.clientX, y: e.clientY },
+          },
+        });
+      }
     };
 
     document.addEventListener('pointerup', handleGlobalPointerUp);
@@ -81,5 +118,14 @@ export const useShapePlacement = (): void => {
     return (): void => {
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [dispatch, dragState.selectedShape, dragState.dragOffsets, tiles, playSound, gameMode]);
+  }, [
+    dispatch,
+    dragState.selectedShape,
+    dragState.selectedShapeIndex,
+    dragState.dragOffsets,
+    tiles,
+    playSound,
+    gameMode,
+    isAuthenticated,
+  ]);
 };

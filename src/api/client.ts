@@ -3,8 +3,8 @@
  * Provides type-safe methods for all backend endpoints
  */
 
+import { unpackTiles, unpackShape, isCompactShape } from '../bytePacking';
 import type { SavedGameState, Shape as TetrixShape, SerializedQueueItem as TetrixSerializedQueueItem, TileData as TetrixTileData } from '../types';
-import { unpackTiles, unpackShape, isCompactShape, isCompactTiles } from '../bytePacking';
 
 interface Stats {
   gamesPlayed: number;
@@ -189,9 +189,9 @@ class TetrixAPI {
 
     // Convert compact tiles if present
     if (state.tiles && Array.isArray(state.tiles) && state.tiles.length === 100 && typeof state.tiles[0] === 'number') {
-      const compactTiles = new Uint8Array(state.tiles as any);
+      const compactTiles = new Uint8Array(state.tiles as unknown as number[]);
       const unpackedTiles = unpackTiles(compactTiles);
-      state.tiles = Array.from(unpackedTiles.values()).map(tile => ({
+      state.tiles = Array.from(unpackedTiles.values()).map((tile) => ({
         position: tile.position,
         backgroundColor: tile.backgroundColor,
         isFilled: tile.block.isFilled,
@@ -201,7 +201,7 @@ class TetrixAPI {
 
     // Convert compact shapes in queue
     if (state.nextQueue) {
-      state.nextQueue = state.nextQueue.map(item => {
+      state.nextQueue = state.nextQueue.map((item) => {
         if (item.type === 'shape' && isCompactShape(item.shape)) {
           return {
             ...item,
@@ -311,7 +311,7 @@ class TetrixAPI {
         shapeId,
         x,
         y,
-        useCompactFormat: true // Request compact format from backend
+        useCompactFormat: true, // Request compact format from backend
       }),
     });
 
@@ -319,21 +319,21 @@ class TetrixAPI {
     if (response.tiles) {
       // Check if tiles are in compact format (array of numbers)
       if (Array.isArray(response.tiles) && response.tiles.length === 100 && typeof response.tiles[0] === 'number') {
-        const compactTiles = new Uint8Array(response.tiles);
+        const compactTiles = new Uint8Array(response.tiles as unknown as number[]);
         const unpackedTiles = unpackTiles(compactTiles);
         // Convert Map to array of TileData
-        response.tiles = Array.from(unpackedTiles.values()).map(tile => ({
+        response.tiles = Array.from(unpackedTiles.values()).map((tile) => ({
           position: tile.position,
           backgroundColor: tile.backgroundColor,
           isFilled: tile.block.isFilled,
           color: tile.block.color,
-        })) as any;
+        })) as TetrixTileData[];
       }
     }
 
     // Convert compact shapes in updatedQueue
     if (response.updatedQueue) {
-      response.updatedQueue = response.updatedQueue.map(item => {
+      response.updatedQueue = response.updatedQueue.map((item) => {
         if (item.type === 'shape' && isCompactShape(item.shape)) {
           return {
             ...item,

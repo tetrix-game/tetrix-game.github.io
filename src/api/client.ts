@@ -43,10 +43,8 @@ class TetrixAPI {
   private baseURL: string;
 
   constructor() {
-    // Use production API URL in dev, relative path in production
-    this.baseURL = import.meta.env.DEV
-      ? 'https://humorous-education-production-b86a.up.railway.app/api'
-      : '/api';
+    // Use VITE_API_URL if set, otherwise use relative path
+    this.baseURL = import.meta.env.VITE_API_URL || '/api';
   }
 
   /**

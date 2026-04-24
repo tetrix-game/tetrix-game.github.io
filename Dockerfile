@@ -6,6 +6,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Create a clean .npmrc that uses public registry
+RUN echo "registry=https://registry.npmjs.org/" > /root/.npmrc
+
 # Install dependencies (skip the local eslint plugin)
 RUN npm install --legacy-peer-deps --ignore-scripts || npm install --legacy-peer-deps --no-optional
 

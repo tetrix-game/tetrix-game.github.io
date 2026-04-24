@@ -59,7 +59,7 @@ export const ScoreDisplay: React.FC = (): JSX.Element => {
         <div ref={gemIconRef} className={isPulsing ? 'pulse' : ''}>
           <BlueGemIcon />
         </div>
-        <span className="score-display-value">
+        <span className="score-display-value" data-testid="score">
           {formatScore(score)}
         </span>
       </div>

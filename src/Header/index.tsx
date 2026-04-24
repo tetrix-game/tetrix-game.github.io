@@ -1,6 +1,7 @@
 import { Person as PersonIcon, Leaderboard as LeaderboardIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { useMemo, useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { useAuth } from '../AuthProvider/AuthContext';
@@ -23,12 +24,19 @@ export const Header: React.FC = () => {
   const { isWaitingForInteraction } = useMusicControl();
   // Get authentication state
   const { isAuthenticated, user, logout } = useAuth();
+  // Navigation
+  const navigate = useNavigate();
   // Login overlay state
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   // Leaderboard overlay state
   const [showLeaderboardOverlay, setShowLeaderboardOverlay] = useState(false);
 
   const { gameMode } = useTetrixStateContext();
+
+  const handleLogout = useCallback(async () => {
+    await logout();
+    navigate('/');
+  }, [logout, navigate]);
 
   const toggleSoundEffectsEnabled = useCallback(() => {
     // Toggle and let context handle persistence
@@ -63,16 +71,18 @@ export const Header: React.FC = () => {
         <div className="header-right">
           {isAuthenticated ? (
             <div className="user-menu">
-              <span className="user-name">{user?.username}</span>
+              <div className="user-avatar">
+                {user?.username?.charAt(0) || '?'}
+              </div>
               <IconButton
                 onClick={() => setShowLeaderboardOverlay(true)}
                 size="small"
                 aria-label="Leaderboard"
-                sx={{ color: '#4fc3f7', marginLeft: 1 }}
+                sx={{ color: '#4fc3f7' }}
               >
                 <LeaderboardIcon />
               </IconButton>
-              <button className="logout-button" onClick={logout}>
+              <button className="logout-button" onClick={handleLogout}>
                 Logout
               </button>
             </div>

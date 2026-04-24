@@ -505,6 +505,22 @@ async function clearAllDataAndReload(): Promise<void> {
 }
 
 /**
+ * Clear only game state data (preserve settings, modifiers, themes)
+ * Used when transitioning from local to server-based state
+ */
+async function clearGameStateOnly(): Promise<void> {
+  try {
+    // Clear game state and its checksums
+    await Promise.all([
+      crud.remove(STORES.GAME_STATE, 'current'),
+      crud.remove(STORES.CHECKSUMS, 'game_manifest'),
+    ]);
+  } catch {
+    // Silent failure - may not exist
+  }
+}
+
+/**
  * Initialize persistence system on app startup
  */
 async function initializePersistence(): Promise<void> {
@@ -559,6 +575,7 @@ export const persistenceAdapter = {
   saveModifiers,
   loadModifiers,
   clearAllDataAndReload,
+  clearGameStateOnly,
   initializePersistence,
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,

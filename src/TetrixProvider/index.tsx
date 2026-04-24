@@ -1,5 +1,7 @@
 import { useReducer, useEffect, useState, createContext, useContext } from 'react';
 
+import * as apiPersistence from '../apiPersistenceAdapter';
+import { useAuth } from '../AuthProvider/AuthContext';
 import {
   loadTheme,
   loadGameState,
@@ -10,7 +12,7 @@ import { initialState, tetrixReducer } from '../reducers';
 import { initializeTestUtils } from '../testUtils';
 import type { ThemeName, BlockTheme, TetrixReducerState, TetrixDispatch } from '../types';
 
-const { loadModifiers, initializePersistence, clearAllDataAndReload } = persistenceAdapter;
+const { clearAllDataAndReload } = persistenceAdapter;
 
 // Inline context definitions
 const TetrixDispatchContext = createContext<TetrixDispatch | null>(null);
@@ -44,6 +46,7 @@ export function TetrixProvider(
 ): JSX.Element {
   const [state, dispatch] = useReducer(tetrixReducer, initialState);
   const [initState, setInitState] = useState<InitializationState>('BOOTING');
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   // Initialize test utilities for Playwright testing (dev only)
   useEffect(() => {
@@ -63,11 +66,19 @@ export function TetrixProvider(
 
   // Load saved game state on startup
   useEffect((): void => {
+    // Wait for auth check to complete before loading data
+    if (authLoading) {
+      return;
+    }
+
     const loadSavedData = async (): Promise<void> => {
       setInitState('LOADING');
       try {
-        // Ensure DB is healthy before trying to load anything
-        await initializePersistence();
+        // Choose persistence adapter based on auth state
+        const persistence = isAuthenticated ? apiPersistence : persistenceAdapter;
+
+        // Ensure persistence is healthy before trying to load anything
+        await persistence.initializePersistence();
 
         const [
           unlockedModifiersResult,
@@ -75,7 +86,7 @@ export function TetrixProvider(
           gameStateData,
           settings,
         ] = await Promise.all([
-          loadModifiers().catch((_err: Error) => {
+          persistence.loadModifiers().catch((_err: Error) => {
             return { status: 'error', error: _err } as const;
           }),
           loadTheme().catch(() => {
@@ -180,7 +191,7 @@ export function TetrixProvider(
     };
 
     loadSavedData();
-  }, []);
+  }, [authLoading, isAuthenticated]);
 
   if (initState === 'BOOTING' || initState === 'LOADING') {
     return (

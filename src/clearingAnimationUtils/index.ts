@@ -77,7 +77,7 @@ const DEFAULT_CONFIG: AnimationConfig = {
  */
 let animationIdCounter = 0;
 function generateAnimationId(): string {
-  return `anim-${Date.now()}-${animationIdCounter++}`;
+  return `anim-${++animationIdCounter}`;
 }
 
 /**
@@ -135,6 +135,23 @@ export function generateClearingAnimations(
   const rowCount = clearedRows.length;
   const columnCount = clearedColumns.length;
 
+  // Pre-determine which animation tiers to create (avoid checking in loop)
+  const rowTiers: Array<{
+    type: 'row-cw' | 'row-double' | 'row-triple' | 'row-quad';
+    config: AnimationTierConfig;
+  }> = [
+    { type: 'row-cw', config: finalConfig.rows.single },
+  ];
+  if (rowCount >= 2) {
+    rowTiers.push({ type: 'row-double', config: finalConfig.rows.double });
+  }
+  if (rowCount >= 3) {
+    rowTiers.push({ type: 'row-triple', config: finalConfig.rows.triple });
+  }
+  if (rowCount >= 4) {
+    rowTiers.push({ type: 'row-quad', config: finalConfig.rows.quad });
+  }
+
   // Process cleared rows
   for (const { index: row, color } of clearedRows) {
     for (let column = 1; column <= 10; column++) {
@@ -143,57 +160,47 @@ export function generateClearingAnimations(
       if (!tileData) continue;
 
       const animations: TileAnimation[] = [];
+      const columnIndex = column - 1;
 
-      // Single row animation (always present)
-      const singleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.single.waveDelay);
-      animations.push({
-        id: generateAnimationId(),
-        type: 'row-cw',
-        startTime: baseStartTime + finalConfig.rows.single.startDelay + singleWaveOffset,
-        duration: finalConfig.rows.single.duration,
-        color,
-      });
-
-      // Double row animation (2+ rows)
-      if (rowCount >= 2) {
-        const doubleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.double.waveDelay);
-        animations.push({
+      // Generate all applicable tier animations
+      for (const tier of rowTiers) {
+        const waveOffset = columnIndex * tier.config.waveDelay;
+        const anim: TileAnimation = {
           id: generateAnimationId(),
-          type: 'row-double',
-          startTime: baseStartTime + finalConfig.rows.double.startDelay + doubleWaveOffset,
-          duration: finalConfig.rows.double.duration,
+          type: tier.type,
+          startTime: baseStartTime + tier.config.startDelay + waveOffset,
+          duration: tier.config.duration,
           color,
-        });
-      }
+        };
 
-      // Triple row animation (3+ rows)
-      if (rowCount >= 3) {
-        const tripleWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.triple.waveDelay);
-        animations.push({
-          id: generateAnimationId(),
-          type: 'row-triple',
-          startTime: baseStartTime + finalConfig.rows.triple.startDelay + tripleWaveOffset,
-          duration: finalConfig.rows.triple.duration,
-          color,
-        });
-      }
+        // Add optional fields for quad animations
+        if (tier.type === 'row-quad') {
+          anim.beatCount = tier.config.beatCount;
+          anim.finishDuration = tier.config.finishDuration;
+        }
 
-      // Quad row animation (4+ rows) - beating heart
-      if (rowCount >= 4) {
-        const quadWaveOffset = calculateWaveOffset(column - 1, finalConfig.rows.quad.waveDelay);
-        animations.push({
-          id: generateAnimationId(),
-          type: 'row-quad',
-          startTime: baseStartTime + finalConfig.rows.quad.startDelay + quadWaveOffset,
-          duration: finalConfig.rows.quad.duration,
-          beatCount: finalConfig.rows.quad.beatCount,
-          finishDuration: finalConfig.rows.quad.finishDuration,
-          color,
-        });
+        animations.push(anim);
       }
 
       tileData.activeAnimations = [...tileData.activeAnimations, ...animations];
     }
+  }
+
+  // Pre-determine which column animation tiers to create
+  const columnTiers: Array<{
+    type: 'column-ccw' | 'column-double' | 'column-triple' | 'column-quad';
+    config: AnimationTierConfig;
+  }> = [
+    { type: 'column-ccw', config: finalConfig.columns.single },
+  ];
+  if (columnCount >= 2) {
+    columnTiers.push({ type: 'column-double', config: finalConfig.columns.double });
+  }
+  if (columnCount >= 3) {
+    columnTiers.push({ type: 'column-triple', config: finalConfig.columns.triple });
+  }
+  if (columnCount >= 4) {
+    columnTiers.push({ type: 'column-quad', config: finalConfig.columns.quad });
   }
 
   // Process cleared columns
@@ -204,53 +211,26 @@ export function generateClearingAnimations(
       if (!tileData) continue;
 
       const animations: TileAnimation[] = [];
+      const rowIndex = row - 1;
 
-      // Single column animation (always present)
-      const singleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.single.waveDelay);
-      animations.push({
-        id: generateAnimationId(),
-        type: 'column-ccw',
-        startTime: baseStartTime + finalConfig.columns.single.startDelay + singleWaveOffset,
-        duration: finalConfig.columns.single.duration,
-        color,
-      });
-
-      // Double column animation (2+ columns)
-      if (columnCount >= 2) {
-        const doubleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.double.waveDelay);
-        animations.push({
+      // Generate all applicable tier animations
+      for (const tier of columnTiers) {
+        const waveOffset = rowIndex * tier.config.waveDelay;
+        const anim: TileAnimation = {
           id: generateAnimationId(),
-          type: 'column-double',
-          startTime: baseStartTime + finalConfig.columns.double.startDelay + doubleWaveOffset,
-          duration: finalConfig.columns.double.duration,
+          type: tier.type,
+          startTime: baseStartTime + tier.config.startDelay + waveOffset,
+          duration: tier.config.duration,
           color,
-        });
-      }
+        };
 
-      // Triple column animation (3+ columns)
-      if (columnCount >= 3) {
-        const tripleWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.triple.waveDelay);
-        animations.push({
-          id: generateAnimationId(),
-          type: 'column-triple',
-          startTime: baseStartTime + finalConfig.columns.triple.startDelay + tripleWaveOffset,
-          duration: finalConfig.columns.triple.duration,
-          color,
-        });
-      }
+        // Add optional fields for quad animations
+        if (tier.type === 'column-quad') {
+          anim.beatCount = tier.config.beatCount;
+          anim.finishDuration = tier.config.finishDuration;
+        }
 
-      // Quad column animation (4+ columns) - beating heart
-      if (columnCount >= 4) {
-        const quadWaveOffset = calculateWaveOffset(row - 1, finalConfig.columns.quad.waveDelay);
-        animations.push({
-          id: generateAnimationId(),
-          type: 'column-quad',
-          startTime: baseStartTime + finalConfig.columns.quad.startDelay + quadWaveOffset,
-          duration: finalConfig.columns.quad.duration,
-          beatCount: finalConfig.columns.quad.beatCount,
-          finishDuration: finalConfig.columns.quad.finishDuration,
-          color,
-        });
+        animations.push(anim);
       }
 
       tileData.activeAnimations = [...tileData.activeAnimations, ...animations];

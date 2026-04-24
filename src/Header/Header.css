@@ -61,6 +61,21 @@
   border-radius: 4px;
 }
 
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4fc3f7, #3a9bbf);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 .user-name {
   color: var(--theme-text);
   font-size: 14px;

@@ -456,6 +456,11 @@ type CleanupAnimationsAction = {
   type: 'CLEANUP_ANIMATIONS';
 };
 
+type CleanupTileAnimationAction = {
+  type: 'CLEANUP_TILE_ANIMATION';
+  payload: { row: number; col: number; animationId: string };
+};
+
 type OpenStatsAction = {
   type: 'OPEN_STATS';
 };
@@ -590,6 +595,7 @@ export type TetrixAction = | SelectShapeAction
   | DebugReplaceFirstShapeAction
   | DebugIncrementStatsAction
   | CleanupAnimationsAction
+  | CleanupTileAnimationAction
   | OpenStatsAction
   | CloseStatsAction
   | InitializationCompleteAction

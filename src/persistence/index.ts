@@ -2,16 +2,18 @@
  * Persistence Utilities - Convenience Layer
  *
  * Provides easy-to-use functions for common persistence operations.
+ * Automatically uses the correct persistence adapter (API or IndexedDB) based on auth state.
  */
 
 import { persistenceAdapter } from '../persistenceAdapter';
+import { persistenceManager } from '../persistenceManager';
 import type { Shape, TileData, QueueItem, SavedGameState, LoadResult, SerializedQueueItem, StatsPersistenceData } from '../types';
 
+// Helper to get current adapter
+const getAdapter = (): typeof persistenceAdapter => persistenceManager.getCurrentAdapter();
+
+// Re-export functions that don't need game state (they use IndexedDB for now)
 const {
-  saveGameState: saveGameStateAdapter,
-  loadGameState: loadGameStateAdapter,
-  updateGameState: updateGameStateAdapter,
-  clearGameBoard,
   loadSettings: loadSettingsAdapter,
   saveMusicSettings: saveMusicSettingsAdapter,
   loadMusicSettings: loadMusicSettingsAdapter,
@@ -22,10 +24,6 @@ const {
   saveTheme: saveThemeAdapter,
   loadTheme: loadThemeAdapter,
   saveBlockTheme: saveBlockThemeAdapter,
-  saveModifiers,
-  loadModifiers,
-  clearAllDataAndReload,
-  initializePersistence,
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,
 } = persistenceAdapter;
@@ -40,7 +38,7 @@ const {
 export async function saveGameState(data: {
   score: number;
   tiles: TileData[];
-  nextQueue: QueueItem[]; // Full queue with purchasable slots
+  nextQueue: QueueItem[];
   savedShape: Shape | null;
   totalLinesCleared?: number;
   shapesUsed?: number;
@@ -51,9 +49,7 @@ export async function saveGameState(data: {
   queueHiddenShapes?: Shape[];
   queueSize?: number;
   unlockedSlots?: Set<number>;
-  // NOTE: isGameOver is NOT persisted - it's a derived state
 }): Promise<void> {
-  // Serialize queue items (strip IDs, keep types and data)
   const serializedQueue: SerializedQueueItem[] = data.nextQueue.map((item) => {
     if (item.type === 'shape') {
       return { type: 'shape' as const, shape: item.shape };
@@ -68,10 +64,10 @@ export async function saveGameState(data: {
   const { APP_VERSION } = await import('../version');
 
   const gameState: SavedGameState = {
-    version: APP_VERSION, // Include version for validation on load
+    version: APP_VERSION,
     score: data.score,
     tiles: data.tiles,
-    nextQueue: serializedQueue, // Full queue structure
+    nextQueue: serializedQueue,
     savedShape: data.savedShape,
     totalLinesCleared: data.totalLinesCleared ?? 0,
     shapesUsed: data.shapesUsed ?? 0,
@@ -85,7 +81,7 @@ export async function saveGameState(data: {
     lastUpdated: Date.now(),
   };
 
-  await saveGameStateAdapter(gameState);
+  await getAdapter().saveGameState(gameState);
 }
 
 /**
@@ -95,7 +91,7 @@ export async function loadGameState(): Promise<{
   version: string;
   score: number;
   tiles: TileData[];
-  nextQueue: SerializedQueueItem[]; // Full queue
+  nextQueue: SerializedQueueItem[];
   savedShape: Shape | null;
   totalLinesCleared: number;
   shapesUsed: number;
@@ -107,9 +103,8 @@ export async function loadGameState(): Promise<{
   queueSize?: number;
   unlockedSlots?: number[];
   lastUpdated: number;
-  // NOTE: isGameOver is NOT returned - it's calculated on load
 } | null> {
-  const result = await loadGameStateAdapter();
+  const result = await getAdapter().loadGameState();
 
   if (result.status !== 'success') {
     return null;
@@ -124,7 +119,7 @@ export async function loadGameState(): Promise<{
 export async function safeBatchSave(data: {
   score?: number;
   tiles?: TileData[];
-  nextQueue?: QueueItem[]; // Full queue
+  nextQueue?: QueueItem[];
   savedShape?: Shape | null;
   stats?: StatsPersistenceData;
   totalLinesCleared?: number;
@@ -135,13 +130,9 @@ export async function safeBatchSave(data: {
   queueHiddenShapes?: Shape[];
   queueSize?: number;
   unlockedSlots?: Set<number>;
-  // NOTE: isGameOver is NOT saved - it's a derived state
 }): Promise<void> {
-  // Convert unlockedSlots Set to array for persistence
   const unlockedSlotsArray = data.unlockedSlots ? Array.from(data.unlockedSlots) : undefined;
 
-  // Build the update object with proper types
-  // Serialize queue items (strip IDs, keep types and data)
   const serializedQueue: SerializedQueueItem[] | undefined = data.nextQueue?.map((item) => {
     if (item.type === 'shape') {
       return { type: 'shape' as const, shape: item.shape };
@@ -170,7 +161,7 @@ export async function safeBatchSave(data: {
   };
 
   try {
-    await updateGameStateAdapter(updateData);
+    await getAdapter().updateGameState(updateData);
   } catch {
     await saveGameState({
       score: data.score ?? 0,
@@ -185,134 +176,81 @@ export async function safeBatchSave(data: {
       queueColorProbabilities: data.queueColorProbabilities,
       queueHiddenShapes: data.queueHiddenShapes,
       queueSize: data.queueSize,
-      unlockedSlots: data.unlockedSlots, // Pass original Set, saveGameState will convert
+      unlockedSlots: data.unlockedSlots,
     });
   }
 }
 
-/**
- * Load music settings with defaults
- */
+// Re-export passthrough functions
 export async function loadMusicSettings(): Promise<{
   isMuted: boolean;
   volume: number;
   isEnabled: boolean;
 }> {
   const result = await loadMusicSettingsAdapter();
-
-  if (result.status === 'success') {
-    return result.data;
-  }
-
-  return {
-    isMuted: false,
-    volume: 100,
-    isEnabled: true,
-  };
+  if (result.status === 'success') return result.data;
+  return { isMuted: false, volume: 100, isEnabled: true };
 }
 
-/**
- * Save music settings
- */
-export async function saveMusicSettings(
-  isMuted: boolean,
-  volume: number = 100,
-  isEnabled: boolean = true,
-): Promise<void> {
-  await saveMusicSettingsAdapter(isMuted, volume, isEnabled);
-}
+export const saveMusicSettings = saveMusicSettingsAdapter;
 
-/**
- * Load sound effects settings with defaults
- */
 export async function loadSoundEffectsSettings(): Promise<{
   isMuted: boolean;
   volume: number;
   isEnabled: boolean;
 }> {
   const result = await loadSoundEffectsSettingsAdapter();
-
-  if (result.status === 'success') {
-    return result.data;
-  }
-
-  return {
-    isMuted: false,
-    volume: 100,
-    isEnabled: true,
-  };
+  if (result.status === 'success') return result.data;
+  return { isMuted: false, volume: 100, isEnabled: true };
 }
 
-/**
- * Save sound effects settings
- */
-export async function saveSoundEffectsSettings(
-  isMuted: boolean,
-  volume: number = 100,
-  isEnabled: boolean = true,
-): Promise<void> {
-  await saveSoundEffectsSettingsAdapter(isMuted, volume, isEnabled);
-}
+export const saveSoundEffectsSettings = saveSoundEffectsSettingsAdapter;
 
-/**
- * Load debug unlock status
- */
 export async function loadDebugSettings(): Promise<boolean> {
   const result = await loadDebugSettingsAdapter();
   return result.status === 'success' ? result.data : false;
 }
 
-/**
- * Save debug settings
- */
-export async function saveDebugSettings(unlocked: boolean): Promise<void> {
-  await saveDebugSettingsAdapter(unlocked);
-}
+export const saveDebugSettings = saveDebugSettingsAdapter;
 
-/**
- * Load theme preference
- */
 export async function loadTheme(): Promise<string | null> {
   const result = await loadThemeAdapter();
   return result.status === 'success' ? result.data : null;
 }
 
-/**
- * Save theme
- */
-export async function saveTheme(theme: string): Promise<void> {
-  await saveThemeAdapter(theme);
-}
+export const saveTheme = saveThemeAdapter;
+export const saveBlockTheme = saveBlockThemeAdapter;
 
-/**
- * Save block theme
- */
-export async function saveBlockTheme(blockTheme: string): Promise<void> {
-  await saveBlockThemeAdapter(blockTheme);
-}
-
-/**
- * Load settings
- */
-export async function loadSettingsData(): Promise<LoadResult<import('../types').GameSettingsPersistenceData>> {
+export async function loadSettingsData(): Promise<
+  LoadResult<import('../types').GameSettingsPersistenceData>
+> {
   return await loadSettingsAdapter();
 }
 
+// Export adapter functions that use dynamic selection
+export const clearGameBoard = async (): Promise<void> => await getAdapter().clearGameBoard();
+export const saveModifiers = async (modifiers: Set<number>): Promise<void> => (
+  await getAdapter().saveModifiers(modifiers)
+);
+export const loadModifiers = async (): Promise<LoadResult<Set<number>>> => (
+  await getAdapter().loadModifiers()
+);
+export const clearAllDataAndReload = async (): Promise<void> => (
+  await getAdapter().clearAllDataAndReload()
+);
+export const initializePersistence = async (): Promise<void> => (
+  await getAdapter().initializePersistence()
+);
+
 /**
  * Facade object wrapping all persistence exports
- * Matches folder name for architecture compliance
  */
 export const persistence = {
-  // Game state
   clearGameBoard,
   loadGameState,
   safeBatchSave,
-
-  // Modifiers
   saveModifiers,
   loadModifiers,
-
-  // Settings
   loadMusicSettings,
   saveMusicSettings,
   loadSoundEffectsSettings,
@@ -323,14 +261,8 @@ export const persistence = {
   saveTheme,
   saveBlockTheme,
   loadSettingsData,
-
-  // Call to Action
   saveCallToActionTimestamp,
   loadCallToActionTimestamp,
-
-  // Cleanup
   clearAllDataAndReload,
-
-  // Initialization
   initializePersistence,
 };

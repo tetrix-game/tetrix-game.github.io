@@ -59,11 +59,14 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
   }, [dragState.selectedShape, dispatch]);
 
   // Create a map of hovered block positions for quick lookup
-  const hoveredBlockMap = new Map(
-    dragState.hoveredBlockPositions.map((pos) => [
-      `${pos.location.row},${pos.location.column}`,
-      pos.block,
-    ]),
+  const hoveredBlockMap = useMemo(
+    () => new Map(
+      dragState.hoveredBlockPositions.map((pos) => [
+        `${pos.location.row},${pos.location.column}`,
+        pos.block,
+      ]),
+    ),
+    [dragState.hoveredBlockPositions],
   );
 
   // Generate all potential tile positions in the grid
@@ -114,10 +117,7 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
           const row = parseInt(match[1]);
           const column = parseInt(match[2]);
 
-          const activeAnimations = tileData?.activeAnimations;
-          const animationsJson = activeAnimations && activeAnimations.length > 0
-            ? JSON.stringify(activeAnimations)
-            : '[]';
+          const activeAnimations = tileData?.activeAnimations ?? [];
 
           const posKey = `${row},${column}`;
           const hoveredBlock = hoveredBlockMap.get(posKey);
@@ -140,7 +140,7 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
               isHovered={isHovered}
               showShadow={!!showShadow}
               shadowOpacity={shadowOpacity}
-              animationsJson={animationsJson}
+              activeAnimations={activeAnimations}
               theme={blockTheme}
               showIcon={gameMode === 'daily' || showBlockIcons}
               size={gridCellSize}

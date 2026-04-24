@@ -197,6 +197,7 @@ export const ShapeOption = ({ shape, shapeIndex, id }: ShapeOptionProps): JSX.El
   return (
     <div
       ref={containerRef}
+      data-testid={`shape-button-${shapeIndex}`}
       data-shape-index={shapeIndex}
       data-shape-id={shapeId}
       className={`shape-option-container${isSelected ? ' selected' : ''}`}

@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 
 import { api } from '../api/client';
+import { persistenceAdapter } from '../persistenceAdapter';
 import { persistenceManager } from '../persistenceManager';
 
 import { AuthContext } from './AuthContext';
@@ -67,6 +68,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         createdAt: response.user.created_at,
         lastLogin: response.user.last_login,
       };
+
+      // Clear pre-login local game state - server is now source of truth
+      await persistenceAdapter.clearGameStateOnly();
+
       setUser(userData);
       persistenceManager.setAuthenticated(true);
     } catch (err) {
@@ -92,6 +97,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         createdAt: response.user.created_at,
         lastLogin: response.user.last_login,
       };
+
+      // Clear pre-login local game state - server is now source of truth
+      await persistenceAdapter.clearGameStateOnly();
+
       setUser(userData);
       persistenceManager.setAuthenticated(true);
     } catch (err) {

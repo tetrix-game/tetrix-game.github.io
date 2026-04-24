@@ -38,7 +38,7 @@ const TileComponent: React.FC<TileProps> = ({
   return (
     <div
       className={`tile-base ${hasCustomBackground ? 'tile-base-custom' : ''} ${isFilled ? 'filled' : ''} ${className}`}
-      data-testid={`tile-${row}-${col}`}
+      data-testid={`tile-R${row}C${col}`}
       style={{
         gridColumn: col,
         gridRow: row,

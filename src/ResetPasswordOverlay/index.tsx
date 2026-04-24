@@ -5,6 +5,7 @@
 
 import { TextField, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '../AuthProvider/AuthContext';
 import { Overlay } from '../Overlay';
@@ -12,6 +13,8 @@ import './ResetPasswordOverlay.css';
 
 export const ResetPasswordOverlay: React.FC = () => {
   const { resetPassword, clearError } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [token, setToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,14 +23,13 @@ export const ResetPasswordOverlay: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tokenFromUrl = params.get('token');
+    const tokenFromUrl = searchParams.get('token');
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
     } else {
       setValidationError('No reset token provided. Please check your email link.');
     }
-  }, []);
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -78,7 +80,7 @@ export const ResetPasswordOverlay: React.FC = () => {
 
       // Redirect to home after 2 seconds
       setTimeout(() => {
-        window.location.href = '/';
+        navigate('/');
       }, 2000);
     } catch {
       // Error handled by AuthProvider
@@ -88,7 +90,7 @@ export const ResetPasswordOverlay: React.FC = () => {
   };
 
   const handleClose = (): void => {
-    window.location.href = '/';
+    navigate('/');
   };
 
   return (

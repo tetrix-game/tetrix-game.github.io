@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import { BlockVisual } from '../BlockVisual';
+import { useTetrixDispatchContext } from '../TetrixProvider';
 import { Tile } from '../Tile';
 import type { ColorName, TileAnimation, BlockTheme } from '../types';
 import './TetrixTile.css';
@@ -14,7 +15,7 @@ type TetrixTileProps = {
   isHovered: boolean;
   showShadow: boolean;
   shadowOpacity: number;
-  animationsJson: string;
+  activeAnimations: readonly TileAnimation[];
   theme: BlockTheme;
   showIcon: boolean;
   size?: number;
@@ -29,42 +30,29 @@ const TetrixTileComponent = ({
   isHovered: _isHovered,
   showShadow,
   shadowOpacity,
-  animationsJson,
+  activeAnimations,
   theme,
   showIcon,
   size,
 }: TetrixTileProps): JSX.Element => {
-  const [, setTick] = useState(0);
+  const dispatch = useTetrixDispatchContext();
 
-  const activeAnimations = useMemo((): TileAnimation[] => {
-    try {
-      return JSON.parse(animationsJson) as TileAnimation[];
-    } catch {
-      return [];
-    }
-  }, [animationsJson]);
-
-  // Force re-render on animation frame to track animation timing
-  useEffect((): (() => void) | void => {
-    if (!activeAnimations || activeAnimations.length === 0) {
-      return;
-    }
-
-    let rafId: number;
-    const animate = (): void => {
-      setTick((t) => t + 1);
-      rafId = requestAnimationFrame(animate);
-    };
-    rafId = requestAnimationFrame(animate);
-
-    return (): void => cancelAnimationFrame(rafId);
-  }, [activeAnimations]);
-
-  // Filter to only currently-playing animations
+  // Calculate current playing animations at mount time
   const currentTime = performance.now();
-  const playingAnimations = activeAnimations.filter(
-    (anim) => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration,
+  const playingAnimations = useMemo(
+    () => activeAnimations.filter(
+      (anim) => currentTime >= anim.startTime && currentTime < anim.startTime + anim.duration,
+    ),
+    [activeAnimations, currentTime],
   );
+
+  // Handle animation end to trigger cleanup
+  const handleAnimationEnd = useCallback((animationId: string) => {
+    dispatch({
+      type: 'CLEANUP_TILE_ANIMATION',
+      payload: { row, col, animationId },
+    });
+  }, [dispatch, row, col]);
 
   return (
     <Tile
@@ -92,16 +80,12 @@ const TetrixTileComponent = ({
       )}
 
       {playingAnimations.map((anim) => {
-        const elapsed = currentTime - anim.startTime;
-        const progress = Math.min(elapsed / anim.duration, 1);
-
         // Calculate delay: if startTime is in the future, we need to delay
         const delay = Math.max(0, anim.startTime - currentTime);
 
         // For quad animations, divide duration by beat count to get per-beat duration
         // and set the iteration count
         const style: React.CSSProperties & Record<string, string | number> = {
-          '--animation-progress': progress,
           '--animation-duration': `${anim.duration}ms`,
           '--animation-delay': `${delay}ms`,
         };
@@ -125,6 +109,7 @@ const TetrixTileComponent = ({
             key={anim.id}
             className={`tetrix-tile-clearing ${anim.type}`}
             style={style as React.CSSProperties}
+            onAnimationEnd={() => handleAnimationEnd(anim.id)}
           />
         );
       })}

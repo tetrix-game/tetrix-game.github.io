@@ -86,6 +86,15 @@ export async function clearGameBoard(): Promise<void> {
 }
 
 /**
+ * Clear only game state data (no-op for API - state is always on server)
+ * This function exists for API compatibility with IndexedDB adapter
+ */
+export async function clearGameStateOnly(): Promise<void> {
+  // No-op: API persistence doesn't have local state to clear
+  // Server is already the source of truth
+}
+
+/**
  * Clear all data and reload
  */
 export async function clearAllDataAndReload(): Promise<void> {

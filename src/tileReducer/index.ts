@@ -377,6 +377,35 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
       };
     }
 
+    case 'CLEANUP_TILE_ANIMATION': {
+      const { row, col, animationId } = action.payload;
+      const position = makeTileKey(row, col);
+      const tile = state.tiles.get(position);
+
+      if (!tile) {
+        return state;
+      }
+
+      // Remove the completed animation
+      const updatedAnimations = tile.activeAnimations.filter((anim) => anim.id !== animationId);
+
+      // Only update if animations actually changed
+      if (updatedAnimations.length === tile.activeAnimations.length) {
+        return state;
+      }
+
+      const newTiles = new Map(state.tiles);
+      newTiles.set(position, {
+        ...tile,
+        activeAnimations: updatedAnimations,
+      });
+
+      return {
+        ...state,
+        tiles: newTiles,
+      };
+    }
+
     case 'DEBUG_FILL_ROW': {
       const { row, excludeColumn, color } = action.value;
       const newTiles = new Map(state.tiles);

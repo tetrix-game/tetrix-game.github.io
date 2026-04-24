@@ -33,22 +33,36 @@ export function useParticleShower({
 } {
   const [particles, setParticles] = useState<ParticleData[]>([]);
   const lastValueRef = useRef<number | null>(null);
+  const cachedTargetPositionRef = useRef<{ x: number; y: number }>({ x: 100, y: 50 });
 
   const centerScreenPosition = useMemo(() => ({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   }), []);
 
-  const getTargetPosition = useCallback((): { x: number; y: number } => {
-    if (targetIconRef.current) {
-      const rect = targetIconRef.current.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-      };
-    }
-    return { x: 100, y: 50 }; // Fallback position
+  // Cache target position on mount and window resize
+  useEffect((): (() => void) => {
+    const updateTargetPosition = (): void => {
+      if (targetIconRef.current) {
+        const rect = targetIconRef.current.getBoundingClientRect();
+        cachedTargetPositionRef.current = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        };
+      }
+    };
+
+    // Update immediately
+    updateTargetPosition();
+
+    // Update on resize
+    window.addEventListener('resize', updateTargetPosition);
+    return () => window.removeEventListener('resize', updateTargetPosition);
   }, [targetIconRef]);
+
+  const getTargetPosition = useCallback((): { x: number; y: number } => {
+    return cachedTargetPositionRef.current;
+  }, []);
 
   const generateParticles = useCallback((
     particleCount: number,

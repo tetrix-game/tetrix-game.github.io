@@ -1,83 +1,39 @@
-import { StrictMode, useEffect, useState } from 'react';
+import { StrictMode } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { AuthProvider } from '../AuthProvider';
-import { DraggingShape } from '../DraggingShape';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { FullScreenButton as FullScreenFloatingActionButton } from '../FullScreenButton';
-import { Header } from '../Header';
+import { GamePage } from '../GamePage';
+import { LoginPage } from '../LoginPage';
 import { MusicControlProvider } from '../MusicControlProvider';
-import { PersistenceListener } from '../PersistenceListener';
 import { ResetPasswordOverlay } from '../ResetPasswordOverlay';
 import { SoundEffectsProvider } from '../SoundEffectsProvider';
-import { Tetrix } from '../Tetrix';
 import { TetrixProvider } from '../TetrixProvider';
 import { ThemeProvider } from '../ThemeProvider';
-import { ToastOverlay } from '../ToastOverlay';
-import { UpdateNotification } from '../UpdateNotification';
-import { usePointerTracking } from '../usePointerTracking';
-import { useShapePlacement } from '../useShapePlacement';
-import { useUpdateNotification } from '../useUpdateNotification';
 import './App.css';
-
-const AppContent = (): JSX.Element => {
-  // Custom hooks encapsulate all React hook logic
-  const { showUpdateNotification, handleUpdate, handleDismissUpdate } = useUpdateNotification();
-  const [showResetPassword, setShowResetPassword] = useState(false);
-
-  usePointerTracking();
-  useShapePlacement();
-
-  // Check for password reset token in URL
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    if (token && window.location.pathname.includes('reset-password')) {
-      setShowResetPassword(true);
-    }
-  }, []);
-
-  // If showing reset password, show only that
-  if (showResetPassword) {
-    return <ResetPasswordOverlay />;
-  }
-
-  return (
-    <>
-      <PersistenceListener />
-
-      <Header />
-      <div className="game-container">
-        <Tetrix />
-      </div>
-      <FullScreenFloatingActionButton />
-      <DraggingShape />
-      <ToastOverlay />
-
-      {showUpdateNotification && (
-        <UpdateNotification
-          onUpdate={handleUpdate}
-          onDismiss={handleDismissUpdate}
-        />
-      )}
-    </>
-  );
-};
 
 export const App = (): JSX.Element => {
   return (
     <StrictMode>
       <ErrorBoundary>
-        <AuthProvider>
-          <SoundEffectsProvider>
-            <MusicControlProvider>
-              <TetrixProvider>
-                <ThemeProvider>
-                  <AppContent />
-                </ThemeProvider>
-              </TetrixProvider>
-            </MusicControlProvider>
-          </SoundEffectsProvider>
-        </AuthProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <SoundEffectsProvider>
+              <MusicControlProvider>
+                <TetrixProvider>
+                  <ThemeProvider>
+                    <Routes>
+                      <Route path="/" element={<LoginPage />} />
+                      <Route path="/game" element={<GamePage />} />
+                      <Route path="/reset-password" element={<ResetPasswordOverlay />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </ThemeProvider>
+                </TetrixProvider>
+              </MusicControlProvider>
+            </SoundEffectsProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </ErrorBoundary>
     </StrictMode>
   );

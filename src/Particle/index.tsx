@@ -65,7 +65,12 @@ export const Particle: React.FC<ParticleProps> = ({
     } = initialPropsRef.current;
 
     const currentVelocity = { x: initialVelocity.x, y: initialVelocity.y };
-    const positionHistory: Array<{ x: number; y: number; time: number }> = [];
+
+    // Circular buffer for position history (avoids array shift operations)
+    const HISTORY_SIZE = 100;
+    const positionHistory: Array<{ x: number; y: number; time: number }> = new Array(HISTORY_SIZE);
+    let historyIndex = 0;
+    let historyCount = 0;
 
     const startDelay = setTimeout(() => {
       startTimeRef.current = performance.now();
@@ -117,26 +122,44 @@ export const Particle: React.FC<ParticleProps> = ({
             + 0.5 * GRAVITY * elapsed * elapsed;
         }
 
-        // Update position history for trail
-        positionHistory.push({ x: currentPos.x, y: currentPos.y, time: currentTime });
+        // Update position history using circular buffer
+        positionHistory[historyIndex] = { x: currentPos.x, y: currentPos.y, time: currentTime };
+        historyIndex = (historyIndex + 1) % HISTORY_SIZE;
+        if (historyCount < HISTORY_SIZE) {
+          historyCount++;
+        }
 
         // Create trail particles from history
         const trails: Array<{ x: number; y: number; opacity: number }> = [];
         for (let i = 0; i < TRAIL_LENGTH; i++) {
           const trailTime = currentTime - (i + 1) * TRAIL_SPACING;
-          // Find closest position in history
-          const historyEntry = positionHistory.find((h): boolean => h.time <= trailTime);
-          if (historyEntry) {
+
+          // Find closest position in circular buffer (search backwards from most recent)
+          let closestEntry = null;
+          let closestDiff = Infinity;
+
+          for (let j = 0; j < historyCount; j++) {
+            const bufferIndex = (historyIndex - 1 - j + HISTORY_SIZE) % HISTORY_SIZE;
+            const entry = positionHistory[bufferIndex];
+            const timeDiff = Math.abs(entry.time - trailTime);
+
+            if (timeDiff < closestDiff) {
+              closestDiff = timeDiff;
+              closestEntry = entry;
+            }
+
+            // Early exit if we've gone too far back in time
+            if (entry.time < trailTime - TRAIL_SPACING) {
+              break;
+            }
+          }
+
+          if (closestEntry) {
             const trailOpacity = (1 - i / TRAIL_LENGTH) * 0.6; // Fade out trail
-            trails.push({ x: historyEntry.x, y: historyEntry.y, opacity: trailOpacity });
+            trails.push({ x: closestEntry.x, y: closestEntry.y, opacity: trailOpacity });
           }
         }
         setTrailPositions(trails);
-
-        // Limit history size for performance
-        if (positionHistory.length > 100) {
-          positionHistory.shift();
-        }
 
         const progress = elapsedMs / ANIMATION_DURATION;
         let newOpacity = 1;

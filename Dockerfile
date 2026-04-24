@@ -18,12 +18,15 @@ RUN npm install --legacy-peer-deps --ignore-scripts || npm install --legacy-peer
 # Copy source files
 COPY . .
 
-# Accept build argument with default value from Railway environment
-# Railway passes env vars to docker build context, so we use ARG with a default
-ARG VITE_API_URL=https://humorous-education-production-b86a.up.railway.app
-ENV VITE_API_URL=$VITE_API_URL
+# Load environment variables from .env.production file for build
+# This ensures VITE_API_URL is available to Vite during build
+RUN if [ -f .env.production ]; then \
+      export $(cat .env.production | grep -v '^#' | xargs) && \
+      echo "Loaded VITE_API_URL from .env.production: $VITE_API_URL"; \
+    fi
 
 # Build the app (skip linting)
+# Note: Vite will read VITE_API_URL from .env.production automatically
 RUN npm run build:prod
 
 # Production stage

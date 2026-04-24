@@ -127,12 +127,14 @@ railway link
 
 #### 2. Configure Frontend Service
 
-**Environment Variables** (optional, set in Railway dashboard):
+**Environment Variables** (REQUIRED - set in Railway dashboard):
 
 ```bash
-# API URL (if not using default)
-VITE_API_URL=https://your-backend-service.up.railway.app
+# API URL - must point to backend service
+VITE_API_URL=https://humorous-education-production-b86a.up.railway.app
 ```
+
+⚠️ **CRITICAL**: Without `VITE_API_URL`, the frontend will try to call APIs on the same domain (which doesn't exist) and all authentication/game state calls will fail with network errors.
 
 **Railway Configuration** (`railway.json`):
 
@@ -203,9 +205,15 @@ railway logs
 | Variable | Purpose | Set By | Required |
 |----------|---------|--------|----------|
 | `PORT` | Server port | Railway (auto) | ✅ |
-| `VITE_API_URL` | Backend API URL | Manual (optional) | ❌ |
+| `VITE_API_URL` | Backend API URL | Manual | ✅ |
 
-**Note**: API calls default to relative URLs, which works when CORS is configured on the backend to allow the frontend origin.
+**How to Set in Railway**:
+1. Go to Railway dashboard → Your Frontend Service
+2. Click "Variables" tab
+3. Add variable: `VITE_API_URL` = `https://humorous-education-production-b86a.up.railway.app`
+4. Redeploy the service
+
+**Note**: Without `VITE_API_URL`, the API client defaults to `/api` (relative path), which fails because the frontend and backend are separate services. The environment variable is compiled into the built JavaScript at build time.
 
 ### Continuous Deployment
 

@@ -92,16 +92,23 @@ export const useShapePlacement = (): void => {
             // Transition to placing phase (drop animation)
             dispatch({ type: 'PLACE_SHAPE', value: { location, mousePosition: { x: e.clientX, y: e.clientY } } });
 
+            // Capture response values to avoid TypeScript narrowing issues in setTimeout
+            const tiles = response.tiles;
+            const score = response.score!;
+            const linesCleared = response.linesCleared!;
+            const updatedQueue = response.updatedQueue!;
+            const gameOver = response.gameOver || false;
+
             // Apply server response after a short delay to let drop animation start
             setTimeout(() => {
               dispatch({
                 type: 'APPLY_SERVER_PLACEMENT',
                 value: {
-                  tiles: response.tiles,
-                  score: response.score!,
-                  linesCleared: response.linesCleared!,
-                  updatedQueue: response.updatedQueue!,
-                  gameOver: response.gameOver || false,
+                  tiles,
+                  score,
+                  linesCleared,
+                  updatedQueue,
+                  gameOver,
                 },
               });
             }, 50);

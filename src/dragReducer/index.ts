@@ -222,8 +222,8 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       // we should NOT update the validity or hovered blocks
       // The shape is animating into place and should not react to mouse movement anymore
       if (state.dragState.phase === 'placing'
-          || state.dragState.phase === 'returning'
-          || state.dragState.phase === 'waiting-for-server') {
+        || state.dragState.phase === 'returning'
+        || state.dragState.phase === 'waiting-for-server') {
         return {
           ...state,
           mouseGridLocation: location,

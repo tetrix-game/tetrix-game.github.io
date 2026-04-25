@@ -635,6 +635,19 @@ export function tileReducer(state: TetrixReducerState, action: TetrixAction): Te
     case 'APPLY_SERVER_PLACEMENT': {
       const { tiles, score, linesCleared, updatedQueue, gameOver } = action.value;
 
+      // Validate input
+      if (!tiles || !Array.isArray(tiles)) {
+        // eslint-disable-next-line no-console
+        console.error('Invalid tiles in APPLY_SERVER_PLACEMENT:', tiles);
+        return state; // Don't update with bad data
+      }
+
+      if (tiles.length === 0) {
+        // eslint-disable-next-line no-console
+        console.error('Empty tiles array in APPLY_SERVER_PLACEMENT');
+        return state;
+      }
+
       // Convert TileData[] array to Map<string, Tile>
       const newTiles = new Map<string, Tile>();
       tiles.forEach((tileData) => {

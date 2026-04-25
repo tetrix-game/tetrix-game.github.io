@@ -299,19 +299,24 @@ class TetrixAPI {
 
   /**
    * Place a shape with minimal data (server-authoritative)
-   * Coordinates are 0-indexed (0-9)
+   * Frontend uses 0-indexed (0-9), but backend currently expects 1-indexed (1-10)
+   * TODO: Remove +1 conversion once backend is updated to 0-indexed
    */
   async placeShapeMinimal(
     shapeId: number,
     x: number,
     y: number,
   ): Promise<PlacementResponse> {
+    // TEMPORARY: Convert 0-indexed to 1-indexed for backend
+    const backendX = x + 1;
+    const backendY = y + 1;
+
     const response = await this.request<PlacementResponse>('/game/state', {
       method: 'POST',
       body: JSON.stringify({
         shapeId,
-        x,
-        y,
+        x: backendX,
+        y: backendY,
         useCompactFormat: featureFlags.isEnabled('useCompactFormat'),
       }),
     });

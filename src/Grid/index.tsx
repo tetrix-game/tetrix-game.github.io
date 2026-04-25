@@ -72,8 +72,8 @@ export function Grid({ width = GRID_SIZE, height = GRID_SIZE, pixelSize }: GridP
   // Generate all potential tile positions in the grid
   const allPositions = useMemo((): string[] => {
     const positions: string[] = [];
-    for (let row = 1; row <= height; row++) {
-      for (let col = 1; col <= width; col++) {
+    for (let row = 0; row < height; row++) {
+      for (let col = 0; col < width; col++) {
         positions.push(`R${row}C${col}`);
       }
     }

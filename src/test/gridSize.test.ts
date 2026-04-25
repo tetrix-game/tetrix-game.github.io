@@ -61,22 +61,22 @@ describe('Dynamic Grid Size', () => {
     it('should generate 64 addresses for 8x8 grid', () => {
       setGridSize(8);
       expect(GRID_ADDRESSES.length).toBe(64);
-      expect(GRID_ADDRESSES[0]).toBe('R1C1');
-      expect(GRID_ADDRESSES[63]).toBe('R8C8');
+      expect(GRID_ADDRESSES[0]).toBe('R0C0');
+      expect(GRID_ADDRESSES[63]).toBe('R7C7');
     });
 
     it('should generate 144 addresses for 12x12 grid', () => {
       setGridSize(12);
       expect(GRID_ADDRESSES.length).toBe(144);
-      expect(GRID_ADDRESSES[0]).toBe('R1C1');
-      expect(GRID_ADDRESSES[143]).toBe('R12C12');
+      expect(GRID_ADDRESSES[0]).toBe('R0C0');
+      expect(GRID_ADDRESSES[143]).toBe('R11C11');
     });
 
     it('should generate 225 addresses for 15x15 grid', () => {
       setGridSize(15);
       expect(GRID_ADDRESSES.length).toBe(225);
-      expect(GRID_ADDRESSES[0]).toBe('R1C1');
-      expect(GRID_ADDRESSES[224]).toBe('R15C15');
+      expect(GRID_ADDRESSES[0]).toBe('R0C0');
+      expect(GRID_ADDRESSES[224]).toBe('R14C14');
     });
 
     it('should contain all correct addresses in row-major order for 5x5', () => {
@@ -84,28 +84,28 @@ describe('Dynamic Grid Size', () => {
       expect(GRID_ADDRESSES.length).toBe(25);
 
       // Check first row
-      expect(GRID_ADDRESSES[0]).toBe('R1C1');
-      expect(GRID_ADDRESSES[4]).toBe('R1C5');
+      expect(GRID_ADDRESSES[0]).toBe('R0C0');
+      expect(GRID_ADDRESSES[4]).toBe('R0C4');
 
       // Check last row
-      expect(GRID_ADDRESSES[20]).toBe('R5C1');
-      expect(GRID_ADDRESSES[24]).toBe('R5C5');
+      expect(GRID_ADDRESSES[20]).toBe('R4C0');
+      expect(GRID_ADDRESSES[24]).toBe('R4C4');
     });
   });
 
   describe('Tile key generation with different sizes', () => {
     it('should generate valid keys for 8x8 grid', () => {
       setGridSize(8);
-      expect(makeTileKey(1, 1)).toBe('R1C1');
-      expect(makeTileKey(8, 8)).toBe('R8C8');
-      expect(makeTileKey(4, 6)).toBe('R4C6');
+      expect(makeTileKey(0, 0)).toBe('R0C0');
+      expect(makeTileKey(7, 7)).toBe('R7C7');
+      expect(makeTileKey(3, 5)).toBe('R3C5');
     });
 
     it('should generate valid keys for 15x15 grid', () => {
       setGridSize(15);
-      expect(makeTileKey(1, 1)).toBe('R1C1');
-      expect(makeTileKey(15, 15)).toBe('R15C15');
-      expect(makeTileKey(10, 12)).toBe('R10C12');
+      expect(makeTileKey(0, 0)).toBe('R0C0');
+      expect(makeTileKey(14, 14)).toBe('R14C14');
+      expect(makeTileKey(9, 11)).toBe('R9C11');
     });
   });
 
@@ -113,26 +113,26 @@ describe('Dynamic Grid Size', () => {
     it('should create correct tile set for 6x6 grid', () => {
       setGridSize(6);
       const tiles = createTilesWithFilled([
-        { row: 1, column: 1, color: 'blue' },
-        { row: 6, column: 6, color: 'red' },
+        { row: 0, column: 0, color: 'blue' },
+        { row: 4, column: 4, color: 'red' },
       ]);
 
       expect(tiles.size).toBe(36);
-      expect(tiles.get('R1C1')?.block.isFilled).toBe(true);
-      expect(tiles.get('R6C6')?.block.isFilled).toBe(true);
-      expect(tiles.get('R3C3')?.block.isFilled).toBe(false);
+      expect(tiles.get('R0C0')?.block.isFilled).toBe(true);
+      expect(tiles.get('R5C5')?.block.isFilled).toBe(true);
+      expect(tiles.get('R2C2')?.block.isFilled).toBe(false);
     });
 
     it('should create correct tile set for 12x12 grid', () => {
       setGridSize(12);
       const tiles = createTilesWithFilled([
-        { row: 1, column: 1, color: 'blue' },
-        { row: 12, column: 12, color: 'red' },
+        { row: 0, column: 0, color: 'blue' },
+        { row: 11, column: 11, color: 'red' },
       ]);
 
       expect(tiles.size).toBe(144);
-      expect(tiles.get('R1C1')?.block.isFilled).toBe(true);
-      expect(tiles.get('R12C12')?.block.isFilled).toBe(true);
+      expect(tiles.get('R0C0')?.block.isFilled).toBe(true);
+      expect(tiles.get('R11C11')?.block.isFilled).toBe(true);
     });
   });
 
@@ -143,8 +143,8 @@ describe('Dynamic Grid Size', () => {
       expect(GRID_ADDRESSES.length).toBe(49);
 
       // Perform some operations
-      const key = makeTileKey(4, 5);
-      expect(key).toBe('R4C5');
+      const key = makeTileKey(3, 4);
+      expect(key).toBe('R3C4');
 
       // Size should still be 7
       expect(GRID_SIZE).toBe(7);

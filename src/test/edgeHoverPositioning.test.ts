@@ -56,8 +56,8 @@ describe('Edge Hover Positioning', () => {
     // - Anchor block (center): col = 1 + floor((1-1)/2) = 1
     // - Filled blocks relative to anchor: col offset = 1 - 1 = 0
 
-    // When placing this shape at grid location (1, 1):
-    // - The 4x4 top-left corner is at grid position (1, 1)
+    // When placing this shape at grid location (0, 0):
+    // - The 4x4 top-left corner is at grid position (0, 0)
     // - The single filled column is at grid position 1 + 1 = 2 (in 1-indexed)
     // Wait, that doesn't match... let me recalculate
 

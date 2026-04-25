@@ -33,7 +33,7 @@ describe('Rotation Menu Isolation', () => {
         selectedShape: testShapes[1].shape, // Select shape at index 1
         selectedShapeIndex: 1,
       },
-      mouseGridLocation: { row: 5, column: 5 }, // Valid placement location
+      mouseGridLocation: { row: 4, column: 5 }, // Valid placement location
     };
 
     // Two-phase animation: COMPLETE_PLACEMENT keeps all shapes + adds new one (5 total)
@@ -129,7 +129,7 @@ describe('Rotation Menu Isolation', () => {
         selectedShape: testShapes[2].shape, // Select the last shape
         selectedShapeIndex: 2,
       },
-      mouseGridLocation: { row: 5, column: 5 },
+      mouseGridLocation: { row: 4, column: 5 },
     };
 
     const newState = tetrixReducer(state, {

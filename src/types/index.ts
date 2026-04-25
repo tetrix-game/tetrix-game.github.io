@@ -59,7 +59,7 @@ export type TileAnimation = {
 
 // Self-contained tile data structure
 export type Tile = {
-  position: string; // Position string in format "R1C1"
+  position: string; // Position string in format "R0C0"
   backgroundColor: ColorName; // Background color of the tile itself
   block: Block; // Block data (what's placed on this tile)
   activeAnimations: TileAnimation[]; // Active animations running on this tile

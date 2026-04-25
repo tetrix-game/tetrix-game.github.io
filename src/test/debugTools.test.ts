@@ -20,7 +20,7 @@ function countFilledTiles(tiles: TilesSet): number {
 describe('Debug Tools', () => {
   describe('DEBUG_ADD_BLOCK', () => {
     it('should add a block at the specified location', () => {
-      const location = { row: 5, column: 5 };
+      const location = { row: 4, column: 5 };
 
       // Verify initial state has no block
       const initialTile = getTileData(initialState.tiles, location.row, location.column);
@@ -39,7 +39,7 @@ describe('Debug Tools', () => {
     });
 
     it('should overwrite existing blocks', () => {
-      const location = { row: 3, column: 3 };
+      const location = { row: 2, column: 3 };
 
       // Add red block first
       const stateWithRedBlock = tetrixReducer(initialState, {
@@ -64,13 +64,13 @@ describe('Debug Tools', () => {
       // Add a few blocks
       let state = tetrixReducer(initialState, {
         type: 'DEBUG_ADD_BLOCK',
-        value: { location: { row: 5, column: 5 }, color: 'blue' },
+        value: { location: { row: 4, column: 5 }, color: 'blue' },
       });
 
       // Fill a row (excluding position)
       state = tetrixReducer(state, {
         type: 'DEBUG_FILL_ROW',
-        value: { row: 3, excludeColumn: 5, color: 'red' },
+        value: { row: 2, excludeColumn: 5, color: 'red' },
       });
 
       // Count filled tiles
@@ -80,7 +80,7 @@ describe('Debug Tools', () => {
       // Remove a block
       state = tetrixReducer(state, {
         type: 'DEBUG_REMOVE_BLOCK',
-        value: { location: { row: 5, column: 5 } },
+        value: { location: { row: 4, column: 5 } },
       });
 
       // Verify block was removed
@@ -90,7 +90,7 @@ describe('Debug Tools', () => {
       // Add blocks again
       state = tetrixReducer(state, {
         type: 'DEBUG_ADD_BLOCK',
-        value: { location: { row: 1, column: 1 }, color: 'yellow' },
+        value: { location: { row: 0, column: 1 }, color: 'yellow' },
       });
 
       const filledFinal = countFilledTiles(state.tiles);

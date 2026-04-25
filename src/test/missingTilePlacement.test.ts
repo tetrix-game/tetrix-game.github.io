@@ -45,7 +45,7 @@ describe('Shape placement on grids with missing tiles', () => {
     it('should return false when shape would place on missing tile position', () => {
       const shape = createSquareShape();
       // Shape at (1,1) will try to place blocks at R1C1, R1C2, R2C1, R2C2
-      const gridTopLeft: Location = { row: 1, column: 1 };
+      const gridTopLeft: Location = { row: 0, column: 1 };
       const gridSize = { rows: 10, columns: 10 };
 
       // Create tiles missing R1C1
@@ -59,7 +59,7 @@ describe('Shape placement on grids with missing tiles', () => {
 
     it('should return true when all shape blocks land on existing tiles', () => {
       const shape = createSquareShape();
-      const gridTopLeft: Location = { row: 1, column: 1 };
+      const gridTopLeft: Location = { row: 0, column: 1 };
       const gridSize = { rows: 10, columns: 10 };
 
       // Create tiles with all required positions
@@ -72,7 +72,7 @@ describe('Shape placement on grids with missing tiles', () => {
 
     it('should return false when shape partially overlaps missing tiles', () => {
       const shape = createSquareShape();
-      const gridTopLeft: Location = { row: 1, column: 1 };
+      const gridTopLeft: Location = { row: 0, column: 1 };
       const gridSize = { rows: 10, columns: 10 };
 
       // Missing R1C2 - only one of the four required positions
@@ -87,7 +87,7 @@ describe('Shape placement on grids with missing tiles', () => {
   describe('isValidPlacement', () => {
     it('should return false when shape would place on missing tile position', () => {
       const shape = createSquareShape();
-      const gridTopLeft: Location = { row: 1, column: 1 };
+      const gridTopLeft: Location = { row: 0, column: 1 };
 
       // Missing R2C2
       const tiles = createPartialTiles(['R1C1', 'R1C2', 'R2C1', 'R3C3']);
@@ -99,7 +99,7 @@ describe('Shape placement on grids with missing tiles', () => {
 
     it('should return true when all blocks land on existing tiles', () => {
       const shape = createSquareShape();
-      const gridTopLeft: Location = { row: 1, column: 1 };
+      const gridTopLeft: Location = { row: 0, column: 1 };
 
       const tiles = createPartialTiles(['R1C1', 'R1C2', 'R2C1', 'R2C2']);
 
@@ -112,7 +112,7 @@ describe('Shape placement on grids with missing tiles', () => {
   describe('getInvalidBlocks', () => {
     it('should mark blocks as invalid when they would land on missing tiles', () => {
       const shape = createSquareShape();
-      const gridTopLeft: Location = { row: 1, column: 1 };
+      const gridTopLeft: Location = { row: 0, column: 1 };
 
       // Missing R1C1 and R2C2
       const tiles = createPartialTiles(['R1C2', 'R2C1', 'R3C3']);
@@ -127,7 +127,7 @@ describe('Shape placement on grids with missing tiles', () => {
 
     it('should return empty array when all blocks land on existing tiles', () => {
       const shape = createSquareShape();
-      const gridTopLeft: Location = { row: 1, column: 1 };
+      const gridTopLeft: Location = { row: 0, column: 1 };
 
       const tiles = createPartialTiles(['R1C1', 'R1C2', 'R2C1', 'R2C2']);
 

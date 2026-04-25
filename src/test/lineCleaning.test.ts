@@ -29,8 +29,8 @@ describe('Line Clearing Utilities', () => {
     it('should return true when all 10 tiles in a row are filled', () => {
       const positions = [];
       // Fill row 5
-      for (let column = 1; column <= 10; column++) {
-        positions.push({ row: 5, column, color: 'red' as ColorName });
+      for (let column = 0; column < 10; column++) {
+        positions.push({ row: 4, column, color: 'red' as ColorName });
       }
       const tiles = createTilesWithFilled(positions);
 
@@ -40,9 +40,9 @@ describe('Line Clearing Utilities', () => {
     it('should return false when a row is not completely filled', () => {
       const positions = [];
       // Fill row 5 except for one tile
-      for (let column = 1; column <= 10; column++) {
+      for (let column = 0; column < 10; column++) {
         if (column !== 5) {
-          positions.push({ row: 5, column, color: 'red' as ColorName });
+          positions.push({ row: 4, column, color: 'red' as ColorName });
         }
       }
       const tiles = createTilesWithFilled(positions);
@@ -60,8 +60,8 @@ describe('Line Clearing Utilities', () => {
     it('should return true when all 10 tiles in a column are filled', () => {
       const positions = [];
       // Fill column 3
-      for (let row = 1; row <= 10; row++) {
-        positions.push({ row, column: 3, color: 'red' as ColorName });
+      for (let row = 0; row < 10; row++) {
+        positions.push({ row, column: 2, color: 'red' as ColorName });
       }
       const tiles = createTilesWithFilled(positions);
 
@@ -71,9 +71,9 @@ describe('Line Clearing Utilities', () => {
     it('should return false when a column is not completely filled', () => {
       const positions = [];
       // Fill column 3 except for one tile
-      for (let row = 1; row <= 10; row++) {
+      for (let row = 0; row < 10; row++) {
         if (row !== 7) {
-          positions.push({ row, column: 3, color: 'red' as ColorName });
+          positions.push({ row, column: 2, color: 'red' as ColorName });
         }
       }
       const tiles = createTilesWithFilled(positions);
@@ -91,15 +91,15 @@ describe('Line Clearing Utilities', () => {
     it('should find all full rows', () => {
       const positions = [];
       // Fill rows 2, 5, and 9
-      for (const row of [2, 5, 9]) {
-        for (let column = 1; column <= 10; column++) {
+      for (const row of [1, 4, 8]) {
+        for (let column = 0; column < 10; column++) {
           positions.push({ row, column, color: 'red' as ColorName });
         }
       }
       const tiles = createTilesWithFilled(positions);
 
       const fullRows = findFullRows(tiles);
-      expect(fullRows).toEqual([2, 5, 9]);
+      expect(fullRows).toEqual([1, 4, 8]);
     });
 
     it('should return empty array when no rows are full', () => {
@@ -112,15 +112,15 @@ describe('Line Clearing Utilities', () => {
     it('should find all full columns', () => {
       const positions = [];
       // Fill columns 1, 4, and 10
-      for (const column of [1, 4, 10]) {
-        for (let row = 1; row <= 10; row++) {
+      for (const column of [0, 3, 9]) {
+        for (let row = 0; row < 10; row++) {
           positions.push({ row, column, color: 'red' as ColorName });
         }
       }
       const tiles = createTilesWithFilled(positions);
 
       const fullColumns = findFullColumns(tiles);
-      expect(fullColumns).toEqual([1, 4, 10]);
+      expect(fullColumns).toEqual([0, 3, 9]);
     });
 
     it('should return empty array when no columns are full', () => {
@@ -134,7 +134,7 @@ describe('Line Clearing Utilities', () => {
       const positions = [];
       // Fill rows 2 and 5
       for (const row of [2, 5]) {
-        for (let column = 1; column <= 10; column++) {
+        for (let column = 0; column < 10; column++) {
           positions.push({ row, column, color: 'red' as ColorName });
         }
       }
@@ -147,7 +147,7 @@ describe('Line Clearing Utilities', () => {
       expect(testIsRowFull(clearedTiles, 5)).toBe(false);
 
       // Verify all tiles in those rows are empty
-      for (let column = 1; column <= 10; column++) {
+      for (let column = 0; column < 10; column++) {
         const tile2 = getTileData(clearedTiles, 2, column);
         const tile5 = getTileData(clearedTiles, 5, column);
         expect(tile2?.block.isFilled).toBe(false);
@@ -161,7 +161,7 @@ describe('Line Clearing Utilities', () => {
       const positions = [];
       // Fill rows 2 and 7
       for (const row of [2, 7]) {
-        for (let column = 1; column <= 10; column++) {
+        for (let column = 0; column < 10; column++) {
           positions.push({ row, column, color: 'red' as ColorName });
         }
       }
@@ -185,7 +185,7 @@ describe('Line Clearing Utilities', () => {
       const positions = [];
       // Fill columns 3 and 8
       for (const column of [3, 8]) {
-        for (let row = 1; row <= 10; row++) {
+        for (let row = 0; row < 10; row++) {
           positions.push({ row, column, color: 'red' as ColorName });
         }
       }
@@ -198,7 +198,7 @@ describe('Line Clearing Utilities', () => {
       expect(testIsColumnFull(clearedTiles, 8)).toBe(false);
 
       // Verify all tiles in those columns are empty
-      for (let row = 1; row <= 10; row++) {
+      for (let row = 0; row < 10; row++) {
         const tile3 = getTileData(clearedTiles, row, 3);
         const tile8 = getTileData(clearedTiles, row, 8);
         expect(tile3?.block.isFilled).toBe(false);
@@ -212,7 +212,7 @@ describe('Line Clearing Utilities', () => {
       const positions = [];
       // Fill columns 3 and 6
       for (const column of [3, 6]) {
-        for (let row = 1; row <= 10; row++) {
+        for (let row = 0; row < 10; row++) {
           positions.push({ row, column, color: 'red' as ColorName });
         }
       }
@@ -235,11 +235,11 @@ describe('Line Clearing Utilities', () => {
     it('should clear both full rows and columns', () => {
       const positions = [];
       // Fill row 5 and column 3
-      for (let column = 1; column <= 10; column++) {
-        positions.push({ row: 5, column, color: 'red' as ColorName });
+      for (let column = 0; column < 10; column++) {
+        positions.push({ row: 4, column, color: 'red' as ColorName });
       }
-      for (let row = 1; row <= 10; row++) {
-        positions.push({ row, column: 3, color: 'blue' as ColorName });
+      for (let row = 0; row < 10; row++) {
+        positions.push({ row, column: 2, color: 'blue' as ColorName });
       }
       const tiles = createTilesWithFilled(positions);
 
@@ -259,8 +259,8 @@ describe('Line Clearing Utilities', () => {
     it('should handle intersecting row and column clears', () => {
       const positions = [];
       // Fill entire grid
-      for (let row = 1; row <= 10; row++) {
-        for (let column = 1; column <= 10; column++) {
+      for (let row = 0; row < 10; row++) {
+        for (let column = 0; column < 10; column++) {
           positions.push({ row, column, color: 'red' as ColorName });
         }
       }

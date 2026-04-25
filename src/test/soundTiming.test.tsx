@@ -37,7 +37,7 @@ const createMockState = (dragPhase: DragPhase): TetrixReducerState => ({
   tiles: new Map(),
   nextShapes: [],
   savedShape: null,
-  mouseGridLocation: { row: 5, column: 5 },
+  mouseGridLocation: { row: 4, column: 5 },
   mousePosition: { x: 100, y: 100 },
   gridTileSize: null,
   gridBounds: null,

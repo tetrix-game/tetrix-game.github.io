@@ -5,7 +5,7 @@
  * network bandwidth and storage.
  *
  * Tile Format: 100-byte Uint8Array (one byte per tile)
- * - Index 0-99 represents position (0 = R1C1, 99 = R10C10)
+ * - Index 0-99 represents position (0 = R0C0, 99 = R9C9)
  * - Byte value 0-7 = color index
  * - Byte value 255 = empty tile
  *
@@ -50,11 +50,11 @@ export const EMPTY_TILE = 255; // 0xFF - marker for unfilled tiles
 
 /**
  * Convert position string to array index
- * @param position - Position string in format "R{row}C{col}" (1-indexed)
- * @returns Index from 0-99 (0 = R1C1, 99 = R10C10)
- * @example positionToIndex("R1C1") => 0
- * @example positionToIndex("R5C3") => 42
- * @example positionToIndex("R10C10") => 99
+ * @param position - Position string in format "R{row}C{col}" (0-indexed)
+ * @returns Index from 0-99 (0 = R0C0, 99 = R9C9)
+ * @example positionToIndex("R0C0") => 0
+ * @example positionToIndex("R4C2") => 42
+ * @example positionToIndex("R9C9") => 99
  */
 export function positionToIndex(position: string): number {
   const match = position.match(/R(\d+)C(\d+)/);
@@ -62,48 +62,48 @@ export function positionToIndex(position: string): number {
     throw new Error(`Invalid position format: ${position}`);
   }
 
-  const row = parseInt(match[1], 10); // 1-10
-  const col = parseInt(match[2], 10); // 1-10
+  const row = parseInt(match[1], 10); // 0-9
+  const col = parseInt(match[2], 10); // 0-9
 
-  if (row < 1 || row > 10 || col < 1 || col > 10) {
+  if (row < 0 || row >= 10 || col < 0 || col >= 10) {
     throw new Error(`Position out of bounds: ${position}`);
   }
 
-  return (row - 1) * 10 + (col - 1); // 0-99
+  return row * 10 + col; // 0-99
 }
 
 /**
  * Convert array index to position string
  * @param index - Index from 0-99
- * @returns Position string in format "R{row}C{col}" (1-indexed)
- * @example indexToPosition(0) => "R1C1"
- * @example indexToPosition(42) => "R5C3"
- * @example indexToPosition(99) => "R10C10"
+ * @returns Position string in format "R{row}C{col}" (0-indexed)
+ * @example indexToPosition(0) => "R0C0"
+ * @example indexToPosition(42) => "R4C2"
+ * @example indexToPosition(99) => "R9C9"
  */
 export function indexToPosition(index: number): string {
   if (index < 0 || index > 99) {
     throw new Error(`Index out of bounds: ${index}`);
   }
 
-  const row = Math.floor(index / 10) + 1; // 1-10
-  const col = (index % 10) + 1; // 1-10
+  const row = Math.floor(index / 10); // 0-9
+  const col = index % 10; // 0-9
 
   return `R${row}C${col}`;
 }
 
 /**
  * Convert Location object to array index
- * @param location - Location with row and column (1-indexed)
+ * @param location - Location with row and column (0-indexed)
  * @returns Index from 0-99
  */
 export function locationToIndex(location: Location): number {
-  return (location.row - 1) * 10 + (location.column - 1);
+  return location.row * 10 + location.column;
 }
 
 /**
  * Convert array index to Location object
  * @param index - Index from 0-99
- * @returns Location with row and column (1-indexed)
+ * @returns Location with row and column (0-indexed)
  */
 export function indexToLocation(index: number): Location {
   if (index < 0 || index > 99) {
@@ -111,8 +111,8 @@ export function indexToLocation(index: number): Location {
   }
 
   return {
-    row: Math.floor(index / 10) + 1,
-    column: (index % 10) + 1,
+    row: Math.floor(index / 10),
+    column: index % 10,
   };
 }
 

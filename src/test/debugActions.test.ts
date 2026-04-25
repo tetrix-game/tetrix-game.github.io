@@ -112,7 +112,7 @@ describe('Debug Actions for Shape Management', () => {
         selectedShape: testShapes[2],
         selectedShapeIndex: 2,
         phase: 'dragging' as const,
-        hoveredBlockPositions: [{ location: { row: 1, column: 1 }, block: testShapes[2][0][0] }],
+        hoveredBlockPositions: [{ location: { row: 0, column: 1 }, block: testShapes[2][0][0] }],
       },
     };
 
@@ -145,7 +145,7 @@ describe('Debug Actions for Shape Management', () => {
         selectedShape: testShapes[0],
         selectedShapeIndex: 0,
         phase: 'dragging' as const,
-        hoveredBlockPositions: [{ location: { row: 1, column: 1 }, block: testShapes[0][0][0] }],
+        hoveredBlockPositions: [{ location: { row: 0, column: 1 }, block: testShapes[0][0][0] }],
       },
     };
 
@@ -159,7 +159,7 @@ describe('Debug Actions for Shape Management', () => {
     expect(newState.dragState.selectedShapeIndex).toBe(0);
     expect(newState.dragState.phase).toBe('dragging');
     expect(newState.dragState.hoveredBlockPositions).toEqual([
-      { location: { row: 1, column: 1 }, block: testShapes[0][0][0] },
+      { location: { row: 0, column: 1 }, block: testShapes[0][0][0] },
     ]);
   });
 });

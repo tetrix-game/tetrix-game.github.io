@@ -45,10 +45,10 @@ function canPlaceShape(
 
         // Check bounds - short circuit if out of bounds
         if (
-          gridRow < 1
-          || gridRow > gridSize.rows
-          || gridCol < 1
-          || gridCol > gridSize.columns
+          gridRow < 0
+          || gridRow >= gridSize.rows
+          || gridCol < 0
+          || gridCol >= gridSize.columns
         ) {
           return false; // Block doesn't fit
         }
@@ -77,7 +77,7 @@ function canPlaceShape(
  * This function iterates through the shape's 4x4 grid and checks each filled block
  * against the tiles Map for O(1) lookup performance.
  *
- * Gracefully handles any location values (including negative and > 10).
+ * Gracefully handles any location values (including negative and >= 10).
  * Short-circuits to false when any filled block is out of bounds or overlapping.
  *
  * @param shape - The 4x4 shape grid to check
@@ -108,8 +108,8 @@ function isValidPlacement(
         const gridRow = gridTopLeftLocation.row + shapeRow;
         const gridCol = gridTopLeftLocation.column + shapeCol;
 
-        // Check bounds (1-indexed) - short circuit if out of bounds
-        if (gridRow < 1 || gridRow > GRID_SIZE || gridCol < 1 || gridCol > GRID_SIZE) {
+        // Check bounds (0-indexed) - short circuit if out of bounds
+        if (gridRow < 0 || gridRow >= GRID_SIZE || gridCol < 0 || gridCol >= GRID_SIZE) {
           return false; // Block doesn't fit
         }
 
@@ -144,7 +144,7 @@ function isValidPlacement(
  * Get the positions of blocks in the shape that cannot be placed (out of bounds or overlapping)
  * Returns an array of shape-relative coordinates (row, col in the 4x4 grid)
  *
- * Gracefully handles any location values (including negative and > 10).
+ * Gracefully handles any location values (including negative and >= 10).
  * Marks filled blocks as invalid if they're out of bounds or overlapping.
  *
  * @param shape - The 4x4 shape grid to check
@@ -177,11 +177,11 @@ function getInvalidBlocks(
         const gridRow = gridTopLeftLocation.row + shapeRow;
         const gridCol = gridTopLeftLocation.column + shapeCol;
 
-        // Check bounds (1-indexed)
-        const outOfBounds = gridRow < 1
-          || gridRow > GRID_SIZE
-          || gridCol < 1
-          || gridCol > GRID_SIZE;
+        // Check bounds (0-indexed)
+        const outOfBounds = gridRow < 0
+          || gridRow >= GRID_SIZE
+          || gridCol < 0
+          || gridCol >= GRID_SIZE;
 
         // Check if position exists and is occupied using O(1) Map lookup
         let invalid = false;

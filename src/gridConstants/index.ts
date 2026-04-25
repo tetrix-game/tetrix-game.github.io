@@ -2,7 +2,7 @@
  * Grid Constants - Static grid addresses and helper functions
  *
  * This module provides:
- * - GRID_ADDRESSES: Static array of all grid tile keys (R1C1 through R10C10)
+ * - GRID_ADDRESSES: Static array of all grid tile keys (R0C0 through R9C9)
  * - Helper functions for tile key manipulation
  * - Challenge board data conversion utilities
  */
@@ -21,12 +21,12 @@ const GRID_GAP = 2;
 
 /**
  * Generate grid addresses in row-major order
- * Returns a frozen array of all grid keys (R1C1, R1C2, ..., RnCn)
+ * Returns a frozen array of all grid keys (R0C0, R0C1, ..., R(n-1)C(n-1))
  */
 function generateGridAddresses(size: number): readonly string[] {
   const addresses: string[] = [];
-  for (let row = 1; row <= size; row++) {
-    for (let column = 1; column <= size; column++) {
+  for (let row = 0; row < size; row++) {
+    for (let column = 0; column < size; column++) {
       addresses.push(`R${row}C${column}`);
     }
   }
@@ -61,7 +61,7 @@ if (GRID_ADDRESSES.length !== GRID_SIZE * GRID_SIZE) {
 }
 
 /**
- * Helper function to create a tile key from location (1-indexed)
+ * Helper function to create a tile key from location (0-indexed)
  */
 function makeTileKey(row: number, column: number): string {
   return `R${row}C${column}`;

@@ -154,13 +154,13 @@ export function generateClearingAnimations(
 
   // Process cleared rows
   for (const { index: row, color } of clearedRows) {
-    for (let column = 1; column <= 10; column++) {
+    for (let column = 0; column < 10; column++) {
       const key = makeTileKey(row, column);
       const tileData = newTiles.get(key);
       if (!tileData) continue;
 
       const animations: TileAnimation[] = [];
-      const columnIndex = column - 1;
+      const columnIndex = column;
 
       // Generate all applicable tier animations
       for (const tier of rowTiers) {
@@ -205,13 +205,13 @@ export function generateClearingAnimations(
 
   // Process cleared columns
   for (const { index: column, color } of clearedColumns) {
-    for (let row = 1; row <= 10; row++) {
+    for (let row = 0; row < 10; row++) {
       const key = makeTileKey(row, column);
       const tileData = newTiles.get(key);
       if (!tileData) continue;
 
       const animations: TileAnimation[] = [];
-      const rowIndex = row - 1;
+      const rowIndex = row;
 
       // Generate all applicable tier animations
       for (const tier of columnTiers) {
@@ -287,14 +287,14 @@ export function generateFullBoardClearAnimation(
 
   // Apply column animations to all tiles
   // These start after the delay (which accounts for normal animations completing)
-  for (let column = 1; column <= 10; column++) {
-    for (let row = 1; row <= 10; row++) {
+  for (let column = 0; column < 10; column++) {
+    for (let row = 0; row < 10; row++) {
       const key = makeTileKey(row, column);
       const tileData = newTiles.get(key);
       if (!tileData) continue;
 
       const waveOffset = calculateWaveOffset(
-        column - 1,
+        column,
         finalConfig.fullBoardClear.columns.waveDelay,
       );
       const animation: TileAnimation = {
@@ -312,13 +312,13 @@ export function generateFullBoardClearAnimation(
   }
 
   // Apply row animations to all tiles (starts after columns)
-  for (let row = 1; row <= 10; row++) {
-    for (let column = 1; column <= 10; column++) {
+  for (let row = 0; row < 10; row++) {
+    for (let column = 0; column < 10; column++) {
       const key = makeTileKey(row, column);
       const tileData = newTiles.get(key);
       if (!tileData) continue;
 
-      const waveOffset = calculateWaveOffset(row - 1, finalConfig.fullBoardClear.rows.waveDelay);
+      const waveOffset = calculateWaveOffset(row, finalConfig.fullBoardClear.rows.waveDelay);
       const animation: TileAnimation = {
         id: generateAnimationId(),
         type: 'full-board-rows',

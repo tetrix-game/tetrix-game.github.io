@@ -10,11 +10,11 @@ function makeTileKey(row: number, column: number): string {
 /**
  * Checks if a specific row is completely filled with blocks
  * @param tiles - All tiles in the grid (Map)
- * @param row - The row number to check (1-indexed)
+ * @param row - The row number to check (0-indexed)
  * @returns true if all 10 tiles in the row have isFilled = true
  */
 export function isRowFull(tiles: TilesSet, row: number): boolean {
-  for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let column = 0; column < GRID_SIZE; column++) {
     const tile = tiles.get(makeTileKey(row, column));
     if (!tile || !tile.block.isFilled) {
       return false;
@@ -26,11 +26,11 @@ export function isRowFull(tiles: TilesSet, row: number): boolean {
 /**
  * Checks if a specific column is completely filled with blocks
  * @param tiles - All tiles in the grid (Map)
- * @param column - The column number to check (1-indexed)
+ * @param column - The column number to check (0-indexed)
  * @returns true if all 10 tiles in the column have isFilled = true
  */
 export function isColumnFull(tiles: TilesSet, column: number): boolean {
-  for (let row = 1; row <= GRID_SIZE; row++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
     const tile = tiles.get(makeTileKey(row, column));
     if (!tile || !tile.block.isFilled) {
       return false;
@@ -42,11 +42,11 @@ export function isColumnFull(tiles: TilesSet, column: number): boolean {
 /**
  * Finds all full rows in the grid
  * @param tiles - All tiles in the grid (Map)
- * @returns Array of row numbers that are completely filled (1-indexed)
+ * @returns Array of row numbers that are completely filled (0-indexed)
  */
 export function findFullRows(tiles: TilesSet): number[] {
   const fullRows: number[] = [];
-  for (let row = 1; row <= GRID_SIZE; row++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
     if (isRowFull(tiles, row)) {
       fullRows.push(row);
     }
@@ -57,11 +57,11 @@ export function findFullRows(tiles: TilesSet): number[] {
 /**
  * Finds all full columns in the grid
  * @param tiles - All tiles in the grid (Map)
- * @returns Array of column numbers that are completely filled (1-indexed)
+ * @returns Array of column numbers that are completely filled (0-indexed)
  */
 export function findFullColumns(tiles: TilesSet): number[] {
   const fullColumns: number[] = [];
-  for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let column = 0; column < GRID_SIZE; column++) {
     if (isColumnFull(tiles, column)) {
       fullColumns.push(column);
     }
@@ -72,7 +72,7 @@ export function findFullColumns(tiles: TilesSet): number[] {
 /**
  * Clears (empties) all tiles in the specified rows
  * @param tiles - All tiles in the grid (Map)
- * @param rows - Array of row numbers to clear (1-indexed)
+ * @param rows - Array of row numbers to clear (0-indexed)
  * @returns New tiles Map with specified rows cleared
  */
 export function clearRows(tiles: TilesSet, rows: number[]): TilesSet {
@@ -81,9 +81,9 @@ export function clearRows(tiles: TilesSet, rows: number[]): TilesSet {
   const newTiles = new Map(tiles);
   const rowSet = new Set(rows);
 
-  for (let row = 1; row <= GRID_SIZE; row++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
     if (rowSet.has(row)) {
-      for (let column = 1; column <= GRID_SIZE; column++) {
+      for (let column = 0; column < GRID_SIZE; column++) {
         const position = makeTileKey(row, column);
         const tile = newTiles.get(position);
         if (tile) {
@@ -110,7 +110,7 @@ export function clearRows(tiles: TilesSet, rows: number[]): TilesSet {
 /**
  * Clears (empties) all tiles in the specified columns
  * @param tiles - All tiles in the grid (Map)
- * @param columns - Array of column numbers to clear (1-indexed)
+ * @param columns - Array of column numbers to clear (0-indexed)
  * @returns New tiles Map with specified columns cleared
  */
 export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
@@ -119,9 +119,9 @@ export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
   const newTiles = new Map(tiles);
   const columnSet = new Set(columns);
 
-  for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let column = 0; column < GRID_SIZE; column++) {
     if (columnSet.has(column)) {
-      for (let row = 1; row <= GRID_SIZE; row++) {
+      for (let row = 0; row < GRID_SIZE; row++) {
         const position = makeTileKey(row, column);
         const tile = newTiles.get(position);
         if (tile) {
@@ -148,14 +148,14 @@ export function clearColumns(tiles: TilesSet, columns: number[]): TilesSet {
 /**
  * Checks if a line (row or column) has a uniform color
  * @param tiles - All tiles in the grid (Map)
- * @param index - The row or column index (1-indexed)
+ * @param index - The row or column index (0-indexed)
  * @param isRow - True if checking a row, false for a column
  * @returns The color if uniform, otherwise undefined
  */
 function getLineColor(tiles: TilesSet, index: number, isRow: boolean): string | undefined {
   let firstColor: string | undefined;
 
-  for (let i = 1; i <= GRID_SIZE; i++) {
+  for (let i = 0; i < GRID_SIZE; i++) {
     const row = isRow ? index : i;
     const col = isRow ? i : index;
     const tile = tiles.get(makeTileKey(row, col));
@@ -184,8 +184,8 @@ export type ClearedLine = {
  * @returns true if all tiles are empty (not filled)
  */
 export function isGridCompletelyEmpty(tiles: TilesSet): boolean {
-  for (let row = 1; row <= GRID_SIZE; row++) {
-    for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let column = 0; column < GRID_SIZE; column++) {
       const tile = tiles.get(makeTileKey(row, column));
       if (tile?.block.isFilled) {
         return false;

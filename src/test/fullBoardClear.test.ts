@@ -25,8 +25,8 @@ describe('Full Board Clear - isGridCompletelyEmpty', () => {
 
   it('should return false for a partially filled grid', () => {
     const positions = [];
-    for (let row = 1; row <= 5; row++) {
-      for (let column = 1; column <= 10; column++) {
+    for (let row = 0; row < 5; row++) {
+      for (let column = 0; column < 10; column++) {
         positions.push({ row, column, color: 'blue' as const });
       }
     }
@@ -35,7 +35,7 @@ describe('Full Board Clear - isGridCompletelyEmpty', () => {
   });
 
   it('should return false if just one tile is filled', () => {
-    const tiles = createTilesWithFilled([{ row: 10, column: 10, color: 'blue' }]);
+    const tiles = createTilesWithFilled([{ row: 9, column: 9, color: 'blue' }]);
     expect(isGridCompletelyEmpty(tiles)).toBe(false);
   });
 
@@ -47,8 +47,8 @@ describe('Full Board Clear - isGridCompletelyEmpty', () => {
   it('should return false even with different colors on filled tiles', () => {
     const positions = [];
     const colors: Array<'red' | 'blue' | 'green' | 'yellow'> = ['red', 'blue', 'green', 'yellow'];
-    for (let row = 1; row <= 10; row++) {
-      for (let column = 1; column <= 10; column++) {
+    for (let row = 0; row < 10; row++) {
+      for (let column = 0; column < 10; column++) {
         const colorIndex = ((row - 1) * 10 + (column - 1)) % colors.length;
         positions.push({ row, column, color: colors[colorIndex] });
       }
@@ -92,7 +92,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     }, delayAfterNormalAnimations);
 
     // Check a tile in column 1
-    const tile11 = animatedTiles.get(makeTileKey(1, 1));
+    const tile11 = animatedTiles.get(makeTileKey(0, 0));
     expect(tile11?.activeAnimations).toBeDefined();
 
     const columnAnim = tile11!.activeAnimations!.find((a) => a.type === 'full-board-columns');
@@ -124,7 +124,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     }, delayAfterNormal);
 
     // Check column wave progression
-    for (let column = 1; column <= 10; column++) {
+    for (let column = 0; column < 10; column++) {
       const tile = animatedTiles.get(makeTileKey(5, column)); // Check row 5 across all columns
       const columnAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-columns');
 
@@ -150,7 +150,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
     }, delayAfterNormal);
 
     // Check row wave progression
-    for (let row = 1; row <= 10; row++) {
+    for (let row = 0; row < 10; row++) {
       const tile = animatedTiles.get(makeTileKey(row, 5)); // Check column 5 across all rows
       const rowAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-rows');
 
@@ -163,7 +163,7 @@ describe('Full Board Clear - generateFullBoardClearAnimation', () => {
   it('should preserve existing tile data when adding animations', () => {
     const tiles = createTilesWithFilled([]);
     // Set row 5 as filled
-    for (let column = 1; column <= 10; column++) {
+    for (let column = 0; column < 10; column++) {
       const tile = tiles.get(makeTileKey(5, column));
       if (tile) {
         tile.block.isFilled = true;
@@ -341,17 +341,17 @@ describe('Full Board Clear - Reducer Integration', () => {
         invalidBlockPositions: [],
         sourcePosition: { x: 0, y: 0, width: 0, height: 0 },
         targetPosition: { x: 0, y: 0 },
-        placementLocation: { row: 1, column: 10 },
+        placementLocation: { row: 0, column: 10 },
         placementStartPosition: null,
         startTime: null,
         dragOffsets: null,
       },
-      mouseGridLocation: { row: 1, column: 10 },
+      mouseGridLocation: { row: 0, column: 10 },
     };
 
     // Initialize empty tiles first
-    for (let row = 1; row <= 10; row++) {
-      for (let column = 1; column <= 10; column++) {
+    for (let row = 0; row < 10; row++) {
+      for (let column = 0; column < 10; column++) {
         const position = makeTileKey(row, column);
         mockInitialState.tiles.set(position, {
           position,
@@ -364,8 +364,8 @@ describe('Full Board Clear - Reducer Integration', () => {
 
     // Fill the grid almost completely - leave only last column empty
     // When we place the shape, it will fill column 10, and clearing will result in empty board
-    for (let row = 1; row <= 10; row++) {
-      for (let column = 1; column <= 9; column++) {
+    for (let row = 0; row < 10; row++) {
+      for (let column = 0; column < 9; column++) {
         // Fill columns 1-9 completely
         const position = makeTileKey(row, column);
         const tile = mockInitialState.tiles.get(position);
@@ -436,7 +436,7 @@ describe('Full Board Clear - Reducer Integration', () => {
     mockInitialState.tiles = new Map();
 
     // Fill Row 1 except last column (R1C10)
-    for (let col = 1; col <= 9; col++) {
+    for (let col = 0; col < 9; col++) {
       const pos = makeTileKey(1, col);
       mockInitialState.tiles.set(pos, {
         position: pos,
@@ -491,7 +491,7 @@ describe('Full Board Clear - Animation Config', () => {
 
     const animatedTiles = generateFullBoardClearAnimation(tiles);
 
-    const tile = animatedTiles.get(makeTileKey(1, 1));
+    const tile = animatedTiles.get(makeTileKey(0, 0));
     const columnAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-columns');
     const rowAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-rows');
 
@@ -513,7 +513,7 @@ describe('Full Board Clear - Animation Config', () => {
       },
     });
 
-    const tile = animatedTiles.get(makeTileKey(1, 1));
+    const tile = animatedTiles.get(makeTileKey(0, 0));
     const columnAnim = tile!.activeAnimations!.find((a) => a.type === 'full-board-columns');
 
     expect(columnAnim!.duration).toBe(customDuration);

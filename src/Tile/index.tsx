@@ -40,8 +40,8 @@ const TileComponent: React.FC<TileProps> = ({
       className={`tile-base ${hasCustomBackground ? 'tile-base-custom' : ''} ${isFilled ? 'filled' : ''} ${className}`}
       data-testid={`tile-R${row}C${col}`}
       style={{
-        gridColumn: col,
-        gridRow: row,
+        gridColumn: col + 1,
+        gridRow: row + 1,
         opacity,
         ...style,
       }}

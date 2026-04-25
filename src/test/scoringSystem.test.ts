@@ -34,7 +34,7 @@ describe('Scoring System', () => {
       });
 
       // Test mixed row and column clearing (with multiplier bonus)
-      expect(calculateScore(1, 1)).toEqual({
+      expect(calculateScore(0, 0)).toEqual({
         rowsCleared: 1,
         columnsCleared: 1,
         pointsEarned: 20, // (1² + 1² + (1×1×2)) × 5 = 4 × 5

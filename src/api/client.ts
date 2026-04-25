@@ -299,7 +299,7 @@ class TetrixAPI {
 
   /**
    * Place a shape with minimal data (server-authoritative)
-   * Coordinates are 1-indexed (1-10)
+   * Coordinates are 0-indexed (0-9)
    */
   async placeShapeMinimal(
     shapeId: number,

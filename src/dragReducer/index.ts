@@ -338,10 +338,10 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       const centerCol = (minCol + maxCol) / 2;
 
       const targetCellCenterX = currentGridBounds.left
-        + (centerCol - 1) * tileWithGap
+        + centerCol * tileWithGap
         + TILE_SIZE / 2;
       const targetCellCenterY = currentGridBounds.top
-        + (centerRow - 1) * tileWithGap
+        + centerRow * tileWithGap
         + TILE_SIZE / 2;
 
       return {
@@ -433,10 +433,10 @@ export function dragReducer(state: TetrixReducerState, action: TetrixAction): Te
       // For 1-indexed column C, the tile's left edge is at: gridBounds.left + (C - 1) * tileWithGap
       // The tile's center is at: left edge + TILE_SIZE / 2
       const targetCellCenterX = currentGridBounds.left
-        + (centerCol - 1) * tileWithGap
+        + centerCol * tileWithGap
         + TILE_SIZE / 2;
       const targetCellCenterY = currentGridBounds.top
-        + (centerRow - 1) * tileWithGap
+        + centerRow * tileWithGap
         + TILE_SIZE / 2;
 
       // Store where the shape currently IS (before updating mousePosition)

@@ -34,22 +34,22 @@ let GRID_SHAPE_CONFIG: GridShapeConfig = {
  * Check if a coordinate is valid for a diamond shape
  * Diamond is rotated 45° - widest at the middle
  *
- * For a diamond of size N:
- * - Center is at row = ceil(N/2), col = ceil(N/2)
+ * For a diamond of size N (0-indexed):
+ * - Center is at row = floor((N-1)/2), col = floor((N-1)/2)
  * - Valid tiles form a diamond pattern
  *
- * Example 7x7 diamond (size=7):
- *       X       row 1: only col 4
- *      XXX      row 2: cols 3,4,5
- *     XXXXX     row 3: cols 2,3,4,5,6
- *    XXXXXXX    row 4: cols 1,2,3,4,5,6,7 (widest)
- *     XXXXX     row 5: cols 2,3,4,5,6
- *      XXX      row 6: cols 3,4,5
- *       X       row 7: only col 4
+ * Example 7x7 diamond (size=7, 0-indexed):
+ *       X       row 0: only col 3
+ *      XXX      row 1: cols 2,3,4
+ *     XXXXX     row 2: cols 1,2,3,4,5
+ *    XXXXXXX    row 3: cols 0,1,2,3,4,5,6 (widest)
+ *     XXXXX     row 4: cols 1,2,3,4,5
+ *      XXX      row 5: cols 2,3,4
+ *       X       row 6: only col 3
  */
 function isValidDiamondCoordinate(row: number, column: number, size: number): boolean {
   // Diamond must be odd-sized for symmetry
-  const center = Math.ceil(size / 2);
+  const center = Math.floor((size - 1) / 2);
 
   // Distance from center row and column
   const rowDist = Math.abs(row - center);
@@ -66,7 +66,7 @@ function isValidDiamondCoordinate(row: number, column: number, size: number): bo
  * Hexagon has flat top/bottom edges
  */
 function isValidHexagonCoordinate(row: number, column: number, size: number): boolean {
-  const center = Math.ceil(size / 2);
+  const center = Math.floor((size - 1) / 2);
   const rowDist = Math.abs(row - center);
   const colDist = Math.abs(column - center);
 
@@ -85,7 +85,7 @@ function isValidHexagonCoordinate(row: number, column: number, size: number): bo
  * Uses Euclidean distance from center
  */
 function isValidCircleCoordinate(row: number, column: number, size: number): boolean {
-  const center = Math.ceil(size / 2);
+  const center = (size - 1) / 2;
   const radius = size / 2;
 
   // Euclidean distance from center
@@ -103,7 +103,7 @@ function isValidGridCoordinate(row: number, column: number): boolean {
   const { shape, size, customValidator } = GRID_SHAPE_CONFIG;
 
   // Base bounds check
-  if (row < 1 || column < 1 || row > size || column > size) {
+  if (row < 0 || column < 0 || row >= size || column >= size) {
     return false;
   }
 
@@ -135,8 +135,8 @@ function isValidGridCoordinate(row: number, column: number): boolean {
 function generateShapedGridAddresses(config: GridShapeConfig): readonly string[] {
   const addresses: string[] = [];
 
-  for (let row = 1; row <= config.size; row++) {
-    for (let column = 1; column <= config.size; column++) {
+  for (let row = 0; row < config.size; row++) {
+    for (let column = 0; column < config.size; column++) {
       // Store current config temporarily to use isValidGridCoordinate
       const prevConfig = GRID_SHAPE_CONFIG;
       GRID_SHAPE_CONFIG = config;

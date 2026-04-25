@@ -122,7 +122,7 @@ describe('Game Over - Infinite Mode', () => {
   describe('Single Shape Placement Tests', () => {
     it('should NOT be game over when shape fits in current orientation', () => {
       // Create a grid with one empty spot
-      const tiles = createGridWithOneEmptySpot(5, 5);
+      const tiles = createGridWithOneEmptySpot(4, 4);
       const shapes = [createSingleBlockShape()];
       const menus = [false];
 
@@ -208,7 +208,7 @@ describe('Game Over - Infinite Mode', () => {
   // ============================================================================
   describe('Multiple Shape Tests', () => {
     it('should NOT be game over when first shape fits', () => {
-      const tiles = createGridWithOneEmptySpot(5, 5);
+      const tiles = createGridWithOneEmptySpot(4, 4);
       const shapes = [
         createSingleBlockShape(), // This one fits
         createHorizontalLineShape(), // This one doesn't
@@ -221,7 +221,7 @@ describe('Game Over - Infinite Mode', () => {
     });
 
     it('should NOT be game over when last shape fits', () => {
-      const tiles = createGridWithOneEmptySpot(5, 5);
+      const tiles = createGridWithOneEmptySpot(4, 4);
       const shapes = [
         createHorizontalLineShape(), // This one doesn't fit
         createSquareShape(), // This one doesn't fit
@@ -234,7 +234,7 @@ describe('Game Over - Infinite Mode', () => {
     });
 
     it('should be game over when no shapes fit', () => {
-      const tiles = createGridWithOneEmptySpot(5, 5);
+      const tiles = createGridWithOneEmptySpot(4, 4);
       const shapes = [
         createHorizontalLineShape(), // 4 blocks - doesn't fit
         createSquareShape(), // 2x2 - doesn't fit
@@ -247,7 +247,7 @@ describe('Game Over - Infinite Mode', () => {
     });
 
     it('should NOT be game over when only one shape fits (verify OR logic)', () => {
-      const tiles = createGridWithOneEmptySpot(5, 5);
+      const tiles = createGridWithOneEmptySpot(4, 4);
       const shapes = [
         createHorizontalLineShape(), // Doesn't fit
         createSingleBlockShape(), // Fits!
@@ -620,7 +620,7 @@ describe('Game Over - Infinite Mode', () => {
     });
 
     it('should handle single empty cell remaining', () => {
-      const tiles = createGridWithOneEmptySpot(1, 1); // Top-left corner
+      const tiles = createGridWithOneEmptySpot(0, 0); // Top-left corner
       const shapes = [createSingleBlockShape()];
       const menus = [false];
 

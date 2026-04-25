@@ -22,30 +22,30 @@ describe('Grid Shapes', () => {
   describe('Diamond Shape', () => {
     it('should validate center coordinate for 7x7 diamond', () => {
       setGridShape({ shape: 'diamond', size: 7 });
-      expect(isValidGridCoordinate(4, 4)).toBe(true); // Center
+      expect(isValidGridCoordinate(3, 3)).toBe(true); // Center
     });
 
     it('should validate edge coordinates for 7x7 diamond', () => {
       setGridShape({ shape: 'diamond', size: 7 });
-      expect(isValidGridCoordinate(1, 4)).toBe(true); // Top point
-      expect(isValidGridCoordinate(7, 4)).toBe(true); // Bottom point
-      expect(isValidGridCoordinate(4, 1)).toBe(true); // Left point
-      expect(isValidGridCoordinate(4, 7)).toBe(true); // Right point
+      expect(isValidGridCoordinate(0, 3)).toBe(true); // Top point
+      expect(isValidGridCoordinate(6, 3)).toBe(true); // Bottom point
+      expect(isValidGridCoordinate(3, 0)).toBe(true); // Left point
+      expect(isValidGridCoordinate(3, 6)).toBe(true); // Right point
     });
 
     it('should reject corner coordinates for 7x7 diamond', () => {
       setGridShape({ shape: 'diamond', size: 7 });
-      expect(isValidGridCoordinate(1, 1)).toBe(false); // Top-left corner
-      expect(isValidGridCoordinate(1, 7)).toBe(false); // Top-right corner
-      expect(isValidGridCoordinate(7, 1)).toBe(false); // Bottom-left corner
-      expect(isValidGridCoordinate(7, 7)).toBe(false); // Bottom-right corner
+      expect(isValidGridCoordinate(0, 0)).toBe(false); // Top-left corner
+      expect(isValidGridCoordinate(0, 6)).toBe(false); // Top-right corner
+      expect(isValidGridCoordinate(6, 0)).toBe(false); // Bottom-left corner
+      expect(isValidGridCoordinate(6, 6)).toBe(false); // Bottom-right corner
     });
 
     it('should validate widest row for 7x7 diamond', () => {
       setGridShape({ shape: 'diamond', size: 7 });
-      // Row 4 should have all 7 columns valid
-      for (let col = 1; col <= 7; col++) {
-        expect(isValidGridCoordinate(4, col)).toBe(true);
+      // Row 3 should have all 7 columns valid
+      for (let col = 0; col < 7; col++) {
+        expect(isValidGridCoordinate(3, col)).toBe(true);
       }
     });
 
@@ -67,15 +67,15 @@ describe('Grid Shapes', () => {
   describe('Circle Shape', () => {
     it('should validate center for circular grid', () => {
       setGridShape({ shape: 'circle', size: 9 });
-      expect(isValidGridCoordinate(5, 5)).toBe(true); // Center
+      expect(isValidGridCoordinate(4, 4)).toBe(true); // Center
     });
 
     it('should reject far corners for circular grid', () => {
       setGridShape({ shape: 'circle', size: 9 });
-      expect(isValidGridCoordinate(1, 1)).toBe(false);
-      expect(isValidGridCoordinate(1, 9)).toBe(false);
-      expect(isValidGridCoordinate(9, 1)).toBe(false);
-      expect(isValidGridCoordinate(9, 9)).toBe(false);
+      expect(isValidGridCoordinate(0, 0)).toBe(false);
+      expect(isValidGridCoordinate(0, 8)).toBe(false);
+      expect(isValidGridCoordinate(8, 0)).toBe(false);
+      expect(isValidGridCoordinate(8, 8)).toBe(false);
     });
 
     it('should have fewer tiles than square', () => {
@@ -95,8 +95,8 @@ describe('Grid Shapes', () => {
     it('should validate all coordinates for square grid', () => {
       setGridShape({ shape: 'square', size: 5 });
 
-      for (let row = 1; row <= 5; row++) {
-        for (let col = 1; col <= 5; col++) {
+      for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 5; col++) {
           expect(isValidGridCoordinate(row, col)).toBe(true);
         }
       }
@@ -115,7 +115,7 @@ describe('Grid Shapes', () => {
       setGridShape(crossConfig);
 
       // Center should be valid
-      expect(isValidGridCoordinate(5, 5)).toBe(true);
+      expect(isValidGridCoordinate(4, 4)).toBe(true);
 
       // Horizontal and vertical arms should be valid
       expect(isValidGridCoordinate(5, 1)).toBe(true); // Left arm
@@ -124,7 +124,7 @@ describe('Grid Shapes', () => {
       expect(isValidGridCoordinate(9, 5)).toBe(true); // Bottom arm
 
       // Far corners should be invalid
-      expect(isValidGridCoordinate(1, 1)).toBe(false);
+      expect(isValidGridCoordinate(0, 0)).toBe(false);
       expect(isValidGridCoordinate(9, 9)).toBe(false);
     });
 
@@ -139,7 +139,7 @@ describe('Grid Shapes', () => {
 
       // Off-center should be invalid
       expect(isValidGridCoordinate(3, 3)).toBe(false);
-      expect(isValidGridCoordinate(5, 5)).toBe(false);
+      expect(isValidGridCoordinate(4, 4)).toBe(false);
     });
 
     it('should generate correct tile count for plus shape', () => {
@@ -248,10 +248,10 @@ describe('Grid Shapes', () => {
       const config: GridShapeConfig = { shape: 'square', size: 3 };
       const addresses = generateShapedGridAddresses(config);
 
-      expect(addresses[0]).toBe('R1C1');
-      expect(addresses[1]).toBe('R1C2');
-      expect(addresses[2]).toBe('R1C3');
-      expect(addresses[3]).toBe('R2C1');
+      expect(addresses[0]).toBe('R0C0');
+      expect(addresses[1]).toBe('R0C1');
+      expect(addresses[2]).toBe('R0C2');
+      expect(addresses[3]).toBe('R1C0');
     });
 
     it('should skip invalid coordinates for diamond', () => {
@@ -259,13 +259,13 @@ describe('Grid Shapes', () => {
       const addresses = generateShapedGridAddresses(config);
 
       // Should not include corners
-      expect(addresses).not.toContain('R1C1');
-      expect(addresses).not.toContain('R1C5');
-      expect(addresses).not.toContain('R5C1');
-      expect(addresses).not.toContain('R5C5');
+      expect(addresses).not.toContain('R0C0');
+      expect(addresses).not.toContain('R0C4');
+      expect(addresses).not.toContain('R4C0');
+      expect(addresses).not.toContain('R4C4');
 
       // Should include center
-      expect(addresses).toContain('R3C3');
+      expect(addresses).toContain('R2C2');
     });
   });
 });

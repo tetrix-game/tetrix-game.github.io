@@ -8,7 +8,7 @@ import { getTileData } from './testHelpers';
 // Helper to count filled tiles in a row
 const countFilledInRow = (tiles: Map<string, Tile>, row: number): number => {
   let count = 0;
-  for (let col = 1; col <= 10; col++) {
+  for (let col = 0; col < 10; col++) {
     const tile = getTileData(tiles, row, col);
     if (tile?.block.isFilled) count++;
   }
@@ -18,7 +18,7 @@ const countFilledInRow = (tiles: Map<string, Tile>, row: number): number => {
 // Helper to count filled tiles in a column
 const countFilledInColumn = (tiles: Map<string, Tile>, column: number): number => {
   let count = 0;
-  for (let row = 1; row <= 10; row++) {
+  for (let row = 0; row < 10; row++) {
     const tile = getTileData(tiles, row, column);
     if (tile?.block.isFilled) count++;
   }
@@ -122,7 +122,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Shape has blocks at row 1, so we place at row 4 to target row 5
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 1 },
+        mouseGridLocation: { row: 3, column: 1 },
         dragState: {
           ...state.dragState,
           selectedShape: horizontalShape,
@@ -138,7 +138,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Place second shape at column 5 (covers columns 5-8)
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 5 },
+        mouseGridLocation: { row: 3, column: 5 },
         dragState: {
           ...state.dragState,
           selectedShape: horizontalShape,
@@ -155,7 +155,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Single block is at R1, C1. To target R5, C9: row=4, col=8
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 8 },
+        mouseGridLocation: { row: 3, column: 8 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -170,7 +170,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Place final single block at column 10. To target R5, C10: row=4, col=9
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 9 },
+        mouseGridLocation: { row: 3, column: 9 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -184,7 +184,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       expect(row5Filled).toBe(0);
 
       // Verify all tiles in row 5 are empty
-      for (let col = 1; col <= 10; col++) {
+      for (let col = 0; col < 10; col++) {
         const tile = getTileData(state.tiles, 5, col);
         expect(tile?.block.isFilled).toBe(false);
         expect(tile?.block.color).toBe('grey');
@@ -205,7 +205,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // First shape at row 1 (covers rows 1-4)
       state = {
         ...state,
-        mouseGridLocation: { row: 1, column: 2 },
+        mouseGridLocation: { row: 0, column: 2 },
         dragState: {
           ...state.dragState,
           selectedShape: verticalShape,
@@ -217,7 +217,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Second shape at row 5 (covers rows 5-8)
       state = {
         ...state,
-        mouseGridLocation: { row: 5, column: 2 },
+        mouseGridLocation: { row: 4, column: 2 },
         dragState: {
           ...state.dragState,
           selectedShape: verticalShape,
@@ -235,7 +235,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Single block at R1, C1. To target R9, C3: row=8, col=2
       state = {
         ...state,
-        mouseGridLocation: { row: 8, column: 2 },
+        mouseGridLocation: { row: 7, column: 2 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -250,7 +250,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Place final block to complete column 3. To target R10, C3: row=9, col=2
       state = {
         ...state,
-        mouseGridLocation: { row: 9, column: 2 },
+        mouseGridLocation: { row: 8, column: 2 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -264,7 +264,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       expect(col3Filled).toBe(0);
 
       // Verify all tiles in column 3 are empty
-      for (let row = 1; row <= 10; row++) {
+      for (let row = 0; row < 10; row++) {
         const tile = getTileData(state.tiles, row, 3);
         expect(tile?.block.isFilled).toBe(false);
         expect(tile?.block.color).toBe('grey');
@@ -284,7 +284,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // First shape at column 1 (covers columns 1-4)
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 1 },
+        mouseGridLocation: { row: 3, column: 1 },
         dragState: {
           ...state.dragState,
           selectedShape: horizontalShape,
@@ -296,7 +296,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Second shape at column 5 (covers columns 5-8)
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 5 },
+        mouseGridLocation: { row: 3, column: 5 },
         dragState: {
           ...state.dragState,
           selectedShape: horizontalShape,
@@ -309,7 +309,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       const singleBlock = createSingleBlockShape();
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 8 },
+        mouseGridLocation: { row: 3, column: 8 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -320,7 +320,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 9 },
+        mouseGridLocation: { row: 3, column: 9 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -339,7 +339,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // First shape at row 1 (covers rows 1-4)
       state = {
         ...state,
-        mouseGridLocation: { row: 1, column: 4 }, // Target C5 -> col=4
+        mouseGridLocation: { row: 0, column: 4 }, // Target C5 -> col=4
         dragState: {
           ...state.dragState,
           selectedShape: verticalShape,
@@ -351,7 +351,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Second shape at row 5 (covers rows 5-8)
       state = {
         ...state,
-        mouseGridLocation: { row: 5, column: 4 },
+        mouseGridLocation: { row: 4, column: 4 },
         dragState: {
           ...state.dragState,
           selectedShape: verticalShape,
@@ -363,7 +363,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Add single blocks for rows 9 and 10
       state = {
         ...state,
-        mouseGridLocation: { row: 8, column: 4 },
+        mouseGridLocation: { row: 7, column: 4 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -374,7 +374,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
 
       state = {
         ...state,
-        mouseGridLocation: { row: 9, column: 4 },
+        mouseGridLocation: { row: 8, column: 4 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -400,7 +400,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // First shape at column 1 (covers columns 1-4)
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 1 },
+        mouseGridLocation: { row: 3, column: 1 },
         dragState: {
           ...state.dragState,
           selectedShape: horizontalShape,
@@ -412,7 +412,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Second shape at column 5 (covers columns 5-8)
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 5 },
+        mouseGridLocation: { row: 3, column: 5 },
         dragState: {
           ...state.dragState,
           selectedShape: horizontalShape,
@@ -424,7 +424,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Single block at column 9 (leaves column 10 empty)
       state = {
         ...state,
-        mouseGridLocation: { row: 4, column: 8 },
+        mouseGridLocation: { row: 3, column: 8 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -438,7 +438,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       expect(row5Filled).toBe(9);
 
       // Blocks should still be filled (not grey)
-      for (let col = 1; col <= 9; col++) {
+      for (let col = 0; col < 9; col++) {
         const tile = getTileData(state.tiles, 5, col);
         expect(tile?.block.isFilled).toBe(true);
         expect(tile?.block.color).not.toBe('grey');
@@ -455,7 +455,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // First shape at row 1 (covers rows 1-4)
       state = {
         ...state,
-        mouseGridLocation: { row: 1, column: 3 }, // Target C4 -> col=3
+        mouseGridLocation: { row: 0, column: 3 }, // Target C4 -> col=3
         dragState: {
           ...state.dragState,
           selectedShape: verticalShape,
@@ -467,7 +467,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Second shape at row 5 (covers rows 5-8)
       state = {
         ...state,
-        mouseGridLocation: { row: 5, column: 3 },
+        mouseGridLocation: { row: 4, column: 3 },
         dragState: {
           ...state.dragState,
           selectedShape: verticalShape,
@@ -479,7 +479,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       // Single block at row 9 (leaves row 10 empty)
       state = {
         ...state,
-        mouseGridLocation: { row: 8, column: 3 },
+        mouseGridLocation: { row: 7, column: 3 },
         dragState: {
           ...state.dragState,
           selectedShape: singleBlock,
@@ -493,7 +493,7 @@ describe('Tetrix Reducer - Line Clearing Integration', () => {
       expect(col4Filled).toBe(9);
 
       // Blocks should still be filled (not grey)
-      for (let row = 1; row <= 9; row++) {
+      for (let row = 0; row < 9; row++) {
         const tile = getTileData(state.tiles, row, 4);
         expect(tile?.block.isFilled).toBe(true);
         expect(tile?.block.color).not.toBe('grey');

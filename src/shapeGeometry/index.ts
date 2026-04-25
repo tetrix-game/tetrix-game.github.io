@@ -190,8 +190,8 @@ export function mousePositionToGridLocation(
   // This ensures edge tiles are detected across their full width/height
   // Adding 0.5 before floor effectively rounds to nearest, which gives better
   // behavior when the position is between tiles
-  const column = Math.floor(exactColumn + 0.5) + 1; // +1 for 1-indexed
-  const row = Math.floor(exactRow + 0.5) + 1; // +1 for 1-indexed
+  const column = Math.floor(exactColumn + 0.5); // 0-indexed
+  const row = Math.floor(exactRow + 0.5); // 0-indexed
 
   // Return unclamped values - validation functions handle out-of-bounds gracefully
   // This allows shapes to show "does not fit" visual when hovering outside the grid

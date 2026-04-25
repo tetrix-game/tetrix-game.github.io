@@ -23,7 +23,7 @@ export function countFilledTiles(tiles: TilesSet): number {
 
 // Helper to check if row is full
 export function isRowFull(tiles: TilesSet, row: number): boolean {
-  for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let column = 0; column < GRID_SIZE; column++) {
     const tile = getTileData(tiles, row, column);
     if (!tile || !tile.block.isFilled) {
       return false;
@@ -34,7 +34,7 @@ export function isRowFull(tiles: TilesSet, row: number): boolean {
 
 // Helper to check if column is full
 export function isColumnFull(tiles: TilesSet, column: number): boolean {
-  for (let row = 1; row <= GRID_SIZE; row++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
     const tile = getTileData(tiles, row, column);
     if (!tile || !tile.block.isFilled) {
       return false;
@@ -50,8 +50,8 @@ export function createTilesWithFilled(
   const tiles = new Map<string, Tile>();
 
   // Initialize all tiles as empty
-  for (let row = 1; row <= GRID_SIZE; row++) {
-    for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let column = 0; column < GRID_SIZE; column++) {
       const position = `R${row}C${column}`;
       const tile: Tile = {
         position,
@@ -187,8 +187,8 @@ export function createEmptyGrid(): TilesSet {
  */
 export function createFullGrid(color: ColorName = 'blue'): TilesSet {
   const positions: Array<{ row: number; column: number; color: ColorName }> = [];
-  for (let row = 1; row <= GRID_SIZE; row++) {
-    for (let column = 1; column <= GRID_SIZE; column++) {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let column = 0; column < GRID_SIZE; column++) {
       positions.push({ row, column, color });
     }
   }
@@ -200,8 +200,8 @@ export function createFullGrid(color: ColorName = 'blue'): TilesSet {
  */
 export function createGridWithOneEmptySpot(row: number, col: number): TilesSet {
   const positions: Array<{ row: number; column: number; color: ColorName }> = [];
-  for (let r = 1; r <= GRID_SIZE; r++) {
-    for (let c = 1; c <= GRID_SIZE; c++) {
+  for (let r = 0; r < GRID_SIZE; r++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
       // Skip the empty spot
       if (r !== row || c !== col) {
         positions.push({ row: r, column: c, color: 'blue' });

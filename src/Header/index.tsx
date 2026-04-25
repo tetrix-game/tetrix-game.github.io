@@ -1,8 +1,9 @@
-import { Person as PersonIcon, Leaderboard as LeaderboardIcon } from '@mui/icons-material';
+import { Person as PersonIcon, Leaderboard as LeaderboardIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { useMemo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { api } from '../api/client';
 import { AudioUnlockIndicator } from '../AudioUnlockIndicator';
 import { useAuth } from '../AuthProvider/AuthContext';
 import { BackgroundMusic } from '../BackgroundMusic';
@@ -13,7 +14,7 @@ import { ScoreDisplay } from '../ScoreDisplay';
 import { SettingsOverlay } from '../SettingsOverlay';
 import { SoundEffectsControlContext } from '../SoundEffectsControlContext';
 import { useSoundEffects } from '../SoundEffectsProvider';
-import { useTetrixStateContext } from '../TetrixProvider';
+import { useTetrixStateContext, useTetrixDispatchContext } from '../TetrixProvider';
 import { useMusicControl } from '../useMusicControl';
 import './Header.css';
 
@@ -30,13 +31,34 @@ export const Header: React.FC = () => {
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   // Leaderboard overlay state
   const [showLeaderboardOverlay, setShowLeaderboardOverlay] = useState(false);
+  // New game loading state
+  const [isResetting, setIsResetting] = useState(false);
 
   const { gameMode } = useTetrixStateContext();
+  const dispatch = useTetrixDispatchContext();
 
   const handleLogout = useCallback(async () => {
     await logout();
     navigate('/');
   }, [logout, navigate]);
+
+  const handleNewGame = useCallback(async () => {
+    if (!isAuthenticated || isResetting) return;
+
+    try {
+      setIsResetting(true);
+      // Call backend to reset game state (preserves statistics)
+      await api.resetGame();
+      // Reload game state from backend to get fresh state
+      const gameState = await api.getGameState();
+      // Update frontend state with loaded data
+      dispatch({ type: 'LOAD_GAME_STATE', value: { gameData: gameState, stats: gameState.stats } });
+    } catch (error) {
+      console.error('Failed to reset game:', error);
+    } finally {
+      setIsResetting(false);
+    }
+  }, [isAuthenticated, isResetting, dispatch]);
 
   const toggleSoundEffectsEnabled = useCallback(() => {
     // Toggle and let context handle persistence
@@ -81,6 +103,15 @@ export const Header: React.FC = () => {
                 sx={{ color: '#4fc3f7' }}
               >
                 <LeaderboardIcon />
+              </IconButton>
+              <IconButton
+                onClick={handleNewGame}
+                size="small"
+                aria-label="New Game"
+                disabled={isResetting}
+                sx={{ color: '#4fc3f7' }}
+              >
+                <RefreshIcon />
               </IconButton>
               <button className="logout-button" onClick={handleLogout}>
                 Logout
